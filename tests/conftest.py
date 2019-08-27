@@ -1,0 +1,95 @@
+import os
+
+import json
+
+import dataclasses
+
+import typing
+
+import pytest
+
+
+SCHEMA_DIR = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)),
+    "schemas"
+)
+
+AVRO_SCHEMAS_DIR = os.path.join(SCHEMA_DIR, "avro")
+JSON_SCHEMAS_DIR = os.path.join(SCHEMA_DIR, "json")
+
+
+def load(fp):
+    with open(fp, mode="r") as f:
+        return f.read()
+
+
+@pytest.fixture
+def user_dataclass():
+    @dataclasses.dataclass(repr=False)
+    class User:
+        name: str
+        age: int
+
+    return User
+
+
+@pytest.fixture
+def user_v2_dataclass():
+    @dataclasses.dataclass(repr=False)
+    class UserV2:
+        "A User V2"
+        name: str
+        age: int
+
+    return UserV2
+
+
+@pytest.fixture
+def user_advance_dataclass():
+    class UserAdvance:
+        name: str
+        age: int
+        pets: typing.List[str]
+        accounts: typing.Dict[str, int]
+        favorite_colors: typing.Tuple[str] = ("BLUE", "YELLOW", "GREEN")
+        country: str = "Argentina"
+        address: str = None
+
+    return UserAdvance
+
+
+@pytest.fixture
+def user_avro_json():
+    user_avro_path = os.path.join(AVRO_SCHEMAS_DIR, "user.avsc")
+    schema_string = load(user_avro_path)
+    return json.loads(schema_string)
+
+
+@pytest.fixture
+def user_v2_avro_json():
+    user_avro_path = os.path.join(AVRO_SCHEMAS_DIR, "user_v2.avsc")
+    schema_string = load(user_avro_path)
+    return json.loads(schema_string)
+
+
+@pytest.fixture
+def user_advance_avro_json():
+    user_avro_path = os.path.join(AVRO_SCHEMAS_DIR, "user_advance.avsc")
+    schema_string = load(user_avro_path)
+    return json.loads(schema_string)
+
+#  private static final Logger log = LoggerFactory.getLogger(Main.class);
+
+#     public class ProductAccumulator {
+#         private String omnitureId;
+#         private String variantId;
+#         private Double cev;
+#         private Long total;
+
+#         public ProductAccumulator(String omnitureId, String variantId, Double cev, Long total) {
+#             this.omnitureId = omnitureId;
+#             this.variantId = variantId;
+#             this.cev = cev;
+#             this.total = total;
+#         }
+#     }
