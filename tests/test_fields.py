@@ -12,6 +12,13 @@ INMUTABLE_TYPES_AND_DEFAULTS = (
     (float, 10.4),
 )
 
+LIST_TYPE_AND_ITEMS_TYPE = (
+    (str, "string"),
+    (int, "int"),
+    (bool, "boolean"),
+    (float, "float"),
+)
+
 
 def test_invalid_type_field():
     python_type = typing.Set
@@ -49,5 +56,55 @@ def test_inmutable_types_with_default_value(inmutable_type, default):
     assert {"name": name, "type": avro_type, "default": default} == field.to_dict()
 
 
-def test_container_types():
-    pass
+def test_tuple_type():
+    """
+    When the type is Tuple, the Avro field type should be enum
+    with the symbols attribute present.
+    """
+    name = "an_enum_field"
+    default = ("BLUE", "YELOW", "RED",)
+    python_type = typing.Tuple
+    field = fields.Field(name, python_type, default)
+
+    assert {"name": name, "type": "enum", "symbols": list(default)} == field.to_dict()
+
+
+@pytest.mark.parametrize("python_primitive_type,python_type_str", LIST_TYPE_AND_ITEMS_TYPE)
+def test_list_type(python_primitive_type, python_type_str):
+    """
+    When the type is List, the Avro field type should be array
+    with the items attribute present.
+    """
+    name = "an_array_field"
+    python_type = typing.List[python_primitive_type]
+    field = fields.Field(name, python_type, dataclasses.MISSING)
+
+    assert {"name": name, "type": "array", "items": python_type_str} == field.to_dict()
+
+
+def test_list_type_default_value():
+    """
+    When the type is List, the Avro field type should be array
+    with the items attribute present.
+    """
+    name = "an_array_field"
+    python_type = typing.List[int]
+
+    field = fields.Field(name, python_type, None)
+    assert {"name": name, "type": "array", "items": "int", "default": []} == field.to_dict()
+
+    field = fields.Field(name, python_type, [1, 2])
+    assert {"name": name, "type": "array", "items": "int", "default": [1, 2]} == field.to_dict()
+
+
+@pytest.mark.parametrize("python_primitive_type,python_type_str", LIST_TYPE_AND_ITEMS_TYPE)
+def test_dict_type(python_primitive_type, python_type_str):
+    """
+    When the type is Dict, the Avro field type should be map
+    with the values attribute present. The keys are always string type.
+    """
+    name = "a_map_field"
+    python_type = typing.Dict[str, python_primitive_type]
+    field = fields.Field(name, python_type, dataclasses.MISSING)
+
+    assert {"name": name, "type": "map", "values": python_type_str} == field.to_dict()

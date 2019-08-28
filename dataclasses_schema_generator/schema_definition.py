@@ -12,6 +12,8 @@ class BaseSchemaDefinition:
     type: str
     fields: list
     klass_or_instance: dataclasses.dataclass
+    aliases: typing.List[str] = None
+    namespace: str = None
 
     def get_rendered_fields(self):
         raise NotImplementedError
@@ -53,6 +55,10 @@ class AvroSchemaDefinition(BaseSchemaDefinition):
 
         # if self.aliases:
         #     schema["aliases"] = self.aliases
+
+        # if self.namespace:
+        #     schema["namespace"] = self.namespace
+
 
         if self.include_schema_doc:
             doc = self.generate_documentation()

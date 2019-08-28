@@ -93,6 +93,19 @@ class Field:
             # we need to see what to to when is a custom type
             pass
 
+    def get_default_value(self):
+        if self.default is not dataclasses.MISSING:
+            if self.type in PYTHON_INMUTABLE_TYPES:
+                if self.default is None:
+                    return NULL
+                return self.default
+            elif self.type is list:
+                if self.default is None:
+                    return []
+
+                assert isinstance(self.default, list), "List is required as default"
+                return self.default
+
     def render(self) -> OrderedDict:
         """
         Render the fields base on the avro field
@@ -117,11 +130,15 @@ class Field:
             ("type", self.to_avro_type),
         ])
 
-        if self.default is not dataclasses.MISSING and not self.symbols:
-            if self.default is None:
-                template["default"] = NULL
-            else:
-                template["default"] = self.default
+        default = self.get_default_value()
+
+        if default is not None:
+            template["default"] = default
+        # if self.default is not dataclasses.MISSING and not self.symbols:
+        #     if self.default is None:
+        #         template["default"] = NULL
+        #     else:
+        #         template["default"] = self.default
 
         if self.items_type:
             template["items"] = self.items_type
