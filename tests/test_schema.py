@@ -58,3 +58,29 @@ def test_schema_documentation(user_v2_dataclass, user_v2_avro_json):
     user_schema = json.loads(user)
 
     assert user_v2_avro_json == user_schema
+
+
+def test_extra_avro_attributes(user_extra_avro_attributes):
+    """
+    This method is to test the extra avro attribute like
+    namespace and aliases.
+    """
+    namespace = "test.com.ar/user/v1"
+    aliases = ["User", "My favorite User"]
+
+    class User:
+        "An User"
+        name: str
+        age: int
+
+        @classmethod
+        def extra_avro_attributes(cls):
+            return {
+                "namespace": namespace,
+                "aliases": aliases
+            }
+
+    user_schema_gen = SchemaGenerator(User).render()
+    user_schema = json.loads(user_schema_gen)
+
+    assert user_schema == user_extra_avro_attributes

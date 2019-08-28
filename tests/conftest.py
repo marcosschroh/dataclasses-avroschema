@@ -45,6 +45,22 @@ def user_v2_dataclass():
 
 
 @pytest.fixture
+def user_extra_avro_atributes_dataclass():
+    @dataclasses.dataclass(repr=False)
+    class UserAliasesNamespace:
+        name: str
+        age: int
+
+        def extra_avro_attributes() -> typing.Dict[str, typing.Any]:
+            return {
+                "namespace": "test.com.ar/user/v1",
+                "aliases": ["User", "My favorite User"]
+            }
+
+    return UserAliasesNamespace
+
+
+@pytest.fixture
 def user_advance_dataclass():
     class UserAdvance:
         name: str
@@ -75,6 +91,13 @@ def user_v2_avro_json():
 @pytest.fixture
 def user_advance_avro_json():
     user_avro_path = os.path.join(AVRO_SCHEMAS_DIR, "user_advance.avsc")
+    schema_string = load(user_avro_path)
+    return json.loads(schema_string)
+
+
+@pytest.fixture
+def user_extra_avro_attributes():
+    user_avro_path = os.path.join(AVRO_SCHEMAS_DIR, "user_extra_avro_attributes.avsc")
     schema_string = load(user_avro_path)
     return json.loads(schema_string)
 

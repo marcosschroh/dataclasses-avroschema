@@ -1,0 +1,11 @@
+{
+    "type": "record",
+    "name": "User",
+    "doc": "An User",
+    "namespace": "test.com.ar/user/v1",
+    "aliases": ["User", "My favorite User"],
+    "fields": [
+       {"name": "name", "type": "string"},
+       {"name": "age", "type": "int"}
+    ]
+ }
