@@ -1,6 +1,4 @@
-import json
-
-from dataclasses_schema_generator.schema_generator import SchemaGenerator
+from dataclasses_avroschema.schema_generator import SchemaGenerator
 
 
 def test_total_schema_fields_from_class(user_dataclass):

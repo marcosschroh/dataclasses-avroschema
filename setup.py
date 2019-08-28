@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-""" setup.py for dataclasses-schema-generator."""
+""" setup.py for dataclasses-avroschema."""
 
 from setuptools import setup, find_packages
 
@@ -13,14 +13,13 @@ with open("README.md") as readme_file:
 requires = ["mypy==0.711"]
 
 setup(
-    name="dataclasses-schema-generator",
+    name="dataclasses-avroschema",
     version=__version__,
-    description="",
+    description="Generate Avro Schemas from a Python class",
     long_description=long_description,
     author="Marcos Schroh",
     author_email="schrohm@gmail.com",
     install_requires=requires,
-    extras_require={"faust": ["faust>=1.7.0"]},
     url="",
     download_url="",
     packages=find_packages(exclude=("tests",)),
@@ -32,7 +31,7 @@ setup(
     ],
     keywords=(
         """
-        Python, Data Classes, Schema, Avro
+        Python, Data Classes, Avro Schema, Avro, Apache, Data Streaming
         """
     ),
 )

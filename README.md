@@ -4,7 +4,7 @@ Generate [Avro](https://avro.apache.org/docs/1.8.2/spec.html) Schemas from a Pyt
 
 ## Requirements:
 
-python 3.7+
+python 3.7+ mypy>=0.711
 
 ## Installation
 

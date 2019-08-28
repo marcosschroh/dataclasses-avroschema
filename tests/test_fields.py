@@ -2,7 +2,7 @@ import pytest
 import dataclasses
 import typing
 
-from dataclasses_schema_generator import fields
+from dataclasses_avroschema import fields
 
 
 INMUTABLE_TYPES_AND_DEFAULTS = (
