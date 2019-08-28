@@ -39,6 +39,9 @@ class SchemaGenerator:
     def render(self) -> str:
         return json.dumps(self.generate_schema())
 
+    def avro_schema(self) -> typing.Dict[str, typing.Any]:
+        return json.loads(self.render())
+
     @property
     def get_fields(self) -> typing.List[Field]:
         return self.fields

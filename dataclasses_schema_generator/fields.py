@@ -131,14 +131,8 @@ class Field:
         ])
 
         default = self.get_default_value()
-
         if default is not None:
             template["default"] = default
-        # if self.default is not dataclasses.MISSING and not self.symbols:
-        #     if self.default is None:
-        #         template["default"] = NULL
-        #     else:
-        #         template["default"] = self.default
 
         if self.items_type:
             template["items"] = self.items_type
