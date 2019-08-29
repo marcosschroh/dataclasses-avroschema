@@ -10,17 +10,15 @@ __version__ = "0.1.0"
 with open("README.md") as readme_file:
     long_description = readme_file.read()
 
-requires = ["mypy==0.711"]
-
 setup(
     name="dataclasses-avroschema",
     version=__version__,
     description="Generate Avro Schemas from a Python class",
     long_description=long_description,
+    long_description_content_type="text/markdown",
     author="Marcos Schroh",
     author_email="schrohm@gmail.com",
-    install_requires=requires,
-    url="",
+    url="https://github.com/marcosschroh/dataclasses-avroschema",
     download_url="",
     packages=find_packages(exclude=("tests",)),
     include_package_data=True,
