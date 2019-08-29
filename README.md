@@ -9,7 +9,7 @@ python 3.7+
 ## Installation
 
 ```
-pip install dataclasses-avorschema
+pip install dataclasses-avroschema
 ```
 
 ## Usage:
