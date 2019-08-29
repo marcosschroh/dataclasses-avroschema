@@ -66,7 +66,7 @@ There are some special avro attributes like `aliases`, `namespace` and `doc` (bo
 The `doc` attribute can be set via the docstring class. The `aliases` and `namespaces` must be set using the `extra_avro_attributes` static method.
 
 ```python
-from dataclasses_avroschema import SchemaGenerator
+from dataclasses_avroschema.schema_generator import SchemaGenerator
 
 class User:
     "My User Class"
@@ -81,7 +81,7 @@ class User:
             "aliases": ["User", "My favorite User"]
         }
 
-print(SchemaGenerator(User).avro_schema())
+SchemaGenerator(User).avro_schema()
 
 '{
   "type": "record",

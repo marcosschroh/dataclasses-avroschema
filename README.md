@@ -15,6 +15,9 @@ pip install dataclasses-avroschema
 ## Usage:
 
 ```python
+from dataclasses_avroschema.schema_generator import SchemaGenerator
+
+
 class User:
     "An User"
     name: str
@@ -25,10 +28,7 @@ class User:
     country: str = "Argentina"
     address: str = None
 
-
-user_avro_schema = SchemaGenerator(User).avro_schema()
-
-print(user_avro_schema)
+SchemaGenerator(User).avro_schema()
 
 '{
     "type": "record",
