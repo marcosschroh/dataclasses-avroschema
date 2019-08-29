@@ -1,0 +1,20 @@
+site_name: Python Schema Registry Client
+site_description: avro, kafka, client, avro schema, apache, python
+
+theme:
+    name: 'material'
+
+repo_name: marcosschroh/dataclasses-avroschema
+repo_url: https://github.com/marcosschroh/dataclasses-avroschema
+
+nav:
+    - Introduction: 'index.md'
+    - Message Serializer: 'avro_schema.md'
+    - Faust integration: 'fields_specification.md'
+
+markdown_extensions:
+  - markdown.extensions.codehilite:
+      guess_lang: false
+  - admonition
+  - codehilite
+  - extra
