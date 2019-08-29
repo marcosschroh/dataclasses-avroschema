@@ -70,6 +70,7 @@ def user_advance_dataclass():
         age: int
         pets: typing.List[str]
         accounts: typing.Dict[str, int]
+        has_car: bool = False
         favorite_colors: typing.Tuple[str] = ("BLUE", "YELLOW", "GREEN")
         country: str = "Argentina"
         address: str = None

@@ -32,7 +32,7 @@ user_avro_schema = SchemaGenerator(User).avro_schema()
 
 print(user_avro_schema)
 
-{
+'{
     "type": "record",
     "name": "User",
     "doc": "An User",
@@ -45,7 +45,7 @@ print(user_avro_schema)
         {"name": "country", "type": ["string", "null"], "default": "Argentina"},
         {"name": "address", "type": ["null", "string"], "default": "null"}
     ]
- }
+}'
 ```
 
 ## TODO:

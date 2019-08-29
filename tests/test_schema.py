@@ -1,3 +1,4 @@
+import json
 import pytest
 
 from dataclasses_avroschema.schema_generator import SchemaGenerator
@@ -21,21 +22,21 @@ def test_total_schema_fields_from_instance(user_dataclass):
 def test_schema_generator_render_from_class(user_dataclass, user_avro_json):
     user_schema = SchemaGenerator(user_dataclass, include_schema_doc=False).avro_schema()
 
-    assert user_schema == user_avro_json
+    assert user_schema == json.dumps(user_avro_json)
 
 
 def test_schema_generator_render_from_instance(user_dataclass, user_avro_json):
     user = user_dataclass("test", 20, True, 10.4, encoded)
     user_schema = SchemaGenerator(user, include_schema_doc=False).avro_schema()
 
-    assert user_schema == user_avro_json
+    assert user_schema == json.dumps(user_avro_json)
 
 
 def test_schema_generator_render_from_class_with_doc(user_dataclass, user_avro_json):
     user_avro_json["doc"] = "User(name: str, age: int, has_pets: bool, money: float, encoded: bytes)"
     user_schema = SchemaGenerator(user_dataclass).avro_schema()
 
-    assert user_schema == user_avro_json
+    assert user_schema == json.dumps(user_avro_json)
 
 
 def test_schema_generator_render_from_instance_with_doc(user_dataclass, user_avro_json):
@@ -44,19 +45,19 @@ def test_schema_generator_render_from_instance_with_doc(user_dataclass, user_avr
     user = user_dataclass("test", 20, True, 10.4, encoded)
     user_schema = SchemaGenerator(user).avro_schema()
 
-    assert user_schema == user_avro_json
+    assert user_schema == json.dumps(user_avro_json)
 
 
 def test_schema_generator_class_with_list(user_advance_dataclass, user_advance_avro_json):
     user_schema = SchemaGenerator(user_advance_dataclass, include_schema_doc=False).avro_schema()
 
-    assert user_advance_avro_json == user_schema
+    assert user_schema == json.dumps(user_advance_avro_json)
 
 
 def test_schema_documentation(user_v2_dataclass, user_v2_avro_json):
     user_schema = SchemaGenerator(user_v2_dataclass).avro_schema()
 
-    assert user_v2_avro_json == user_schema
+    assert user_schema == json.dumps(user_v2_avro_json)
 
 
 def test_extra_avro_attributes(user_extra_avro_attributes):
@@ -80,11 +81,11 @@ def test_extra_avro_attributes(user_extra_avro_attributes):
             }
 
     user_schema = SchemaGenerator(User).avro_schema()
-    assert user_schema == user_extra_avro_attributes
+    assert user_schema == json.dumps(user_extra_avro_attributes)
 
     # test with an instance
     user_schema = SchemaGenerator(User("test", 1)).avro_schema()
-    assert user_schema == user_extra_avro_attributes
+    assert user_schema == json.dumps(user_extra_avro_attributes)
 
 
 def test_extra_avro_attributes_invalid(user_extra_avro_attributes):

@@ -72,15 +72,15 @@ class AvroSchemaDefinition(BaseSchemaDefinition):
             ("fields", self.get_rendered_fields())
         ])
 
-        if self.aliases is not None:
-            schema["aliases"] = self.aliases
-
-        if self.namespace is not None:
-            schema["namespace"] = self.namespace
-
         if self.include_schema_doc:
             doc = self.generate_documentation()
             if doc is not None:
                 schema["doc"] = doc
+
+        if self.namespace is not None:
+            schema["namespace"] = self.namespace
+
+        if self.aliases is not None:
+            schema["aliases"] = self.aliases
 
         return schema

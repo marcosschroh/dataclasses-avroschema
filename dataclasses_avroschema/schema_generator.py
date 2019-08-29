@@ -36,10 +36,10 @@ class SchemaGenerator:
 
         return schema
 
-    def render(self) -> str:
+    def avro_schema(self) -> str:
         return json.dumps(self.generate_schema())
 
-    def avro_schema(self) -> typing.Dict[str, typing.Any]:
+    def to_python(self) -> typing.Dict[str, typing.Any]:
         return json.loads(self.render())
 
     @property

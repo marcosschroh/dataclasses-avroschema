@@ -1,9 +1,9 @@
 {
-    "type": "record",
-    "name": "UserV2",
-    "doc": "A User V2",
-    "fields": [
-        {"name": "name", "type": "string"},
-        {"name": "age", "type": "int"}   
-    ]
+  "type": "record",
+  "name": "UserV2",
+  "fields": [
+    {"name": "name", "type": "string"},
+    {"name": "age", "type": "int"}   
+  ],
+  "doc": "A User V2"
 }

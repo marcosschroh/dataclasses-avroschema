@@ -83,31 +83,31 @@ class User:
 
 print(SchemaGenerator(User).avro_schema())
 
-{
-  'type': 'record', 
-  'name': 'User',
-  'aliases': ['User', 'My favorite User'], 
-  'namespace': 'test.com.ar/user/v1', 
-  'doc': 'My User Class',
-  'fields': [
+'{
+  "type": "record",
+  "name": "User",
+  "fields": [
     {
-      'name': 'name',
-      'type': 'string'
+      "name": "name",
+      "type": "string"
     },
     {
-      'name': 'age',
-      'type': 'int'
+      "name": "age",
+      "type": "int"
     },
     {
-      'name': 'has_pets',
-      'type': ['boolean', 'null'],
-      'default': False
+      "name": "has_pets",
+      "type": ["boolean", "null"],
+      "default": false
     },
     {
-      'name': 'money', 
-      'type': ['float', 'null'],
-      'default': 100.3
+      "name": "money",
+      "type": ["float", "null"],
+      "default": 100.3
     }
-  ]
-}
+  ],
+  "doc": "My User Class",
+  "namespace": "test.com.ar/user/v1",
+  "aliases": ["User", "My favorite User"]
+}'
 ```
