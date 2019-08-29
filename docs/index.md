@@ -53,3 +53,5 @@ print(user_avro_schema)
 1. Schema relations
 2. Recursive Schemas
 3. Support for Avro Logical Types
+4. Custom Exceptions?
+
