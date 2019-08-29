@@ -1,4 +1,4 @@
-site_name: Python Schema Registry Client
+site_name: Dataclasses Avro Schema
 site_description: avro, kafka, client, avro schema, apache, python
 
 theme:
