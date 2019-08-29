@@ -82,7 +82,7 @@ class Field:
         if self.type in PYTHON_PRIMITIVE_TYPES:
             avro_type = PYTHON_TYPE_TO_AVRO.get(self.type)
 
-            if self.default is not dataclasses.MISSING and self.type not in PYTHON_PRIMITIVE_CONTAINERS:
+            if self.default is not dataclasses.MISSING and self.type is not tuple:
                 if self.default is not None:
                     return [avro_type, NULL]
                 # means that default value is None

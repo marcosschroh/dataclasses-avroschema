@@ -93,10 +93,10 @@ def test_list_type_default_value():
     python_type = typing.List[int]
 
     field = fields.Field(name, python_type, None)
-    assert {"name": name, "type": "array", "items": "int", "default": []} == field.to_dict()
+    assert {"name": name, "type": ["null", "array"], "items": "int", "default": []} == field.to_dict()
 
     field = fields.Field(name, python_type, [1, 2])
-    assert {"name": name, "type": "array", "items": "int", "default": [1, 2]} == field.to_dict()
+    assert {"name": name, "type": ["array", "null"], "items": "int", "default": [1, 2]} == field.to_dict()
 
 
 @pytest.mark.parametrize("python_primitive_type,python_type_str", LIST_TYPE_AND_ITEMS_TYPE)
@@ -121,7 +121,7 @@ def test_dict_type_default_value():
     python_type = typing.Dict[str, int]
 
     field = fields.Field(name, python_type, None)
-    assert {"name": name, "type": "map", "values": "int", "default": {}} == field.to_dict()
+    assert {"name": name, "type": ["null", "map"], "values": "int", "default": {}} == field.to_dict()
 
     field = fields.Field(name, python_type, {"key": 1})
-    assert {"name": name, "type": "map", "values": "int", "default": {"key": 1}} == field.to_dict()
+    assert {"name": name, "type": ["map", "null"], "values": "int", "default": {"key": 1}} == field.to_dict()
