@@ -4,7 +4,7 @@ Generate [Avro](https://avro.apache.org/docs/1.8.2/spec.html) Schemas from a Pyt
 
 ## Requirements:
 
-python 3.7+ mypy>=0.711
+python 3.7+
 
 ## Installation
 
@@ -32,7 +32,7 @@ print(user_avro_schema)
 
 {
     "type": "record",
-    "name": "UserAdvance",
+    "name": "User",
     "doc": "An User",
     "fields": [
         {"name": "name", "type": "string"},
@@ -48,7 +48,7 @@ print(user_avro_schema)
 
 ## TODO:
 
-1. Custom Types
+1. Schema relations
 2. Recursive Schemas
 3. Support for Avro Logical Types
 

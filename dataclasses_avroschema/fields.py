@@ -29,7 +29,7 @@ PYTHON_TYPE_TO_AVRO = {
 }
 
 # excluding tuple because is a container
-PYTHON_INMUTABLE_TYPES = (str, int, bool, float)
+PYTHON_INMUTABLE_TYPES = (str, int, bool, float, bytes)
 
 PYTHON_PRIMITIVE_CONTAINERS = (list, tuple, dict)
 
@@ -103,7 +103,13 @@ class Field:
                 if self.default is None:
                     return []
 
-                assert isinstance(self.default, list), "List is required as default"
+                assert isinstance(self.default, list), f"List is required as default for field {self.name}"
+                return self.default
+            elif self.type is dict:
+                if self.default is None:
+                    return {}
+
+                assert isinstance(self.default, dict), f"Dict is required as default for field {self.name}"
                 return self.default
 
     def render(self) -> OrderedDict:

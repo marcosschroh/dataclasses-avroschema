@@ -117,8 +117,8 @@ Session.vim
 # Auto-generated tag files
 tags
 
-
 .pytest_cache/
 
-
 .ipython/
+
+.DS_Store

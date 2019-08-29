@@ -10,6 +10,7 @@ INMUTABLE_TYPES_AND_DEFAULTS = (
     (int, 1),
     (bool, True),
     (float, 10.4),
+    # (bytes, "test".encode()),
 )
 
 LIST_TYPE_AND_ITEMS_TYPE = (
@@ -17,6 +18,7 @@ LIST_TYPE_AND_ITEMS_TYPE = (
     (int, "int"),
     (bool, "boolean"),
     (float, "float"),
+    (bytes, "bytes"),
 )
 
 
@@ -108,3 +110,18 @@ def test_dict_type(python_primitive_type, python_type_str):
     field = fields.Field(name, python_type, dataclasses.MISSING)
 
     assert {"name": name, "type": "map", "values": python_type_str} == field.to_dict()
+
+
+def test_dict_type_default_value():
+    """
+    When the type is Dict, the Avro field type should be a map
+    with the values attribute present.
+    """
+    name = "a_map_field"
+    python_type = typing.Dict[str, int]
+
+    field = fields.Field(name, python_type, None)
+    assert {"name": name, "type": "map", "values": "int", "default": {}} == field.to_dict()
+
+    field = fields.Field(name, python_type, {"key": 1})
+    assert {"name": name, "type": "map", "values": "int", "default": {"key": 1}} == field.to_dict()

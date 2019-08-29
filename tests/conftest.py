@@ -29,6 +29,9 @@ def user_dataclass():
     class User:
         name: str
         age: int
+        has_pets: bool
+        money: float
+        encoded: bytes
 
     return User
 

@@ -57,7 +57,7 @@ class AvroSchemaDefinition(BaseSchemaDefinition):
 
         if extra_avro_attributes_fn:
             extra_avro_attributes = extra_avro_attributes_fn()
-            assert isinstance(extra_avro_attributes, dict), "Dict must be returned for extra_avro_attributes method"
+            assert isinstance(extra_avro_attributes, dict), "Dict must be returned type in extra_avro_attributes method"
 
             aliases = extra_avro_attributes.get("aliases", self.aliases)
             namespace = extra_avro_attributes.get("namespace", self.namespace)
