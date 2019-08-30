@@ -105,18 +105,10 @@ def user_extra_avro_attributes():
     schema_string = load(user_avro_path)
     return json.loads(schema_string)
 
-#  private static final Logger log = LoggerFactory.getLogger(Main.class);
 
-#     public class ProductAccumulator {
-#         private String omnitureId;
-#         private String variantId;
-#         private Double cev;
-#         private Long total;
+@pytest.fixture
+def user_one_address_schema():
+    user_avro_path = os.path.join(AVRO_SCHEMAS_DIR, "user_one_address.avsc")
+    schema_string = load(user_avro_path)
+    return json.loads(schema_string)
 
-#         public ProductAccumulator(String omnitureId, String variantId, Double cev, Long total) {
-#             this.omnitureId = omnitureId;
-#             this.variantId = variantId;
-#             this.cev = cev;
-#             this.total = total;
-#         }
-#     }

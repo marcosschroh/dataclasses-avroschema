@@ -4,6 +4,8 @@ import typing
 
 from collections import OrderedDict
 
+from dataclasses_avroschema import schema_generator
+
 
 BOOLEAN = "boolean"
 NULL = "null"
@@ -91,7 +93,8 @@ class Field:
             return avro_type
         else:
             # we need to see what to to when is a custom type
-            pass
+            # is a record schema
+            return schema_generator.SchemaGenerator(self.type).avro_schema_to_python()
 
     def get_default_value(self):
         if self.default is not dataclasses.MISSING:

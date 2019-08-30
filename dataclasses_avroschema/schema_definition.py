@@ -3,6 +3,8 @@ import inspect
 import typing
 from collections import OrderedDict
 
+from dataclasses_avroschema import fields
+
 
 @dataclasses.dataclass
 class BaseSchemaDefinition:
@@ -10,10 +12,7 @@ class BaseSchemaDefinition:
     Minimal Schema definition
     """
     type: str
-    fields: list
     klass_or_instance: dataclasses.dataclass
-    aliases: typing.List[str] = None
-    namespace: str = None
 
     def get_rendered_fields(self):
         raise NotImplementedError
@@ -35,13 +34,22 @@ class BaseSchemaDefinition:
 
 @dataclasses.dataclass
 class AvroSchemaDefinition(BaseSchemaDefinition):
-
+    aliases: typing.List[str] = None
+    namespace: str = None
+    fields: typing.List["fields.Field"] = None
     include_schema_doc: bool = True
 
     def __post_init__(self):
         self.generate_extra_avro_attributes()
+        self.fields = self.parse_dataclasses_fields()
 
-    def get_rendered_fields(self):
+    def parse_dataclasses_fields(self) -> typing.List["Field"]:
+        return [
+            fields.Field(dataclass_field.name, dataclass_field.type, dataclass_field.default)
+            for dataclass_field in dataclasses.fields(self.klass_or_instance)
+        ]
+
+    def get_rendered_fields(self) -> typing.List["fields.Field"]:
         return [
             field.render() for field in self.fields
         ]
