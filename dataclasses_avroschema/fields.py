@@ -65,7 +65,13 @@ class Field:
 
             if origin is list:
                 # because avro can have only one type, we take the first one
-                self.items_type = PYTHON_TYPE_TO_AVRO[self.type.__args__[0]]
+                items_type = self.type.__args__[0]
+
+                if items_type in PYTHON_PRIMITIVE_TYPES:
+                    self.items_type = PYTHON_TYPE_TO_AVRO[items_type]
+                else:
+                    # means is a custom type
+                    self.items_type = schema_generator.SchemaGenerator(items_type).avro_schema_to_python()
             elif origin is tuple:
                 self.symbols = list(self.default)
             elif origin is dict:

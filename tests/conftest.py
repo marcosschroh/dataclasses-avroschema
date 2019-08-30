@@ -112,3 +112,9 @@ def user_one_address_schema():
     schema_string = load(user_avro_path)
     return json.loads(schema_string)
 
+
+@pytest.fixture
+def user_many_address_schema():
+    user_avro_path = os.path.join(AVRO_SCHEMAS_DIR, "user_many_address.avsc")
+    schema_string = load(user_avro_path)
+    return json.loads(schema_string)
