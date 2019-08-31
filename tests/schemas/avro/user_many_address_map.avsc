@@ -1,0 +1,34 @@
+{
+    "type": "record",
+    "name": "User",
+    "fields": [
+        {
+            "name": "name",
+            "type": "string"
+        },
+        {
+            "name": "age",
+            "type": "int"
+        },
+        {
+            "name": "addresses",
+            "type": "map",
+            "values": {
+                "type": "record",
+                "name": "Address",
+                "fields": [
+                    {
+                        "name": "street",
+                        "type": "string"
+                    },
+                    {
+                        "name": "street_number",
+                        "type": "int"
+                    }
+                ],
+                "doc": "An Address"
+            }
+        } 
+    ],
+    "doc": "User with multiple Address"
+}
