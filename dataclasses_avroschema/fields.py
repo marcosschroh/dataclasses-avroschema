@@ -43,6 +43,7 @@ class Field:
     name: str
     type: typing.Any  # store the python type
     default: typing.Any = dataclasses.MISSING
+    default_factory: typing.Any = None
 
     # for avro array field
     items_type: typing.Any = None
@@ -111,15 +112,23 @@ class Field:
             elif self.type is list:
                 if self.default is None:
                     return []
-
-                assert isinstance(self.default, list), f"List is required as default for field {self.name}"
-                return self.default
             elif self.type is dict:
                 if self.default is None:
                     return {}
+        elif self.default_factory not in (dataclasses.MISSING, None):
+            if self.type is list:
+                # expeting a callable
+                default = self.default_factory()
+                assert isinstance(default, list), f"List is required as default for field {self.name}"
 
-                assert isinstance(self.default, dict), f"Dict is required as default for field {self.name}"
-                return self.default
+                print(default)
+                return default
+            elif self.type is dict:
+                # expeting a callable
+                default = self.default_factory()
+                assert isinstance(default, dict), f"Dict is required as default for field {self.name}"
+
+                return default
 
     def render(self) -> OrderedDict:
         """

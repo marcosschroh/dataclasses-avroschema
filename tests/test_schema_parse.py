@@ -57,3 +57,22 @@ def test_advance_schema(user_advance_dataclass):
 
     assert parse_schema(schema)
 
+
+def test_advance_schema_with_defaults(user_advance_with_defaults_dataclass):
+    """
+    Python class contains the primitive, primitive with default values
+    array, enum, map types.
+
+    class UserAdvance:
+        name: str
+        age: int
+        pets: typing.List[str] = dataclasses.field(default_factory=lambda: ['dog', 'cat'])
+        accounts: typing.Dict[str, int] = dataclasses.field(default_factory=lambda: {"key": 1})
+        has_car: bool = False
+        favorite_colors: typing.Tuple[str] = ("BLUE", "YELLOW", "GREEN")
+        country: str = "Argentina"
+        address: str = None
+    """
+    schema = SchemaGenerator(user_advance_with_defaults_dataclass)
+
+    assert parse_schema(schema.to_python())

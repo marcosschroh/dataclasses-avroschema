@@ -123,7 +123,7 @@ def test_list_type_default_value():
 
     assert expected == field.to_dict()
 
-    field = fields.Field(name, python_type, [1, 2])
+    field = fields.Field(name, python_type, default=dataclasses.MISSING, default_factory=lambda: [1, 2])
 
     expected = {
         "name": name,
@@ -181,7 +181,7 @@ def test_dict_type_default_value():
     }
     assert expected == field.to_dict()
 
-    field = fields.Field(name, python_type, {"key": 1})
+    field = fields.Field(name, python_type, default=dataclasses.MISSING, default_factory=lambda: {"key": 1})
 
     expected = {
         "name": name,
