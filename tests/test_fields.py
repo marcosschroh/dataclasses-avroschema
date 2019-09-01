@@ -68,7 +68,16 @@ def test_tuple_type():
     python_type = typing.Tuple
     field = fields.Field(name, python_type, default)
 
-    assert {"name": name, "type": "enum", "symbols": list(default)} == field.to_dict()
+    expected = {
+        "name": name,
+        "type": {
+            "type": "enum",
+            "name": name,
+            "symbols": list(default)
+        }
+    }
+
+    assert expected == field.to_dict()
 
 
 @pytest.mark.parametrize("python_primitive_type,python_type_str", LIST_TYPE_AND_ITEMS_TYPE)
@@ -81,7 +90,16 @@ def test_list_type(python_primitive_type, python_type_str):
     python_type = typing.List[python_primitive_type]
     field = fields.Field(name, python_type, dataclasses.MISSING)
 
-    assert {"name": name, "type": "array", "items": python_type_str} == field.to_dict()
+    expected = {
+        "name": name,
+        "type": {
+            "type": "array",
+            "name": name,
+            "items": python_type_str
+        }
+    }
+
+    assert expected == field.to_dict()
 
 
 def test_list_type_default_value():
@@ -93,10 +111,31 @@ def test_list_type_default_value():
     python_type = typing.List[int]
 
     field = fields.Field(name, python_type, None)
-    assert {"name": name, "type": ["null", "array"], "items": "int", "default": []} == field.to_dict()
+    expected = {
+        "name": name,
+        "type": {
+            "type": "array",
+            "name": name,
+            "items": "int"
+        },
+        "default": []
+    }
+
+    assert expected == field.to_dict()
 
     field = fields.Field(name, python_type, [1, 2])
-    assert {"name": name, "type": ["array", "null"], "items": "int", "default": [1, 2]} == field.to_dict()
+
+    expected = {
+        "name": name,
+        "type": {
+            "type": "array",
+            "name": name,
+            "items": "int"
+        },
+        "default": [1, 2]
+    }
+
+    assert expected == field.to_dict()
 
 
 @pytest.mark.parametrize("python_primitive_type,python_type_str", LIST_TYPE_AND_ITEMS_TYPE)
@@ -109,7 +148,16 @@ def test_dict_type(python_primitive_type, python_type_str):
     python_type = typing.Dict[str, python_primitive_type]
     field = fields.Field(name, python_type, dataclasses.MISSING)
 
-    assert {"name": name, "type": "map", "values": python_type_str} == field.to_dict()
+    expected = {
+        "name": name,
+        "type": {
+            "type": "map",
+            "name": name,
+            "values": python_type_str
+        }
+    }
+
+    assert expected == field.to_dict()
 
 
 def test_dict_type_default_value():
@@ -121,7 +169,28 @@ def test_dict_type_default_value():
     python_type = typing.Dict[str, int]
 
     field = fields.Field(name, python_type, None)
-    assert {"name": name, "type": ["null", "map"], "values": "int", "default": {}} == field.to_dict()
+
+    expected = {
+        "name": name,
+        "type": {
+            "type": "map",
+            "name": name,
+            "values": "int"
+        },
+        "default": {}
+    }
+    assert expected == field.to_dict()
 
     field = fields.Field(name, python_type, {"key": 1})
-    assert {"name": name, "type": ["map", "null"], "values": "int", "default": {"key": 1}} == field.to_dict()
+
+    expected = {
+        "name": name,
+        "type": {
+            "type": "map",
+            "name": name,
+            "values": "int"
+        },
+        "default": {"key": 1}
+    }
+
+    assert expected == field.to_dict()

@@ -23,9 +23,9 @@ PYTHON_TYPE_TO_AVRO = {
     float: FLOAT,
     bytes: BYTES,
     str: STRING,
-    list: ARRAY,
-    tuple: ENUM,
-    dict: MAP,
+    list: {"type": ARRAY},
+    tuple: {"type": ENUM},
+    dict: {"type": MAP},
 }
 
 # excluding tuple because is a container
@@ -77,17 +77,26 @@ class Field:
 
             self.type = origin
 
-    @property
-    def to_avro_type(self) -> PythonPrimitiveTypes:
-        if self.type in PYTHON_PRIMITIVE_TYPES:
-            avro_type = PYTHON_TYPE_TO_AVRO.get(self.type)
+    def get_avro_type(self) -> PythonPrimitiveTypes:
+        avro_type = PYTHON_TYPE_TO_AVRO.get(self.type)
 
+        if self.type in PYTHON_INMUTABLE_TYPES:
             if self.default is not dataclasses.MISSING and self.type is not tuple:
                 if self.default is not None:
                     return [avro_type, NULL]
                 # means that default value is None
                 return [NULL, avro_type]
 
+            return avro_type
+        elif self.type in PYTHON_PRIMITIVE_CONTAINERS:
+            if self.items_type:
+                avro_type["items"] = self.items_type
+            elif self.values_type:
+                avro_type["values"] = self.values_type
+            elif self.symbols:
+                avro_type["symbols"] = self.symbols
+
+            avro_type["name"] = self.name
             return avro_type
         else:
             # we need to see what to to when is a custom type
@@ -127,25 +136,18 @@ class Field:
             The default key is optional.
 
             If self.type is:
-                * list, the OrderedDict will contains the key items
-                * tuple, he OrderedDict will contains the key symbols
-                * dict, he OrderedDict will contains the key values
+                * list, the OrderedDict will contains the key items inside type
+                * tuple, he OrderedDict will contains the key symbols inside type
+                * dict, he OrderedDict will contains the key values inside type
         """
         template = OrderedDict([
             ("name", self.name),
-            ("type", self.to_avro_type),
+            ("type", self.get_avro_type()),
         ])
 
         default = self.get_default_value()
         if default is not None:
             template["default"] = default
-
-        if self.items_type:
-            template["items"] = self.items_type
-        elif self.values_type:
-            template["values"] = self.values_type
-        elif self.symbols:
-            template["symbols"] = self.symbols
 
         return template
 
