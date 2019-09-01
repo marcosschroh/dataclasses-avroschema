@@ -121,7 +121,6 @@ class Field:
                 default = self.default_factory()
                 assert isinstance(default, list), f"List is required as default for field {self.name}"
 
-                print(default)
                 return default
             elif self.type is dict:
                 # expeting a callable
