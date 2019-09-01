@@ -1,0 +1,58 @@
+{
+    "type": "record",
+    "name": "UserAdvance",
+    "fields": [
+      {
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "name": "age",
+        "type": "int"
+      },
+      {
+        "name": "pets",
+        "type": {
+          "type": "array",
+          "items": "string",
+          "name": "pets"
+        },
+        "default": ["dog", "cat"]
+      },
+      {
+        "name": "accounts",
+        "type": {
+          "type": "map",
+          "values": "int",
+          "name": "accounts"
+        },
+        "default": {
+            "key": 1
+        }
+      },
+      {
+        "name": "has_car",
+        "type": ["boolean", "null"],
+        "default": false
+      },
+      {
+        "name": "favorite_colors",
+        "type": {
+          "type": "enum",
+          "symbols": ["BLUE", "YELLOW", "GREEN"],
+          "name": "favorite_colors"
+        }
+      },
+      {
+        "name": "country",
+        "type": ["string", "null"],
+        "default": "Argentina"
+      },
+      {
+        "name": "address",
+        "type": ["null", "string"],
+        "default": "null"
+      }
+    ]
+}
+ 

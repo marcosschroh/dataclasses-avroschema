@@ -26,7 +26,6 @@ So, the previous types can be matched to:
 | float     |     float   |
 | double    |     float   |
 | null      |     None    |
-| double    |     wip     |
 | bytes     |     wip     |
 
 Example:

@@ -22,7 +22,12 @@ class SchemaGenerator:
 
     def parse_dataclasses_fields(self) -> typing.List[Field]:
         return [
-            Field(dataclass_field.name, dataclass_field.type, dataclass_field.default)
+            Field(
+                dataclass_field.name,
+                dataclass_field.type,
+                dataclass_field.default,
+                dataclass_field.default_factory
+            )
             for dataclass_field in dataclasses.fields(self.dataclass)
         ]
 
@@ -40,7 +45,7 @@ class SchemaGenerator:
         return json.dumps(self.generate_schema())
 
     def to_python(self) -> typing.Dict[str, typing.Any]:
-        return json.loads(self.render())
+        return json.loads(self.avro_schema())
 
     @property
     def get_fields(self) -> typing.List[Field]:

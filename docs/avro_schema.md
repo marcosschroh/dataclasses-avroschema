@@ -54,10 +54,107 @@ class User:
     has_pets: bool
     money: float
 
-avro_schema = SchemaGenerator(User).avro_schema()
+SchemaGenerator(User).avro_schema()
+
+{
+  "type": "record",
+  "name": "User",
+  "fields": [
+    {
+      "name": "name",
+      "type": "string"
+    }
+    ,
+    {
+      "name": "age",
+      "type": "int"
+    },
+    {
+      "name": "has_pets",
+      "type": "boolean"
+    },
+    {
+      "name": "money",
+      "type": "float"
+    }
+  ],
+  "doc": "User(name: str, age: int, has_pets: bool, money: float)"
+}'
 ```
 
-and that is it!! Each python field is related with a avro type. You can find the field relationships here:
+and that is it!! Each python field is related with a avro type. You can find the field relationships (here)[https://marcosschroh.github.io/dataclasses-avroschema/fields_specification/]:
+
+### Enum, Array and Map fields
+
+```python
+class UserAdvance:
+    name: str
+    age: int
+    pets: typing.List[str] = dataclasses.field(default_factory=lambda: ['dog', 'cat'])  # array field with default
+    accounts: typing.Dict[str, int] = dataclasses.field(default_factory=lambda: {"key": 1})  # map field with default
+    has_car: bool = False
+    favorite_colors: typing.Tuple[str] = ("BLUE", "YELLOW", "GREEN")  # enum field
+    country: str = "Argentina"
+    address: str = None
+
+SchemaGenerator(UserAdvance, include_schema_doc=False).avro_schema()
+
+'{
+  "type": "record",
+  "name": "UserAdvance",
+  "fields": [
+    {
+      "name": "name",
+      "type": "string"
+    },
+    {
+      "name": "age",
+      "type": "int"
+    },
+    {
+      "name": "pets",
+      "type": {
+        "type": "array",
+        "items": "string",
+        "name": "pets"
+      },
+      "default": ["dog", "cat"]
+    },
+    {
+      "name": "accounts",
+      "type": {
+        "type": "map",
+        "values": "int",
+        "name": "accounts"
+      },
+      "default": {"key": 1}
+    },
+    {
+      "name": "has_car",
+      "type": ["boolean", "null"],
+      "default": false
+    },
+    {
+      "name": "favorite_colors",
+      "type": {
+        "type": "enum",
+        "symbols": ["BLUE", "YELLOW", "GREEN"],
+        "name": "favorite_colors"
+      }
+    },
+    {
+      "name": "country",
+      "type": ["string", "null"],
+      "default": "Argentina"
+    },
+    {
+      "name": "address",
+      "type": ["null", "string"],
+      "default": "null"
+    }
+  ]
+}'
+```
 
 ### Special Avro attributes
 
