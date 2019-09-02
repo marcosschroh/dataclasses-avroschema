@@ -9,8 +9,9 @@ repo_url: https://github.com/marcosschroh/dataclasses-avroschema
 
 nav:
     - Introduction: 'index.md'
-    - Avro Schema and Python Classes: 'avro_schema.md'
     - Fields Specification: 'fields_specification.md'
+    - Avro Schema and Python Classes: 'avro_schema.md'
+    - Schema Relationships: 'schema_relationships.md'
 
 markdown_extensions:
   - markdown.extensions.codehilite:

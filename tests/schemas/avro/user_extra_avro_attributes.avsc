@@ -8,4 +8,4 @@
   "doc": "An User",
   "namespace": "test.com.ar/user/v1",
   "aliases": ["User", "My favorite User"]
- }
+}

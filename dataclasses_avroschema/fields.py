@@ -4,6 +4,8 @@ import typing
 
 from collections import OrderedDict
 
+from dataclasses_avroschema import schema_generator
+
 
 BOOLEAN = "boolean"
 NULL = "null"
@@ -64,12 +66,26 @@ class Field:
 
             if origin is list:
                 # because avro can have only one type, we take the first one
-                self.items_type = PYTHON_TYPE_TO_AVRO[self.type.__args__[0]]
-            elif origin is tuple:
-                self.symbols = list(self.default)
+                items_type = self.type.__args__[0]
+
+                if items_type in PYTHON_PRIMITIVE_TYPES:
+                    self.items_type = PYTHON_TYPE_TO_AVRO[items_type]
+                else:
+                    # means is a custom type
+                    self.items_type = schema_generator.SchemaGenerator(
+                        items_type).avro_schema_to_python()
             elif origin is dict:
                 # because avro can have only one type, we take the first one
-                self.values_type = PYTHON_TYPE_TO_AVRO[self.type.__args__[1]]
+                values_type = self.type.__args__[1]
+
+                if values_type in PYTHON_PRIMITIVE_TYPES:
+                    self.values_type = PYTHON_TYPE_TO_AVRO[values_type]
+                else:
+                    self.values_type = schema_generator.SchemaGenerator(
+                        values_type).avro_schema_to_python()
+
+            elif origin is tuple:
+                self.symbols = list(self.default)
             else:
                 # we do not accept any other typing._GenericAlias like a set
                 # we should raise an exception
@@ -101,7 +117,8 @@ class Field:
             return avro_type
         else:
             # we need to see what to to when is a custom type
-            pass
+            # is a record schema
+            return schema_generator.SchemaGenerator(self.type).avro_schema_to_python()
 
     def get_default_value(self):
         if self.default is not dataclasses.MISSING:

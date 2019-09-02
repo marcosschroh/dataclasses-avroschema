@@ -1,3 +1,4 @@
+import typing
 from fastavro import parse_schema
 
 from dataclasses_avroschema.schema_generator import SchemaGenerator
@@ -14,7 +15,7 @@ def test_minimal_schema(user_dataclass):
         money: float
         encoded: bytes
     """
-    schema = SchemaGenerator(user_dataclass).to_python()
+    schema = SchemaGenerator(user_dataclass).avro_schema_to_python()
 
     assert parse_schema(schema)
 
@@ -33,7 +34,7 @@ def test_schema_with_extra_avro_attrs(user_extra_avro_atributes_dataclass):
                 "aliases": ["User", "My favorite User"]
             }
     """
-    schema = SchemaGenerator(user_extra_avro_atributes_dataclass).to_python()
+    schema = SchemaGenerator(user_extra_avro_atributes_dataclass).avro_schema_to_python()
 
     assert parse_schema(schema)
 
@@ -53,7 +54,7 @@ def test_advance_schema(user_advance_dataclass):
         country: str = "Argentina"
         address: str = None
     """
-    schema = SchemaGenerator(user_advance_dataclass).to_python()
+    schema = SchemaGenerator(user_advance_dataclass).avro_schema_to_python()
 
     assert parse_schema(schema)
 
@@ -75,4 +76,58 @@ def test_advance_schema_with_defaults(user_advance_with_defaults_dataclass):
     """
     schema = SchemaGenerator(user_advance_with_defaults_dataclass)
 
-    assert parse_schema(schema.to_python())
+    assert parse_schema(schema.avro_schema_to_python())
+
+
+def test_one_to_one_schema(user_advance_with_defaults_dataclass):
+    """
+    Test schema relationship one-to-one
+    """
+    class Address:
+        "An Address"
+        street: str
+        street_number: int
+
+    class User:
+        "An User with Address"
+        name: str
+        age: int
+        address: Address
+
+    assert parse_schema(SchemaGenerator(User).avro_schema_to_python())
+
+
+def test_one_to_many_schema(user_advance_with_defaults_dataclass):
+    """
+    Test schema relationship one-to-many
+    """
+    class Address:
+        "An Address"
+        street: str
+        street_number: int
+
+    class User:
+        "User with multiple Address"
+        name: str
+        age: int
+        addresses: typing.List[Address]
+
+    assert parse_schema(SchemaGenerator(User).avro_schema_to_python())
+
+
+def test_one_to_many_with_map_schema(user_advance_with_defaults_dataclass):
+    """
+    Test schema relationship one-to-many using a map
+    """
+    class Address:
+        "An Address"
+        street: str
+        street_number: int
+
+    class User:
+        "User with multiple Address"
+        name: str
+        age: int
+        addresses: typing.Dict[str, Address]
+
+    assert parse_schema(SchemaGenerator(User).avro_schema_to_python())

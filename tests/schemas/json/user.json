@@ -1,9 +1,0 @@
-{
-    "type": "object",
-    "description": "A User",
-    "properties": {
-        "name": {"type": "string"},
-        "age": {"type": "integer"}
-    },
-    "required": ["name", "age"]
-}

@@ -46,7 +46,7 @@ For example, a User may be defined with:
 Image that you have to define the previous `User` schema but you do not know avro, you know python:
 
 ```python
-from dataclasses_avroschema import SchemaGenerator
+from dataclasses_avroschema.schema_generator import SchemaGenerator
 
 class User:
     name: str
@@ -87,6 +87,11 @@ and that is it!! Each python field is related with a avro type. You can find the
 ### Enum, Array and Map fields
 
 ```python
+import typing
+
+from dataclasses_avroschema.schema_generator import SchemaGenerator
+
+
 class UserAdvance:
     name: str
     age: int

@@ -18,6 +18,10 @@ python 3.7+
 pip install dataclasses-avroschema
 ```
 
+## Doocumentaion
+
+https://marcosschroh.github.io/dataclasses-avroschema/
+
 ## Usage:
 
 ```python
@@ -52,12 +56,14 @@ SchemaGenerator(User).avro_schema()
 }'
 ```
 
-## TODO:
+## Features:
 
-1. Schema relations
-2. Recursive Schemas
-3. Support for Avro Logical Types
-4. Custom Exceptions?
+* [X] int, long, float, boolean, string and null support
+* [X] enum, array, map and records support
+* [X] Schema relations (oneToOne, oneToMany)
+* [ ] Recursive Schemas
+* [ ] Support for Avro Logical Types
+* [ ] Custom Exceptions?
 
 
 
