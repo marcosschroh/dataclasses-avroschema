@@ -73,6 +73,9 @@ The `enum` type is mapped to a python `tuple`.
 Example:
 
 ```python
+import typing
+
+
 class User:
     ...
     favorite_colors: typing.Tuple[str] = ("BLUE", "YELLOW", "GREEN")
@@ -98,7 +101,10 @@ The `array` type is mapped to a python `list`.
 Example:
 
 ```python
-   class UserAdvance:
+import typing
+
+
+class UserAdvance:
     ...
     pets: typing.List[str]
     cars: typing.List[str] = None
@@ -123,6 +129,9 @@ The `array` type is mapped to a python `dict` where all the keys should be `stri
 Example:
 
 ```python
+import typing
+
+
 class UserAdvance:
     ...
     accounts_money: typing.Dict[str, float]
