@@ -20,7 +20,8 @@ pip install dataclasses-avroschema
 ## Usage:
 
 ```python
-from dataclasses_avroschema import SchemaGenerator
+from dataclasses_avroschema.schema_generator import SchemaGenerator
+
 
 class User:
     "An User"
@@ -33,9 +34,7 @@ class User:
     address: str = None
 
 
-user_avro_schema = SchemaGenerator(User).avro_schema()
-
-print(user_avro_schema)
+SchemaGenerator(User).avro_schema()
 
 '{
     "type": "record",
@@ -53,10 +52,12 @@ print(user_avro_schema)
 }'
 ```
 
-## TODO:
+## Features:
 
-1. Schema relations
-2. Recursive Schemas
-3. Support for Avro Logical Types
-4. Custom Exceptions?
+* [X] int, long, float, boolean, string and null support
+* [X] enum, array, map and records support
+* [X] Schema relations (oneToOne, oneToMany)
+* [ ] Recursive Schemas
+* [ ] Support for Avro Logical Types
+* [ ] Custom Exceptions?
 

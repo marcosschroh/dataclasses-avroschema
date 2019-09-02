@@ -24,30 +24,16 @@ SchemaGenerator(User).avro_schema()
   "type": "record",
   "name": "User",
   "fields": [
-    {
-      "name": "name",
-      "type": "string"
-    },
-    {
-      "name": "age",
-      "type": "int"
-    },
-    {
-      "name": "address",
-      "type": {
-        "type": "record",
-        "name": "Address",
-        "fields": [
-          {
-            "name": "street",
-            "type": "string"
-          },
-          {
-            "name": "street_number",
-            "type": "int"
-          }
-        ],
-        "doc": "An Address"
+    {"name": "name", "type": "string"},
+    {"name": "age", "type": "int"},
+    {"name": "address", "type": {
+      "type": "record",
+      "name": "Address",
+      "fields": [
+        {"name": "street","type": "string"},
+        {"name": "street_number", "type": "int"}
+      ],
+      "doc": "An Address"
       }
     }
   ],
@@ -84,38 +70,24 @@ SchemaGenerator(User).avro_schema()
   "type": "record",
   "name": "User",
   "fields": [
-    {
-      "name": "name",
-      "type": "string"
-    },
-    {
-      "name": "age",
-      "type": "int"
-    },
-    {
-      "name": "addresses",
-      "type": {
+    {"name": "name", "type": "string"},
+    {"name": "age", "type": "int"},
+    {"name": "addresses", "type": {
         "type": "array",
         "items": {
           "type": "record",
           "name": "Address",
           "fields": [
-            {
-              "name": "street",
-              "type": "string"
-            },
-            {
-              "name": "street_number",
-              "type": "int"
-            }
+            {"name": "street", "type": "string"},
+            {"name": "street_number", "type": "int"}
           ],
           "doc": "An Address"
         },
         "name": "addresses"
       }
     }
-   ],
-   "doc": "User with multiple Address"
+  ],
+  "doc": "User with multiple Address"
 }'
 ```
 
@@ -147,30 +119,16 @@ SchemaGenerator(User).avro_schema()
   "type": "record",
   "name": "User",
   "fields": [
-    {
-      "name": "name",
-      "type": "string"
-    },
-    {
-      "name": "age",
-      "type": "int"
-    },
-    {
-      "name": "addresses",
-      "type": {
+    {"name": "name", "type": "string"},
+    {"name": "age", "type": "int"},
+    {"name": "addresses", "type": {
         "type": "map",
         "values": {
           "type": "record",
           "name": "Address",
           "fields": [
-            {
-              "name": "street",
-              "type": "string"
-            },
-            {
-              "name": "street_number",
-              "type": "int"
-            }
+            {"name": "street", "type": "string"},
+            {"name": "street_number", "type": "int"}
           ],
           "doc": "An Address"
         },

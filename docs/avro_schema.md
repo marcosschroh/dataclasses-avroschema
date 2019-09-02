@@ -60,23 +60,10 @@ SchemaGenerator(User).avro_schema()
   "type": "record",
   "name": "User",
   "fields": [
-    {
-      "name": "name",
-      "type": "string"
-    }
-    ,
-    {
-      "name": "age",
-      "type": "int"
-    },
-    {
-      "name": "has_pets",
-      "type": "boolean"
-    },
-    {
-      "name": "money",
-      "type": "float"
-    }
+    {"name": "name", "type": "string"},
+    {"name": "age", "type": "int"},
+    {"name": "has_pets", "type": "boolean"},
+    {"name": "money", "type": "float"}
   ],
   "doc": "User(name: str, age: int, has_pets: bool, money: float)"
 }'
@@ -108,25 +95,16 @@ SchemaGenerator(UserAdvance, include_schema_doc=False).avro_schema()
   "type": "record",
   "name": "UserAdvance",
   "fields": [
-    {
-      "name": "name",
-      "type": "string"
-    },
-    {
-      "name": "age",
-      "type": "int"
-    },
-    {
-      "name": "pets",
-      "type": {
-        "type": "array",
-        "items": "string",
-        "name": "pets"
+    {"name": "name", "type": "string"},
+    {"name": "age", "type": "int"},
+    {"name": "pets", "type": {
+      "type": "array",
+      "items": "string",
+      "name": "pets"
       },
       "default": ["dog", "cat"]
     },
-    {
-      "name": "accounts",
+    {"name": "accounts",
       "type": {
         "type": "map",
         "values": "int",
@@ -134,29 +112,16 @@ SchemaGenerator(UserAdvance, include_schema_doc=False).avro_schema()
       },
       "default": {"key": 1}
     },
-    {
-      "name": "has_car",
-      "type": ["boolean", "null"],
-      "default": false
-    },
-    {
-      "name": "favorite_colors",
+    {"name": "has_car", "type": ["boolean", "null"], "default": false},
+    {"name": "favorite_colors",
       "type": {
         "type": "enum",
         "symbols": ["BLUE", "YELLOW", "GREEN"],
         "name": "favorite_colors"
       }
     },
-    {
-      "name": "country",
-      "type": ["string", "null"],
-      "default": "Argentina"
-    },
-    {
-      "name": "address",
-      "type": ["null", "string"],
-      "default": "null"
-    }
+    {"name": "country", "type": ["string", "null"], "default": "Argentina"},
+    { "name": "address", "type": ["null", "string"], "default": "null"}
   ]
 }'
 ```
@@ -169,6 +134,7 @@ The `doc` attribute can be set via the docstring class. The `aliases` and `names
 
 ```python
 from dataclasses_avroschema.schema_generator import SchemaGenerator
+
 
 class User:
     "My User Class"
