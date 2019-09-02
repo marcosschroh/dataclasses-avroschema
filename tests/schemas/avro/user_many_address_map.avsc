@@ -12,21 +12,24 @@
         },
         {
             "name": "addresses",
-            "type": "map",
-            "values": {
-                "type": "record",
-                "name": "Address",
-                "fields": [
-                    {
-                        "name": "street",
-                        "type": "string"
-                    },
-                    {
-                        "name": "street_number",
-                        "type": "int"
-                    }
-                ],
-                "doc": "An Address"
+            "type": {
+                "type": "map",
+                "values": {
+                    "type": "record",
+                    "name": "Address",
+                    "fields": [
+                        {
+                            "name": "street",
+                            "type": "string"
+                        },
+                        {
+                            "name": "street_number",
+                            "type": "int"
+                        }
+                    ],
+                    "doc": "An Address"
+                },
+                "name": "addresses"
             }
         } 
     ],

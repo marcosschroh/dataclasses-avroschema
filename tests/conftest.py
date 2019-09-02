@@ -89,50 +89,47 @@ def user_advance_with_defaults_dataclass():
     return UserAdvance
 
 
+def load_json(file_name):
+    schema_path = os.path.join(AVRO_SCHEMAS_DIR, file_name)
+    schema_string = load(schema_path)
+    return json.loads(schema_string)
+
+
 @pytest.fixture
 def user_avro_json():
-    user_avro_path = os.path.join(AVRO_SCHEMAS_DIR, "user.avsc")
-    schema_string = load(user_avro_path)
-    return json.loads(schema_string)
+    return load_json("user.avsc")
 
 
 @pytest.fixture
 def user_v2_avro_json():
-    user_avro_path = os.path.join(AVRO_SCHEMAS_DIR, "user_v2.avsc")
-    schema_string = load(user_avro_path)
-    return json.loads(schema_string)
+    return load_json("user_v2.avsc")
 
 
 @pytest.fixture
 def user_advance_avro_json():
-    user_avro_path = os.path.join(AVRO_SCHEMAS_DIR, "user_advance.avsc")
-    schema_string = load(user_avro_path)
-    return json.loads(schema_string)
+    return load_json("user_advance.avsc")
 
 
 @pytest.fixture
 def user_advance_with_defaults_avro_json():
-    user_avro_path = os.path.join(AVRO_SCHEMAS_DIR, "user_advance_with_defaults.avsc")
-    schema_string = load(user_avro_path)
-    return json.loads(schema_string)
+    return load_json("user_advance_with_defaults.avsc")
 
 
 @pytest.fixture
 def user_extra_avro_attributes():
-    user_avro_path = os.path.join(AVRO_SCHEMAS_DIR, "user_extra_avro_attributes.avsc")
-    schema_string = load(user_avro_path)
-    return json.loads(schema_string)
+    return load_json("user_extra_avro_attributes.avsc")
 
 
 @pytest.fixture
 def user_one_address_schema():
-    user_avro_path = os.path.join(AVRO_SCHEMAS_DIR, "user_one_address.avsc")
-    schema_string = load(user_avro_path)
-    return json.loads(schema_string)
+    return load_json("user_one_address.avsc")
 
 
 @pytest.fixture
 def user_many_address_schema():
-    user_avro_path = os.path.join(AVRO_SCHEMAS_DIR, "user_many_address.avsc")
-    schema_string = load(user_avro_path)
-    return json.loads(schema_string)
+    return load_json("user_many_address.avsc")
+
+
+@pytest.fixture
+def user_many_address_map_schema():
+    return load_json("user_many_address_map.avsc")

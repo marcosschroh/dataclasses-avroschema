@@ -42,7 +42,7 @@ def test_one_to_many_relationship(user_many_address_schema):
     assert schema == json.dumps(user_many_address_schema)
 
 
-def test_one_to_many_map_relationship(user_many_map_address_schema):
+def test_one_to_many_map_relationship(user_many_address_map_schema):
     """
     Test schema relationship one-to-many using a map
     """
@@ -58,4 +58,4 @@ def test_one_to_many_map_relationship(user_many_map_address_schema):
         addresses: typing.Dict[str, Address]
 
     schema = SchemaGenerator(User).avro_schema()
-    assert schema == json.dumps(user_many_map_address_schema)
+    assert schema == json.dumps(user_many_address_map_schema)
