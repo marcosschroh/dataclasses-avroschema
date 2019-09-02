@@ -43,9 +43,20 @@ class AvroSchemaDefinition(BaseSchemaDefinition):
         self.generate_extra_avro_attributes()
         self.fields = self.parse_dataclasses_fields()
 
-    def parse_dataclasses_fields(self) -> typing.List["Field"]:
+    # def parse_dataclasses_fields(self) -> typing.List["Field"]:
+    #     return [
+    #         fields.Field(dataclass_field.name, dataclass_field.type, dataclass_field.default)
+    #         for dataclass_field in dataclasses.fields(self.klass_or_instance)
+    #     ]
+
+    def parse_dataclasses_fields(self) -> typing.List["fields.Field"]:
         return [
-            fields.Field(dataclass_field.name, dataclass_field.type, dataclass_field.default)
+            fields.Field(
+                dataclass_field.name,
+                dataclass_field.type,
+                dataclass_field.default,
+                dataclass_field.default_factory
+            )
             for dataclass_field in dataclasses.fields(self.klass_or_instance)
         ]
 

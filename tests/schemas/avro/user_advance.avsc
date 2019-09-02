@@ -2,14 +2,53 @@
   "type": "record",
   "name": "UserAdvance",
   "fields": [
-    {"name": "name", "type": "string"},
-    {"name": "age", "type": "int"},
-    {"name": "pets", "type": "array", "items": "string"},
-    {"name": "accounts", "type": "map", "values": "int"},
-    {"name": "has_car", "type": ["boolean", "null"], "default": false},
-    {"name": "favorite_colors", "type": "enum", "symbols": ["BLUE", "YELLOW", "GREEN"]},
-    {"name": "country", "type": ["string", "null"], "default": "Argentina"},
-    {"name": "address", "type": ["null", "string"], "default": "null"}
+    {
+      "name": "name",
+      "type": "string"
+    },
+    {
+      "name": "age",
+      "type": "int"
+    },
+    {
+      "name": "pets",
+      "type": {
+        "type": "array",
+        "items": "string",
+        "name": "pets"
+      }
+    },
+    {
+      "name": "accounts",
+      "type": {
+        "type": "map",
+        "values": "int",
+        "name": "accounts"
+      }
+    },
+    {
+      "name": "has_car",
+      "type": ["boolean", "null"],
+      "default": false
+    },
+    {
+      "name": "favorite_colors",
+      "type": {
+        "type": "enum",
+        "symbols": ["BLUE", "YELLOW", "GREEN"],
+        "name": "favorite_colors"
+      }
+    },
+    {
+      "name": "country",
+      "type": ["string", "null"],
+      "default": "Argentina"
+    },
+    {
+      "name": "address",
+      "type": ["null", "string"],
+      "default": "null"
+    }
   ]
 }
 

@@ -1,11 +1,7 @@
 import os
-
 import json
-
 import dataclasses
-
 import typing
-
 import pytest
 
 
@@ -79,6 +75,21 @@ def user_advance_dataclass():
 
 
 @pytest.fixture
+def user_advance_with_defaults_dataclass():
+    class UserAdvance:
+        name: str
+        age: int
+        pets: typing.List[str] = dataclasses.field(default_factory=lambda: ['dog', 'cat'])
+        accounts: typing.Dict[str, int] = dataclasses.field(default_factory=lambda: {"key": 1})
+        has_car: bool = False
+        favorite_colors: typing.Tuple[str] = ("BLUE", "YELLOW", "GREEN")
+        country: str = "Argentina"
+        address: str = None
+
+    return UserAdvance
+
+
+@pytest.fixture
 def user_avro_json():
     user_avro_path = os.path.join(AVRO_SCHEMAS_DIR, "user.avsc")
     schema_string = load(user_avro_path)
@@ -95,6 +106,13 @@ def user_v2_avro_json():
 @pytest.fixture
 def user_advance_avro_json():
     user_avro_path = os.path.join(AVRO_SCHEMAS_DIR, "user_advance.avsc")
+    schema_string = load(user_avro_path)
+    return json.loads(schema_string)
+
+
+@pytest.fixture
+def user_advance_with_defaults_avro_json():
+    user_avro_path = os.path.join(AVRO_SCHEMAS_DIR, "user_advance_with_defaults.avsc")
     schema_string = load(user_avro_path)
     return json.loads(schema_string)
 
