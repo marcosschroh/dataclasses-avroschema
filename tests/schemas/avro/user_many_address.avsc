@@ -29,7 +29,7 @@
                     ],
                     "doc": "An Address"
                 },
-                "name": "addresses"
+                "name": "address"
             }
         } 
     ],

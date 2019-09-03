@@ -1,11 +1,13 @@
 import json
 import dataclasses
 import typing
+import inflect
 
 from collections import OrderedDict
 
 from dataclasses_avroschema import schema_generator
 
+p = inflect.engine()
 
 BOOLEAN = "boolean"
 NULL = "null"
@@ -94,6 +96,14 @@ class Field:
 
             self.type = origin
 
+    @staticmethod
+    def get_singular_name(name):
+        singular = p.singular_noun(name)
+
+        if singular:
+            return singular
+        return name
+
     def get_avro_type(self) -> PythonPrimitiveTypes:
         avro_type = PYTHON_TYPE_TO_AVRO.get(self.type)
 
@@ -113,7 +123,7 @@ class Field:
             elif self.symbols:
                 avro_type["symbols"] = self.symbols
 
-            avro_type["name"] = self.name
+            avro_type["name"] = self.get_singular_name(self.name)
             return avro_type
         else:
             # we need to see what to to when is a custom type
