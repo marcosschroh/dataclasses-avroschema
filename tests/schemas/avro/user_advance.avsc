@@ -15,7 +15,7 @@
       "type": {
         "type": "array",
         "items": "string",
-        "name": "pets"
+        "name": "pet"
       }
     },
     {
@@ -23,7 +23,7 @@
       "type": {
         "type": "map",
         "values": "int",
-        "name": "accounts"
+        "name": "account"
       }
     },
     {
@@ -36,7 +36,7 @@
       "type": {
         "type": "enum",
         "symbols": ["BLUE", "YELLOW", "GREEN"],
-        "name": "favorite_colors"
+        "name": "favorite_color"
       }
     },
     {

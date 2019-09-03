@@ -83,7 +83,7 @@ SchemaGenerator(User).avro_schema()
           ],
           "doc": "An Address"
         },
-        "name": "addresses"
+        "name": "address"
       }
     }
   ],
@@ -132,7 +132,7 @@ SchemaGenerator(User).avro_schema()
           ],
           "doc": "An Address"
         },
-        "name": "addresses"
+        "name": "address"
       }
     }
   ],

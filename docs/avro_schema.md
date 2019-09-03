@@ -100,7 +100,7 @@ SchemaGenerator(UserAdvance, include_schema_doc=False).avro_schema()
     {"name": "pets", "type": {
       "type": "array",
       "items": "string",
-      "name": "pets"
+      "name": "pet"
       },
       "default": ["dog", "cat"]
     },
@@ -108,7 +108,7 @@ SchemaGenerator(UserAdvance, include_schema_doc=False).avro_schema()
       "type": {
         "type": "map",
         "values": "int",
-        "name": "accounts"
+        "name": "account"
       },
       "default": {"key": 1}
     },
@@ -117,7 +117,7 @@ SchemaGenerator(UserAdvance, include_schema_doc=False).avro_schema()
       "type": {
         "type": "enum",
         "symbols": ["BLUE", "YELLOW", "GREEN"],
-        "name": "favorite_colors"
+        "name": "favorite_color"
       }
     },
     {"name": "country", "type": ["string", "null"], "default": "Argentina"},
