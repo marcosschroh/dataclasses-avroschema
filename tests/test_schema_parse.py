@@ -79,7 +79,7 @@ def test_advance_schema_with_defaults(user_advance_with_defaults_dataclass):
     assert parse_schema(schema.avro_schema_to_python())
 
 
-def test_one_to_one_schema(user_advance_with_defaults_dataclass):
+def test_one_to_one_schema():
     """
     Test schema relationship one-to-one
     """
@@ -97,7 +97,7 @@ def test_one_to_one_schema(user_advance_with_defaults_dataclass):
     assert parse_schema(SchemaGenerator(User).avro_schema_to_python())
 
 
-def test_one_to_many_schema(user_advance_with_defaults_dataclass):
+def test_one_to_many_schema():
     """
     Test schema relationship one-to-many
     """
@@ -115,7 +115,7 @@ def test_one_to_many_schema(user_advance_with_defaults_dataclass):
     assert parse_schema(SchemaGenerator(User).avro_schema_to_python())
 
 
-def test_one_to_many_with_map_schema(user_advance_with_defaults_dataclass):
+def test_one_to_many_with_map_schema():
     """
     Test schema relationship one-to-many using a map
     """
