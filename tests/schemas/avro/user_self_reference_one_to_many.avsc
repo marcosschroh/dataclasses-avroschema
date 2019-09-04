@@ -1,0 +1,23 @@
+{
+    "type": "record",
+    "name": "User",
+    "fields": [
+        {
+            "name": "name",
+            "type": "string"
+        },
+        {
+            "name": "age",
+            "type": "int"
+        },
+        {
+            "name": "friends",
+            "type": {
+                "type": "array",
+                "items": "User",
+                "name": "friend"
+            }
+        } 
+    ],
+    "doc": "User with self reference as friends"
+}

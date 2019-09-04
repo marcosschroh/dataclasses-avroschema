@@ -22,10 +22,15 @@ class SchemaGenerator:
         if self.schema_definition is not None:
             return self.schema_definition
 
+        # let's live open the possibility to define different
+        # schema definitions like json
         if schema_type == "avro":
             schema_definition = self._generate_avro_schema()
         else:
             raise ValueError("Invalid type. Expected avro schema type.")
+
+        # cache the schema
+        self.schema_definition = schema_definition
 
         # cache the schema
         self.schema_definition = schema_definition

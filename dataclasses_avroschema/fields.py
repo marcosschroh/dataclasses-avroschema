@@ -110,6 +110,12 @@ class Field:
     def _process_tuple_type(self):
         self.symbols = list(self.default)
 
+    def _process_self_reference_type(self, items_type):
+        internal_type = items_type.__args__[0]
+
+        assert isinstance(internal_type, typing.ForwardRef), "Expecting a self reference"
+        return internal_type.__forward_arg__
+
     @staticmethod
     def get_singular_name(name):
         singular = p.singular_noun(name)

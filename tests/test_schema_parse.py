@@ -131,3 +131,14 @@ def test_one_to_many_with_map_schema():
         addresses: typing.Dict[str, Address]
 
     assert parse_schema(SchemaGenerator(User).avro_schema_to_python())
+
+
+def test_one_to_many_self_reference_schema():
+
+    class User:
+        "User with self reference as friends"
+        name: str
+        age: int
+        friends: typing.List[typing.Type["User"]]
+
+    assert parse_schema(SchemaGenerator(User).avro_schema_to_python())
