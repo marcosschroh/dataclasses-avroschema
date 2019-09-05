@@ -23,16 +23,21 @@ class SchemaGenerator:
             return self.schema_definition
 
         if schema_type == "avro":
-            # cache the schema
-            self.schema_definition = AvroSchemaDefinition(
-                "record",
-                self.dataclass,
-                include_schema_doc=self.include_schema_doc
-            )
+            schema_definition = self._generate_avro_schema()
         else:
-            raise
+            raise ValueError("Invalid type. Expected avro schema type.")
+
+        # cache the schema
+        self.schema_definition = schema_definition
 
         return self.schema_definition.render()
+
+    def _generate_avro_schema(self) -> AvroSchemaDefinition:
+        return AvroSchemaDefinition(
+            "record",
+            self.dataclass,
+            include_schema_doc=self.include_schema_doc
+        )
 
     def avro_schema(self) -> str:
         return json.dumps(self.generate_schema(schema_type="avro"))
@@ -46,4 +51,3 @@ class SchemaGenerator:
             self.generate_schema()
 
         return self.schema_definition.fields
-

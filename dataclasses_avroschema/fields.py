@@ -65,36 +65,50 @@ class Field:
         if isinstance(self.type, typing._GenericAlias):
             # means that could be a list, tuple or dict
             origin = self.type.__origin__
-
-            if origin is list:
-                # because avro can have only one type, we take the first one
-                items_type = self.type.__args__[0]
-
-                if items_type in PYTHON_PRIMITIVE_TYPES:
-                    self.items_type = PYTHON_TYPE_TO_AVRO[items_type]
-                else:
-                    # means is a custom type
-                    self.items_type = schema_generator.SchemaGenerator(
-                        items_type).avro_schema_to_python()
-            elif origin is dict:
-                # because avro can have only one type, we take the first one
-                values_type = self.type.__args__[1]
-
-                if values_type in PYTHON_PRIMITIVE_TYPES:
-                    self.values_type = PYTHON_TYPE_TO_AVRO[values_type]
-                else:
-                    self.values_type = schema_generator.SchemaGenerator(
-                        values_type).avro_schema_to_python()
-
-            elif origin is tuple:
-                self.symbols = list(self.default)
-            else:
-                # we do not accept any other typing._GenericAlias like a set
-                # we should raise an exception
-                raise ValueError(
-                    f"Invalid Type for field {self.name}. Accepted types are list, tuple or dict")
+            processor = self.get_processor(origin)
+            processor()
 
             self.type = origin
+
+    def get_processor(self, origin):
+        if origin is list:
+            return self._process_list_type
+        elif origin is dict:
+            return self._process_dict_type
+        elif origin is tuple:
+            return self._process_tuple_type
+        else:
+            # we do not accept any other typing._GenericAlias like a set
+            # we should raise an exception
+            raise ValueError(
+                f"Invalid Type for field {self.name}. Accepted types are list, tuple or dict")
+
+    def _process_list_type(self):
+        # because avro can have only one type, we take the first one
+        items_type = self.type.__args__[0]
+
+        if items_type in PYTHON_PRIMITIVE_TYPES:
+            self.items_type = PYTHON_TYPE_TO_AVRO[items_type]
+        elif isinstance(items_type, typing._GenericAlias):
+            # Checking for a self reference. Maybe is a typing.ForwardRef
+            self.items_type = self._process_self_reference_type(items_type)
+        else:
+            # means is a custom type
+            self.items_type = schema_generator.SchemaGenerator(
+                items_type).avro_schema_to_python()
+
+    def _process_dict_type(self):
+        # because avro can have only one type, we take the first one
+        values_type = self.type.__args__[1]
+
+        if values_type in PYTHON_PRIMITIVE_TYPES:
+            self.values_type = PYTHON_TYPE_TO_AVRO[values_type]
+        else:
+            self.values_type = schema_generator.SchemaGenerator(
+                values_type).avro_schema_to_python()
+
+    def _process_tuple_type(self):
+        self.symbols = list(self.default)
 
     @staticmethod
     def get_singular_name(name):

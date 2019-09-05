@@ -114,3 +114,9 @@ def test_extra_avro_attributes_invalid(user_extra_avro_attributes):
     msg = "Dict must be returned type in extra_avro_attributes method"
     with pytest.raises(AssertionError, match=msg):
         SchemaGenerator(User).avro_schema()
+
+
+def test_invalid_schema_type(user_dataclass):
+    msg = "Invalid type. Expected avro schema type."
+    with pytest.raises(ValueError, match=msg):
+        SchemaGenerator(user_dataclass).generate_schema(schema_type="json")
