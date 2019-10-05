@@ -133,6 +133,20 @@ def test_one_to_many_with_map_schema():
     assert parse_schema(SchemaGenerator(User).avro_schema_to_python())
 
 
+def test_one_to_one_self_relationship():
+    """
+    Test self relationship one-to-one
+    """
+
+    class User:
+        "User with self reference as friend"
+        name: str
+        age: int
+        friend: typing.Type["User"]
+
+    assert parse_schema(SchemaGenerator(User).avro_schema_to_python())
+
+
 def test_one_to_many_self_reference_schema():
     """
     Test self relationship one-to-many using an array

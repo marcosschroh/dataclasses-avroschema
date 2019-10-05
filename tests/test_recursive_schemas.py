@@ -3,20 +3,21 @@ import typing
 
 from dataclasses_avroschema.schema_generator import SchemaGenerator
 
-# def test_recursive_one_to_one_relationship(user_self_refernece_schema):
-#     """
-#     Test self relationship one-to-one
-#     """
 
-#     class User:
-#         "User with self reference as friend"
-#         name: str
-#         age: int
-#         friend: typing.Type["User"]
+def test_self_one_to_one_relationship(user_self_reference_one_to_one_schema):
+    """
+    Test self relationship one-to-one
+    """
 
-#     schema = SchemaGenerator(User).avro_schema()
+    class User:
+        "User with self reference as friend"
+        name: str
+        age: int
+        friend: typing.Type["User"]
 
-#     assert schema == json.dumps(user_self_refernece_schema)
+    schema = SchemaGenerator(User).avro_schema()
+
+    assert schema == json.dumps(user_self_reference_one_to_one_schema)
 
 
 def test_self_one_to_many_relationship(user_self_reference_one_to_many_schema):

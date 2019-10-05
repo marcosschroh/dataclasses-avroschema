@@ -45,7 +45,7 @@ PythonPrimitiveTypes = typing.Union[str, int, bool, float, list, tuple, dict]
 @dataclasses.dataclass
 class Field:
     name: str
-    type: typing.Any  # store the python type
+    type: typing.Any  # store the python type (Field)
     default: typing.Any = dataclasses.MISSING
     default_factory: typing.Any = None
 
@@ -62,8 +62,8 @@ class Field:
     avro_type: typing.Any = None
 
     def __post_init__(self):
-        if isinstance(self.type, typing._GenericAlias):
-            # means that could be a list, tuple or dict
+        if isinstance(self.type, typing._GenericAlias) and not self.is_self_referenced(self.type):
+            # Means that could be a list, tuple or dict
             origin = self.type.__origin__
             processor = self.get_processor(origin)
             processor()
@@ -71,6 +71,11 @@ class Field:
             self.type = origin
 
     def get_processor(self, origin):
+        """
+        Get processor for a specific type.
+
+        Supported: tuple, list, dict and typing.Type (custom types)
+        """
         if origin is list:
             return self._process_list_type
         elif origin is dict:
@@ -89,11 +94,11 @@ class Field:
 
         if items_type in PYTHON_PRIMITIVE_TYPES:
             self.items_type = PYTHON_TYPE_TO_AVRO[items_type]
-        elif isinstance(items_type, typing._GenericAlias):
+        elif self.is_self_referenced(items_type):
             # Checking for a self reference. Maybe is a typing.ForwardRef
-            self.items_type = self._process_self_reference_type(items_type)
+            self.items_type = self._get_self_reference_type(items_type)
         else:
-            # means is a custom type
+            # Is Avro Record Type
             self.items_type = schema_generator.SchemaGenerator(
                 items_type).avro_schema_to_python()
 
@@ -106,9 +111,9 @@ class Field:
 
         if values_type in PYTHON_PRIMITIVE_TYPES:
             self.values_type = PYTHON_TYPE_TO_AVRO[values_type]
-        elif isinstance(values_type, typing._GenericAlias):
+        elif self.is_self_referenced(values_type):
             # Checking for a self reference. Maybe is a typing.ForwardRef
-            self.values_type = self._process_self_reference_type(values_type)
+            self.values_type = self._get_self_reference_type(values_type)
         else:
             self.values_type = schema_generator.SchemaGenerator(
                 values_type).avro_schema_to_python()
@@ -116,12 +121,16 @@ class Field:
     def _process_tuple_type(self):
         self.symbols = list(self.default)
 
-    def _process_self_reference_type(self, a_type):
+    @staticmethod
+    def _get_self_reference_type(a_type):
         internal_type = a_type.__args__[0]
-        print(internal_type)
-        assert isinstance(internal_type, typing.ForwardRef), "Expecting a self reference"
-        print("EL tipo:", internal_type.__forward_arg__)
+
         return internal_type.__forward_arg__
+
+    @staticmethod
+    def is_self_referenced(a_type):
+        return isinstance(a_type, typing._GenericAlias) \
+            and a_type.__args__ and isinstance(a_type.__args__[0], typing.ForwardRef)
 
     @staticmethod
     def get_singular_name(name):
@@ -132,6 +141,9 @@ class Field:
         return name
 
     def get_avro_type(self) -> PythonPrimitiveTypes:
+        if self.is_self_referenced(self.type):
+            return self._get_self_reference_type(self.type)
+
         avro_type = PYTHON_TYPE_TO_AVRO.get(self.type)
 
         if self.type in PYTHON_INMUTABLE_TYPES:
@@ -153,8 +165,7 @@ class Field:
             avro_type["name"] = self.get_singular_name(self.name)
             return avro_type
         else:
-            # we need to see what to to when is a custom type
-            # is a record schema
+            # Assuming that is a Avro Record type.
             return schema_generator.SchemaGenerator(self.type).avro_schema_to_python()
 
     def get_default_value(self):
