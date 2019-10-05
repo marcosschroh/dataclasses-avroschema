@@ -136,5 +136,10 @@ def user_many_address_map_schema():
 
 
 @pytest.fixture
-def user_self_refernece_schema():
+def user_self_reference_one_to_many_schema():
     return load_json("user_self_reference_one_to_many.avsc")
+
+
+@pytest.fixture
+def user_self_reference_one_to_many_map_schema():
+    return load_json("user_self_reference_one_to_many_map.avsc")

@@ -59,35 +59,3 @@ def test_one_to_many_map_relationship(user_many_address_map_schema):
 
     schema = SchemaGenerator(User).avro_schema()
     assert schema == json.dumps(user_many_address_map_schema)
-
-
-# def test_recursive_one_to_one_relationship(user_self_refernece_schema):
-#     """
-#     Test self relationship one-to-one
-#     """
-
-#     class User:
-#         "User with self reference as friend"
-#         name: str
-#         age: int
-#         friend: typing.Type["User"]
-
-#     schema = SchemaGenerator(User).avro_schema()
-
-#     assert schema == json.dumps(user_self_refernece_schema)
-
-
-def test_recursive_one_to_many_relationship(user_self_refernece_schema):
-    """
-    Test self relationship one-to-many
-    """
-
-    class User:
-        "User with self reference as friends"
-        name: str
-        age: int
-        friends: typing.List[typing.Type["User"]]
-
-    schema = SchemaGenerator(User).avro_schema()
-
-    assert schema == json.dumps(user_self_refernece_schema)

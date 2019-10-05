@@ -98,11 +98,17 @@ class Field:
                 items_type).avro_schema_to_python()
 
     def _process_dict_type(self):
-        # because avro can have only one type, we take the first one
+        """
+        Process typing.Dict. Avro assumes that the key of a map is always a string,
+        so we take the second argument to determine the value type
+        """
         values_type = self.type.__args__[1]
 
         if values_type in PYTHON_PRIMITIVE_TYPES:
             self.values_type = PYTHON_TYPE_TO_AVRO[values_type]
+        elif isinstance(values_type, typing._GenericAlias):
+            # Checking for a self reference. Maybe is a typing.ForwardRef
+            self.values_type = self._process_self_reference_type(values_type)
         else:
             self.values_type = schema_generator.SchemaGenerator(
                 values_type).avro_schema_to_python()
@@ -110,10 +116,11 @@ class Field:
     def _process_tuple_type(self):
         self.symbols = list(self.default)
 
-    def _process_self_reference_type(self, items_type):
-        internal_type = items_type.__args__[0]
-
+    def _process_self_reference_type(self, a_type):
+        internal_type = a_type.__args__[0]
+        print(internal_type)
         assert isinstance(internal_type, typing.ForwardRef), "Expecting a self reference"
+        print("EL tipo:", internal_type.__forward_arg__)
         return internal_type.__forward_arg__
 
     @staticmethod
