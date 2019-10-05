@@ -1,4 +1,4 @@
-## OneToOne Schema relationship
+## OneToOne Schema Relationship
 
 An User has one Address example:
 
@@ -41,7 +41,46 @@ SchemaGenerator(User).avro_schema()
 }'
 ```
 
-## OneToMany Schema relationshop 
+## OneToOne Recursive Schema Relationship
+
+An User with only one friend :-( :
+
+```python
+import typing
+
+from dataclasses_avroschema.schema_generator import SchemaGenerator
+
+
+class User:
+    "User with self reference as friend"
+    name: str
+    age: int
+    friend: typing.Type["User"]
+
+schema = SchemaGenerator(User).avro_schema()
+
+'{
+  "type": "record",
+  "name": "User",
+  "fields": [
+    {
+      "name": "name",
+      "type": "string"
+    },
+    {
+      "name": "age",
+      "type": "int"
+    },
+    {
+      "name": "friend",
+      "type": "User"
+    }
+  ],
+  "doc": "User with self reference as friend"
+}'
+```
+
+## OneToMany Schema Relationship 
 
 An User has multiple Address example:
 
@@ -137,5 +176,82 @@ SchemaGenerator(User).avro_schema()
     }
   ],
   "doc": "User with multiple Address"
+}'
+```
+
+## OneToMany Recursive Schema Relationship 
+
+An User with multiple friends :-) :
+
+```python
+import typing
+
+from dataclasses_avroschema.schema_generator import SchemaGenerator
+
+# Using a List (Avro Array)
+class User:
+    "User with self reference as friends"
+    name: str
+    age: int
+    friends: typing.List[typing.Type["User"]]
+
+
+schema = SchemaGenerator(User).avro_schema()
+
+'{
+  "type": "record",
+  "name": "User",
+  "fields": [
+    {
+      "name": "name",
+      "type": "string"
+    },
+    {
+      "name": "age",
+      "type": "int"
+    },
+    {
+      "name": "friends",
+      "type": {
+        "type": "array",
+        "items": "User",
+        "name": "friend"
+      }
+    }
+  ],
+  "doc": "User with self reference as friends"
+}'
+
+# Using a Dict (Avro Map)
+class User:
+  "User with self reference as friends"
+  name: str
+  age: int
+  friends: typing.Dict[str, typing.Type["User"]]
+
+schema = SchemaGenerator(User).avro_schema()
+
+'{
+  "type": "record",
+  "name": "User",
+  "fields": [
+    {
+      "name": "name",
+      "type": "string"
+    },
+    {
+      "name": "age",
+      "type": "int"
+    },
+    {
+      "name": "friends",
+      "type": {
+        "type": "map",
+        "values": "User",
+        "name": "friend"
+      }
+    }
+  ],
+  "doc": "User with self reference as friends"
 }'
 ```

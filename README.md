@@ -61,7 +61,7 @@ SchemaGenerator(User).avro_schema()
 * [X] int, long, float, boolean, string and null support
 * [X] enum, array, map and records support
 * [X] Schema relations (oneToOne, oneToMany)
-* [ ] Recursive Schemas
+* [X] Recursive Schemas
 * [ ] Support for Avro Logical Types
 * [ ] Custom Exceptions?
 
