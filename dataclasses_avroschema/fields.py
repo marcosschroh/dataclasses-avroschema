@@ -43,83 +43,10 @@ PythonPrimitiveTypes = typing.Union[str, int, bool, float, list, tuple, dict]
 
 
 @dataclasses.dataclass
-class Field:
+class BaseField:
     name: str
     type: typing.Any  # store the python type (Field)
     default: typing.Any = dataclasses.MISSING
-    default_factory: typing.Any = None
-
-    # for avro array field
-    items_type: typing.Any = None
-
-    # for avro enum field
-    symbols: typing.Any = None
-
-    # for avro map field
-    values_type: typing.Any = None
-
-    # avro type storing
-    avro_type: typing.Any = None
-
-    def __post_init__(self):
-        if isinstance(self.type, typing._GenericAlias) and not self.is_self_referenced(self.type):
-            # Means that could be a list, tuple or dict
-            origin = self.type.__origin__
-            processor = self.get_processor(origin)
-            processor()
-
-            self.type = origin
-
-    def get_processor(self, origin):
-        """
-        Get processor for a specific type.
-
-        Supported: tuple, list, dict and typing.Type (custom types)
-        """
-        if origin is list:
-            return self._process_list_type
-        elif origin is dict:
-            return self._process_dict_type
-        elif origin is tuple:
-            return self._process_tuple_type
-        else:
-            # we do not accept any other typing._GenericAlias like a set
-            # we should raise an exception
-            raise ValueError(
-                f"Invalid Type for field {self.name}. Accepted types are list, tuple or dict")
-
-    def _process_list_type(self):
-        # because avro can have only one type, we take the first one
-        items_type = self.type.__args__[0]
-
-        if items_type in PYTHON_PRIMITIVE_TYPES:
-            self.items_type = PYTHON_TYPE_TO_AVRO[items_type]
-        elif self.is_self_referenced(items_type):
-            # Checking for a self reference. Maybe is a typing.ForwardRef
-            self.items_type = self._get_self_reference_type(items_type)
-        else:
-            # Is Avro Record Type
-            self.items_type = schema_generator.SchemaGenerator(
-                items_type).avro_schema_to_python()
-
-    def _process_dict_type(self):
-        """
-        Process typing.Dict. Avro assumes that the key of a map is always a string,
-        so we take the second argument to determine the value type
-        """
-        values_type = self.type.__args__[1]
-
-        if values_type in PYTHON_PRIMITIVE_TYPES:
-            self.values_type = PYTHON_TYPE_TO_AVRO[values_type]
-        elif self.is_self_referenced(values_type):
-            # Checking for a self reference. Maybe is a typing.ForwardRef
-            self.values_type = self._get_self_reference_type(values_type)
-        else:
-            self.values_type = schema_generator.SchemaGenerator(
-                values_type).avro_schema_to_python()
-
-    def _process_tuple_type(self):
-        self.symbols = list(self.default)
 
     @staticmethod
     def _get_self_reference_type(a_type):
@@ -139,60 +66,6 @@ class Field:
         if singular:
             return singular
         return name
-
-    def get_avro_type(self) -> PythonPrimitiveTypes:
-        if self.is_self_referenced(self.type):
-            return self._get_self_reference_type(self.type)
-
-        avro_type = PYTHON_TYPE_TO_AVRO.get(self.type)
-
-        if self.type in PYTHON_INMUTABLE_TYPES:
-            if self.default is not dataclasses.MISSING and self.type is not tuple:
-                if self.default is not None:
-                    return [avro_type, NULL]
-                # means that default value is None
-                return [NULL, avro_type]
-
-            return avro_type
-        elif self.type in PYTHON_PRIMITIVE_CONTAINERS:
-            if self.items_type:
-                avro_type["items"] = self.items_type
-            elif self.values_type:
-                avro_type["values"] = self.values_type
-            elif self.symbols:
-                avro_type["symbols"] = self.symbols
-
-            avro_type["name"] = self.get_singular_name(self.name)
-            return avro_type
-        else:
-            # Assuming that is a Avro Record type.
-            return schema_generator.SchemaGenerator(self.type).avro_schema_to_python()
-
-    def get_default_value(self):
-        if self.default is not dataclasses.MISSING:
-            if self.type in PYTHON_INMUTABLE_TYPES:
-                if self.default is None:
-                    return NULL
-                return self.default
-            elif self.type is list:
-                if self.default is None:
-                    return []
-            elif self.type is dict:
-                if self.default is None:
-                    return {}
-        elif self.default_factory not in (dataclasses.MISSING, None):
-            if self.type is list:
-                # expeting a callable
-                default = self.default_factory()
-                assert isinstance(default, list), f"List is required as default for field {self.name}"
-
-                return default
-            elif self.type is dict:
-                # expeting a callable
-                default = self.default_factory()
-                assert isinstance(default, dict), f"Dict is required as default for field {self.name}"
-
-                return default
 
     def render(self) -> OrderedDict:
         """
@@ -224,8 +97,219 @@ class Field:
 
         return template
 
+    def get_default_value(self):
+        return
+
     def to_json(self) -> str:
         return json.dumps(self.render())
 
     def to_dict(self) -> dict:
         return json.loads(self.to_json())
+
+
+class InmutableField(BaseField):
+
+    def get_avro_type(self) -> PythonPrimitiveTypes:
+        if self.default is not dataclasses.MISSING:
+            if self.default is not None:
+                return [self.avro_type, NULL]
+            # means that default value is None
+            return [NULL, self.avro_type]
+
+        return self.avro_type
+
+    def get_default_value(self):
+        if self.default is not dataclasses.MISSING:
+            if self.default is None:
+                return NULL
+            return self.default
+
+
+@dataclasses.dataclass
+class StringField(InmutableField):
+    avro_type: typing.ClassVar = STRING
+
+
+@dataclasses.dataclass
+class IntegerField(InmutableField):
+    avro_type: typing.ClassVar = INT
+
+
+@dataclasses.dataclass
+class BooleanField(InmutableField):
+    avro_type: typing.ClassVar = BOOLEAN
+
+
+@dataclasses.dataclass
+class FloatField(InmutableField):
+    avro_type: typing.ClassVar = FLOAT
+
+
+@dataclasses.dataclass
+class BytesField(InmutableField):
+    avro_type: typing.ClassVar = BYTES
+
+
+@dataclasses.dataclass
+class TupleField(BaseField):
+    avro_type: typing.ClassVar = ENUM
+    symbols: typing.Any = None
+    default_factory: typing.Any = None
+
+    def __post_init__(self):
+        self.generate_symbols()
+
+    def get_avro_type(self) -> PythonPrimitiveTypes:
+        avro_type = {
+            "type": ENUM,
+            "symbols": self.symbols
+        }
+
+        avro_type["name"] = self.get_singular_name(self.name)
+        return avro_type
+
+    def generate_symbols(self):
+        self.symbols = list(self.default)
+
+
+@dataclasses.dataclass
+class ListField(BaseField):
+    avro_type: typing.ClassVar = ARRAY
+    items_type: typing.Any = None
+    default_factory: typing.Any = None
+
+    def __post_init__(self):
+        self.generate_items_type()
+
+    def get_avro_type(self) -> PythonPrimitiveTypes:
+        avro_type = {
+            "type": ARRAY,
+            "items": self.items_type
+        }
+
+        avro_type["name"] = self.get_singular_name(self.name)
+        return avro_type
+
+    def get_default_value(self):
+        if self.default is not dataclasses.MISSING:
+            if self.default is None:
+                return []
+        elif self.default_factory not in (dataclasses.MISSING, None):
+            # expeting a callable
+            default = self.default_factory()
+            assert isinstance(default, list), f"List is required as default for field {self.name}"
+
+            return default
+
+    def generate_items_type(self):
+        # because avro can have only one type, we take the first one
+        items_type = self.type.__args__[0]
+
+        if items_type in PYTHON_PRIMITIVE_TYPES:
+            self.items_type = PYTHON_TYPE_TO_AVRO[items_type]
+        elif self.is_self_referenced(items_type):
+            # Checking for a self reference. Maybe is a typing.ForwardRef
+            self.items_type = self._get_self_reference_type(items_type)
+        else:
+            # Is Avro Record Type
+            self.items_type = schema_generator.SchemaGenerator(
+                items_type).avro_schema_to_python()
+
+
+@dataclasses.dataclass
+class DictField(BaseField):
+    avro_type: typing.ClassVar = MAP
+    default_factory: typing.Any = None
+    values_type: typing.Any = None
+
+    def __post_init__(self):
+        self.generate_values_type()
+
+    def get_avro_type(self) -> PythonPrimitiveTypes:
+        avro_type = {
+            "type": MAP,
+            "values": self.values_type
+        }
+
+        avro_type["name"] = self.get_singular_name(self.name)
+        return avro_type
+
+    def get_default_value(self):
+        if self.default is not dataclasses.MISSING:
+            if self.default is None:
+                return {}
+        elif self.default_factory not in (dataclasses.MISSING, None):
+            # expeting a callable
+            default = self.default_factory()
+            assert isinstance(default, dict), f"Dict is required as default for field {self.name}"
+
+            return default
+
+    def generate_values_type(self):
+        """
+        Process typing.Dict. Avro assumes that the key of a map is always a string,
+        so we take the second argument to determine the value type
+        """
+        values_type = self.type.__args__[1]
+
+        if values_type in PYTHON_PRIMITIVE_TYPES:
+            self.values_type = PYTHON_TYPE_TO_AVRO[values_type]
+        elif self.is_self_referenced(values_type):
+            # Checking for a self reference. Maybe is a typing.ForwardRef
+            self.values_type = self._get_self_reference_type(values_type)
+        else:
+            self.values_type = schema_generator.SchemaGenerator(
+                values_type).avro_schema_to_python()
+
+
+@dataclasses.dataclass
+class SelfReferenceField(BaseField):
+
+    def get_avro_type(self):
+        return self._get_self_reference_type(self.type)
+
+
+@dataclasses.dataclass
+class RecordField(BaseField):
+
+    def get_avro_type(self):
+        return schema_generator.SchemaGenerator(self.type).avro_schema_to_python()
+
+
+INMUTABLE_FIELDS_CLASSES = {
+    bool: BooleanField,
+    int: IntegerField,
+    float: FloatField,
+    bytes: BytesField,
+    str: StringField,
+}
+
+CONTAINER_FIELDS_CLASSES = {
+    tuple: TupleField,
+    list: ListField,
+    dict: DictField
+}
+
+
+def field_factory(name: str, native_type: typing.Any, default: typing.Any = dataclasses.MISSING,
+                  default_factory: typing.Any = None):
+
+    if native_type in PYTHON_INMUTABLE_TYPES:
+        klass = INMUTABLE_FIELDS_CLASSES[native_type]
+        return klass(name=name, type=native_type, default=default)
+    elif BaseField.is_self_referenced(native_type):
+        return SelfReferenceField(name=name, type=native_type, default=default)
+    elif isinstance(native_type, typing._GenericAlias):
+        origin = native_type.__origin__
+
+        if origin not in (tuple, list, dict):
+            raise ValueError(
+                f"Invalid Type for field {name}. Accepted types are list, tuple or dict")
+
+        klass = CONTAINER_FIELDS_CLASSES[origin]
+        return klass(name=name, type=native_type, default=default, default_factory=default_factory)
+    else:
+        return RecordField(name=name, type=native_type, default=default)
+
+
+Field = field_factory
