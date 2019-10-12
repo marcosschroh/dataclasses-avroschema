@@ -2,6 +2,8 @@ import json
 import dataclasses
 import typing
 import inflect
+import datetime
+import uuid
 
 from collections import OrderedDict
 
@@ -13,11 +15,16 @@ BOOLEAN = "boolean"
 NULL = "null"
 INT = "int"
 FLOAT = "float"
+LONG = "long"
 BYTES = "bytes"
 STRING = "string"
 ARRAY = "array"
 ENUM = "enum"
 MAP = "map"
+DATE = "date"
+TIME_MILLIS = "time-millis"
+TIMESTAMP_MILLIS = "timestamp-millis"
+UUID = "uuid"
 
 
 PYTHON_TYPE_TO_AVRO = {
@@ -30,12 +37,18 @@ PYTHON_TYPE_TO_AVRO = {
     list: {"type": ARRAY},
     tuple: {"type": ENUM},
     dict: {"type": MAP},
+    datetime.date: {"type": INT, "logicalType": DATE},
+    datetime.time: {"type": INT, "logicalType": TIME_MILLIS},
+    datetime.datetime: {"type": LONG, "logicalType": TIMESTAMP_MILLIS},
+    uuid.uuid4: {'type': 'string', 'logicalType': UUID}
 }
 
 # excluding tuple because is a container
 PYTHON_INMUTABLE_TYPES = (str, int, bool, float, bytes)
 
 PYTHON_PRIMITIVE_CONTAINERS = (list, tuple, dict)
+
+PYTHON_LOGICAL_TYPES = (datetime.date, datetime.time, datetime.datetime, uuid.uuid4)
 
 PYTHON_PRIMITIVE_TYPES = PYTHON_INMUTABLE_TYPES + PYTHON_PRIMITIVE_CONTAINERS
 
@@ -98,7 +111,10 @@ class BaseField:
         return template
 
     def get_default_value(self):
-        return
+        if self.default is not dataclasses.MISSING:
+            if self.default is None:
+                return NULL
+            return self.default
 
     def to_json(self) -> str:
         return json.dumps(self.render())
@@ -117,12 +133,6 @@ class InmutableField(BaseField):
             return [NULL, self.avro_type]
 
         return self.avro_type
-
-    def get_default_value(self):
-        if self.default is not dataclasses.MISSING:
-            if self.default is None:
-                return NULL
-            return self.default
 
 
 @dataclasses.dataclass
@@ -167,6 +177,9 @@ class TupleField(BaseField):
 
         avro_type["name"] = self.get_singular_name(self.name)
         return avro_type
+
+    def get_default_value(self):
+        return
 
     def generate_symbols(self):
         self.symbols = list(self.default)
@@ -268,6 +281,102 @@ class SelfReferenceField(BaseField):
     def get_avro_type(self):
         return self._get_self_reference_type(self.type)
 
+    def get_default_value(self):
+        return
+
+
+@dataclasses.dataclass
+class DateField(BaseField):
+    """
+    The date logical type represents a date within the calendar,
+    with no reference to a particular time zone or time of day.
+
+    A date logical type annotates an Avro int, where the int stores
+    the number of days from the unix epoch, 1 January 1970 (ISO calendar).
+    """
+    avro_type: typing.ClassVar = DATE
+
+    def get_avro_type(self):
+        return {"type": INT, "logicalType": self.avro_type}
+
+    def get_default_value(self):
+        if self.default is not dataclasses.MISSING:
+            if self.default is None:
+                return NULL
+
+            # Convert to datetime and get the amount of days
+            date_time = datetime.datetime.combine(self.default, datetime.datetime.min.time())
+            ts = (date_time - datetime.datetime(1970, 1, 1)).total_seconds()
+            return int(ts / (3600 * 24))
+
+
+@dataclasses.dataclass
+class TimeField(BaseField):
+    """
+    The time-millis logical type represents a time of day,
+    with no reference to a particular calendar,
+    time zone or date, with a precision of one millisecond.
+
+    A time-millis logical type annotates an Avro int,
+    where the int stores the number of milliseconds after midnight, 00:00:00.000.
+    """
+    avro_type: typing.ClassVar = TIME_MILLIS
+
+    def get_avro_type(self):
+        return {"type": INT, "logicalType": self.avro_type}
+
+    def get_default_value(self):
+        if self.default is not dataclasses.MISSING:
+            if self.default is None:
+                return NULL
+
+            return self.time_to_miliseconds(self.default)
+
+    @staticmethod
+    def time_to_miliseconds(time):
+        hour, minutes, seconds, microseconds = time.hour, time.minute, time.second, time.microsecond
+
+        return int((((hour * 60 + minutes) * 60 + seconds) * 1000) + (microseconds / 1000))
+
+
+@dataclasses.dataclass
+class DatetimeField(BaseField):
+    """
+    The timestamp-millis logical type represents an instant on the global timeline,
+    independent of a particular time zone or calendar, with a precision of one millisecond.
+
+    A timestamp-millis logical type annotates an Avro long,
+    where the long stores the number of milliseconds from the unix epoch,
+    1 January 1970 00:00:00.000 UTC.
+    """
+    avro_type: typing.ClassVar = TIMESTAMP_MILLIS
+
+    def get_avro_type(self):
+        return {"type": LONG, "logicalType": self.avro_type}
+
+    def get_default_value(self):
+        if self.default is not dataclasses.MISSING:
+            if self.default is None:
+                return NULL
+
+            ts = (self.default - datetime.datetime(1970, 1, 1)).total_seconds()
+            return ts * 1000
+
+
+@dataclasses.dataclass
+class UUIDField(BaseField):
+    avro_type: typing.ClassVar = UUID
+
+    def get_avro_type(self):
+        return {'type': 'string', 'logicalType': self.avro_type}
+
+    def get_default_value(self):
+        if self.default is not dataclasses.MISSING:
+            if self.default is None:
+                return NULL
+
+            return str(self.default)
+
 
 @dataclasses.dataclass
 class RecordField(BaseField):
@@ -287,7 +396,14 @@ INMUTABLE_FIELDS_CLASSES = {
 CONTAINER_FIELDS_CLASSES = {
     tuple: TupleField,
     list: ListField,
-    dict: DictField
+    dict: DictField,
+}
+
+LOGICAL_TYPES_FIELDS_CLASSES = {
+    datetime.date: DateField,
+    datetime.time: TimeField,
+    datetime.datetime: DatetimeField,
+    uuid.uuid4: UUIDField
 }
 
 
@@ -308,6 +424,9 @@ def field_factory(name: str, native_type: typing.Any, default: typing.Any = data
 
         klass = CONTAINER_FIELDS_CLASSES[origin]
         return klass(name=name, type=native_type, default=default, default_factory=default_factory)
+    elif native_type in PYTHON_LOGICAL_TYPES:
+        klass = LOGICAL_TYPES_FIELDS_CLASSES[native_type]
+        return klass(name=name, type=native_type, default=default)
     else:
         return RecordField(name=name, type=native_type, default=default)
 
