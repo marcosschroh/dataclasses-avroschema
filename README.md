@@ -62,8 +62,5 @@ SchemaGenerator(User).avro_schema()
 * [X] enum, array, map and records support
 * [X] Schema relations (oneToOne, oneToMany)
 * [X] Recursive Schemas
-* [ ] Support for Avro Logical Types
-* [ ] Custom Exceptions?
-
-
-
+* [x] Support for Avro Logical Types (Date, Time, Datetime, UUID)
+* [ ] Decimal Logical Types
