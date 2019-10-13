@@ -160,4 +160,25 @@ Records use the type name "record" and will represent the "Schema".
 | map       |     dict    |
 | record    | Python class|
 
+### Logical Types
 
+A logical type is an Avro primitive or complex type with extra attributes to represent a derived type. The attribute logicalType must always be present for a logical type, and is a string with the name of one of the logical types listed later in this section. Other attributes may be defined for particular logical types.
+
+A logical type is always serialized using its underlying Avro type so that values are encoded in exactly the same way as the equivalent Avro type that does not have a logicalType attribute. Language implementations may choose to represent logical types with an appropriate native type, although this is not required.
+
+Language implementations must ignore unknown logical types when reading, and should use the underlying Avro type. If a logical type is invalid, for example a decimal with scale greater than its precision, then implementations should ignore the logical type and use the underlying Avro type.
+
+* Date: The date logical type represents a date within the calendar, with no reference to a particular time zone or time of day. A date logical type annotates an Avro int, where the int stores the number of days from the unix epoch, 1 January 1970 (ISO calendar).
+
+* Time (millisecond precision): The time-millis logical type represents a time of day, with no reference to a particular calendar, time zone or date, with a precision of one millisecond. A time-millis logical type annotates an Avro int, where the int stores the number of milliseconds after midnight, 00:00:00.000.
+
+* Timestamp (millisecond precision): The timestamp-millis logical type represents an instant on the global timeline, independent of a particular time zone or calendar, with a precision of one millisecond. A timestamp-millis logical type annotates an Avro long, where the long stores the number of milliseconds from the unix epoch, 1 January 1970 00:00:00.000 UTC.
+
+* UUID: Represents a uuid as a string
+
+| Avro Type | Logical Type |Python Type |
+|-----------|--------------|-------------|
+| int       |  date        | datetime.date
+| int       |  time-millis | datetime.time     |
+| long      |  timestamp-millis | datetime.datetime |
+| string    |  uuid        | uuid.uuid4 |
