@@ -47,7 +47,16 @@ class User:
 
 ## Complex Types
 
-Avro supports six kinds of complex types: records, enums, arrays, maps, unions and fixed.
+Avro supports six kinds of complex types: enums, arrays, maps, unions, fixed and records.
+
+| Avro Type | Python Type |
+|-----------|-------------|
+| enums     |   tuple     |
+| arrays    |   list      |
+| maps      |   dict      |
+| unions    |typing.Union |
+| records   |Python Class |
+
 
 ### Enums
 
@@ -138,27 +147,37 @@ class UserAdvance:
     cars_brand_total: typing.Dict[str, int] = None
 ```
 
+### Unions
+
+Unions are represented using JSON arrays. For example, `["null", "string"]` declares a schema which may be either a null or string.
+
+In this case we want to represent the `union` usign `typing.Union`:
+
+```python
+import typing
+
+class Bus:
+    "A Bus"
+    engine_name: str
+
+
+class Car:
+    "A Car"
+    engine_name: str
+
+
+ class UnionSchema:
+    "Some Unions"
+    lake_trip: typing.Union[Bus, Car]
+    river_trip: typing.Union[Bus, Car] = None
+    mountain_trip: typing.Union[Bus, Car] = dataclasses.field(
+        default_factory=lambda: {"engine_name": "honda"})
+```
+
 ### Records
 
 Records use the type name "record" and will represent the "Schema".
 
-
-### Avro Field and Python Types Summary
-
-| Avro Type | Python Type |
-|-----------|-------------|
-| string    |     str     |
-| int       |     int     |
-| long      |     int     |
-| boolean   |     bool    |
-| float     |     float   |
-| null      |     None    |
-| double    |     wip     |
-| bytes     |     wip     |
-| enum      |     tuple   |
-| array     |     list    |
-| map       |     dict    |
-| record    | Python class|
 
 ### Logical Types
 
@@ -182,3 +201,24 @@ Language implementations must ignore unknown logical types when reading, and sho
 | int       |  time-millis | datetime.time     |
 | long      |  timestamp-millis | datetime.datetime |
 | string    |  uuid        | uuid.uuid4 |
+
+
+### Avro Field and Python Types Summary
+
+Python Type | Avro Type   | Logical Type |
+|-----------|-------------|--------------|
+| str       | string      | do not apply |
+| int       | int         | do not apply |
+| bool      | boolean     | do not apply |
+| float     | float       | do not apply |
+| None      | null        | do not apply |
+| bytes     | bytes       | do not apply |
+| tuple     | enum        | do not apply |
+| list      | array       | do not apply |
+| dict      | map         | do not apply |
+| typing.Union| union     | do not apply |
+| Pythin classs | record  | do not apply |
+| datetime.date | int     |  date        |
+| datetime.time | int     |  time-millis |
+| datetime.datetim| long  |  timestamp-millis |
+| uuid.uuid4  | string    |  uuid        |

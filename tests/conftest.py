@@ -153,3 +153,8 @@ def user_self_reference_one_to_many_map_schema():
 @pytest.fixture
 def logical_types_schema():
     return load_json("logical_types.avsc")
+
+
+@pytest.fixture
+def union_type_schema():
+    return load_json("union_type.avsc")
