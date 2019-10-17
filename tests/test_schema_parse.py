@@ -1,6 +1,7 @@
 import typing
 import datetime
 import uuid
+import dataclasses
 
 from fastavro import parse_schema
 
@@ -192,3 +193,20 @@ def test_logical_types_schema():
         event_uuid: uuid.uuid4 = '09f00184-7721-4266-a955-21048a5cc235'
 
     assert parse_schema(SchemaGenerator(LogicalTypes).avro_schema_to_python())
+
+
+def test_schema_with_union_types():
+    class Bus:
+        "A Bus"
+        engine_name: str
+
+    class Car:
+        "A Car"
+        engine_name: str
+
+    class UnionSchema:
+        "Some Unions"
+        mountain_trip: typing.Union[Bus, Car] = dataclasses.field(
+            default_factory=lambda: {"engine_name": "honda"})
+
+    assert parse_schema(SchemaGenerator(UnionSchema).avro_schema_to_python())

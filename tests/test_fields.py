@@ -54,7 +54,7 @@ LOGICAL_TYPES_AND_DEFAULTS = (
 def test_invalid_type_field():
     python_type = typing.Set
     name = "test_field"
-    msg = f"Invalid Type for field {name}. Accepted types are list, tuple or dict"
+    msg = f"Invalid Type for field {name}. Accepted types are list, tuple, dict or typing.Union"
 
     with pytest.raises(ValueError, match=msg):
         fields.Field(name, python_type, dataclasses.MISSING)
@@ -194,6 +194,7 @@ def test_dict_type_default_value():
     When the type is Dict, the Avro field type should be a map
     with the values attribute present.
     """
+
     name = "a_map_field"
     python_type = typing.Dict[str, int]
 
@@ -220,6 +221,116 @@ def test_dict_type_default_value():
             "values": "int"
         },
         "default": {"key": 1}
+    }
+
+    assert expected == field.to_dict()
+
+
+def test_union_type():
+    class User:
+        "User"
+        first_name: str
+
+    class Car:
+        "Car"
+        engine_name: str
+
+    name = "an_union_field"
+    python_type = typing.Union[User, Car]
+
+    field = fields.Field(name, python_type)
+
+    expected = {
+        "name": name,
+        "type": [
+            {
+                "name": "User",
+                "type": "record",
+                "doc": "User",
+                "fields": [
+                    {"name": "first_name", "type": "string"}
+                ]
+            },
+            {
+                "name": "Car",
+                "type": "record",
+                "doc": "Car",
+                "fields": [
+                    {"name": "engine_name", "type": "string"}
+                ]
+            }
+        ]
+    }
+
+    assert expected == field.to_dict()
+
+
+def test_union_type_default_value():
+    class User:
+        "User"
+        first_name: str
+
+    class Car:
+        "Car"
+        engine_name: str
+
+    name = "an_union_field"
+    python_type = typing.Union[User, Car]
+    field = fields.Field(name, python_type, None)
+
+    expected = {
+        "name": name,
+        "type": [
+            fields.NULL,
+            {
+                "name": "User",
+                "type": "record",
+                "doc": "User",
+                "fields": [
+                    {"name": "first_name", "type": "string"}
+                ]
+            },
+            {
+                "name": "Car",
+                "type": "record",
+                "doc": "Car",
+                "fields": [
+                    {"name": "engine_name", "type": "string"}
+                ]
+            }
+        ],
+        "default": fields.NULL
+    }
+
+    assert expected == field.to_dict()
+
+    field = fields.Field(
+        name, python_type,
+        default=dataclasses.MISSING,
+        default_factory=lambda: {"first_name": "a name"}
+    )
+
+    expected = {
+        "name": name,
+        "type": [
+            {
+                "name": "User",
+                "type": "record",
+                "doc": "User",
+                "fields": [
+                    {"name": "first_name", "type": "string"}
+                ]
+            },
+            {
+                "name": "Car",
+                "type": "record",
+                "doc": "Car",
+                "fields": [
+                    {"name": "engine_name", "type": "string"}
+                ]
+            }
+        ],
+        "default": {"first_name": "a name"}
     }
 
     assert expected == field.to_dict()

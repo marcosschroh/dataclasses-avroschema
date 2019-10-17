@@ -40,7 +40,7 @@ PYTHON_TYPE_TO_AVRO = {
     datetime.date: {"type": INT, "logicalType": DATE},
     datetime.time: {"type": INT, "logicalType": TIME_MILLIS},
     datetime.datetime: {"type": LONG, "logicalType": TIMESTAMP_MILLIS},
-    uuid.uuid4: {'type': 'string', 'logicalType': UUID}
+    uuid.uuid4: {"type": "string", "logicalType": UUID}
 }
 
 # excluding tuple because is a container
@@ -245,6 +245,7 @@ class DictField(BaseField):
         }
 
         avro_type["name"] = self.get_singular_name(self.name)
+
         return avro_type
 
     def get_default_value(self):
@@ -273,6 +274,35 @@ class DictField(BaseField):
         else:
             self.values_type = schema_generator.SchemaGenerator(
                 values_type).avro_schema_to_python()
+
+
+@dataclasses.dataclass
+class UnionField(BaseField):
+    default_factory: typing.Any = dataclasses.MISSING
+
+    def get_avro_type(self):
+        schemas = self.type.__args__
+
+        unions = [
+            schema_generator.SchemaGenerator(schema).avro_schema_to_python() for schema in schemas
+            if schema is not None
+        ]
+
+        if self.default is None and self.default_factory is dataclasses.MISSING:
+            unions.insert(0, NULL)
+
+        return unions
+
+    def get_default_value(self):
+        if self.default is not dataclasses.MISSING:
+            if self.default is None:
+                return NULL
+        elif self.default_factory not in (dataclasses.MISSING, None):
+            # expeting a callable
+            default = self.default_factory()
+            assert isinstance(default, dict), f"Dict is required as default for field {self.name}"
+
+            return default
 
 
 @dataclasses.dataclass
@@ -397,6 +427,7 @@ CONTAINER_FIELDS_CLASSES = {
     tuple: TupleField,
     list: ListField,
     dict: DictField,
+    typing.Union: UnionField,
 }
 
 LOGICAL_TYPES_FIELDS_CLASSES = {
@@ -408,7 +439,7 @@ LOGICAL_TYPES_FIELDS_CLASSES = {
 
 
 def field_factory(name: str, native_type: typing.Any, default: typing.Any = dataclasses.MISSING,
-                  default_factory: typing.Any = None):
+                  default_factory: typing.Any = dataclasses.MISSING):
 
     if native_type in PYTHON_INMUTABLE_TYPES:
         klass = INMUTABLE_FIELDS_CLASSES[native_type]
@@ -418,9 +449,9 @@ def field_factory(name: str, native_type: typing.Any, default: typing.Any = data
     elif isinstance(native_type, typing._GenericAlias):
         origin = native_type.__origin__
 
-        if origin not in (tuple, list, dict):
+        if origin not in (tuple, list, dict, typing.Union):
             raise ValueError(
-                f"Invalid Type for field {name}. Accepted types are list, tuple or dict")
+                f"Invalid Type for field {name}. Accepted types are list, tuple, dict or typing.Union")
 
         klass = CONTAINER_FIELDS_CLASSES[origin]
         return klass(name=name, type=native_type, default=default, default_factory=default_factory)

@@ -1,5 +1,7 @@
 import json
 import pytest
+import typing
+import dataclasses
 
 from dataclasses_avroschema.schema_generator import SchemaGenerator
 
@@ -120,3 +122,23 @@ def test_invalid_schema_type(user_dataclass):
     msg = "Invalid type. Expected avro schema type."
     with pytest.raises(ValueError, match=msg):
         SchemaGenerator(user_dataclass).generate_schema(schema_type="json")
+
+
+def test_schema_with_unions_type(union_type_schema):
+    class Bus:
+        "A Bus"
+        engine_name: str
+
+    class Car:
+        "A Car"
+        engine_name: str
+
+    class UnionSchema:
+        "Some Unions"
+        lake_trip: typing.Union[Bus, Car]
+        river_trip: typing.Union[Bus, Car] = None
+        mountain_trip: typing.Union[Bus, Car] = dataclasses.field(
+            default_factory=lambda: {"engine_name": "honda"})
+
+    schema = SchemaGenerator(UnionSchema).avro_schema()
+    assert schema == json.dumps(union_type_schema)

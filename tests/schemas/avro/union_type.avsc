@@ -1,0 +1,92 @@
+{
+  "type": "record",
+  "name": "UnionSchema",
+  "fields": [
+    {
+      "name": "lake_trip",
+      "type": [
+        {
+          "type": "record",
+          "name": "Bus",
+          "fields": [
+            {
+              "name": "engine_name",
+              "type": "string"
+            }
+          ],
+          "doc": "A Bus"
+        },
+        {
+          "type": "record",
+          "name": "Car",
+          "fields": [
+            {
+              "name": "engine_name",
+              "type": "string"
+            }
+          ],
+          "doc": "A Car"
+        }
+      ]
+    },
+    {
+      "name": "river_trip",
+      "type": [
+        "null",
+        {
+          "type": "record",
+          "name": "Bus",
+          "fields": [
+            {
+              "name": "engine_name",
+              "type": "string"
+            }
+          ],
+          "doc": "A Bus"
+        },
+        {
+          "type": "record",
+          "name": "Car",
+          "fields": [
+            {
+              "name": "engine_name",
+              "type": "string"
+            }
+          ],
+          "doc": "A Car"
+        }
+      ],
+      "default": "null"
+    },
+    {
+      "name": "mountain_trip",
+      "type": [
+        {
+          "type": "record",
+          "name": "Bus",
+          "fields": [
+            {
+              "name": "engine_name",
+              "type": "string"
+            }
+          ],
+          "doc": "A Bus"
+        },
+        {
+          "type": "record",
+          "name": "Car",
+          "fields": [
+            {
+              "name": "engine_name",
+              "type": "string"
+            }
+          ],
+          "doc": "A Car"
+        }
+      ],
+      "default": {"engine_name": "honda"}
+    }
+  ],
+  "doc": "Some Unions"
+}
+    

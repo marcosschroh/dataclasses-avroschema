@@ -54,9 +54,8 @@ SchemaGenerator(User).avro_schema()
 
 ## Features:
 
-* [X] int, long, float, boolean, string and null support
-* [X] enum, array, map and records support
+* [X] Primitive types: int, long, float, boolean, string and null support
+* [X] Complex types: enum, array, map, unions and records support
+* [x] Logical Types: date, time, datetime, uuid support
 * [X] Schema relations (oneToOne, oneToMany)
-* [x] Recursive Schemas
-* [x] Support for Avro Logical Types (Date, Time, Datetime, UUID)
-* [ ] Decimal Logical Types
+* [X] Recursive Schemas
