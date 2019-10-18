@@ -1,4 +1,6 @@
-## OneToOne Schema Relationship
+## Schema Relationships
+
+### OneToOne
 
 An User has one Address example:
 

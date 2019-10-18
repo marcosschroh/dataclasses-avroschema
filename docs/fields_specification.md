@@ -1,6 +1,6 @@
 ## Avro Fields and Python Fields
 
-Apache Avro has `Primitive Types` and `Complex Types`, so we need to match these types with python types.
+Apache Avro has `Primitive Types`, `Complex Types` and `Logical Types`, so we need to match these types with python types.
 
 ## Primitive Types and python representation
 
@@ -21,28 +21,10 @@ So, the previous types can be matched to:
 |-----------|-------------|
 | string    |     str     |
 | int       |     int     |
-| long      |     int     |
 | boolean   |     bool    |
 | float     |     float   |
-| double    |     float   |
 | null      |     None    |
 | bytes     |     wip     |
-
-Example:
-
-```python
-class User:
-    name: str
-    age: int
-    has_pets: bool
-    money: float
-    
-    # some with default values
-    country: str = "Argentina"
-    address: str = None
-    total_houses: int = 1
-    has_car: bool = False
-```
 
 
 ## Complex Types
@@ -58,125 +40,27 @@ Avro supports six kinds of complex types: enums, arrays, maps, unions, fixed and
 | records   |Python Class |
 
 
-### Enums
+* Enums: Use the type name "enum" and support the following attributes:
+  1. name: a JSON string providing the name of the enum (required).
+  2. namespace: a JSON string that qualifies the name;
+  3. aliases: a JSON array of strings, providing alternate names for this enum (optional).
+  4. doc: a JSON string providing documentation to the user of this schema (optional).
+  5. symbols: a JSON array, listing symbols, as JSON strings (required). All symbols in an enum must be unique; duplicates are prohibited. Every symbol must match the regular expression [A-Za-z_][A-Za-z0-9_]* (the same requirement as for names).
 
-Enums use the type name "enum" and support the following attributes:
+When we want to define a `enum` type we should specify a default value because we need to define the `symbols`
+In future version we will have a custom enum type to avoid this
 
-* name: a JSON string providing the name of the enum (required).
-* namespace: a JSON string that qualifies the name;
-* aliases: a JSON array of strings, providing alternate names for this enum (optional).
-* doc: a JSON string providing documentation to the user of this schema (optional).
-* symbols: a JSON array, listing symbols, as JSON strings (required). All symbols in an enum must be unique; duplicates are prohibited. Every symbol must match the regular expression [A-Za-z_][A-Za-z0-9_]* (the same requirement as for names).
+* Arrays: Use the type name "array" and support the following attribute:
+  1. name: a JSON string providing the name of the enum (required).
+  2. items: the schema of the array's items.
 
-For example, playing card suits might be defined with:
+* Maps: Use the type name "map". Map keys are assumed to be string. Support the following attribute:
+  1. name: a JSON string providing the name of the enum (required).
+  2. values: the schema of the map's values.
 
-```python
-{ "type": "enum",
-  "name": "Suit",
-  "symbols" : ["SPADES", "HEARTS", "DIAMONDS", "CLUBS"]
-}
-```
+* Unions: `Unions` are represented using JSON arrays. For example, `["null", "string"]` declares a schema which may be either a null or string.
 
-The `enum` type is mapped to a python `tuple`.
-
-Example:
-
-```python
-import typing
-
-
-class User:
-    ...
-    favorite_colors: typing.Tuple[str] = ("BLUE", "YELLOW", "GREEN")
-```
-
-* When we want to define a `enum` type we should specify a default value because we need to define the `symbols`
-  In future version we will have a custom enum type to avoid this
-
-### Arrays
-
-Arrays use the type name "array" and support a single attribute:
-
-* items: the schema of the array's items.
-
-For example, an array of strings is declared with:
-
-```python
-{"type": "array", "items": "string"}
-```
-
-The `array` type is mapped to a python `list`.
-
-Example:
-
-```python
-import typing
-
-
-class UserAdvance:
-    ...
-    pets: typing.List[str]
-    cars: typing.List[str] = None
-```
-
-### Maps
-
-Maps use the type name "map" and support one attribute:
-
-* values: the schema of the map's values.
-
-Map keys are assumed to be strings.
-
-For example, a map from string to long is declared with:
-
-```python
-{"type": "map", "values": "long"}
-```
-
-The `array` type is mapped to a python `dict` where all the keys should be `string`.
-
-Example:
-
-```python
-import typing
-
-
-class UserAdvance:
-    ...
-    accounts_money: typing.Dict[str, float]
-    cars_brand_total: typing.Dict[str, int] = None
-```
-
-### Unions
-
-Unions are represented using JSON arrays. For example, `["null", "string"]` declares a schema which may be either a null or string.
-
-In this case we want to represent the `union` usign `typing.Union`:
-
-```python
-import typing
-
-class Bus:
-    "A Bus"
-    engine_name: str
-
-
-class Car:
-    "A Car"
-    engine_name: str
-
-
- class UnionSchema:
-    "Some Unions"
-    lake_trip: typing.Union[Bus, Car]
-    river_trip: typing.Union[Bus, Car] = None
-    mountain_trip: typing.Union[Bus, Car] = dataclasses.field(
-        default_factory=lambda: {"engine_name": "honda"})
-```
-
-### Records
-
-Records use the type name "record" and will represent the "Schema".
+* Records: `Records` use the type name `record` and will represent the `Schema`.
 
 
 ### Logical Types
