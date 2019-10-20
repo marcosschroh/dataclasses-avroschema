@@ -13,6 +13,15 @@ LIST_TYPE_AND_ITEMS_TYPE = (
 )
 
 
+def test_invalid_type_container_field():
+    python_type = typing.Set
+    name = "test_field"
+    msg = f"Invalid Type for field {name}. Accepted types are list, tuple, dict or typing.Union"
+
+    with pytest.raises(ValueError, match=msg):
+        fields.Field(name, python_type, dataclasses.MISSING)
+
+
 def test_tuple_type():
     """
     When the type is Tuple, the Avro field type should be enum
