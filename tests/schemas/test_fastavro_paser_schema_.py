@@ -187,8 +187,8 @@ def test_logical_types_schema():
 
     class LogicalTypes:
         "Some logical types"
-        birthday: datetime.date = a_datetime
-        meeting_time: datetime.time = a_datetime
+        birthday: datetime.date = a_datetime.date()
+        meeting_time: datetime.time = a_datetime.time()
         release_datetime: datetime.datetime = a_datetime
         event_uuid: uuid.uuid4 = '09f00184-7721-4266-a955-21048a5cc235'
 

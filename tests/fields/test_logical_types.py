@@ -1,6 +1,6 @@
 import pytest
 import datetime
-from uuid import uuid4
+import uuid
 
 from dataclasses_avroschema import fields
 
@@ -26,10 +26,17 @@ LOGICAL_TYPES_AND_DEFAULTS = (
         fields.TIMESTAMP_MILLIS
     ),
     (
-        uuid4,
+        uuid.uuid4,
         fields.STRING,
         fields.UUID
     )
+)
+
+LOGICAL_TYPES_AND_INVALID_DEFAULTS = (
+    (datetime.date, 1, None),
+    (datetime.time, "test", None),
+    (datetime.datetime, 10, None),
+    (uuid.uuid4, 10, f"Invalid default type. Default should be {str} or {uuid.UUID}"),
 )
 
 
@@ -130,8 +137,8 @@ def test_logical_type_datetime_with_default():
 
 def test_logical_type_uuid_with_default():
     name = "a uuid"
-    python_type = uuid4
-    default = uuid4()
+    python_type = uuid.uuid4
+    default = uuid.uuid4()
     field = fields.Field(name, python_type, default)
 
     expected = {
@@ -144,3 +151,13 @@ def test_logical_type_uuid_with_default():
     }
 
     assert expected == field.to_dict()
+
+
+@pytest.mark.parametrize("logical_type,invalid_default,msg", LOGICAL_TYPES_AND_INVALID_DEFAULTS)
+def test_invalid_default_values(logical_type, invalid_default, msg):
+    name = "a_field"
+    field = fields.Field(name, logical_type, invalid_default)
+
+    msg = msg or f"Invalid default type. Default should be {logical_type}"
+    with pytest.raises(AssertionError, match=msg):
+        field.to_dict()
