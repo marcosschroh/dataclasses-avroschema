@@ -58,7 +58,7 @@ PythonPrimitiveTypes = typing.Union[str, int, bool, float, list, tuple, dict]
 @dataclasses.dataclass
 class BaseField:
     name: str
-    type: typing.Any  # store the python type (Field)
+    type: typing.Any  # store the python primitive type
     default: typing.Any = dataclasses.MISSING
 
     @staticmethod
@@ -114,7 +114,15 @@ class BaseField:
         if self.default is not dataclasses.MISSING:
             if self.default is None:
                 return NULL
-            return self.default
+
+            if self.validate_default():
+                return self.default
+
+    def validate_default(self):
+        msg = f"Invalid default type. Default should be {self.type}"
+        assert isinstance(self.default, self.type), msg
+
+        return True
 
     def to_json(self) -> str:
         return json.dumps(self.render())
@@ -334,10 +342,12 @@ class DateField(BaseField):
             if self.default is None:
                 return NULL
 
-            # Convert to datetime and get the amount of days
-            date_time = datetime.datetime.combine(self.default, datetime.datetime.min.time())
-            ts = (date_time - datetime.datetime(1970, 1, 1)).total_seconds()
-            return int(ts / (3600 * 24))
+            if self.validate_default():
+                # Convert to datetime and get the amount of days
+                date_time = datetime.datetime.combine(self.default, datetime.datetime.min.time())
+                ts = (date_time - datetime.datetime(1970, 1, 1)).total_seconds()
+
+                return int(ts / (3600 * 24))
 
 
 @dataclasses.dataclass
@@ -360,7 +370,8 @@ class TimeField(BaseField):
             if self.default is None:
                 return NULL
 
-            return self.time_to_miliseconds(self.default)
+            if self.validate_default():
+                return self.time_to_miliseconds(self.default)
 
     @staticmethod
     def time_to_miliseconds(time):
@@ -389,8 +400,9 @@ class DatetimeField(BaseField):
             if self.default is None:
                 return NULL
 
-            ts = (self.default - datetime.datetime(1970, 1, 1)).total_seconds()
-            return ts * 1000
+            if self.validate_default():
+                ts = (self.default - datetime.datetime(1970, 1, 1)).total_seconds()
+                return ts * 1000
 
 
 @dataclasses.dataclass
@@ -405,7 +417,14 @@ class UUIDField(BaseField):
             if self.default is None:
                 return NULL
 
-            return str(self.default)
+            if self.validate_default():
+                return str(self.default)
+
+    def validate_default(self):
+        msg = f"Invalid default type. Default should be {str} or {uuid.UUID}"
+        assert isinstance(self.default, (str, uuid.UUID)), msg
+
+        return True
 
 
 @dataclasses.dataclass
