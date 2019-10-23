@@ -20,7 +20,7 @@ class SchemaGenerator:
 
     def generate_schema(self, schema_type: str = "avro"):
         if self.schema_definition is not None:
-            return self.schema_definition
+            return self.schema_definition.render()
 
         # let's live open the possibility to define different
         # schema definitions like json

@@ -60,3 +60,4 @@ SchemaGenerator(User).avro_schema()
 * [x] Logical Types: date, time, datetime, uuid support
 * [X] Schema relations (oneToOne, oneToMany)
 * [X] Recursive Schemas
+* [X] Generate Avro Schemas from `faust.Record`

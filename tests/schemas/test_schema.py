@@ -54,6 +54,15 @@ def test_schema_documentation(user_v2_dataclass, user_v2_avro_json):
     assert user_schema == json.dumps(user_v2_avro_json)
 
 
+def test_schema_cached(user_v2_dataclass, user_v2_avro_json):
+    schema_generator = SchemaGenerator(user_v2_dataclass)
+    user_schema = schema_generator.avro_schema()
+
+    assert user_schema == json.dumps(user_v2_avro_json)
+
+    assert user_schema == schema_generator.avro_schema()
+
+
 def test_extra_avro_attributes(user_extra_avro_attributes):
     """
     This method is to test the extra avro attribute like

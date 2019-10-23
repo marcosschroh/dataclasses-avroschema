@@ -5,6 +5,11 @@ from collections import OrderedDict
 
 from dataclasses_avroschema import fields
 
+try:
+    import faust
+except ImportError:
+    faust = None
+
 
 @dataclasses.dataclass
 class BaseSchemaDefinition:
@@ -31,6 +36,15 @@ class BaseSchemaDefinition:
         if doc is not None:
             return doc.replace("\n", "")
 
+    @property
+    def is_faust_record(self):
+        if faust:
+            if inspect.isclass(self.klass_or_instance):
+                return issubclass(self.klass_or_instance, faust.Record)
+            return issubclass(self.klass_or_instance.__class__, faust.Record)
+
+        return False
+
 
 @dataclasses.dataclass
 class AvroSchemaDefinition(BaseSchemaDefinition):
@@ -44,6 +58,11 @@ class AvroSchemaDefinition(BaseSchemaDefinition):
         self.fields = self.parse_dataclasses_fields()
 
     def parse_dataclasses_fields(self) -> typing.List["fields.Field"]:
+        if self.is_faust_record:
+            return self.parse_faust_record_fields()
+        return self.parse_fields()
+
+    def parse_fields(self):
         return [
             fields.Field(
                 dataclass_field.name,
@@ -53,6 +72,34 @@ class AvroSchemaDefinition(BaseSchemaDefinition):
             )
             for dataclass_field in dataclasses.fields(self.klass_or_instance)
         ]
+
+    def parse_faust_record_fields(self) -> typing.List["fields.Field"]:
+        schema_fields = []
+
+        for dataclass_field in dataclasses.fields(self.klass_or_instance):
+            faust_field = dataclass_field.default
+
+            if faust_field.required:
+                default = dataclasses.MISSING
+                default_factory = dataclasses.MISSING
+            else:
+                default = faust_field.default
+                default_factory = dataclasses.MISSING
+
+                if isinstance(default, dataclasses.Field):
+                    default_factory = default.default_factory
+                    default = dataclasses.MISSING
+
+            schema_fields.append(
+                fields.Field(
+                    dataclass_field.name,
+                    dataclass_field.type,
+                    default,
+                    default_factory
+                )
+            )
+
+        return schema_fields
 
     def get_rendered_fields(self) -> typing.List["fields.Field"]:
         return [
