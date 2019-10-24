@@ -2,6 +2,7 @@ import json
 import pytest
 
 from dataclasses_avroschema.schema_generator import SchemaGenerator
+from dataclasses_avroschema.schema_definition import BaseSchemaDefinition
 
 encoded = "test".encode()
 
@@ -114,3 +115,16 @@ def test_invalid_schema_type(user_dataclass):
     msg = "Invalid type. Expected avro schema type."
     with pytest.raises(ValueError, match=msg):
         SchemaGenerator(user_dataclass).generate_schema(schema_type="json")
+
+
+def test_not_implementd_methods():
+    class Aclass:
+        pass
+
+    schema = BaseSchemaDefinition('avro', Aclass)
+
+    with pytest.raises(NotImplementedError):
+        schema.get_rendered_fields()
+
+    with pytest.raises(NotImplementedError):
+        schema.render()

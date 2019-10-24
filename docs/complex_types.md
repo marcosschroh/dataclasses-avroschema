@@ -4,9 +4,9 @@ The following list represent the avro complext types mapped to python types:
 
 | Avro Type | Python Type |
 |-----------|-------------|
-| enums     |   tuple     |
-| arrays    |   list      |
-| maps      |   dict      |
+| enums     |   typing.Tuple     |
+| arrays    |   typing.List, typing.Sequence, typing.MutableSequence      |
+| maps      |   typing.Dict, typing.Mapping, typing.MutableMapping      |
 | unions    |typing.Union |
 | records   |Python Class |
 

@@ -7,8 +7,8 @@ from dataclasses_avroschema import fields
 
 try:
     import faust
-except ImportError:
-    faust = None
+except ImportError:  # pragma: no cover
+    faust = None  # pragma: no cover
 
 
 @dataclasses.dataclass
