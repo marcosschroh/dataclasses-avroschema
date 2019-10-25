@@ -8,4 +8,9 @@ python:
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 install: pip install -r requirements.txt
 
-script: ./scripts/test.sh && codecov && codecov --token=$CODECOV_TOKEN
+matrix:
+  include:	
+    - name: Test 
+      script: ./scripts/test.sh && codecov && codecov --token=$CODECOV_TOKEN
+    - name: Lint
+      script: ./scripts/lint.sh

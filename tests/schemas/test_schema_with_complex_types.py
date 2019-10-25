@@ -7,16 +7,18 @@ from dataclasses_avroschema.schema_generator import SchemaGenerator
 
 
 def test_schema_with_complex_types(user_advance_dataclass, user_advance_avro_json):
-    user_schema = SchemaGenerator(user_advance_dataclass, include_schema_doc=False).avro_schema()
+    user_schema = SchemaGenerator(
+        user_advance_dataclass, include_schema_doc=False
+    ).avro_schema()
 
     assert user_schema == json.dumps(user_advance_avro_json)
 
 
-def test_schema_with_complex_types_and_defaults(user_advance_with_defaults_dataclass,
-                                                user_advance_with_defaults_avro_json):
+def test_schema_with_complex_types_and_defaults(
+    user_advance_with_defaults_dataclass, user_advance_with_defaults_avro_json
+):
     user_schema = SchemaGenerator(
-        user_advance_with_defaults_dataclass,
-        include_schema_doc=False
+        user_advance_with_defaults_dataclass, include_schema_doc=False
     ).avro_schema()
 
     assert user_schema == json.dumps(user_advance_with_defaults_avro_json)
@@ -36,7 +38,8 @@ def test_schema_with_unions_type(union_type_schema):
         lake_trip: typing.Union[Bus, Car]
         river_trip: typing.Union[Bus, Car] = None
         mountain_trip: typing.Union[Bus, Car] = dataclasses.field(
-            default_factory=lambda: {"engine_name": "honda"})
+            default_factory=lambda: {"engine_name": "honda"}
+        )
 
     schema = SchemaGenerator(UnionSchema).avro_schema()
     assert schema == json.dumps(union_type_schema)

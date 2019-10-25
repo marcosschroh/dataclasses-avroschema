@@ -38,7 +38,9 @@ def test_schema_with_extra_avro_attrs(user_extra_avro_atributes_dataclass):
                 "aliases": ["User", "My favorite User"]
             }
     """
-    schema = SchemaGenerator(user_extra_avro_atributes_dataclass).avro_schema_to_python()
+    schema = SchemaGenerator(
+        user_extra_avro_atributes_dataclass
+    ).avro_schema_to_python()
 
     assert parse_schema(schema)
 
@@ -87,6 +89,7 @@ def test_one_to_one_schema():
     """
     Test relationship one-to-one
     """
+
     class Address:
         "An Address"
         street: str
@@ -105,6 +108,7 @@ def test_one_to_many_schema():
     """
     Test relationship one-to-many
     """
+
     class Address:
         "An Address"
         street: str
@@ -123,6 +127,7 @@ def test_one_to_many_with_map_schema():
     """
     Test relationship one-to-many using a map
     """
+
     class Address:
         "An Address"
         street: str
@@ -190,7 +195,7 @@ def test_logical_types_schema():
         birthday: datetime.date = a_datetime.date()
         meeting_time: datetime.time = a_datetime.time()
         release_datetime: datetime.datetime = a_datetime
-        event_uuid: uuid.uuid4 = '09f00184-7721-4266-a955-21048a5cc235'
+        event_uuid: uuid.uuid4 = "09f00184-7721-4266-a955-21048a5cc235"
 
     assert parse_schema(SchemaGenerator(LogicalTypes).avro_schema_to_python())
 
@@ -207,6 +212,7 @@ def test_schema_with_union_types():
     class UnionSchema:
         "Some Unions"
         mountain_trip: typing.Union[Bus, Car] = dataclasses.field(
-            default_factory=lambda: {"engine_name": "honda"})
+            default_factory=lambda: {"engine_name": "honda"}
+        )
 
     assert parse_schema(SchemaGenerator(UnionSchema).avro_schema_to_python())

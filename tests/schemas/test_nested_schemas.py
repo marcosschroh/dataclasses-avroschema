@@ -8,6 +8,7 @@ def test_one_to_one_relationship(user_one_address_schema):
     """
     Test schema relationship one-to-one
     """
+
     class Address:
         "An Address"
         street: str
@@ -27,6 +28,7 @@ def test_one_to_many_relationship(user_many_address_schema):
     """
     Test schema relationship one-to-many
     """
+
     class Address:
         "An Address"
         street: str
@@ -46,6 +48,7 @@ def test_one_to_many_map_relationship(user_many_address_map_schema):
     """
     Test schema relationship one-to-many using a map
     """
+
     class Address:
         "An Address"
         street: str

@@ -40,12 +40,18 @@ def test_faust_record_schema_complex_types(user_advance_avro_json):
     assert user_schema == json.dumps(user_advance_avro_json)
 
 
-def test_faust_record_schema_complex_types_with_defaults(user_advance_with_defaults_avro_json):
+def test_faust_record_schema_complex_types_with_defaults(
+    user_advance_with_defaults_avro_json
+):
     class UserAdvance(faust.Record):
         name: str
         age: int
-        pets: typing.List[str] = dataclasses.field(default_factory=lambda: ['dog', 'cat'])
-        accounts: typing.Dict[str, int] = dataclasses.field(default_factory=lambda: {"key": 1})
+        pets: typing.List[str] = dataclasses.field(
+            default_factory=lambda: ["dog", "cat"]
+        )
+        accounts: typing.Dict[str, int] = dataclasses.field(
+            default_factory=lambda: {"key": 1}
+        )
         has_car: bool = False
         favorite_colors: typing.Tuple[str] = ("BLUE", "YELLOW", "GREEN")
         country: str = "Argentina"
@@ -64,7 +70,7 @@ def test_faust_record_schema_logical_types(logical_types_schema):
         birthday: datetime.date = a_datetime.date()
         meeting_time: datetime.time = a_datetime.time()
         release_datetime: datetime.datetime = a_datetime
-        event_uuid: uuid.uuid4 = '09f00184-7721-4266-a955-21048a5cc235'
+        event_uuid: uuid.uuid4 = "09f00184-7721-4266-a955-21048a5cc235"
 
     schema = SchemaGenerator(LogicalTypes).avro_schema()
 
@@ -75,6 +81,7 @@ def test_faust_record_one_to_one_relationship(user_one_address_schema):
     """
     Test schema relationship one-to-one
     """
+
     class Address(faust.Record):
         "An Address"
         street: str
@@ -94,6 +101,7 @@ def test_faust_record_one_to_many_relationship(user_many_address_schema):
     """
     Test schema relationship one-to-many
     """
+
     class Address(faust.Record):
         "An Address"
         street: str
@@ -113,6 +121,7 @@ def test_faust_record_one_to_many_map_relationship(user_many_address_map_schema)
     """
     Test schema relationship one-to-many using a map
     """
+
     class Address(faust.Record):
         "An Address"
         street: str
@@ -128,7 +137,9 @@ def test_faust_record_one_to_many_map_relationship(user_many_address_map_schema)
     assert schema == json.dumps(user_many_address_map_schema)
 
 
-def test_faust_record_self_one_to_one_relationship(user_self_reference_one_to_one_schema):
+def test_faust_record_self_one_to_one_relationship(
+    user_self_reference_one_to_one_schema
+):
     """
     Test self relationship one-to-one
     """
@@ -144,7 +155,9 @@ def test_faust_record_self_one_to_one_relationship(user_self_reference_one_to_on
     assert schema == json.dumps(user_self_reference_one_to_one_schema)
 
 
-def test_faust_record_self_one_to_many_relationship(user_self_reference_one_to_many_schema):
+def test_faust_record_self_one_to_many_relationship(
+    user_self_reference_one_to_many_schema
+):
     """
     Test self relationship one-to-many
     """
@@ -160,7 +173,9 @@ def test_faust_record_self_one_to_many_relationship(user_self_reference_one_to_m
     assert schema == json.dumps(user_self_reference_one_to_many_schema)
 
 
-def test_faust_record_self_one_to_many_map_relationship(user_self_reference_one_to_many_map_schema):
+def test_faust_record_self_one_to_many_map_relationship(
+    user_self_reference_one_to_many_map_schema
+):
     """
     Test self relationship one-to-many Map
     """
@@ -190,7 +205,8 @@ def test_faust_record_schema_with_unions_type(union_type_schema):
         lake_trip: typing.Union[Bus, Car]
         river_trip: typing.Union[Bus, Car] = None
         mountain_trip: typing.Union[Bus, Car] = dataclasses.field(
-            default_factory=lambda: {"engine_name": "honda"})
+            default_factory=lambda: {"engine_name": "honda"}
+        )
 
     schema = SchemaGenerator(UnionSchema).avro_schema()
     assert schema == json.dumps(union_type_schema)
