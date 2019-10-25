@@ -1,15 +1,34 @@
 import pytest
 import dataclasses
 import typing
+from faker import Faker
 
 from dataclasses_avroschema import fields
 
-LIST_TYPE_AND_ITEMS_TYPE = (
+faker = Faker()
+
+
+PRIMITIVE_TYPES = (
     (str, "string"),
     (int, "int"),
     (bool, "boolean"),
     (float, "float"),
-    (bytes, "bytes"),
+    # (bytes, "bytes"),
+)
+
+SEQUENCE_TYPES = (typing.List, typing.Sequence, typing.MutableSequence)
+MAPPING_TYPES = (typing.Dict, typing.Mapping, typing.MutableMapping)
+
+SEQUENCES_AND_TYPES = (
+    (sequence, python_type, items_type)
+    for sequence in SEQUENCE_TYPES
+    for python_type, items_type in PRIMITIVE_TYPES
+)
+
+MAPPING_AND_TYPES = (
+    (sequence, python_type, items_type)
+    for sequence in MAPPING_TYPES
+    for python_type, items_type in PRIMITIVE_TYPES
 )
 
 
@@ -44,14 +63,14 @@ def test_tuple_type():
     assert expected == field.to_dict()
 
 
-@pytest.mark.parametrize("python_primitive_type,python_type_str", LIST_TYPE_AND_ITEMS_TYPE)
-def test_list_type(python_primitive_type, python_type_str):
+@pytest.mark.parametrize("sequence, python_primitive_type,python_type_str", SEQUENCES_AND_TYPES)
+def test_sequence_type(sequence, python_primitive_type, python_type_str):
     """
     When the type is List, the Avro field type should be array
     with the items attribute present.
     """
     name = "an_array_field"
-    python_type = typing.List[python_primitive_type]
+    python_type = sequence[python_primitive_type]
     field = fields.Field(name, python_type, dataclasses.MISSING)
 
     expected = {
@@ -65,51 +84,45 @@ def test_list_type(python_primitive_type, python_type_str):
 
     assert expected == field.to_dict()
 
-
-def test_list_type_default_value():
-    """
-    When the type is List, the Avro field type should be array
-    with the items attribute present.
-    """
-    name = "an_array_field"
-    python_type = typing.List[int]
-
+    python_type = sequence[python_primitive_type]
     field = fields.Field(name, python_type, None)
     expected = {
         "name": name,
         "type": {
             "type": "array",
             "name": name,
-            "items": "int"
+            "items": python_type_str
         },
         "default": []
     }
 
     assert expected == field.to_dict()
 
-    field = fields.Field(name, python_type, default=dataclasses.MISSING, default_factory=lambda: [1, 2])
+    values = faker.pylist(2, True, python_primitive_type)
+    field = fields.Field(
+        name, python_type, default=dataclasses.MISSING, default_factory=lambda: values)
 
     expected = {
         "name": name,
         "type": {
             "type": "array",
             "name": name,
-            "items": "int"
+            "items": python_type_str
         },
-        "default": [1, 2]
+        "default": values
     }
 
     assert expected == field.to_dict()
 
 
-@pytest.mark.parametrize("python_primitive_type,python_type_str", LIST_TYPE_AND_ITEMS_TYPE)
-def test_dict_type(python_primitive_type, python_type_str):
+@pytest.mark.parametrize("mapping,python_primitive_type,python_type_str", MAPPING_AND_TYPES)
+def test_mapping_type(mapping, python_primitive_type, python_type_str):
     """
     When the type is Dict, the Avro field type should be map
     with the values attribute present. The keys are always string type.
     """
     name = "a_map_field"
-    python_type = typing.Dict[str, python_primitive_type]
+    python_type = mapping[str, python_primitive_type]
     field = fields.Field(name, python_type, dataclasses.MISSING)
 
     expected = {
@@ -123,16 +136,6 @@ def test_dict_type(python_primitive_type, python_type_str):
 
     assert expected == field.to_dict()
 
-
-def test_dict_type_default_value():
-    """
-    When the type is Dict, the Avro field type should be a map
-    with the values attribute present.
-    """
-
-    name = "a_map_field"
-    python_type = typing.Dict[str, int]
-
     field = fields.Field(name, python_type, None)
 
     expected = {
@@ -140,22 +143,24 @@ def test_dict_type_default_value():
         "type": {
             "type": "map",
             "name": name,
-            "values": "int"
+            "values": python_type_str
         },
         "default": {}
     }
     assert expected == field.to_dict()
 
-    field = fields.Field(name, python_type, default=dataclasses.MISSING, default_factory=lambda: {"key": 1})
+    value = faker.pydict(2, True, python_primitive_type)
+    field = fields.Field(
+        name, python_type, default=dataclasses.MISSING, default_factory=lambda: value)
 
     expected = {
         "name": name,
         "type": {
             "type": "map",
             "name": name,
-            "values": "int"
+            "values": python_type_str
         },
-        "default": {"key": 1}
+        "default": value
     }
 
     assert expected == field.to_dict()

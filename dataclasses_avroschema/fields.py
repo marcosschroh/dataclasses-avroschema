@@ -4,6 +4,7 @@ import typing
 import inflect
 import datetime
 import uuid
+import collections
 
 from collections import OrderedDict
 
@@ -445,7 +446,11 @@ INMUTABLE_FIELDS_CLASSES = {
 CONTAINER_FIELDS_CLASSES = {
     tuple: TupleField,
     list: ListField,
+    collections.abc.Sequence: ListField,
+    collections.abc.MutableSequence: ListField,
     dict: DictField,
+    collections.abc.Mapping: DictField,
+    collections.abc.MutableMapping: DictField,
     typing.Union: UnionField,
 }
 
@@ -468,7 +473,11 @@ def field_factory(name: str, native_type: typing.Any, default: typing.Any = data
     elif isinstance(native_type, typing._GenericAlias):
         origin = native_type.__origin__
 
-        if origin not in (tuple, list, dict, typing.Union):
+        if origin not in (
+            tuple, list, dict, typing.Union,
+            collections.abc.Sequence, collections.abc.MutableSequence,
+            collections.abc.Mapping, collections.abc.MutableMapping
+        ):
             raise ValueError(
                 f"Invalid Type for field {name}. Accepted types are list, tuple, dict or typing.Union")
 
