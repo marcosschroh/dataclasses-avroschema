@@ -5,10 +5,7 @@ import typing
 import pytest
 
 
-SCHEMA_DIR = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)),
-    "schemas"
-)
+SCHEMA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "schemas")
 
 AVRO_SCHEMAS_DIR = os.path.join(SCHEMA_DIR, "avro")
 JSON_SCHEMAS_DIR = os.path.join(SCHEMA_DIR, "json")
@@ -53,7 +50,7 @@ def user_extra_avro_atributes_dataclass():
         def extra_avro_attributes() -> typing.Dict[str, typing.Any]:
             return {
                 "namespace": "test.com.ar/user/v1",
-                "aliases": ["User", "My favorite User"]
+                "aliases": ["User", "My favorite User"],
             }
 
     return UserAliasesNamespace
@@ -79,8 +76,12 @@ def user_advance_with_defaults_dataclass():
     class UserAdvance:
         name: str
         age: int
-        pets: typing.List[str] = dataclasses.field(default_factory=lambda: ['dog', 'cat'])
-        accounts: typing.Dict[str, int] = dataclasses.field(default_factory=lambda: {"key": 1})
+        pets: typing.List[str] = dataclasses.field(
+            default_factory=lambda: ["dog", "cat"]
+        )
+        accounts: typing.Dict[str, int] = dataclasses.field(
+            default_factory=lambda: {"key": 1}
+        )
         has_car: bool = False
         favorite_colors: typing.Tuple[str] = ("BLUE", "YELLOW", "GREEN")
         country: str = "Argentina"

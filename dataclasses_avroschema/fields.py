@@ -41,7 +41,7 @@ PYTHON_TYPE_TO_AVRO = {
     datetime.date: {"type": INT, "logicalType": DATE},
     datetime.time: {"type": INT, "logicalType": TIME_MILLIS},
     datetime.datetime: {"type": LONG, "logicalType": TIMESTAMP_MILLIS},
-    uuid.uuid4: {"type": "string", "logicalType": UUID}
+    uuid.uuid4: {"type": "string", "logicalType": UUID},
 }
 
 # excluding tuple because is a container
@@ -70,8 +70,11 @@ class BaseField:
 
     @staticmethod
     def is_self_referenced(a_type):
-        return isinstance(a_type, typing._GenericAlias) \
-            and a_type.__args__ and isinstance(a_type.__args__[0], typing.ForwardRef)
+        return (
+            isinstance(a_type, typing._GenericAlias)
+            and a_type.__args__
+            and isinstance(a_type.__args__[0], typing.ForwardRef)
+        )
 
     @staticmethod
     def get_singular_name(name):
@@ -100,10 +103,7 @@ class BaseField:
                 * tuple, he OrderedDict will contains the key symbols inside type
                 * dict, he OrderedDict will contains the key values inside type
         """
-        template = OrderedDict([
-            ("name", self.name),
-            ("type", self.get_avro_type()),
-        ])
+        template = OrderedDict([("name", self.name), ("type", self.get_avro_type())])
 
         default = self.get_default_value()
         if default is not None:
@@ -133,7 +133,6 @@ class BaseField:
 
 
 class InmutableField(BaseField):
-
     def get_avro_type(self) -> PythonPrimitiveTypes:
         if self.default is not dataclasses.MISSING:
             if self.default is not None:
@@ -179,10 +178,7 @@ class TupleField(BaseField):
         self.generate_symbols()
 
     def get_avro_type(self) -> PythonPrimitiveTypes:
-        avro_type = {
-            "type": ENUM,
-            "symbols": self.symbols
-        }
+        avro_type = {"type": ENUM, "symbols": self.symbols}
 
         avro_type["name"] = self.get_singular_name(self.name)
         return avro_type
@@ -204,10 +200,7 @@ class ListField(BaseField):
         self.generate_items_type()
 
     def get_avro_type(self) -> PythonPrimitiveTypes:
-        avro_type = {
-            "type": ARRAY,
-            "items": self.items_type
-        }
+        avro_type = {"type": ARRAY, "items": self.items_type}
 
         avro_type["name"] = self.get_singular_name(self.name)
         return avro_type
@@ -219,7 +212,9 @@ class ListField(BaseField):
         elif self.default_factory not in (dataclasses.MISSING, None):
             # expeting a callable
             default = self.default_factory()
-            assert isinstance(default, list), f"List is required as default for field {self.name}"
+            assert isinstance(
+                default, list
+            ), f"List is required as default for field {self.name}"
 
             return default
 
@@ -235,7 +230,8 @@ class ListField(BaseField):
         else:
             # Is Avro Record Type
             self.items_type = schema_generator.SchemaGenerator(
-                items_type).avro_schema_to_python()
+                items_type
+            ).avro_schema_to_python()
 
 
 @dataclasses.dataclass
@@ -248,10 +244,7 @@ class DictField(BaseField):
         self.generate_values_type()
 
     def get_avro_type(self) -> PythonPrimitiveTypes:
-        avro_type = {
-            "type": MAP,
-            "values": self.values_type
-        }
+        avro_type = {"type": MAP, "values": self.values_type}
 
         avro_type["name"] = self.get_singular_name(self.name)
 
@@ -264,7 +257,9 @@ class DictField(BaseField):
         elif self.default_factory not in (dataclasses.MISSING, None):
             # expeting a callable
             default = self.default_factory()
-            assert isinstance(default, dict), f"Dict is required as default for field {self.name}"
+            assert isinstance(
+                default, dict
+            ), f"Dict is required as default for field {self.name}"
 
             return default
 
@@ -282,7 +277,8 @@ class DictField(BaseField):
             self.values_type = self._get_self_reference_type(values_type)
         else:
             self.values_type = schema_generator.SchemaGenerator(
-                values_type).avro_schema_to_python()
+                values_type
+            ).avro_schema_to_python()
 
 
 @dataclasses.dataclass
@@ -293,7 +289,8 @@ class UnionField(BaseField):
         schemas = self.type.__args__
 
         unions = [
-            schema_generator.SchemaGenerator(schema).avro_schema_to_python() for schema in schemas
+            schema_generator.SchemaGenerator(schema).avro_schema_to_python()
+            for schema in schemas
             if schema is not None
         ]
 
@@ -309,14 +306,15 @@ class UnionField(BaseField):
         elif self.default_factory not in (dataclasses.MISSING, None):
             # expeting a callable
             default = self.default_factory()
-            assert isinstance(default, dict), f"Dict is required as default for field {self.name}"
+            assert isinstance(
+                default, dict
+            ), f"Dict is required as default for field {self.name}"
 
             return default
 
 
 @dataclasses.dataclass
 class SelfReferenceField(BaseField):
-
     def get_avro_type(self):
         return self._get_self_reference_type(self.type)
 
@@ -333,6 +331,7 @@ class DateField(BaseField):
     A date logical type annotates an Avro int, where the int stores
     the number of days from the unix epoch, 1 January 1970 (ISO calendar).
     """
+
     avro_type: typing.ClassVar = DATE
 
     def get_avro_type(self):
@@ -345,7 +344,9 @@ class DateField(BaseField):
 
             if self.validate_default():
                 # Convert to datetime and get the amount of days
-                date_time = datetime.datetime.combine(self.default, datetime.datetime.min.time())
+                date_time = datetime.datetime.combine(
+                    self.default, datetime.datetime.min.time()
+                )
                 ts = (date_time - datetime.datetime(1970, 1, 1)).total_seconds()
 
                 return int(ts / (3600 * 24))
@@ -361,6 +362,7 @@ class TimeField(BaseField):
     A time-millis logical type annotates an Avro int,
     where the int stores the number of milliseconds after midnight, 00:00:00.000.
     """
+
     avro_type: typing.ClassVar = TIME_MILLIS
 
     def get_avro_type(self):
@@ -376,9 +378,16 @@ class TimeField(BaseField):
 
     @staticmethod
     def time_to_miliseconds(time):
-        hour, minutes, seconds, microseconds = time.hour, time.minute, time.second, time.microsecond
+        hour, minutes, seconds, microseconds = (
+            time.hour,
+            time.minute,
+            time.second,
+            time.microsecond,
+        )
 
-        return int((((hour * 60 + minutes) * 60 + seconds) * 1000) + (microseconds / 1000))
+        return int(
+            (((hour * 60 + minutes) * 60 + seconds) * 1000) + (microseconds / 1000)
+        )
 
 
 @dataclasses.dataclass
@@ -391,6 +400,7 @@ class DatetimeField(BaseField):
     where the long stores the number of milliseconds from the unix epoch,
     1 January 1970 00:00:00.000 UTC.
     """
+
     avro_type: typing.ClassVar = TIMESTAMP_MILLIS
 
     def get_avro_type(self):
@@ -411,7 +421,7 @@ class UUIDField(BaseField):
     avro_type: typing.ClassVar = UUID
 
     def get_avro_type(self):
-        return {'type': 'string', 'logicalType': self.avro_type}
+        return {"type": "string", "logicalType": self.avro_type}
 
     def get_default_value(self):
         if self.default is not dataclasses.MISSING:
@@ -430,7 +440,6 @@ class UUIDField(BaseField):
 
 @dataclasses.dataclass
 class RecordField(BaseField):
-
     def get_avro_type(self):
         return schema_generator.SchemaGenerator(self.type).avro_schema_to_python()
 
@@ -458,12 +467,16 @@ LOGICAL_TYPES_FIELDS_CLASSES = {
     datetime.date: DateField,
     datetime.time: TimeField,
     datetime.datetime: DatetimeField,
-    uuid.uuid4: UUIDField
+    uuid.uuid4: UUIDField,
 }
 
 
-def field_factory(name: str, native_type: typing.Any, default: typing.Any = dataclasses.MISSING,
-                  default_factory: typing.Any = dataclasses.MISSING):
+def field_factory(
+    name: str,
+    native_type: typing.Any,
+    default: typing.Any = dataclasses.MISSING,
+    default_factory: typing.Any = dataclasses.MISSING,
+):
 
     if native_type in PYTHON_INMUTABLE_TYPES:
         klass = INMUTABLE_FIELDS_CLASSES[native_type]
@@ -474,15 +487,28 @@ def field_factory(name: str, native_type: typing.Any, default: typing.Any = data
         origin = native_type.__origin__
 
         if origin not in (
-            tuple, list, dict, typing.Union,
-            collections.abc.Sequence, collections.abc.MutableSequence,
-            collections.abc.Mapping, collections.abc.MutableMapping
+            tuple,
+            list,
+            dict,
+            typing.Union,
+            collections.abc.Sequence,
+            collections.abc.MutableSequence,
+            collections.abc.Mapping,
+            collections.abc.MutableMapping,
         ):
             raise ValueError(
-                f"Invalid Type for field {name}. Accepted types are list, tuple, dict or typing.Union")
+                f"""
+                Invalid Type for field {name}. Accepted types are list, tuple, dict or typing.Union
+                """
+            )
 
         klass = CONTAINER_FIELDS_CLASSES[origin]
-        return klass(name=name, type=native_type, default=default, default_factory=default_factory)
+        return klass(
+            name=name,
+            type=native_type,
+            default=default,
+            default_factory=default_factory,
+        )
     elif native_type in PYTHON_LOGICAL_TYPES:
         klass = LOGICAL_TYPES_FIELDS_CLASSES[native_type]
         return klass(name=name, type=native_type, default=default)

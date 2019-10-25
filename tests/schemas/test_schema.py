@@ -21,7 +21,9 @@ def test_total_schema_fields_from_instance(user_dataclass):
 
 
 def test_schema_render_from_class(user_dataclass, user_avro_json):
-    user_schema = SchemaGenerator(user_dataclass, include_schema_doc=False).avro_schema()
+    user_schema = SchemaGenerator(
+        user_dataclass, include_schema_doc=False
+    ).avro_schema()
 
     assert user_schema == json.dumps(user_avro_json)
 
@@ -34,14 +36,18 @@ def test_schema_render_from_instance(user_dataclass, user_avro_json):
 
 
 def test_schema_render_from_class_with_doc(user_dataclass, user_avro_json):
-    user_avro_json["doc"] = "User(name: str, age: int, has_pets: bool, money: float, encoded: bytes)"
+    user_avro_json[
+        "doc"
+    ] = "User(name: str, age: int, has_pets: bool, money: float, encoded: bytes)"
     user_schema = SchemaGenerator(user_dataclass).avro_schema()
 
     assert user_schema == json.dumps(user_avro_json)
 
 
 def test_schema_render_from_instance_with_doc(user_dataclass, user_avro_json):
-    user_avro_json["doc"] = "User(name: str, age: int, has_pets: bool, money: float, encoded: bytes)"
+    user_avro_json[
+        "doc"
+    ] = "User(name: str, age: int, has_pets: bool, money: float, encoded: bytes)"
 
     user = user_dataclass("test", 20, True, 10.4, encoded)
     user_schema = SchemaGenerator(user).avro_schema()
@@ -79,10 +85,7 @@ def test_extra_avro_attributes(user_extra_avro_attributes):
 
         @staticmethod
         def extra_avro_attributes():
-            return {
-                "namespace": namespace,
-                "aliases": aliases
-            }
+            return {"namespace": namespace, "aliases": aliases}
 
     user_schema = SchemaGenerator(User).avro_schema()
     assert user_schema == json.dumps(user_extra_avro_attributes)
@@ -97,6 +100,7 @@ def test_extra_avro_attributes_invalid(user_extra_avro_attributes):
     This method is to test the extra avro attribute like
     namespace and aliases.
     """
+
     class User:
         "An User"
         name: str
@@ -121,7 +125,7 @@ def test_not_implementd_methods():
     class Aclass:
         pass
 
-    schema = BaseSchemaDefinition('avro', Aclass)
+    schema = BaseSchemaDefinition("avro", Aclass)
 
     with pytest.raises(NotImplementedError):
         schema.get_rendered_fields()

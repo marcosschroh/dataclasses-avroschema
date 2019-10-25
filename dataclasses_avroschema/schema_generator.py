@@ -6,7 +6,6 @@ from dataclasses_avroschema.schema_definition import AvroSchemaDefinition
 
 
 class SchemaGenerator:
-
     def __init__(self, klass_or_instance, include_schema_doc: bool = True) -> None:
         self.dataclass = self.generate_dataclass(klass_or_instance)
         self.include_schema_doc = include_schema_doc
@@ -39,9 +38,7 @@ class SchemaGenerator:
 
     def _generate_avro_schema(self) -> AvroSchemaDefinition:
         return AvroSchemaDefinition(
-            "record",
-            self.dataclass,
-            include_schema_doc=self.include_schema_doc
+            "record", self.dataclass, include_schema_doc=self.include_schema_doc
         )
 
     def avro_schema(self) -> str:

@@ -47,23 +47,21 @@ def test_tuple_type():
     with the symbols attribute present.
     """
     name = "an_enum_field"
-    default = ("BLUE", "YELOW", "RED",)
+    default = ("BLUE", "YELOW", "RED")
     python_type = typing.Tuple
     field = fields.Field(name, python_type, default)
 
     expected = {
         "name": name,
-        "type": {
-            "type": "enum",
-            "name": name,
-            "symbols": list(default)
-        }
+        "type": {"type": "enum", "name": name, "symbols": list(default)},
     }
 
     assert expected == field.to_dict()
 
 
-@pytest.mark.parametrize("sequence, python_primitive_type,python_type_str", SEQUENCES_AND_TYPES)
+@pytest.mark.parametrize(
+    "sequence, python_primitive_type,python_type_str", SEQUENCES_AND_TYPES
+)
 def test_sequence_type(sequence, python_primitive_type, python_type_str):
     """
     When the type is List, the Avro field type should be array
@@ -75,11 +73,7 @@ def test_sequence_type(sequence, python_primitive_type, python_type_str):
 
     expected = {
         "name": name,
-        "type": {
-            "type": "array",
-            "name": name,
-            "items": python_type_str
-        }
+        "type": {"type": "array", "name": name, "items": python_type_str},
     }
 
     assert expected == field.to_dict()
@@ -88,34 +82,29 @@ def test_sequence_type(sequence, python_primitive_type, python_type_str):
     field = fields.Field(name, python_type, None)
     expected = {
         "name": name,
-        "type": {
-            "type": "array",
-            "name": name,
-            "items": python_type_str
-        },
-        "default": []
+        "type": {"type": "array", "name": name, "items": python_type_str},
+        "default": [],
     }
 
     assert expected == field.to_dict()
 
     values = faker.pylist(2, True, python_primitive_type)
     field = fields.Field(
-        name, python_type, default=dataclasses.MISSING, default_factory=lambda: values)
+        name, python_type, default=dataclasses.MISSING, default_factory=lambda: values
+    )
 
     expected = {
         "name": name,
-        "type": {
-            "type": "array",
-            "name": name,
-            "items": python_type_str
-        },
-        "default": values
+        "type": {"type": "array", "name": name, "items": python_type_str},
+        "default": values,
     }
 
     assert expected == field.to_dict()
 
 
-@pytest.mark.parametrize("mapping,python_primitive_type,python_type_str", MAPPING_AND_TYPES)
+@pytest.mark.parametrize(
+    "mapping,python_primitive_type,python_type_str", MAPPING_AND_TYPES
+)
 def test_mapping_type(mapping, python_primitive_type, python_type_str):
     """
     When the type is Dict, the Avro field type should be map
@@ -127,11 +116,7 @@ def test_mapping_type(mapping, python_primitive_type, python_type_str):
 
     expected = {
         "name": name,
-        "type": {
-            "type": "map",
-            "name": name,
-            "values": python_type_str
-        }
+        "type": {"type": "map", "name": name, "values": python_type_str},
     }
 
     assert expected == field.to_dict()
@@ -140,27 +125,20 @@ def test_mapping_type(mapping, python_primitive_type, python_type_str):
 
     expected = {
         "name": name,
-        "type": {
-            "type": "map",
-            "name": name,
-            "values": python_type_str
-        },
-        "default": {}
+        "type": {"type": "map", "name": name, "values": python_type_str},
+        "default": {},
     }
     assert expected == field.to_dict()
 
     value = faker.pydict(2, True, python_primitive_type)
     field = fields.Field(
-        name, python_type, default=dataclasses.MISSING, default_factory=lambda: value)
+        name, python_type, default=dataclasses.MISSING, default_factory=lambda: value
+    )
 
     expected = {
         "name": name,
-        "type": {
-            "type": "map",
-            "name": name,
-            "values": python_type_str
-        },
-        "default": value
+        "type": {"type": "map", "name": name, "values": python_type_str},
+        "default": value,
     }
 
     assert expected == field.to_dict()
@@ -187,19 +165,15 @@ def test_union_type():
                 "name": "User",
                 "type": "record",
                 "doc": "User",
-                "fields": [
-                    {"name": "first_name", "type": "string"}
-                ]
+                "fields": [{"name": "first_name", "type": "string"}],
             },
             {
                 "name": "Car",
                 "type": "record",
                 "doc": "Car",
-                "fields": [
-                    {"name": "engine_name", "type": "string"}
-                ]
-            }
-        ]
+                "fields": [{"name": "engine_name", "type": "string"}],
+            },
+        ],
     }
 
     assert expected == field.to_dict()
@@ -226,28 +200,25 @@ def test_union_type_default_value():
                 "name": "User",
                 "type": "record",
                 "doc": "User",
-                "fields": [
-                    {"name": "first_name", "type": "string"}
-                ]
+                "fields": [{"name": "first_name", "type": "string"}],
             },
             {
                 "name": "Car",
                 "type": "record",
                 "doc": "Car",
-                "fields": [
-                    {"name": "engine_name", "type": "string"}
-                ]
-            }
+                "fields": [{"name": "engine_name", "type": "string"}],
+            },
         ],
-        "default": fields.NULL
+        "default": fields.NULL,
     }
 
     assert expected == field.to_dict()
 
     field = fields.Field(
-        name, python_type,
+        name,
+        python_type,
         default=dataclasses.MISSING,
-        default_factory=lambda: {"first_name": "a name"}
+        default_factory=lambda: {"first_name": "a name"},
     )
 
     expected = {
@@ -257,20 +228,16 @@ def test_union_type_default_value():
                 "name": "User",
                 "type": "record",
                 "doc": "User",
-                "fields": [
-                    {"name": "first_name", "type": "string"}
-                ]
+                "fields": [{"name": "first_name", "type": "string"}],
             },
             {
                 "name": "Car",
                 "type": "record",
                 "doc": "Car",
-                "fields": [
-                    {"name": "engine_name", "type": "string"}
-                ]
-            }
+                "fields": [{"name": "engine_name", "type": "string"}],
+            },
         ],
-        "default": {"first_name": "a name"}
+        "default": {"first_name": "a name"},
     }
 
     assert expected == field.to_dict()
