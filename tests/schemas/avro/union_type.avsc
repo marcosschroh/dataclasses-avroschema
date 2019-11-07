@@ -3,6 +3,18 @@
   "name": "UnionSchema",
   "fields": [
     {
+      "name": "first_union",
+      "type": ["string", "int"]
+    },
+    {
+      "name": "logical_union",
+      "type": [
+        {"type": "long", "logicalType": "timestamp-millis"},
+        {"type": "int", "logicalType": "date"},
+        {"type": "string", "logicalType": "uuid"}
+      ]
+    },
+    {
       "name": "lake_trip",
       "type": [
         {
@@ -89,4 +101,3 @@
   ],
   "doc": "Some Unions"
 }
-    

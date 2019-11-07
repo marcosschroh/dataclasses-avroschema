@@ -202,6 +202,8 @@ def test_faust_record_schema_with_unions_type(union_type_schema):
 
     class UnionSchema(faust.Record):
         "Some Unions"
+        first_union: typing.Union[str, int]
+        logical_union: typing.Union[datetime.datetime, datetime.date, uuid.uuid4]
         lake_trip: typing.Union[Bus, Car]
         river_trip: typing.Union[Bus, Car] = None
         mountain_trip: typing.Union[Bus, Car] = dataclasses.field(

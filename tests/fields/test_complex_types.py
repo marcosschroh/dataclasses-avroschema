@@ -1,6 +1,7 @@
 import pytest
 import dataclasses
 import typing
+import datetime
 from faker import Faker
 
 from dataclasses_avroschema import fields
@@ -9,12 +10,29 @@ faker = Faker()
 
 
 PRIMITIVE_TYPES = (
-    (str, "string"),
-    (int, "int"),
-    (bool, "boolean"),
-    (float, "float"),
+    (str, fields.STRING),
+    (int, fields.INT),
+    (bool, fields.BOOLEAN),
+    (float, fields.FLOAT),
     # (bytes, "bytes"),
 )
+
+UNION_PRIMITIVE_ELEMENTS = (
+    ((str, int), (fields.STRING, fields.INT)),
+    (
+        (datetime.date, datetime.datetime),
+        (
+            fields.PYTHON_TYPE_TO_AVRO[datetime.date],
+            fields.PYTHON_TYPE_TO_AVRO[datetime.datetime],
+        ),
+    ),
+    ((float, str, int), (fields.FLOAT, fields.STRING, fields.INT)),
+    (
+        (str, float, int, bool),
+        (fields.STRING, fields.FLOAT, fields.INT, fields.BOOLEAN),
+    ),
+)
+
 
 SEQUENCE_TYPES = (typing.List, typing.Sequence, typing.MutableSequence)
 MAPPING_TYPES = (typing.Dict, typing.Mapping, typing.MutableMapping)
@@ -144,7 +162,20 @@ def test_mapping_type(mapping, python_primitive_type, python_type_str):
     assert expected == field.to_dict()
 
 
-def test_union_type():
+@pytest.mark.parametrize("args", UNION_PRIMITIVE_ELEMENTS)
+def test_union_type(args):
+    primitive_types, avro_types = args[0], args[1]
+
+    name = "an_union_field"
+    python_type = typing.Union[primitive_types]
+    field = fields.Field(name, python_type)
+
+    expected = {"name": name, "type": [*avro_types]}
+
+    assert expected == field.to_dict()
+
+
+def test_union_type_with_records():
     class User:
         "User"
         first_name: str
@@ -155,7 +186,6 @@ def test_union_type():
 
     name = "an_union_field"
     python_type = typing.Union[User, Car]
-
     field = fields.Field(name, python_type)
 
     expected = {
@@ -179,7 +209,7 @@ def test_union_type():
     assert expected == field.to_dict()
 
 
-def test_union_type_default_value():
+def test_union_type_with_record_default():
     class User:
         "User"
         first_name: str

@@ -41,7 +41,7 @@ PYTHON_TYPE_TO_AVRO = {
     datetime.date: {"type": INT, "logicalType": DATE},
     datetime.time: {"type": INT, "logicalType": TIME_MILLIS},
     datetime.datetime: {"type": LONG, "logicalType": TIMESTAMP_MILLIS},
-    uuid.uuid4: {"type": "string", "logicalType": UUID},
+    uuid.uuid4: {"type": STRING, "logicalType": UUID},
 }
 
 # excluding tuple because is a container
@@ -93,7 +93,8 @@ class BaseField:
         returns:
             OrderedDict(
                 ("name", "a name"),
-                ("type", "a type")
+                ("type", "a type"),
+                ("default", "default value")
             )
 
             The default key is optional.
@@ -210,7 +211,7 @@ class ListField(BaseField):
             if self.default is None:
                 return []
         elif self.default_factory not in (dataclasses.MISSING, None):
-            # expeting a callable
+            # expecting a callable
             default = self.default_factory()
             assert isinstance(
                 default, list
@@ -286,13 +287,21 @@ class UnionField(BaseField):
     default_factory: typing.Any = dataclasses.MISSING
 
     def get_avro_type(self):
-        schemas = self.type.__args__
+        elements = self.type.__args__
 
-        unions = [
-            schema_generator.SchemaGenerator(schema).avro_schema_to_python()
-            for schema in schemas
-            if schema is not None
-        ]
+        unions = []
+        for element in elements:
+            if element in PYTHON_PRIMITIVE_TYPES:
+                union_element = PYTHON_TYPE_TO_AVRO[element]
+            elif element in PYTHON_LOGICAL_TYPES:
+                klass = LOGICAL_TYPES_FIELDS_CLASSES[element]
+                union_element = klass.get_avro_type()
+            else:
+                union_element = schema_generator.SchemaGenerator(
+                    element
+                ).avro_schema_to_python()
+
+            unions.append(union_element)
 
         if self.default is None and self.default_factory is dataclasses.MISSING:
             unions.insert(0, NULL)
@@ -307,8 +316,8 @@ class UnionField(BaseField):
             # expeting a callable
             default = self.default_factory()
             assert isinstance(
-                default, dict
-            ), f"Dict is required as default for field {self.name}"
+                default, (dict, list)
+            ), f"Dict or List is required as default for field {self.name}"
 
             return default
 
@@ -334,8 +343,9 @@ class DateField(BaseField):
 
     avro_type: typing.ClassVar = DATE
 
-    def get_avro_type(self):
-        return {"type": INT, "logicalType": self.avro_type}
+    @staticmethod
+    def get_avro_type():
+        return {"type": INT, "logicalType": DATE}
 
     def get_default_value(self):
         if self.default is not dataclasses.MISSING:
@@ -365,8 +375,9 @@ class TimeField(BaseField):
 
     avro_type: typing.ClassVar = TIME_MILLIS
 
-    def get_avro_type(self):
-        return {"type": INT, "logicalType": self.avro_type}
+    @staticmethod
+    def get_avro_type():
+        return {"type": INT, "logicalType": TIME_MILLIS}
 
     def get_default_value(self):
         if self.default is not dataclasses.MISSING:
@@ -403,8 +414,9 @@ class DatetimeField(BaseField):
 
     avro_type: typing.ClassVar = TIMESTAMP_MILLIS
 
-    def get_avro_type(self):
-        return {"type": LONG, "logicalType": self.avro_type}
+    @staticmethod
+    def get_avro_type():
+        return {"type": LONG, "logicalType": TIMESTAMP_MILLIS}
 
     def get_default_value(self):
         if self.default is not dataclasses.MISSING:
@@ -420,8 +432,9 @@ class DatetimeField(BaseField):
 class UUIDField(BaseField):
     avro_type: typing.ClassVar = UUID
 
-    def get_avro_type(self):
-        return {"type": "string", "logicalType": self.avro_type}
+    @staticmethod
+    def get_avro_type():
+        return {"type": "string", "logicalType": UUID}
 
     def get_default_value(self):
         if self.default is not dataclasses.MISSING:
