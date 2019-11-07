@@ -201,6 +201,18 @@ def test_logical_types_schema():
 
 
 def test_schema_with_union_types():
+    class UnionSchema:
+        "Some Unions"
+        first_union: typing.Union[str, int]
+        logical_union: typing.Union[datetime.datetime, datetime.date, uuid.uuid4]
+        second_union: typing.Union[str, int] = dataclasses.field(
+            default_factory=lambda: ["test"]
+        )
+
+    assert parse_schema(SchemaGenerator(UnionSchema).avro_schema_to_python())
+
+
+def test_schema_with_union_record_types():
     class Bus:
         "A Bus"
         engine_name: str

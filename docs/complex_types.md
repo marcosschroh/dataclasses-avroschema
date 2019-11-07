@@ -185,24 +185,10 @@ SchemaGenerator(User).avro_schema()
   "type": "record",
   "name": "User",
   "fields": [
-    {
-      "name": "name",
-      "type": "string"
-    },
-    {
-      "name": "age",
-      "type": "int"
-    },
-    {
-      "name": "has_pets",
-      "type": ["boolean", "null"],
-      "default": false
-    },
-    {
-      "name": "money",
-      "type": ["float", "null"],
-      "default": 100.3
-    }
+    {"name": "name", "type": "string"},
+    {"name": "age", "type": "int"},
+    {"name": "has_pets", "type": ["boolean", "null"], "default": false},
+    {"name": "money", "type": ["float", "null"], "default": 100.3}
   ],
   "doc": "My User Class",
   "namespace": "test.com.ar/user/v1",
@@ -215,9 +201,34 @@ SchemaGenerator(User).avro_schema()
 ```python
 import typing
 import dataclasses
+import datetime
+import uuid
 
 from dataclasses_avroschema.schema_generator import SchemaGenerator
 
+class UnionSchema:
+    "Some Unions"
+    first_union: typing.Union[str, int]
+    logical_union: typing.Union[datetime.datetime, datetime.date, uuid.uuid4]
+    second_union: typing.Union[str, int] = dataclasses.field(
+    default_factory=lambda: ["test"])
+
+SchemaGenerator(UnionSchema).avro_schema()
+
+{
+ "type": "record",
+ "name": "UnionSchema",
+ "fields": [
+  {"name": "first_union", "type": ["string", "int"]},
+  {"name": "logical_union", "type": [
+    {"type": "long", "logicalType": "timestamp-millis"},
+    {"type": "int", "logicalType": "date"},
+    {"type": "string", "logicalType": "uuid"}]},
+  {"name": "second_union", "type": ["string", "int"], "default": ["test"]}],
+ "doc": "Some Unions"
+}
+
+# Union with Records
 
 class Bus:
     "A Bus"
@@ -235,6 +246,8 @@ class Car:
     river_trip: typing.Union[Bus, Car] = None
     mountain_trip: typing.Union[Bus, Car] = dataclasses.field(
         default_factory=lambda: {"engine_name": "honda"})
+
+SchemaGenerator(UnionSchema).avro_schema()
 
 '{
   "type": "record",
