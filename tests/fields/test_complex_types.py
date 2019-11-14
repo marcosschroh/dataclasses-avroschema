@@ -2,6 +2,8 @@ import pytest
 import dataclasses
 import typing
 import datetime
+import uuid
+
 from faker import Faker
 
 from dataclasses_avroschema import fields
@@ -9,12 +11,16 @@ from dataclasses_avroschema import fields
 faker = Faker()
 
 
-PRIMITIVE_TYPES = (
+PRIMITIVE_TYPES_AND_LOGICAL = (
     (str, fields.STRING),
     (int, fields.INT),
     (bool, fields.BOOLEAN),
     (float, fields.FLOAT),
     # (bytes, "bytes"),
+    # (datetime.date, fields.LOGICAL_DATE),
+    # (datetime.time, fields.LOGICAL_TIME),
+    # (datetime.datetime, fields.LOGICAL_DATETIME),
+    (uuid.uuid4, fields.LOGICAL_UUID),
 )
 
 UNION_PRIMITIVE_ELEMENTS = (
@@ -40,13 +46,13 @@ MAPPING_TYPES = (typing.Dict, typing.Mapping, typing.MutableMapping)
 SEQUENCES_AND_TYPES = (
     (sequence, python_type, items_type)
     for sequence in SEQUENCE_TYPES
-    for python_type, items_type in PRIMITIVE_TYPES
+    for python_type, items_type in PRIMITIVE_TYPES_AND_LOGICAL
 )
 
 MAPPING_AND_TYPES = (
     (sequence, python_type, items_type)
     for sequence in MAPPING_TYPES
-    for python_type, items_type in PRIMITIVE_TYPES
+    for python_type, items_type in PRIMITIVE_TYPES_AND_LOGICAL
 )
 
 
@@ -106,6 +112,9 @@ def test_sequence_type(sequence, python_primitive_type, python_type_str):
 
     assert expected == field.to_dict()
 
+    if python_primitive_type is datetime.datetime:
+        python_primitive_type = "date_time"
+
     values = faker.pylist(2, True, python_primitive_type)
     field = fields.Field(
         name, python_type, default=dataclasses.MISSING, default_factory=lambda: values
@@ -147,6 +156,9 @@ def test_mapping_type(mapping, python_primitive_type, python_type_str):
         "default": {},
     }
     assert expected == field.to_dict()
+
+    if python_primitive_type is datetime.datetime:
+        python_primitive_type = "date_time"
 
     value = faker.pydict(2, True, python_primitive_type)
     field = fields.Field(

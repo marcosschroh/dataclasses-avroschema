@@ -26,6 +26,10 @@ DATE = "date"
 TIME_MILLIS = "time-millis"
 TIMESTAMP_MILLIS = "timestamp-millis"
 UUID = "uuid"
+LOGICAL_DATE = {"type": INT, "logicalType": DATE}
+LOGICAL_TIME = {"type": INT, "logicalType": TIME_MILLIS}
+LOGICAL_DATETIME = {"type": LONG, "logicalType": TIMESTAMP_MILLIS}
+LOGICAL_UUID = {"type": STRING, "logicalType": UUID}
 
 
 PYTHON_TYPE_TO_AVRO = {
@@ -52,6 +56,8 @@ PYTHON_PRIMITIVE_CONTAINERS = (list, tuple, dict)
 PYTHON_LOGICAL_TYPES = (datetime.date, datetime.time, datetime.datetime, uuid.uuid4)
 
 PYTHON_PRIMITIVE_TYPES = PYTHON_INMUTABLE_TYPES + PYTHON_PRIMITIVE_CONTAINERS
+
+PRIMITIVE_AND_LOGICAL_TYPES = PYTHON_INMUTABLE_TYPES + PYTHON_LOGICAL_TYPES
 
 PythonPrimitiveTypes = typing.Union[str, int, bool, float, list, tuple, dict]
 
@@ -170,19 +176,26 @@ class BytesField(InmutableField):
 
 
 @dataclasses.dataclass
-class TupleField(BaseField):
-    avro_type: typing.ClassVar = ENUM
+class ContainerField(BaseField):
+
+    def get_avro_type(self) -> PythonPrimitiveTypes:
+        avro_type = self.avro_type
+        avro_type["name"] = self.get_singular_name(self.name)
+
+        return avro_type
+
+
+@dataclasses.dataclass
+class TupleField(ContainerField):
     symbols: typing.Any = None
     default_factory: typing.Any = None
 
     def __post_init__(self):
         self.generate_symbols()
 
-    def get_avro_type(self) -> PythonPrimitiveTypes:
-        avro_type = {"type": ENUM, "symbols": self.symbols}
-
-        avro_type["name"] = self.get_singular_name(self.name)
-        return avro_type
+    @property
+    def avro_type(self) -> typing.Dict:
+        return {"type": ENUM, "symbols": self.symbols}
 
     def get_default_value(self):
         return
@@ -192,19 +205,16 @@ class TupleField(BaseField):
 
 
 @dataclasses.dataclass
-class ListField(BaseField):
-    avro_type: typing.ClassVar = ARRAY
+class ListField(ContainerField):
     items_type: typing.Any = None
     default_factory: typing.Any = None
 
     def __post_init__(self):
         self.generate_items_type()
 
-    def get_avro_type(self) -> PythonPrimitiveTypes:
-        avro_type = {"type": ARRAY, "items": self.items_type}
-
-        avro_type["name"] = self.get_singular_name(self.name)
-        return avro_type
+    @property
+    def avro_type(self) -> typing.Dict:
+        return {"type": ARRAY, "items": self.items_type}
 
     def get_default_value(self):
         if self.default is not dataclasses.MISSING:
@@ -223,8 +233,9 @@ class ListField(BaseField):
         # because avro can have only one type, we take the first one
         items_type = self.type.__args__[0]
 
-        if items_type in PYTHON_PRIMITIVE_TYPES:
-            self.items_type = PYTHON_TYPE_TO_AVRO[items_type]
+        if items_type in PRIMITIVE_AND_LOGICAL_TYPES:
+            klass = PRIMITIVE_LOGICAL_TYPES_FIELDS_CLASSES[items_type]
+            self.items_type = klass.avro_type
         elif self.is_self_referenced(items_type):
             # Checking for a self reference. Maybe is a typing.ForwardRef
             self.items_type = self._get_self_reference_type(items_type)
@@ -236,20 +247,16 @@ class ListField(BaseField):
 
 
 @dataclasses.dataclass
-class DictField(BaseField):
-    avro_type: typing.ClassVar = MAP
+class DictField(ContainerField):
     default_factory: typing.Any = None
     values_type: typing.Any = None
 
     def __post_init__(self):
         self.generate_values_type()
 
-    def get_avro_type(self) -> PythonPrimitiveTypes:
-        avro_type = {"type": MAP, "values": self.values_type}
-
-        avro_type["name"] = self.get_singular_name(self.name)
-
-        return avro_type
+    @property
+    def avro_type(self) -> typing.Dict:
+        return {"type": MAP, "values": self.values_type}
 
     def get_default_value(self):
         if self.default is not dataclasses.MISSING:
@@ -271,8 +278,9 @@ class DictField(BaseField):
         """
         values_type = self.type.__args__[1]
 
-        if values_type in PYTHON_PRIMITIVE_TYPES:
-            self.values_type = PYTHON_TYPE_TO_AVRO[values_type]
+        if values_type in PRIMITIVE_AND_LOGICAL_TYPES:
+            klass = PRIMITIVE_LOGICAL_TYPES_FIELDS_CLASSES[values_type]
+            self.values_type = klass.avro_type
         elif self.is_self_referenced(values_type):
             # Checking for a self reference. Maybe is a typing.ForwardRef
             self.values_type = self._get_self_reference_type(values_type)
@@ -291,11 +299,9 @@ class UnionField(BaseField):
 
         unions = []
         for element in elements:
-            if element in PYTHON_PRIMITIVE_TYPES:
-                union_element = PYTHON_TYPE_TO_AVRO[element]
-            elif element in PYTHON_LOGICAL_TYPES:
-                klass = LOGICAL_TYPES_FIELDS_CLASSES[element]
-                union_element = klass.get_avro_type()
+            if element in PRIMITIVE_AND_LOGICAL_TYPES:
+                klass = PRIMITIVE_LOGICAL_TYPES_FIELDS_CLASSES[element]
+                union_element = klass.avro_type
             else:
                 union_element = schema_generator.SchemaGenerator(
                     element
@@ -331,8 +337,14 @@ class SelfReferenceField(BaseField):
         return
 
 
+class LogicalTypeField(BaseField):
+
+    def get_avro_type(self):
+        return self.avro_type
+
+
 @dataclasses.dataclass
-class DateField(BaseField):
+class DateField(LogicalTypeField):
     """
     The date logical type represents a date within the calendar,
     with no reference to a particular time zone or time of day.
@@ -340,12 +352,7 @@ class DateField(BaseField):
     A date logical type annotates an Avro int, where the int stores
     the number of days from the unix epoch, 1 January 1970 (ISO calendar).
     """
-
-    avro_type: typing.ClassVar = DATE
-
-    @staticmethod
-    def get_avro_type():
-        return {"type": INT, "logicalType": DATE}
+    avro_type: typing.ClassVar = {"type": INT, "logicalType": DATE}
 
     def get_default_value(self):
         if self.default is not dataclasses.MISSING:
@@ -354,16 +361,20 @@ class DateField(BaseField):
 
             if self.validate_default():
                 # Convert to datetime and get the amount of days
-                date_time = datetime.datetime.combine(
-                    self.default, datetime.datetime.min.time()
-                )
-                ts = (date_time - datetime.datetime(1970, 1, 1)).total_seconds()
+                return self.days_from_unix_epoch(self.default)
 
-                return int(ts / (3600 * 24))
+    @staticmethod
+    def days_from_unix_epoch(date):
+        date_time = datetime.datetime.combine(
+            date, datetime.datetime.min.time()
+        )
+        ts = (date_time - datetime.datetime(1970, 1, 1)).total_seconds()
+
+        return int(ts / (3600 * 24))
 
 
 @dataclasses.dataclass
-class TimeField(BaseField):
+class TimeField(LogicalTypeField):
     """
     The time-millis logical type represents a time of day,
     with no reference to a particular calendar,
@@ -372,12 +383,7 @@ class TimeField(BaseField):
     A time-millis logical type annotates an Avro int,
     where the int stores the number of milliseconds after midnight, 00:00:00.000.
     """
-
-    avro_type: typing.ClassVar = TIME_MILLIS
-
-    @staticmethod
-    def get_avro_type():
-        return {"type": INT, "logicalType": TIME_MILLIS}
+    avro_type: typing.ClassVar = {"type": INT, "logicalType": TIME_MILLIS}
 
     def get_default_value(self):
         if self.default is not dataclasses.MISSING:
@@ -402,7 +408,7 @@ class TimeField(BaseField):
 
 
 @dataclasses.dataclass
-class DatetimeField(BaseField):
+class DatetimeField(LogicalTypeField):
     """
     The timestamp-millis logical type represents an instant on the global timeline,
     independent of a particular time zone or calendar, with a precision of one millisecond.
@@ -411,12 +417,7 @@ class DatetimeField(BaseField):
     where the long stores the number of milliseconds from the unix epoch,
     1 January 1970 00:00:00.000 UTC.
     """
-
-    avro_type: typing.ClassVar = TIMESTAMP_MILLIS
-
-    @staticmethod
-    def get_avro_type():
-        return {"type": LONG, "logicalType": TIMESTAMP_MILLIS}
+    avro_type: typing.ClassVar = {"type": LONG, "logicalType": TIMESTAMP_MILLIS}
 
     def get_default_value(self):
         if self.default is not dataclasses.MISSING:
@@ -424,17 +425,16 @@ class DatetimeField(BaseField):
                 return NULL
 
             if self.validate_default():
-                ts = (self.default - datetime.datetime(1970, 1, 1)).total_seconds()
-                return ts * 1000
-
-
-@dataclasses.dataclass
-class UUIDField(BaseField):
-    avro_type: typing.ClassVar = UUID
+                return self.milliseconds_from_unix_epoch(self.default)
 
     @staticmethod
-    def get_avro_type():
-        return {"type": "string", "logicalType": UUID}
+    def milliseconds_from_unix_epoch(date_time):
+        ts = (date_time - datetime.datetime(1970, 1, 1)).total_seconds()
+        return ts * 1000
+
+@dataclasses.dataclass
+class UUIDField(LogicalTypeField):
+    avro_type: typing.ClassVar = {"type": STRING, "logicalType": UUID}
 
     def get_default_value(self):
         if self.default is not dataclasses.MISSING:
@@ -481,6 +481,11 @@ LOGICAL_TYPES_FIELDS_CLASSES = {
     datetime.time: TimeField,
     datetime.datetime: DatetimeField,
     uuid.uuid4: UUIDField,
+}
+
+PRIMITIVE_LOGICAL_TYPES_FIELDS_CLASSES = {
+    **INMUTABLE_FIELDS_CLASSES,
+    **LOGICAL_TYPES_FIELDS_CLASSES
 }
 
 
