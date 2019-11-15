@@ -3,31 +3,7 @@ import dataclasses
 
 from dataclasses_avroschema import fields
 
-
-PRIMITIVE_TYPES_AND_DEFAULTS = (
-    (str, "test"),
-    (int, 1),
-    (bool, True),
-    (float, 10.4),
-    # (bytes, "test".encode()),
-)
-
-PRIMITIVE_TYPES_AND_INVALID_DEFAULTS = (
-    (str, 1),
-    (int, "test"),
-    (bool, 10),
-    (float, False),
-    # (bytes, "test".encode()),
-)
-
-
-LIST_TYPE_AND_ITEMS_TYPE = (
-    (str, "string"),
-    (int, "int"),
-    (bool, "boolean"),
-    (float, "float"),
-    (bytes, "bytes"),
-)
+from . import consts
 
 
 @pytest.mark.parametrize("primitive_type", fields.PYTHON_INMUTABLE_TYPES)
@@ -48,7 +24,7 @@ def test_primitive_types_with_default_value_none(primitive_type):
     assert {"name": name, "type": avro_type, "default": fields.NULL} == field.to_dict()
 
 
-@pytest.mark.parametrize("primitive_type,default", PRIMITIVE_TYPES_AND_DEFAULTS)
+@pytest.mark.parametrize("primitive_type,default", consts.PRIMITIVE_TYPES_AND_DEFAULTS)
 def test_primitive_types_with_default_value(primitive_type, default):
     name = "a_field"
     field = fields.Field(name, primitive_type, default)
@@ -58,7 +34,7 @@ def test_primitive_types_with_default_value(primitive_type, default):
 
 
 @pytest.mark.parametrize(
-    "primitive_type,invalid_default", PRIMITIVE_TYPES_AND_INVALID_DEFAULTS
+    "primitive_type,invalid_default", consts.PRIMITIVE_TYPES_AND_INVALID_DEFAULTS
 )
 def test_invalid_default_values(primitive_type, invalid_default):
     name = "a_field"

@@ -62,17 +62,6 @@ PRIMITIVE_AND_LOGICAL_TYPES = PYTHON_INMUTABLE_TYPES + PYTHON_LOGICAL_TYPES
 PythonPrimitiveTypes = typing.Union[str, int, bool, float, list, tuple, dict]
 
 
-# def converter(obj):
-#     if isinstance(obj, datetime.datetime) and hasattr(obj, "time"):
-#         return DatetimeField.milliseconds_from_unix_epoch(obj)
-#     elif isinstance(obj, datetime.date):
-#         return DateField.days_from_unix_epoch(obj)
-#     elif isinstance(obj, datetime.time):
-#         return TimeField.time_to_miliseconds(obj)
-#     elif isinstance(obj, uuid.UUID):
-#         return str(obj)
-
-
 @dataclasses.dataclass
 class BaseField:
     name: str
@@ -188,7 +177,6 @@ class BytesField(InmutableField):
 
 @dataclasses.dataclass
 class ContainerField(BaseField):
-
     def get_avro_type(self) -> PythonPrimitiveTypes:
         avro_type = self.avro_type
         avro_type["name"] = self.get_singular_name(self.name)
@@ -243,7 +231,8 @@ class ListField(ContainerField):
             return [
                 LOGICAL_TYPES_FIELDS_CLASSES[type(item)].to_logical_type(item)
                 if type(item) in logical_classes
-                else item for item in default
+                else item
+                for item in default
             ]
 
     def generate_items_type(self):
@@ -286,7 +275,14 @@ class DictField(ContainerField):
                 default, dict
             ), f"Dict is required as default for field {self.name}"
 
-            return default
+            logical_classes = LOGICAL_TYPES_FIELDS_CLASSES.keys()
+
+            return {
+                key: LOGICAL_TYPES_FIELDS_CLASSES[type(value)].to_logical_type(value)
+                if type(value) in logical_classes
+                else value
+                for key, value in default.items()
+            }
 
     def generate_values_type(self):
         """
@@ -355,7 +351,6 @@ class SelfReferenceField(BaseField):
 
 
 class LogicalTypeField(BaseField):
-
     def get_avro_type(self):
         return self.avro_type
 
@@ -369,6 +364,7 @@ class DateField(LogicalTypeField):
     A date logical type annotates an Avro int, where the int stores
     the number of days from the unix epoch, 1 January 1970 (ISO calendar).
     """
+
     avro_type: typing.ClassVar = {"type": INT, "logicalType": DATE}
 
     def get_default_value(self):
@@ -393,9 +389,7 @@ class DateField(LogicalTypeField):
         Returns:
             int
         """
-        date_time = datetime.datetime.combine(
-            date, datetime.datetime.min.time()
-        )
+        date_time = datetime.datetime.combine(date, datetime.datetime.min.time())
         ts = (date_time - datetime.datetime(1970, 1, 1)).total_seconds()
 
         return int(ts / (3600 * 24))
@@ -411,6 +405,7 @@ class TimeField(LogicalTypeField):
     A time-millis logical type annotates an Avro int,
     where the int stores the number of milliseconds after midnight, 00:00:00.000.
     """
+
     avro_type: typing.ClassVar = {"type": INT, "logicalType": TIME_MILLIS}
 
     def get_default_value(self):
@@ -455,6 +450,7 @@ class DatetimeField(LogicalTypeField):
     where the long stores the number of milliseconds from the unix epoch,
     1 January 1970 00:00:00.000 UTC.
     """
+
     avro_type: typing.ClassVar = {"type": LONG, "logicalType": TIMESTAMP_MILLIS}
 
     def get_default_value(self):
@@ -539,7 +535,7 @@ LOGICAL_TYPES_FIELDS_CLASSES = {
 
 PRIMITIVE_LOGICAL_TYPES_FIELDS_CLASSES = {
     **INMUTABLE_FIELDS_CLASSES,
-    **LOGICAL_TYPES_FIELDS_CLASSES
+    **LOGICAL_TYPES_FIELDS_CLASSES,
 }
 
 

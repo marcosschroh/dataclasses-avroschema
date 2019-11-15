@@ -4,28 +4,11 @@ import uuid
 
 from dataclasses_avroschema import fields
 
-
-now = datetime.datetime.now()
-
-# Represent the logical types
-# (python_type, avro_internal_type, logical_type)
-LOGICAL_TYPES_AND_DEFAULTS = (
-    (datetime.date, fields.INT, fields.DATE),
-    (datetime.time, fields.INT, fields.TIME_MILLIS),
-    (datetime.datetime, fields.LONG, fields.TIMESTAMP_MILLIS),
-    (uuid.uuid4, fields.STRING, fields.UUID),
-)
-
-LOGICAL_TYPES_AND_INVALID_DEFAULTS = (
-    (datetime.date, 1, None),
-    (datetime.time, "test", None),
-    (datetime.datetime, 10, None),
-    (uuid.uuid4, 10, f"Invalid default type. Default should be {str} or {uuid.UUID}"),
-)
+from . import consts
 
 
 @pytest.mark.parametrize(
-    "python_type,avro_type,logical_type", LOGICAL_TYPES_AND_DEFAULTS
+    "python_type,avro_type,logical_type", consts.LOGICAL_TYPES_AND_DEFAULTS
 )
 def test_logical_types(python_type, avro_type, logical_type):
     name = "a logical type"
@@ -38,7 +21,7 @@ def test_logical_types(python_type, avro_type, logical_type):
 
 
 @pytest.mark.parametrize(
-    "python_type,avro_type,logical_type", LOGICAL_TYPES_AND_DEFAULTS
+    "python_type,avro_type,logical_type", consts.LOGICAL_TYPES_AND_DEFAULTS
 )
 def test_logical_types_with_null_as_default(python_type, avro_type, logical_type):
     name = "a logical type"
@@ -57,9 +40,9 @@ def test_logical_types_with_null_as_default(python_type, avro_type, logical_type
 def test_logical_type_date_with_default():
     name = "a date"
     python_type = datetime.date
-    field = fields.Field(name, python_type, now.date())
+    field = fields.Field(name, python_type, consts.now.date())
 
-    date_time = datetime.datetime.combine(now, datetime.datetime.min.time())
+    date_time = datetime.datetime.combine(consts.now, datetime.datetime.min.time())
     ts = (date_time - datetime.datetime(1970, 1, 1)).total_seconds()
 
     expected = {
@@ -74,7 +57,7 @@ def test_logical_type_date_with_default():
 def test_logical_type_time_with_default():
     name = "a time"
     python_type = datetime.time
-    time = now.time()
+    time = consts.now.time()
     field = fields.Field(name, python_type, time)
 
     hour, minutes, seconds, microseconds = (
@@ -99,9 +82,9 @@ def test_logical_type_time_with_default():
 def test_logical_type_datetime_with_default():
     name = "a datetime"
     python_type = datetime.datetime
-    field = fields.Field(name, python_type, now)
+    field = fields.Field(name, python_type, consts.now)
 
-    ts = (now - datetime.datetime(1970, 1, 1)).total_seconds()
+    ts = (consts.now - datetime.datetime(1970, 1, 1)).total_seconds()
 
     expected = {
         "name": name,
@@ -128,7 +111,7 @@ def test_logical_type_uuid_with_default():
 
 
 @pytest.mark.parametrize(
-    "logical_type,invalid_default,msg", LOGICAL_TYPES_AND_INVALID_DEFAULTS
+    "logical_type,invalid_default,msg", consts.LOGICAL_TYPES_AND_INVALID_DEFAULTS
 )
 def test_invalid_default_values(logical_type, invalid_default, msg):
     name = "a_field"
