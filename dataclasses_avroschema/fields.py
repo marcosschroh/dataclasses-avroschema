@@ -62,6 +62,17 @@ PRIMITIVE_AND_LOGICAL_TYPES = PYTHON_INMUTABLE_TYPES + PYTHON_LOGICAL_TYPES
 PythonPrimitiveTypes = typing.Union[str, int, bool, float, list, tuple, dict]
 
 
+# def converter(obj):
+#     if isinstance(obj, datetime.datetime) and hasattr(obj, "time"):
+#         return DatetimeField.milliseconds_from_unix_epoch(obj)
+#     elif isinstance(obj, datetime.date):
+#         return DateField.days_from_unix_epoch(obj)
+#     elif isinstance(obj, datetime.time):
+#         return TimeField.time_to_miliseconds(obj)
+#     elif isinstance(obj, uuid.UUID):
+#         return str(obj)
+
+
 @dataclasses.dataclass
 class BaseField:
     name: str
@@ -133,7 +144,7 @@ class BaseField:
         return True
 
     def to_json(self) -> str:
-        return json.dumps(self.render())
+        return json.dumps(self.render(), indent=2)
 
     def to_dict(self) -> dict:
         return json.loads(self.to_json())
@@ -227,7 +238,13 @@ class ListField(ContainerField):
                 default, list
             ), f"List is required as default for field {self.name}"
 
-            return default
+            logical_classes = LOGICAL_TYPES_FIELDS_CLASSES.keys()
+
+            return [
+                LOGICAL_TYPES_FIELDS_CLASSES[type(item)].to_logical_type(item)
+                if type(item) in logical_classes
+                else item for item in default
+            ]
 
     def generate_items_type(self):
         # because avro can have only one type, we take the first one
@@ -361,10 +378,21 @@ class DateField(LogicalTypeField):
 
             if self.validate_default():
                 # Convert to datetime and get the amount of days
-                return self.days_from_unix_epoch(self.default)
+                return self.to_logical_type(self.default)
 
     @staticmethod
-    def days_from_unix_epoch(date):
+    def to_logical_type(date):
+        """
+        Convert to datetime and get the amount of days
+        from the unix epoch, 1 January 1970 (ISO calendar)
+        for a given date
+
+        Arguments:
+            date (datetime.date)
+
+        Returns:
+            int
+        """
         date_time = datetime.datetime.combine(
             date, datetime.datetime.min.time()
         )
@@ -391,10 +419,20 @@ class TimeField(LogicalTypeField):
                 return NULL
 
             if self.validate_default():
-                return self.time_to_miliseconds(self.default)
+                return self.to_logical_type(self.default)
 
     @staticmethod
-    def time_to_miliseconds(time):
+    def to_logical_type(time):
+        """
+        Returns the number of milliseconds after midnight, 00:00:00.000
+        for a given time object
+
+        Arguments:
+            time (datetime.time)
+
+        Returns:
+            int
+        """
         hour, minutes, seconds, microseconds = (
             time.hour,
             time.minute,
@@ -425,12 +463,23 @@ class DatetimeField(LogicalTypeField):
                 return NULL
 
             if self.validate_default():
-                return self.milliseconds_from_unix_epoch(self.default)
+                return self.to_logical_type(self.default)
 
     @staticmethod
-    def milliseconds_from_unix_epoch(date_time):
+    def to_logical_type(date_time):
+        """
+        Returns the number of milliseconds from the unix epoch,
+        1 January 1970 00:00:00.000 UTC for a given datetime
+
+        Arguments:
+            date_time (datetime.datetime)
+
+        Returns:
+            float
+        """
         ts = (date_time - datetime.datetime(1970, 1, 1)).total_seconds()
         return ts * 1000
+
 
 @dataclasses.dataclass
 class UUIDField(LogicalTypeField):
@@ -442,13 +491,17 @@ class UUIDField(LogicalTypeField):
                 return NULL
 
             if self.validate_default():
-                return str(self.default)
+                return self.to_logical_type(self.default)
 
     def validate_default(self):
         msg = f"Invalid default type. Default should be {str} or {uuid.UUID}"
         assert isinstance(self.default, (str, uuid.UUID)), msg
 
         return True
+
+    @staticmethod
+    def to_logical_type(uuid4):
+        return str(uuid4)
 
 
 @dataclasses.dataclass
@@ -481,6 +534,7 @@ LOGICAL_TYPES_FIELDS_CLASSES = {
     datetime.time: TimeField,
     datetime.datetime: DatetimeField,
     uuid.uuid4: UUIDField,
+    uuid.UUID: UUIDField,
 }
 
 PRIMITIVE_LOGICAL_TYPES_FIELDS_CLASSES = {

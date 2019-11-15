@@ -10,21 +10,28 @@ from dataclasses_avroschema import fields
 
 faker = Faker()
 
+now = datetime.datetime.now()
 
-PRIMITIVE_TYPES_AND_LOGICAL = (
+
+PRIMITIVE_TYPES = (
     (str, fields.STRING),
     (int, fields.INT),
     (bool, fields.BOOLEAN),
     (float, fields.FLOAT),
     # (bytes, "bytes"),
-    # (datetime.date, fields.LOGICAL_DATE),
-    # (datetime.time, fields.LOGICAL_TIME),
-    # (datetime.datetime, fields.LOGICAL_DATETIME),
-    (uuid.uuid4, fields.LOGICAL_UUID),
+)
+
+LOGICAL_TYPES = (
+    (datetime.date, fields.LOGICAL_DATE, now.date()),
+    (datetime.time, fields.LOGICAL_TIME, now.time()),
+    (datetime.datetime, fields.LOGICAL_DATETIME, now),
+    (uuid.uuid4, fields.LOGICAL_UUID, uuid.uuid4()),
 )
 
 UNION_PRIMITIVE_ELEMENTS = (
-    ((str, int), (fields.STRING, fields.INT)),
+    (
+        (str, int), (fields.STRING, fields.INT)
+    ),
     (
         (datetime.date, datetime.datetime),
         (
@@ -32,7 +39,10 @@ UNION_PRIMITIVE_ELEMENTS = (
             fields.PYTHON_TYPE_TO_AVRO[datetime.datetime],
         ),
     ),
-    ((float, str, int), (fields.FLOAT, fields.STRING, fields.INT)),
+    (
+        (float, str, int),
+        (fields.FLOAT, fields.STRING, fields.INT)
+    ),
     (
         (str, float, int, bool),
         (fields.STRING, fields.FLOAT, fields.INT, fields.BOOLEAN),
@@ -46,13 +56,19 @@ MAPPING_TYPES = (typing.Dict, typing.Mapping, typing.MutableMapping)
 SEQUENCES_AND_TYPES = (
     (sequence, python_type, items_type)
     for sequence in SEQUENCE_TYPES
-    for python_type, items_type in PRIMITIVE_TYPES_AND_LOGICAL
+    for python_type, items_type in PRIMITIVE_TYPES
+)
+
+SEQUENCES_LOGICAL_TYPES = (
+    (sequence, python_type, items_type, value)
+    for sequence in SEQUENCE_TYPES
+    for python_type, items_type, value in LOGICAL_TYPES
 )
 
 MAPPING_AND_TYPES = (
     (sequence, python_type, items_type)
     for sequence in MAPPING_TYPES
-    for python_type, items_type in PRIMITIVE_TYPES_AND_LOGICAL
+    for python_type, items_type in PRIMITIVE_TYPES
 )
 
 
@@ -102,7 +118,6 @@ def test_sequence_type(sequence, python_primitive_type, python_type_str):
 
     assert expected == field.to_dict()
 
-    python_type = sequence[python_primitive_type]
     field = fields.Field(name, python_type, None)
     expected = {
         "name": name,
@@ -111,9 +126,6 @@ def test_sequence_type(sequence, python_primitive_type, python_type_str):
     }
 
     assert expected == field.to_dict()
-
-    if python_primitive_type is datetime.datetime:
-        python_primitive_type = "date_time"
 
     values = faker.pylist(2, True, python_primitive_type)
     field = fields.Field(
@@ -130,6 +142,52 @@ def test_sequence_type(sequence, python_primitive_type, python_type_str):
 
 
 @pytest.mark.parametrize(
+    "sequence,python_primitive_type,python_type_str,value", SEQUENCES_LOGICAL_TYPES
+)
+def test_sequence_with_logical_type(sequence, python_primitive_type, python_type_str, value):
+    """
+    When the type is List, the Avro field type should be array
+    with the items attribute present.
+    """
+    name = "an_array_field"
+    python_type = sequence[python_primitive_type]
+
+    field = fields.Field(name, python_type, dataclasses.MISSING)
+    expected = {
+        "name": name,
+        "type": {"type": "array", "name": name, "items": python_type_str},
+    }
+
+    assert expected == field.to_dict()
+
+    field = fields.Field(name, python_type, None)
+    expected = {
+        "name": name,
+        "type": {"type": "array", "name": name, "items": python_type_str},
+        "default": [],
+    }
+
+    assert expected == field.to_dict()
+
+    values = [value]
+
+    field = fields.Field(
+        name, python_type, default=dataclasses.MISSING, default_factory=lambda: values
+    )
+
+    expected = {
+        "name": name,
+        "type": {"type": "array", "name": name, "items": python_type_str},
+        "default": [
+            fields.LOGICAL_TYPES_FIELDS_CLASSES[python_primitive_type].to_logical_type(value)
+            for value in values
+        ],
+    }
+
+    assert expected == field.to_dict()
+
+
+@pytest.mark.parametrize(
     "mapping,python_primitive_type,python_type_str", MAPPING_AND_TYPES
 )
 def test_mapping_type(mapping, python_primitive_type, python_type_str):
@@ -139,8 +197,8 @@ def test_mapping_type(mapping, python_primitive_type, python_type_str):
     """
     name = "a_map_field"
     python_type = mapping[str, python_primitive_type]
-    field = fields.Field(name, python_type, dataclasses.MISSING)
 
+    field = fields.Field(name, python_type, dataclasses.MISSING)
     expected = {
         "name": name,
         "type": {"type": "map", "name": name, "values": python_type_str},
@@ -149,16 +207,13 @@ def test_mapping_type(mapping, python_primitive_type, python_type_str):
     assert expected == field.to_dict()
 
     field = fields.Field(name, python_type, None)
-
     expected = {
         "name": name,
         "type": {"type": "map", "name": name, "values": python_type_str},
         "default": {},
     }
-    assert expected == field.to_dict()
 
-    if python_primitive_type is datetime.datetime:
-        python_primitive_type = "date_time"
+    assert expected == field.to_dict()
 
     value = faker.pydict(2, True, python_primitive_type)
     field = fields.Field(

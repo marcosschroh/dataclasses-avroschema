@@ -57,7 +57,7 @@ def test_logical_types_with_null_as_default(python_type, avro_type, logical_type
 def test_logical_type_date_with_default():
     name = "a date"
     python_type = datetime.date
-    field = fields.Field(name, python_type, now)
+    field = fields.Field(name, python_type, now.date())
 
     date_time = datetime.datetime.combine(now, datetime.datetime.min.time())
     ts = (date_time - datetime.datetime(1970, 1, 1)).total_seconds()
