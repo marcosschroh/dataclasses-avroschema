@@ -104,3 +104,25 @@ LOGICAL_TYPES_AND_INVALID_DEFAULTS = (
     (datetime.datetime, 10, None),
     (uuid.uuid4, 10, f"Invalid default type. Default should be {str} or {uuid.UUID}"),
 )
+
+
+class User:
+    "User"
+    first_name: str
+
+
+avro_user = {
+    "name": "User",
+    "type": "record",
+    "doc": "User",
+    "fields": [{"name": "first_name", "type": "string"}],
+}
+
+ARRAY_WITH_UNION_TYPES = (
+    (typing.Union[int, str], [fields.INT, fields.STRING], [10, 20, "test"]),
+    (
+        typing.Union[int, str, User],
+        [fields.INT, fields.STRING, avro_user],
+        [10, 20, "test"],
+    ),
+)
