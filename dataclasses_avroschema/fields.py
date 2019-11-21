@@ -8,7 +8,7 @@ import collections
 
 from collections import OrderedDict
 
-from dataclasses_avroschema import schema_generator
+from dataclasses_avroschema import schema_generator, utils
 
 p = inflect.engine()
 
@@ -73,14 +73,6 @@ class BaseField:
         internal_type = a_type.__args__[0]
 
         return internal_type.__forward_arg__
-
-    @staticmethod
-    def is_self_referenced(a_type):
-        return (
-            isinstance(a_type, typing._GenericAlias)
-            and a_type.__args__
-            and isinstance(a_type.__args__[0], typing.ForwardRef)
-        )
 
     @staticmethod
     def get_singular_name(name):
@@ -242,9 +234,15 @@ class ListField(ContainerField):
         if items_type in PRIMITIVE_AND_LOGICAL_TYPES:
             klass = PRIMITIVE_LOGICAL_TYPES_FIELDS_CLASSES[items_type]
             self.items_type = klass.avro_type
-        elif self.is_self_referenced(items_type):
+        elif utils.is_self_referenced(items_type):
             # Checking for a self reference. Maybe is a typing.ForwardRef
             self.items_type = self._get_self_reference_type(items_type)
+        elif utils.is_union(items_type):
+            self.items_type = UnionField.generate_union(
+                items_type.__args__,
+                default=self.default,
+                default_factory=self.default_factory,
+            )
         else:
             # Is Avro Record Type
             self.items_type = schema_generator.SchemaGenerator(
@@ -294,7 +292,7 @@ class DictField(ContainerField):
         if values_type in PRIMITIVE_AND_LOGICAL_TYPES:
             klass = PRIMITIVE_LOGICAL_TYPES_FIELDS_CLASSES[values_type]
             self.values_type = klass.avro_type
-        elif self.is_self_referenced(values_type):
+        elif utils.is_self_referenced(values_type):
             # Checking for a self reference. Maybe is a typing.ForwardRef
             self.values_type = self._get_self_reference_type(values_type)
         else:
@@ -310,6 +308,28 @@ class UnionField(BaseField):
     def get_avro_type(self):
         elements = self.type.__args__
 
+        return self.generate_union(
+            elements, default=self.default, default_factory=self.default_factory
+        )
+
+    @staticmethod
+    def generate_union(
+        elements: typing.List,
+        default: typing.Any = None,
+        default_factory: typing.Callable = dataclasses.MISSING,
+    ):
+        """
+        Generate union.
+
+        Arguments:
+            elements (typing.List): List of python types
+            default (typing.Any): Default value
+            default factory (typing.Calleable): Callable to get the default value for
+                a list or dict type
+
+        Returns:
+            typing.List: List of avro types
+        """
         unions = []
         for element in elements:
             if element in PRIMITIVE_AND_LOGICAL_TYPES:
@@ -322,7 +342,7 @@ class UnionField(BaseField):
 
             unions.append(union_element)
 
-        if self.default is None and self.default_factory is dataclasses.MISSING:
+        if default is None and default_factory is dataclasses.MISSING:
             unions.insert(0, NULL)
 
         return unions
@@ -549,7 +569,7 @@ def field_factory(
     if native_type in PYTHON_INMUTABLE_TYPES:
         klass = INMUTABLE_FIELDS_CLASSES[native_type]
         return klass(name=name, type=native_type, default=default)
-    elif BaseField.is_self_referenced(native_type):
+    elif utils.is_self_referenced(native_type):
         return SelfReferenceField(name=name, type=native_type, default=default)
     elif isinstance(native_type, typing._GenericAlias):
         origin = native_type.__origin__

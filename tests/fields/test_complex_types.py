@@ -131,6 +131,36 @@ def test_sequence_with_logical_type(
     assert expected == field.to_dict()
 
 
+@pytest.mark.parametrize("union,items,default", consts.ARRAY_WITH_UNION_TYPES)
+def test_sequence_with_union_type(union, items, default):
+    name = "an_array_field"
+    python_type = typing.List[union]
+
+    field = fields.Field(name, python_type, default=dataclasses.MISSING)
+    expected = {"name": name, "type": {"type": "array", "name": name, "items": items}}
+
+    assert expected == field.to_dict()
+
+    field = fields.Field(name, python_type, default_factory=lambda: default)
+    expected = {
+        "name": name,
+        "type": {"type": "array", "name": name, "items": items},
+        "default": default,
+    }
+
+    assert expected == field.to_dict()
+
+    field = fields.Field(name, python_type, default=None)
+    items.insert(0, fields.NULL)
+    expected = {
+        "name": name,
+        "type": {"type": "array", "name": name, "items": items},
+        "default": [],
+    }
+
+    assert expected == field.to_dict()
+
+
 @pytest.mark.parametrize(
     "mapping,python_primitive_type,python_type_str", consts.MAPPING_AND_TYPES
 )

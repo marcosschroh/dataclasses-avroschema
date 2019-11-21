@@ -1,4 +1,3 @@
-
 #!/bin/sh
 
 ./scripts/clean.sh

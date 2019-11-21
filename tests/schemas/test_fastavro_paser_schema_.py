@@ -228,3 +228,14 @@ def test_schema_with_union_record_types():
         )
 
     assert parse_schema(SchemaGenerator(UnionSchema).avro_schema_to_python())
+
+
+def test_schema_array_with_union_types():
+    class ArrayUnionSchema:
+        "Array Some Unions"
+        first_union: typing.List[typing.Union[str, int]]
+        second_union: typing.List[typing.Union[str, int]] = dataclasses.field(
+            default_factory=lambda: ["test"]
+        )
+
+    assert parse_schema(SchemaGenerator(ArrayUnionSchema).avro_schema_to_python())
