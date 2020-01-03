@@ -34,7 +34,7 @@ LOGICAL_UUID = {"type": STRING, "logicalType": UUID}
 
 PYTHON_TYPE_TO_AVRO = {
     bool: BOOLEAN,
-    None: NULL,
+    type(None): NULL,
     int: INT,
     float: FLOAT,
     bytes: BYTES,
@@ -49,7 +49,7 @@ PYTHON_TYPE_TO_AVRO = {
 }
 
 # excluding tuple because is a container
-PYTHON_INMUTABLE_TYPES = (str, int, bool, float, bytes)
+PYTHON_INMUTABLE_TYPES = (str, int, bool, float, bytes, type(None))
 
 PYTHON_PRIMITIVE_CONTAINERS = (list, tuple, dict)
 
@@ -165,6 +165,11 @@ class FloatField(InmutableField):
 @dataclasses.dataclass
 class BytesField(InmutableField):
     avro_type: typing.ClassVar = BYTES
+
+
+@dataclasses.dataclass
+class NoneField(InmutableField):
+    avro_type: typing.ClassVar = NULL
 
 
 @dataclasses.dataclass
@@ -532,6 +537,7 @@ INMUTABLE_FIELDS_CLASSES = {
     float: FloatField,
     bytes: BytesField,
     str: StringField,
+    type(None): NoneField,
 }
 
 CONTAINER_FIELDS_CLASSES = {

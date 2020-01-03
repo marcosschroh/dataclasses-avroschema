@@ -47,6 +47,7 @@ LOGICAL_TYPES = (
 
 UNION_PRIMITIVE_ELEMENTS = (
     ((str, int), (fields.STRING, fields.INT)),
+    ((str, None), (fields.STRING, fields.NULL)),
     (
         (datetime.date, datetime.datetime),
         (
