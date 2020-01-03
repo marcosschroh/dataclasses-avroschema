@@ -18,7 +18,7 @@ python 3.7+
 pip install dataclasses-avroschema
 ```
 
-## Doocumentaion
+## Documentation
 
 https://marcosschroh.github.io/dataclasses-avroschema/
 
