@@ -205,6 +205,8 @@ def test_schema_with_union_types():
         "Some Unions"
         first_union: typing.Union[str, int]
         logical_union: typing.Union[datetime.datetime, datetime.date, uuid.uuid4]
+        optional_union: typing.Optional[str]
+        optional_union_with_default: typing.Optional[str] = None
         second_union: typing.Union[str, int] = dataclasses.field(
             default_factory=lambda: ["test"]
         )
