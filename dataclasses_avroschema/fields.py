@@ -110,7 +110,10 @@ class BaseField:
                 * tuple, he OrderedDict will contains the key symbols inside type
                 * dict, he OrderedDict will contains the key values inside type
         """
-        template = OrderedDict([("name", self.name), ("type", self.get_avro_type())] + self.render_metadata())
+        template = OrderedDict(
+            [("name", self.name), ("type", self.get_avro_type())]
+            + self.render_metadata()
+        )
 
         default = self.get_default_value()
         if default is not None:
@@ -578,14 +581,16 @@ def field_factory(
     native_type: typing.Any,
     default: typing.Any = dataclasses.MISSING,
     default_factory: typing.Any = dataclasses.MISSING,
-    metadata: typing.Dict = dataclasses.MISSING
+    metadata: typing.Dict = dataclasses.MISSING,
 ):
 
     if native_type in PYTHON_INMUTABLE_TYPES:
         klass = INMUTABLE_FIELDS_CLASSES[native_type]
         return klass(name=name, type=native_type, default=default, metadata=metadata)
     elif utils.is_self_referenced(native_type):
-        return SelfReferenceField(name=name, type=native_type, default=default, metadata=metadata)
+        return SelfReferenceField(
+            name=name, type=native_type, default=default, metadata=metadata
+        )
     elif isinstance(native_type, typing._GenericAlias):
         origin = native_type.__origin__
 
@@ -611,13 +616,15 @@ def field_factory(
             type=native_type,
             default=default,
             default_factory=default_factory,
-            metadata=metadata
+            metadata=metadata,
         )
     elif native_type in PYTHON_LOGICAL_TYPES:
         klass = LOGICAL_TYPES_FIELDS_CLASSES[native_type]
         return klass(name=name, type=native_type, default=default, metadata=metadata)
     else:
-        return RecordField(name=name, type=native_type, default=default, metadata=metadata)
+        return RecordField(
+            name=name, type=native_type, default=default, metadata=metadata
+        )
 
 
 Field = field_factory
