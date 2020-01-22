@@ -1,6 +1,3 @@
-import dataclasses
-import typing
-
 from dataclasses_avroschema import fields
 
 
