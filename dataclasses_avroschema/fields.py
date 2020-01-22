@@ -83,7 +83,7 @@ class BaseField:
             return singular
         return name
 
-    def render_metadata(self) -> typing.List[typing.Tuple[str, str]]:
+    def get_metadata(self) -> typing.List[typing.Tuple[str, str]]:
         meta_data_for_template = []
         if type(self.metadata) == dict:
             for name, value in self.metadata.items():
@@ -112,7 +112,7 @@ class BaseField:
         """
         template = OrderedDict(
             [("name", self.name), ("type", self.get_avro_type())]
-            + self.render_metadata()
+            + self.get_metadata()
         )
 
         default = self.get_default_value()

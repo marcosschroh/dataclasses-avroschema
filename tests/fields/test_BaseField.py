@@ -50,13 +50,13 @@ def test_render_metadata():
 
     expected = [("desc", "English Language Name")]
 
-    assert expected == field.render_metadata()
+    assert expected == field.get_metadata()
 
     field = fields.Field("engine_name", str, fields.NULL)
 
     expected = []
 
-    assert expected == field.render_metadata()
+    assert expected == field.get_metadata()
 
     field = fields.Field(
         "breed_name",
@@ -67,4 +67,4 @@ def test_render_metadata():
 
     expected = [("encoding", "some_exotic_encoding"), ("doc", "Official Breed Name")]
 
-    assert expected == field.render_metadata()
+    assert expected == field.get_metadata()
