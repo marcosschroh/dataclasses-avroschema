@@ -111,8 +111,7 @@ class BaseField:
                 * dict, he OrderedDict will contains the key values inside type
         """
         template = OrderedDict(
-            [("name", self.name), ("type", self.get_avro_type())]
-            + self.get_metadata()
+            [("name", self.name), ("type", self.get_avro_type())] + self.get_metadata()
         )
 
         default = self.get_default_value()
