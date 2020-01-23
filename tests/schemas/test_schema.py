@@ -21,8 +21,8 @@ def test_total_schema_fields_from_instance(user_dataclass):
 
 
 def test_schema_render_from_class_with_field_metadata(
-        user_dataclass_with_field_metadata,
-        user_with_field_metadata_avro_json):
+    user_dataclass_with_field_metadata, user_with_field_metadata_avro_json
+):
     user_schema = SchemaGenerator(
         user_dataclass_with_field_metadata, include_schema_doc=False
     ).avro_schema()

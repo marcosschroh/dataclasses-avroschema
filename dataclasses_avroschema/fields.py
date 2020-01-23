@@ -331,9 +331,9 @@ class UnionField(BaseField):
 
     @staticmethod
     def generate_union(
-            elements: typing.List,
-            default: typing.Any = None,
-            default_factory: typing.Callable = dataclasses.MISSING,
+        elements: typing.List,
+        default: typing.Any = None,
+        default_factory: typing.Callable = dataclasses.MISSING,
     ):
         """
         Generate union.
@@ -578,29 +578,31 @@ PRIMITIVE_LOGICAL_TYPES_FIELDS_CLASSES = {
 
 
 def field_factory(
-        name: str,
-        native_type: typing.Any,
-        default: typing.Any = dataclasses.MISSING,
-        default_factory: typing.Any = dataclasses.MISSING,
-        metadata: typing.Dict = dataclasses.MISSING
+    name: str,
+    native_type: typing.Any,
+    default: typing.Any = dataclasses.MISSING,
+    default_factory: typing.Any = dataclasses.MISSING,
+    metadata: typing.Dict = dataclasses.MISSING,
 ):
     if native_type in PYTHON_INMUTABLE_TYPES:
         klass = INMUTABLE_FIELDS_CLASSES[native_type]
         return klass(name=name, type=native_type, default=default, metadata=metadata)
     elif utils.is_self_referenced(native_type):
-        return SelfReferenceField(name=name, type=native_type, default=default, metadata=metadata)
+        return SelfReferenceField(
+            name=name, type=native_type, default=default, metadata=metadata
+        )
     elif isinstance(native_type, typing._GenericAlias):
         origin = native_type.__origin__
 
         if origin not in (
-                tuple,
-                list,
-                dict,
-                typing.Union,
-                collections.abc.Sequence,
-                collections.abc.MutableSequence,
-                collections.abc.Mapping,
-                collections.abc.MutableMapping,
+            tuple,
+            list,
+            dict,
+            typing.Union,
+            collections.abc.Sequence,
+            collections.abc.MutableSequence,
+            collections.abc.Mapping,
+            collections.abc.MutableMapping,
         ):
             raise ValueError(
                 f"""
@@ -614,13 +616,15 @@ def field_factory(
             type=native_type,
             default=default,
             default_factory=default_factory,
-            metadata=metadata
+            metadata=metadata,
         )
     elif native_type in PYTHON_LOGICAL_TYPES:
         klass = LOGICAL_TYPES_FIELDS_CLASSES[native_type]
         return klass(name=name, type=native_type, default=default, metadata=metadata)
     else:
-        return RecordField(name=name, type=native_type, default=default, metadata=metadata)
+        return RecordField(
+            name=name, type=native_type, default=default, metadata=metadata
+        )
 
 
 Field = field_factory
