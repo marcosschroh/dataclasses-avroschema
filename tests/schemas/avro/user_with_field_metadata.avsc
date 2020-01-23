@@ -1,0 +1,11 @@
+{
+  "type": "record",
+  "name": "User",
+  "fields": [
+    {"name": "name", "type": "string", "classification":  "test"},
+    {"name": "age", "type": "int", "classification":  "test"},
+    {"name": "has_pets", "type": "boolean", "classification":  "test"},
+    {"name": "money", "type": "float", "classification":  "test"},
+    {"name": "encoded", "type": "bytes", "classification":  "test"}
+  ]
+}

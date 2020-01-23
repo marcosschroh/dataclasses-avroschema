@@ -17,6 +17,19 @@ def user_dataclass():
 
 
 @pytest.fixture
+def user_dataclass_with_field_metadata():
+    @dataclasses.dataclass(repr=False)
+    class User:
+        name: str = dataclasses.field(metadata={"classification": "test"})
+        age: int = dataclasses.field(metadata={"classification": "test"})
+        has_pets: bool = dataclasses.field(metadata={"classification": "test"})
+        money: float = dataclasses.field(metadata={"classification": "test"})
+        encoded: bytes = dataclasses.field(metadata={"classification": "test"})
+
+    return User
+
+
+@pytest.fixture
 def user_v2_dataclass():
     @dataclasses.dataclass(repr=False)
     class UserV2:
