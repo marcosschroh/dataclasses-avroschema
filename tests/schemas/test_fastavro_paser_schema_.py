@@ -24,6 +24,22 @@ def test_minimal_schema(user_dataclass):
     assert parse_schema(schema)
 
 
+def test_schema_with_field_metadata(user_dataclass_with_field_metadata):
+    """
+    Python class contains the primitive types:
+
+    class User:
+        name: str
+        age: int
+        has_pets: bool
+        money: float
+        encoded: bytes
+    """
+    schema = SchemaGenerator(user_dataclass_with_field_metadata).avro_schema_to_python()
+
+    assert parse_schema(schema)
+
+
 def test_schema_with_extra_avro_attrs(user_extra_avro_atributes_dataclass):
     """
     Python class contains the primitive types plus aliases and namespace

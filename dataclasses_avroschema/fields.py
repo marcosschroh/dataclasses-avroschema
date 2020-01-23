@@ -31,7 +31,6 @@ LOGICAL_TIME = {"type": INT, "logicalType": TIME_MILLIS}
 LOGICAL_DATETIME = {"type": LONG, "logicalType": TIMESTAMP_MILLIS}
 LOGICAL_UUID = {"type": STRING, "logicalType": UUID}
 
-
 PYTHON_TYPE_TO_AVRO = {
     bool: BOOLEAN,
     type(None): NULL,
@@ -85,9 +84,12 @@ class BaseField:
 
     def get_metadata(self) -> typing.List[typing.Tuple[str, str]]:
         meta_data_for_template = []
-        if type(self.metadata) == dict:
-            for name, value in self.metadata.items():
+        try:
+            metadata = dict(self.metadata)
+            for name, value in metadata.items():
                 meta_data_for_template.append((name, value))
+        except (ValueError, TypeError):
+            return meta_data_for_template
         return meta_data_for_template
 
     def render(self) -> OrderedDict:
@@ -329,9 +331,9 @@ class UnionField(BaseField):
 
     @staticmethod
     def generate_union(
-        elements: typing.List,
-        default: typing.Any = None,
-        default_factory: typing.Callable = dataclasses.MISSING,
+            elements: typing.List,
+            default: typing.Any = None,
+            default_factory: typing.Callable = dataclasses.MISSING,
     ):
         """
         Generate union.
@@ -576,32 +578,29 @@ PRIMITIVE_LOGICAL_TYPES_FIELDS_CLASSES = {
 
 
 def field_factory(
-    name: str,
-    native_type: typing.Any,
-    default: typing.Any = dataclasses.MISSING,
-    default_factory: typing.Any = dataclasses.MISSING,
-    metadata: typing.Dict = dataclasses.MISSING,
+        name: str,
+        native_type: typing.Any,
+        default: typing.Any = dataclasses.MISSING,
+        default_factory: typing.Any = dataclasses.MISSING,
+        metadata: typing.Dict = dataclasses.MISSING
 ):
-
     if native_type in PYTHON_INMUTABLE_TYPES:
         klass = INMUTABLE_FIELDS_CLASSES[native_type]
         return klass(name=name, type=native_type, default=default, metadata=metadata)
     elif utils.is_self_referenced(native_type):
-        return SelfReferenceField(
-            name=name, type=native_type, default=default, metadata=metadata
-        )
+        return SelfReferenceField(name=name, type=native_type, default=default, metadata=metadata)
     elif isinstance(native_type, typing._GenericAlias):
         origin = native_type.__origin__
 
         if origin not in (
-            tuple,
-            list,
-            dict,
-            typing.Union,
-            collections.abc.Sequence,
-            collections.abc.MutableSequence,
-            collections.abc.Mapping,
-            collections.abc.MutableMapping,
+                tuple,
+                list,
+                dict,
+                typing.Union,
+                collections.abc.Sequence,
+                collections.abc.MutableSequence,
+                collections.abc.Mapping,
+                collections.abc.MutableMapping,
         ):
             raise ValueError(
                 f"""
@@ -615,15 +614,13 @@ def field_factory(
             type=native_type,
             default=default,
             default_factory=default_factory,
-            metadata=metadata,
+            metadata=metadata
         )
     elif native_type in PYTHON_LOGICAL_TYPES:
         klass = LOGICAL_TYPES_FIELDS_CLASSES[native_type]
         return klass(name=name, type=native_type, default=default, metadata=metadata)
     else:
-        return RecordField(
-            name=name, type=native_type, default=default, metadata=metadata
-        )
+        return RecordField(name=name, type=native_type, default=default, metadata=metadata)
 
 
 Field = field_factory

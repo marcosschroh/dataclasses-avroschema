@@ -22,6 +22,11 @@ def user_avro_json():
 
 
 @pytest.fixture
+def user_with_field_metadata_avro_json():
+    return load_json("user_with_field_metadata.avsc")
+
+
+@pytest.fixture
 def user_v2_avro_json():
     return load_json("user_v2.avsc")
 

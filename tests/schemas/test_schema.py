@@ -20,6 +20,16 @@ def test_total_schema_fields_from_instance(user_dataclass):
     assert len(schema_generator.get_fields) == 5
 
 
+def test_schema_render_from_class_with_field_metadata(
+        user_dataclass_with_field_metadata,
+        user_with_field_metadata_avro_json):
+    user_schema = SchemaGenerator(
+        user_dataclass_with_field_metadata, include_schema_doc=False
+    ).avro_schema()
+
+    assert user_schema == json.dumps(user_with_field_metadata_avro_json)
+
+
 def test_schema_render_from_class(user_dataclass, user_avro_json):
     user_schema = SchemaGenerator(
         user_dataclass, include_schema_doc=False
