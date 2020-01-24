@@ -23,7 +23,7 @@ setup(
     download_url="",
     packages=find_packages(exclude=("tests",)),
     include_package_data=True,
-    license="GPLv3",
+    license="MIT",
     classifiers=[
         "Programming Language :: Python :: 3.7",
         "Topic :: Software Development",
