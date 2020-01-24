@@ -1,8 +1,9 @@
 import json
+
 import pytest
 
-from dataclasses_avroschema.schema_generator import SchemaGenerator
 from dataclasses_avroschema.schema_definition import BaseSchemaDefinition
+from dataclasses_avroschema.schema_generator import SchemaGenerator
 
 encoded = "test".encode()
 
@@ -135,10 +136,12 @@ def test_not_implementd_methods():
     class Aclass:
         pass
 
-    schema = BaseSchemaDefinition("avro", Aclass)
+    with pytest.raises(TypeError) as excinfo:
+        BaseSchemaDefinition("avro", Aclass)
 
-    with pytest.raises(NotImplementedError):
-        schema.get_rendered_fields()
+    msg = (
+        f"Can't instantiate abstract class BaseSchemaDefinition with abstract "
+        f"methods get_rendered_fields, render"
+    )
 
-    with pytest.raises(NotImplementedError):
-        schema.render()
+    assert msg == str(excinfo.value)

@@ -3,7 +3,7 @@
 
 """ setup.py for dataclasses-avroschema."""
 
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 __version__ = "0.8.0"
 

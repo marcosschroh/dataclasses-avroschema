@@ -1,12 +1,13 @@
-import json
-import faust
-import typing
-import datetime
-import uuid
 import dataclasses
+import datetime
+import json
+import typing
+import uuid
 
-from dataclasses_avroschema.schema_generator import SchemaGenerator
+import faust
+
 from dataclasses_avroschema import schema_definition
+from dataclasses_avroschema.schema_generator import SchemaGenerator
 
 encoded = "test".encode()
 

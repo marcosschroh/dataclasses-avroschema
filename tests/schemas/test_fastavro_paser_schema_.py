@@ -1,7 +1,7 @@
-import typing
-import datetime
-import uuid
 import dataclasses
+import datetime
+import typing
+import uuid
 
 from fastavro import parse_schema
 

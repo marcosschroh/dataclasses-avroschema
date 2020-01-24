@@ -1,6 +1,7 @@
-import pytest
 import datetime
 import uuid
+
+import pytest
 
 from dataclasses_avroschema import fields
 

@@ -1,5 +1,6 @@
-import pytest
 import dataclasses
+
+import pytest
 
 from dataclasses_avroschema import fields
 

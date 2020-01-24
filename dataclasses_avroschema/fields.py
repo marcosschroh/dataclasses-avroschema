@@ -1,12 +1,13 @@
-import json
-import dataclasses
-import typing
-import inflect
-import datetime
-import uuid
+import abc
 import collections
-
+import dataclasses
+import datetime
+import json
+import typing
+import uuid
 from collections import OrderedDict
+
+import inflect
 
 from dataclasses_avroschema import schema_generator, utils
 
@@ -63,6 +64,8 @@ PythonPrimitiveTypes = typing.Union[str, int, bool, float, list, tuple, dict]
 
 @dataclasses.dataclass
 class BaseField:
+    avro_type: typing.ClassVar
+
     name: str
     type: typing.Any  # store the python primitive type
     default: typing.Any = dataclasses.MISSING
@@ -141,6 +144,10 @@ class BaseField:
 
     def to_dict(self) -> dict:
         return json.loads(self.to_json())
+
+    @abc.abstractmethod
+    def get_avro_type(self):
+        ...  # pragma: no cover
 
 
 class InmutableField(BaseField):
@@ -577,13 +584,33 @@ PRIMITIVE_LOGICAL_TYPES_FIELDS_CLASSES = {
 }
 
 
+FieldType = typing.Union[
+    StringField,
+    BooleanField,
+    FloatField,
+    BytesField,
+    NoneField,
+    TupleField,
+    ListField,
+    DictField,
+    UnionField,
+    SelfReferenceField,
+    LogicalTypeField,
+    DateField,
+    TimeField,
+    DatetimeField,
+    UUIDField,
+    RecordField,
+]
+
+
 def field_factory(
     name: str,
     native_type: typing.Any,
     default: typing.Any = dataclasses.MISSING,
     default_factory: typing.Any = dataclasses.MISSING,
     metadata: typing.Dict = dataclasses.MISSING,
-):
+) -> FieldType:
     if native_type in PYTHON_INMUTABLE_TYPES:
         klass = INMUTABLE_FIELDS_CLASSES[native_type]
         return klass(name=name, type=native_type, default=default, metadata=metadata)

@@ -1,5 +1,5 @@
-import typing
 import datetime
+import typing
 import uuid
 
 from dataclasses_avroschema import fields
