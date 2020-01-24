@@ -1,3 +1,4 @@
+import abc
 import dataclasses
 import inspect
 import typing
@@ -12,19 +13,21 @@ except ImportError:  # pragma: no cover
 
 
 @dataclasses.dataclass
-class BaseSchemaDefinition:
+class BaseSchemaDefinition(abc.ABC):
     """
     Minimal Schema definition
     """
 
     type: str
-    klass_or_instance: dataclasses.dataclass
+    klass_or_instance: typing.Any
 
+    @abc.abstractmethod
     def get_rendered_fields(self):
-        raise NotImplementedError
+        ...  # pragma: no cover
 
+    @abc.abstractmethod
     def render(self):
-        raise NotImplementedError
+        ...  # pragma: no cover
 
     def get_schema_name(self):
         if inspect.isclass(self.klass_or_instance):
@@ -38,7 +41,7 @@ class BaseSchemaDefinition:
             return doc.replace("\n", "")
 
     @property
-    def is_faust_record(self):
+    def is_faust_record(self) -> bool:
         if faust:
             if inspect.isclass(self.klass_or_instance):
                 return issubclass(self.klass_or_instance, faust.Record)
@@ -51,7 +54,7 @@ class BaseSchemaDefinition:
 class AvroSchemaDefinition(BaseSchemaDefinition):
     aliases: typing.List[str] = None
     namespace: str = None
-    fields: typing.List["fields.Field"] = None
+    fields: typing.List["fields.FieldType"] = None
     include_schema_doc: bool = True
 
     def __post_init__(self):

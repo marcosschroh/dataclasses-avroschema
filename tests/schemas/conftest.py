@@ -1,5 +1,6 @@
-import os
 import json
+import os
+
 import pytest
 
 AVRO_SCHEMAS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "avro")

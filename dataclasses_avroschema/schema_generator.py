@@ -1,5 +1,5 @@
-import json
 import dataclasses
+import json
 import typing
 
 from dataclasses_avroschema.schema_definition import AvroSchemaDefinition
@@ -9,7 +9,7 @@ class SchemaGenerator:
     def __init__(self, klass_or_instance, include_schema_doc: bool = True) -> None:
         self.dataclass = self.generate_dataclass(klass_or_instance)
         self.include_schema_doc = include_schema_doc
-        self.schema_definition = None
+        self.schema_definition: AvroSchemaDefinition = None
 
     @staticmethod
     def generate_dataclass(klass_or_instance):
@@ -31,10 +31,8 @@ class SchemaGenerator:
         # cache the schema
         self.schema_definition = schema_definition
 
-        # cache the schema
-        self.schema_definition = schema_definition
-
-        return self.schema_definition.render()
+        if self.schema_definition:
+            return self.schema_definition.render()
 
     def _generate_avro_schema(self) -> AvroSchemaDefinition:
         return AvroSchemaDefinition(

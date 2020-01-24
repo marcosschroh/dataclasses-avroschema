@@ -1,9 +1,8 @@
-import json
-import typing
 import dataclasses
 import datetime
+import json
+import typing
 import uuid
-
 
 from dataclasses_avroschema.schema_generator import SchemaGenerator
 

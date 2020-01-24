@@ -12,11 +12,13 @@ def is_union(a_type: typing.Any) -> bool:
         bool
     """
     return (
-        isinstance(a_type, typing._GenericAlias) and a_type.__origin__ is typing.Union
+        isinstance(a_type, typing._GenericAlias)
+        and a_type.__origin__  # type: ignore
+        is typing.Union
     )
 
 
-def is_self_referenced(a_type):
+def is_self_referenced(a_type) -> bool:
     """
     Given a python type, return True if is self referenced, meaning
     that is instance of typing.ForwardRef, otherwise False
@@ -33,7 +35,7 @@ def is_self_referenced(a_type):
         is_self_referenced(a_type) # True
     """
     return (
-        isinstance(a_type, typing._GenericAlias)
+        isinstance(a_type, typing._GenericAlias)  # type: ignore
         and a_type.__args__
-        and isinstance(a_type.__args__[0], typing.ForwardRef)
+        and isinstance(a_type.__args__[0], typing.ForwardRef)  # type: ignore
     )

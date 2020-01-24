@@ -1,7 +1,7 @@
-import pytest
 import dataclasses
 import typing
 
+import pytest
 from faker import Faker
 
 from dataclasses_avroschema import fields

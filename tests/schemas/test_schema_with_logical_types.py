@@ -1,5 +1,5 @@
-import json
 import datetime
+import json
 import uuid
 
 from dataclasses_avroschema.schema_generator import SchemaGenerator
