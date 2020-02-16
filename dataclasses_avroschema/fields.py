@@ -9,7 +9,7 @@ from collections import OrderedDict
 
 import inflect
 
-from dataclasses_avroschema import schema_generator, utils
+from dataclasses_avroschema import schema_generator, types, utils
 
 p = inflect.engine()
 
@@ -23,6 +23,7 @@ STRING = "string"
 ARRAY = "array"
 ENUM = "enum"
 MAP = "map"
+FIXED = "fixed"
 DATE = "date"
 TIME_MILLIS = "time-millis"
 TIMESTAMP_MILLIS = "timestamp-millis"
@@ -42,6 +43,7 @@ PYTHON_TYPE_TO_AVRO = {
     list: {"type": ARRAY},
     tuple: {"type": ENUM},
     dict: {"type": MAP},
+    types.Fixed: {"type": FIXED},
     datetime.date: {"type": INT, "logicalType": DATE},
     datetime.time: {"type": INT, "logicalType": TIME_MILLIS},
     datetime.datetime: {"type": LONG, "logicalType": TIMESTAMP_MILLIS},
@@ -386,6 +388,27 @@ class UnionField(BaseField):
 
 
 @dataclasses.dataclass
+class FixedField(BaseField):
+    def get_avro_type(self):
+        avro_type = {
+            "type": FIXED,
+            "name": self.get_singular_name(self.name),
+            "size": int(self.default.size),
+        }
+
+        if self.default.namespace is not None:
+            avro_type["namespace"] = self.default.namespace
+
+        if self.default.aliases is not None:
+            avro_type["aliases"] = self.default.aliases
+
+        return avro_type
+
+    def get_default_value(self):
+        return
+
+
+@dataclasses.dataclass
 class SelfReferenceField(BaseField):
     def get_avro_type(self):
         return self._get_self_reference_type(self.type)
@@ -581,6 +604,7 @@ LOGICAL_TYPES_FIELDS_CLASSES = {
 PRIMITIVE_LOGICAL_TYPES_FIELDS_CLASSES = {
     **INMUTABLE_FIELDS_CLASSES,
     **LOGICAL_TYPES_FIELDS_CLASSES,
+    types.Fixed: FixedField,
 }
 
 
@@ -594,6 +618,7 @@ FieldType = typing.Union[
     ListField,
     DictField,
     UnionField,
+    FixedField,
     SelfReferenceField,
     LogicalTypeField,
     DateField,
@@ -616,6 +641,10 @@ def field_factory(
         return klass(name=name, type=native_type, default=default, metadata=metadata)
     elif utils.is_self_referenced(native_type):
         return SelfReferenceField(
+            name=name, type=native_type, default=default, metadata=metadata
+        )
+    elif native_type is types.Fixed:
+        return FixedField(
             name=name, type=native_type, default=default, metadata=metadata
         )
     elif isinstance(native_type, typing._GenericAlias):

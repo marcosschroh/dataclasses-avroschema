@@ -3,6 +3,8 @@ import typing
 
 import pytest
 
+from dataclasses_avroschema import types
+
 
 @pytest.fixture
 def user_dataclass():
@@ -68,6 +70,7 @@ def user_advance_dataclass():
         favorite_colors: typing.Tuple[str] = ("BLUE", "YELLOW", "GREEN")
         country: str = "Argentina"
         address: str = None
+        md5: types.Fixed = types.Fixed(16)
 
     return UserAdvance
 
