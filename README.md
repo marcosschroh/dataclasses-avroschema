@@ -7,14 +7,13 @@ Generate [Avro](https://avro.apache.org/docs/1.8.2/spec.html) Schemas from a Pyt
 [![codecov](https://codecov.io/gh/marcosschroh/dataclasses-avroschema/branch/master/graph/badge.svg)](https://codecov.io/gh/marcosschroh/dataclasses-avroschema)
 ![python version](https://img.shields.io/badge/python-3.7%2B-yellowgreen)
 
-
-## Requirements:
+## Requirements
 
 python 3.7+
 
 ## Installation
 
-```
+```bash
 pip install dataclasses-avroschema
 ```
 
@@ -22,7 +21,7 @@ pip install dataclasses-avroschema
 
 https://marcosschroh.github.io/dataclasses-avroschema/
 
-## Usage:
+## Usage
 
 ```python
 from dataclasses_avroschema.schema_generator import SchemaGenerator
@@ -56,10 +55,10 @@ SchemaGenerator(User).avro_schema()
 }'
 ```
 
-## Features:
+## Features
 
 * [X] Primitive types: int, long, float, boolean, string and null support
-* [X] Complex types: enum, array, map, unions and records support
+* [X] Complex types: enum, array, map, fixed, unions and records support
 * [x] Logical Types: date, time, datetime, uuid support
 * [X] Schema relations (oneToOne, oneToMany)
 * [X] Recursive Schemas

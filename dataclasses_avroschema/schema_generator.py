@@ -31,8 +31,7 @@ class SchemaGenerator:
         # cache the schema
         self.schema_definition = schema_definition
 
-        if self.schema_definition:
-            return self.schema_definition.render()
+        return self.schema_definition.render()
 
     def _generate_avro_schema(self) -> AvroSchemaDefinition:
         return AvroSchemaDefinition(

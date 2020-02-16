@@ -26,19 +26,18 @@ So, the previous types can be matched to:
 | null      |     None    |
 | bytes     |     wip     |
 
-
 ## Complex Types
 
-Avro supports six kinds of complex types: enums, arrays, maps, unions, fixed and records.
+Avro supports six kinds of complex types: enums, arrays, maps, fixed, unions and records.
 
 | Avro Type | Python Type |
 |-----------|-------------|
 | enums     |   tuple     |
 | arrays    |   list      |
 | maps      |   dict      |
+| fixed     |   types.Fixed|
 | unions    |typing.Union |
 | records   |Python Class |
-
 
 * Enums: Use the type name "enum" and support the following attributes:
   1. name: a JSON string providing the name of the enum (required).
@@ -58,10 +57,15 @@ In future version we will have a custom enum type to avoid this
   1. name: a JSON string providing the name of the enum (required).
   2. values: the schema of the map's values.
 
+* Fixed uses the type name "fixed" and supports two attributes:
+  1. name: a string naming this fixed (required).
+  2. namespace, a string that qualifies the name;
+  3. aliases: a JSON array of strings, providing alternate names for this enum (optional).
+  4. size: an integer, specifying the number of bytes per value (required).
+
 * Unions: `Unions` are represented using JSON arrays. For example, `["null", "string"]` declares a schema which may be either a null or string.
 
 * Records: `Records` use the type name `record` and will represent the `Schema`.
-
 
 ### Logical Types
 
@@ -86,7 +90,6 @@ Language implementations must ignore unknown logical types when reading, and sho
 | long      |  timestamp-millis | datetime.datetime |
 | string    |  uuid        | uuid.uuid4 |
 
-
 ### Avro Field and Python Types Summary
 
 Python Type | Avro Type   | Logical Type |
@@ -104,6 +107,7 @@ Python Type | Avro Type   | Logical Type |
 | typing.Dict      | map         | do not apply |
 | typing.Mapping      | map         | do not apply |
 | typing.MutableMapping      | map         | do not apply |
+| types.Fixed      | fixed         | do not apply |
 | typing.Union| union     | do not apply |
 | Pythin classs | record  | do not apply |
 | datetime.date | int     |  date        |

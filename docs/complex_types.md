@@ -7,9 +7,9 @@ The following list represent the avro complext types mapped to python types:
 | enums     |   typing.Tuple     |
 | arrays    |   typing.List, typing.Sequence, typing.MutableSequence      |
 | maps      |   typing.Dict, typing.Mapping, typing.MutableMapping      |
+| fixed     | types.Fixed |
 | unions    |typing.Union |
 | records   |Python Class |
-
 
 ### Enums
 
@@ -154,46 +154,30 @@ SchemaGenerator(UserAdvance).avro_schema()
 }'
 ```
 
-### Records
-
-Mapped as a Python class
-
-There are some special avro attributes like `aliases`, `namespace` and `doc` (both not required) that can be specified in a record type.
-
-The `doc` attribute can be set via the docstring class. The `aliases` and `namespaces` must be set using the `extra_avro_attributes` static method.
+### Fixed
 
 ```python
+import typing
+
+
+from dataclasses_avroschema import types
 from dataclasses_avroschema.schema_generator import SchemaGenerator
 
 
-class User:
-    "My User Class"
+class UserAdvance:
     name: str
-    age: int
-    has_pets: bool = False
-    money: float = 100.3
+    md5: types.Fixed = types.Fixed(16, namespace='md5', aliases=["md5", "hash"])
 
-    def extra_avro_attributes() -> typing.Dict[str, typing.Any]:
-        return {
-            "namespace": "test.com.ar/user/v1",
-            "aliases": ["User", "My favorite User"]
-        }
+SchemaGenerator(UnionSchema).avro_schema()
 
-SchemaGenerator(User).avro_schema()
-
-'{
-  "type": "record",
-  "name": "User",
-  "fields": [
-    {"name": "name", "type": "string"},
-    {"name": "age", "type": "int"},
-    {"name": "has_pets", "type": ["boolean", "null"], "default": false},
-    {"name": "money", "type": ["float", "null"], "default": 100.3}
+{
+  'type': 'record',
+  'name': 'UserAdvance',
+  'fields': [
+    {'name': 'name', 'type': 'string'},
+    {'name': 'md5', 'type': {'type': 'fixed', 'name': 'md5', 'size': 16,'namespace': 'md5', 'aliases': ['md5', 'hash']}}
   ],
-  "doc": "My User Class",
-  "namespace": "test.com.ar/user/v1",
-  "aliases": ["User", "My favorite User"]
-}'
+  'doc': 'UserAdvance(name: str, md5: dataclasses_avroschema.types.Fixed = 16)'}
 ```
 
 ### Unions
@@ -216,16 +200,16 @@ class UnionSchema:
 SchemaGenerator(UnionSchema).avro_schema()
 
 {
- "type": "record",
- "name": "UnionSchema",
- "fields": [
+  "type": "record",
+  "name": "UnionSchema",
+  "fields": [
   {"name": "first_union", "type": ["string", "int"]},
   {"name": "logical_union", "type": [
     {"type": "long", "logicalType": "timestamp-millis"},
     {"type": "int", "logicalType": "date"},
     {"type": "string", "logicalType": "uuid"}]},
   {"name": "second_union", "type": ["string", "int"], "default": ["test"]}],
- "doc": "Some Unions"
+  "doc": "Some Unions"
 }
 
 # Union with Records
@@ -339,5 +323,47 @@ SchemaGenerator(UnionSchema).avro_schema()
     }
   ],
   "doc": "Some Unions"
+}'
+```
+
+### Records
+
+Mapped as a Python class
+
+There are some special avro attributes like `aliases`, `namespace` and `doc` (both not required) that can be specified in a record type.
+
+The `doc` attribute can be set via the docstring class. The `aliases` and `namespaces` must be set using the `extra_avro_attributes` static method.
+
+```python
+from dataclasses_avroschema.schema_generator import SchemaGenerator
+
+
+class User:
+    "My User Class"
+    name: str
+    age: int
+    has_pets: bool = False
+    money: float = 100.3
+
+    def extra_avro_attributes() -> typing.Dict[str, typing.Any]:
+        return {
+            "namespace": "test.com.ar/user/v1",
+            "aliases": ["User", "My favorite User"]
+        }
+
+SchemaGenerator(User).avro_schema()
+
+'{
+  "type": "record",
+  "name": "User",
+  "fields": [
+    {"name": "name", "type": "string"},
+    {"name": "age", "type": "int"},
+    {"name": "has_pets", "type": ["boolean", "null"], "default": false},
+    {"name": "money", "type": ["float", "null"], "default": 100.3}
+  ],
+  "doc": "My User Class",
+  "namespace": "test.com.ar/user/v1",
+  "aliases": ["User", "My favorite User"]
 }'
 ```

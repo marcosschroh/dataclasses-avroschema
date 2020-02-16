@@ -75,8 +75,12 @@ def test_advance_schema(user_advance_dataclass):
         favorite_colors: typing.Tuple[str] = ("BLUE", "YELLOW", "GREEN")
         country: str = "Argentina"
         address: str = None
+        md5: types.Fixed = types.Fixed(16)
     """
+    user_schema = SchemaGenerator(user_advance_dataclass).avro_schema()
     schema = SchemaGenerator(user_advance_dataclass).avro_schema_to_python()
+
+    print("hola", user_schema)
 
     assert parse_schema(schema)
 

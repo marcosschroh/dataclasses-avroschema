@@ -4,7 +4,7 @@ import typing
 import pytest
 from faker import Faker
 
-from dataclasses_avroschema import fields
+from dataclasses_avroschema import fields, types
 
 from . import consts
 
@@ -356,6 +356,32 @@ def test_union_type_with_record_default():
             },
         ],
         "default": {"first_name": "a name"},
+    }
+
+    assert expected == field.to_dict()
+
+
+def test_fixed_type():
+    """
+    When the type is types.Fixed, the Avro field type should be fixed
+    with size attribute present.
+    """
+    name = "a_fixed_field"
+    namespace = "md5"
+    aliases = ["md5", "hash"]
+    default = types.Fixed(16, namespace=namespace, aliases=aliases)
+    python_type = types.Fixed
+    field = fields.Field(name, python_type, default)
+
+    expected = {
+        "name": name,
+        "type": {
+            "type": "fixed",
+            "name": name,
+            "size": default.size,
+            "namespace": namespace,
+            "aliases": aliases,
+        },
     }
 
     assert expected == field.to_dict()
