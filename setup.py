@@ -5,7 +5,7 @@
 
 from setuptools import find_packages, setup
 
-__version__ = "0.11.0"
+__version__ = "0.11.1"
 
 with open("README.md") as readme_file:
     long_description = readme_file.read()
@@ -17,7 +17,7 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     author="Marcos Schroh",
-    install_requires=["inflect==2.1.0"],
+    install_requires=["inflect==2.1.0", "fastavro"],
     author_email="schrohm@gmail.com",
     url="https://github.com/marcosschroh/dataclasses-avroschema",
     download_url="",
