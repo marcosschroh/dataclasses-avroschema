@@ -1,6 +1,6 @@
 #!/bin/sh
 
-./scripts/clean.sh
+./scripts/clean
 
 VERSION=`cat setup.py | grep '__version__ =' | sed 's/__version__ = //' | sed 's/"//g'`
 

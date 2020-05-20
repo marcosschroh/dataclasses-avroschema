@@ -1,0 +1,9 @@
+#!/bin/sh -e
+
+export PREFIX=""
+if [ -d 'venv' ] ; then
+    export PREFIX="venv/bin/"
+fi
+
+${PREFIX}isort --multi-line=3 --trailing-comma --force-grid-wrap=0 --combine-as --line-width 120 --recursive --apply dataclasses_avroschema tests
+${PREFIX}black dataclasses_avroschema tests

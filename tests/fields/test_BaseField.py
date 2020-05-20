@@ -2,9 +2,7 @@ from dataclasses_avroschema import fields
 
 
 def test_render():
-    field = fields.Field(
-        "first_name", str, fields.NULL, metadata={"desc": "English Language Name"}
-    )
+    field = fields.Field("first_name", str, fields.NULL, metadata={"desc": "English Language Name"})
 
     expected = {
         "name": "first_name",
@@ -26,10 +24,7 @@ def test_render():
     assert expected == field.render()
 
     field = fields.Field(
-        "breed_name",
-        str,
-        fields.NULL,
-        metadata={"encoding": "some_exotic_encoding", "doc": "Official Breed Name"},
+        "breed_name", str, fields.NULL, metadata={"encoding": "some_exotic_encoding", "doc": "Official Breed Name"},
     )
 
     expected = {
@@ -44,9 +39,7 @@ def test_render():
 
 
 def test_render_metadata():
-    field = fields.Field(
-        "first_name", str, fields.NULL, metadata={"desc": "English Language Name"}
-    )
+    field = fields.Field("first_name", str, fields.NULL, metadata={"desc": "English Language Name"})
 
     expected = [("desc", "English Language Name")]
 
@@ -59,10 +52,7 @@ def test_render_metadata():
     assert expected == field.get_metadata()
 
     field = fields.Field(
-        "breed_name",
-        str,
-        fields.NULL,
-        metadata={"encoding": "some_exotic_encoding", "doc": "Official Breed Name"},
+        "breed_name", str, fields.NULL, metadata={"encoding": "some_exotic_encoding", "doc": "Official Breed Name"},
     )
 
     expected = [("encoding", "some_exotic_encoding"), ("doc", "Official Breed Name")]

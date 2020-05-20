@@ -34,9 +34,7 @@ def test_primitive_types_with_default_value(primitive_type, default):
     assert {"name": name, "type": avro_type, "default": default} == field.to_dict()
 
 
-@pytest.mark.parametrize(
-    "primitive_type,invalid_default", consts.PRIMITIVE_TYPES_AND_INVALID_DEFAULTS
-)
+@pytest.mark.parametrize("primitive_type,invalid_default", consts.PRIMITIVE_TYPES_AND_INVALID_DEFAULTS)
 def test_invalid_default_values(primitive_type, invalid_default):
     name = "a_field"
     field = fields.Field(name, primitive_type, invalid_default)

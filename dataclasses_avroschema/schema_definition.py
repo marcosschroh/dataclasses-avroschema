@@ -95,11 +95,7 @@ class AvroSchemaDefinition(BaseSchemaDefinition):
                     default_factory = default.default_factory
                     default = dataclasses.MISSING
 
-            schema_fields.append(
-                fields.Field(
-                    dataclass_field.name, dataclass_field.type, default, default_factory
-                )
-            )
+            schema_fields.append(fields.Field(dataclass_field.name, dataclass_field.type, default, default_factory))
 
         return schema_fields
 
@@ -113,15 +109,11 @@ class AvroSchemaDefinition(BaseSchemaDefinition):
         After calling the method extra_avro_attributes a dict is expected:
             typing.Dict[str, typing.Any]
         """
-        extra_avro_attributes_fn = getattr(
-            self.klass_or_instance, "extra_avro_attributes", None
-        )
+        extra_avro_attributes_fn = getattr(self.klass_or_instance, "extra_avro_attributes", None)
 
         if extra_avro_attributes_fn:
             extra_avro_attributes = extra_avro_attributes_fn()
-            assert isinstance(
-                extra_avro_attributes, dict
-            ), "Dict must be returned type in extra_avro_attributes method"
+            assert isinstance(extra_avro_attributes, dict), "Dict must be returned type in extra_avro_attributes method"
 
             aliases = extra_avro_attributes.get("aliases", self.aliases)
             namespace = extra_avro_attributes.get("namespace", self.namespace)
@@ -131,11 +123,7 @@ class AvroSchemaDefinition(BaseSchemaDefinition):
 
     def render(self):
         schema = OrderedDict(
-            [
-                ("type", self.type),
-                ("name", self.get_schema_name()),
-                ("fields", self.get_rendered_fields()),
-            ]
+            [("type", self.type), ("name", self.get_schema_name()), ("fields", self.get_rendered_fields()),]
         )
 
         if self.include_schema_doc:

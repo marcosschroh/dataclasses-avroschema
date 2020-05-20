@@ -1,0 +1,12 @@
+#!/bin/sh -e
+
+export PREFIX=""
+if [ -d 'venv' ] ; then
+    export PREFIX="venv/bin/"
+fi
+
+tests=${1-"./tests"}
+
+${PREFIX}pytest --cov=dataclasses_avroschema ${tests} --cov-fail-under=99
+${PREFIX}black dataclasses_avroschema tests --check
+${PREFIX}flake8 dataclasses_avroschema

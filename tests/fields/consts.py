@@ -50,16 +50,10 @@ UNION_PRIMITIVE_ELEMENTS = (
     ((str, None), (fields.STRING, fields.NULL)),
     (
         (datetime.date, datetime.datetime),
-        (
-            fields.PYTHON_TYPE_TO_AVRO[datetime.date],
-            fields.PYTHON_TYPE_TO_AVRO[datetime.datetime],
-        ),
+        (fields.PYTHON_TYPE_TO_AVRO[datetime.date], fields.PYTHON_TYPE_TO_AVRO[datetime.datetime],),
     ),
     ((float, str, int), (fields.FLOAT, fields.STRING, fields.INT)),
-    (
-        (str, float, int, bool),
-        (fields.STRING, fields.FLOAT, fields.INT, fields.BOOLEAN),
-    ),
+    ((str, float, int, bool), (fields.STRING, fields.FLOAT, fields.INT, fields.BOOLEAN),),
 )
 
 
@@ -67,9 +61,7 @@ SEQUENCE_TYPES = (typing.List, typing.Sequence, typing.MutableSequence)
 MAPPING_TYPES = (typing.Dict, typing.Mapping, typing.MutableMapping)
 
 SEQUENCES_AND_TYPES = (
-    (sequence, python_type, items_type)
-    for sequence in SEQUENCE_TYPES
-    for python_type, items_type in PRIMITIVE_TYPES
+    (sequence, python_type, items_type) for sequence in SEQUENCE_TYPES for python_type, items_type in PRIMITIVE_TYPES
 )
 
 SEQUENCES_LOGICAL_TYPES = (
@@ -79,9 +71,7 @@ SEQUENCES_LOGICAL_TYPES = (
 )
 
 MAPPING_AND_TYPES = (
-    (mapping, python_type, items_type)
-    for mapping in MAPPING_TYPES
-    for python_type, items_type in PRIMITIVE_TYPES
+    (mapping, python_type, items_type) for mapping in MAPPING_TYPES for python_type, items_type in PRIMITIVE_TYPES
 )
 
 MAPPING_LOGICAL_TYPES = (
@@ -121,9 +111,5 @@ avro_user = {
 
 ARRAY_WITH_UNION_TYPES = (
     (typing.Union[int, str], [fields.INT, fields.STRING], [10, 20, "test"]),
-    (
-        typing.Union[int, str, User],
-        [fields.INT, fields.STRING, avro_user],
-        [10, 20, "test"],
-    ),
+    (typing.Union[int, str, User], [fields.INT, fields.STRING, avro_user], [10, 20, "test"],),
 )

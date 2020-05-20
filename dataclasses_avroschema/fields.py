@@ -117,9 +117,7 @@ class BaseField:
                 * tuple, he OrderedDict will contains the key symbols inside type
                 * dict, he OrderedDict will contains the key values inside type
         """
-        template = OrderedDict(
-            [("name", self.name), ("type", self.get_avro_type())] + self.get_metadata()
-        )
+        template = OrderedDict([("name", self.name), ("type", self.get_avro_type())] + self.get_metadata())
 
         default = self.get_default_value()
         if default is not None:
@@ -240,9 +238,7 @@ class ListField(ContainerField):
         elif self.default_factory not in (dataclasses.MISSING, None):
             # expecting a callable
             default = self.default_factory()
-            assert isinstance(
-                default, list
-            ), f"List is required as default for field {self.name}"
+            assert isinstance(default, list), f"List is required as default for field {self.name}"
 
             logical_classes = LOGICAL_TYPES_FIELDS_CLASSES.keys()
 
@@ -265,15 +261,11 @@ class ListField(ContainerField):
             self.items_type = self._get_self_reference_type(items_type)
         elif utils.is_union(items_type):
             self.items_type = UnionField.generate_union(
-                items_type.__args__,
-                default=self.default,
-                default_factory=self.default_factory,
+                items_type.__args__, default=self.default, default_factory=self.default_factory,
             )
         else:
             # Is Avro Record Type
-            self.items_type = schema_generator.SchemaGenerator(
-                items_type
-            ).avro_schema_to_python()
+            self.items_type = schema_generator.SchemaGenerator(items_type).avro_schema_to_python()
 
 
 @dataclasses.dataclass
@@ -295,9 +287,7 @@ class DictField(ContainerField):
         elif self.default_factory not in (dataclasses.MISSING, None):
             # expeting a callable
             default = self.default_factory()
-            assert isinstance(
-                default, dict
-            ), f"Dict is required as default for field {self.name}"
+            assert isinstance(default, dict), f"Dict is required as default for field {self.name}"
 
             logical_classes = LOGICAL_TYPES_FIELDS_CLASSES.keys()
 
@@ -322,9 +312,7 @@ class DictField(ContainerField):
             # Checking for a self reference. Maybe is a typing.ForwardRef
             self.values_type = self._get_self_reference_type(values_type)
         else:
-            self.values_type = schema_generator.SchemaGenerator(
-                values_type
-            ).avro_schema_to_python()
+            self.values_type = schema_generator.SchemaGenerator(values_type).avro_schema_to_python()
 
 
 @dataclasses.dataclass
@@ -334,15 +322,11 @@ class UnionField(BaseField):
     def get_avro_type(self):
         elements = self.type.__args__
 
-        return self.generate_union(
-            elements, default=self.default, default_factory=self.default_factory
-        )
+        return self.generate_union(elements, default=self.default, default_factory=self.default_factory)
 
     @staticmethod
     def generate_union(
-        elements: typing.List,
-        default: typing.Any = None,
-        default_factory: typing.Callable = dataclasses.MISSING,
+        elements: typing.List, default: typing.Any = None, default_factory: typing.Callable = dataclasses.MISSING,
     ):
         """
         Generate union.
@@ -362,9 +346,7 @@ class UnionField(BaseField):
                 klass = PRIMITIVE_LOGICAL_TYPES_FIELDS_CLASSES[element]
                 union_element = klass.avro_type
             else:
-                union_element = schema_generator.SchemaGenerator(
-                    element
-                ).avro_schema_to_python()
+                union_element = schema_generator.SchemaGenerator(element).avro_schema_to_python()
 
             unions.append(union_element)
 
@@ -380,9 +362,7 @@ class UnionField(BaseField):
         elif self.default_factory not in (dataclasses.MISSING, None):
             # expeting a callable
             default = self.default_factory()
-            assert isinstance(
-                default, (dict, list)
-            ), f"Dict or List is required as default for field {self.name}"
+            assert isinstance(default, (dict, list)), f"Dict or List is required as default for field {self.name}"
 
             return default
 
@@ -502,9 +482,7 @@ class TimeField(LogicalTypeField):
             time.microsecond,
         )
 
-        return int(
-            (((hour * 60 + minutes) * 60 + seconds) * 1000) + (microseconds / 1000)
-        )
+        return int((((hour * 60 + minutes) * 60 + seconds) * 1000) + (microseconds / 1000))
 
 
 @dataclasses.dataclass
@@ -640,13 +618,9 @@ def field_factory(
         klass = INMUTABLE_FIELDS_CLASSES[native_type]
         return klass(name=name, type=native_type, default=default, metadata=metadata)
     elif utils.is_self_referenced(native_type):
-        return SelfReferenceField(
-            name=name, type=native_type, default=default, metadata=metadata
-        )
+        return SelfReferenceField(name=name, type=native_type, default=default, metadata=metadata)
     elif native_type is types.Fixed:
-        return FixedField(
-            name=name, type=native_type, default=default, metadata=metadata
-        )
+        return FixedField(name=name, type=native_type, default=default, metadata=metadata)
     elif isinstance(native_type, typing._GenericAlias):
         origin = native_type.__origin__
 
@@ -667,20 +641,12 @@ def field_factory(
             )
 
         klass = CONTAINER_FIELDS_CLASSES[origin]
-        return klass(
-            name=name,
-            type=native_type,
-            default=default,
-            default_factory=default_factory,
-            metadata=metadata,
-        )
+        return klass(name=name, type=native_type, default=default, default_factory=default_factory, metadata=metadata,)
     elif native_type in PYTHON_LOGICAL_TYPES:
         klass = LOGICAL_TYPES_FIELDS_CLASSES[native_type]
         return klass(name=name, type=native_type, default=default, metadata=metadata)
     else:
-        return RecordField(
-            name=name, type=native_type, default=default, metadata=metadata
-        )
+        return RecordField(name=name, type=native_type, default=default, metadata=metadata)
 
 
 Field = field_factory

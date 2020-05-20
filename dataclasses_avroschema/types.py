@@ -10,9 +10,7 @@ class Fixed(typing.Generic[T]):
     size (int): Specifying the number of bytes per value
     """
 
-    def __init__(
-        self, size: int, namespace: str = None, aliases: typing.List = None
-    ) -> None:
+    def __init__(self, size: int, namespace: str = None, aliases: typing.List = None) -> None:
         self.size = size
         self.namespace = namespace
         self.aliases = aliases
