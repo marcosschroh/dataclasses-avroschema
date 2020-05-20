@@ -55,6 +55,52 @@ SchemaGenerator(User).avro_schema()
 }'
 ```
 
+and serialization
+
+```python
+import typing
+
+from dataclasses_avroschema.schema_generator import SchemaGenerator
+
+
+@dataclass
+class Address:
+    "An Address"
+    street: str
+    street_number: int
+
+@dataclass
+class User:
+    "User with multiple Address"
+    name: str
+    age: int
+    addresses: typing.List[Address]
+
+address_data = {
+    "street": "test",
+    "street_number": 10,
+}
+
+# create an Address instance
+address = Address(**address_data)
+
+data_user = {
+    "name": "john",
+    "age": 20,
+    "addresses": [address],
+}
+
+# create an User instance
+user = User(**data_user)
+schema = SchemaGenerator(user)
+
+schema.serialize()
+# >>> b"\x08john(\x02\x08test\x14\x00"
+
+schema.serialize(serialization_type="avro-json")
+# >>> b'{"name": "john", "age": 20, "addresses": [{"street": "test", "street_number": 10}]}'
+```
+
 ## Features
 
 * [X] Primitive types: int, long, float, boolean, string and null support
@@ -63,6 +109,8 @@ SchemaGenerator(User).avro_schema()
 * [X] Schema relations (oneToOne, oneToMany)
 * [X] Recursive Schemas
 * [X] Generate Avro Schemas from `faust.Record`
+* [X] Instance serialization correspondent to `avro schema` generated
+* [X] Data deserialization
 
 ## Development
 
