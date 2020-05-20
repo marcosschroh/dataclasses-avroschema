@@ -63,3 +63,10 @@ SchemaGenerator(User).avro_schema()
 * [X] Schema relations (oneToOne, oneToMany)
 * [X] Recursive Schemas
 * [X] Generate Avro Schemas from `faust.Record`
+
+## Development
+
+1. Create a `virtualenv`: `python3.7 -m venv venv && source venv/bin/activate`
+2. Install requirements: `pip install -r requirements.txt`
+3. Code linting: `./scripts/lint`
+4. Run tests: `./scripts/test`

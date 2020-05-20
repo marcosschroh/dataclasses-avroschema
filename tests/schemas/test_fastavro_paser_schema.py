@@ -54,9 +54,7 @@ def test_schema_with_extra_avro_attrs(user_extra_avro_atributes_dataclass):
                 "aliases": ["User", "My favorite User"]
             }
     """
-    schema = SchemaGenerator(
-        user_extra_avro_atributes_dataclass
-    ).avro_schema_to_python()
+    schema = SchemaGenerator(user_extra_avro_atributes_dataclass).avro_schema_to_python()
 
     assert parse_schema(schema)
 
@@ -227,9 +225,7 @@ def test_schema_with_union_types():
         logical_union: typing.Union[datetime.datetime, datetime.date, uuid.uuid4]
         optional_union: typing.Optional[str]
         optional_union_with_default: typing.Optional[str] = None
-        second_union: typing.Union[str, int] = dataclasses.field(
-            default_factory=lambda: ["test"]
-        )
+        second_union: typing.Union[str, int] = dataclasses.field(default_factory=lambda: ["test"])
 
     assert parse_schema(SchemaGenerator(UnionSchema).avro_schema_to_python())
 
@@ -245,9 +241,7 @@ def test_schema_with_union_record_types():
 
     class UnionSchema:
         "Some Unions"
-        mountain_trip: typing.Union[Bus, Car] = dataclasses.field(
-            default_factory=lambda: {"engine_name": "honda"}
-        )
+        mountain_trip: typing.Union[Bus, Car] = dataclasses.field(default_factory=lambda: {"engine_name": "honda"})
 
     assert parse_schema(SchemaGenerator(UnionSchema).avro_schema_to_python())
 
@@ -256,8 +250,6 @@ def test_schema_array_with_union_types():
     class ArrayUnionSchema:
         "Array Some Unions"
         first_union: typing.List[typing.Union[str, int]]
-        second_union: typing.List[typing.Union[str, int]] = dataclasses.field(
-            default_factory=lambda: ["test"]
-        )
+        second_union: typing.List[typing.Union[str, int]] = dataclasses.field(default_factory=lambda: ["test"])
 
     assert parse_schema(SchemaGenerator(ArrayUnionSchema).avro_schema_to_python())

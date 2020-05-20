@@ -24,17 +24,13 @@ def test_total_schema_fields_from_instance(user_dataclass):
 def test_schema_render_from_class_with_field_metadata(
     user_dataclass_with_field_metadata, user_with_field_metadata_avro_json
 ):
-    user_schema = SchemaGenerator(
-        user_dataclass_with_field_metadata, include_schema_doc=False
-    ).avro_schema()
+    user_schema = SchemaGenerator(user_dataclass_with_field_metadata, include_schema_doc=False).avro_schema()
 
     assert user_schema == json.dumps(user_with_field_metadata_avro_json)
 
 
 def test_schema_render_from_class(user_dataclass, user_avro_json):
-    user_schema = SchemaGenerator(
-        user_dataclass, include_schema_doc=False
-    ).avro_schema()
+    user_schema = SchemaGenerator(user_dataclass, include_schema_doc=False).avro_schema()
 
     assert user_schema == json.dumps(user_avro_json)
 
@@ -47,18 +43,14 @@ def test_schema_render_from_instance(user_dataclass, user_avro_json):
 
 
 def test_schema_render_from_class_with_doc(user_dataclass, user_avro_json):
-    user_avro_json[
-        "doc"
-    ] = "User(name: str, age: int, has_pets: bool, money: float, encoded: bytes)"
+    user_avro_json["doc"] = "User(name: str, age: int, has_pets: bool, money: float, encoded: bytes)"
     user_schema = SchemaGenerator(user_dataclass).avro_schema()
 
     assert user_schema == json.dumps(user_avro_json)
 
 
 def test_schema_render_from_instance_with_doc(user_dataclass, user_avro_json):
-    user_avro_json[
-        "doc"
-    ] = "User(name: str, age: int, has_pets: bool, money: float, encoded: bytes)"
+    user_avro_json["doc"] = "User(name: str, age: int, has_pets: bool, money: float, encoded: bytes)"
 
     user = user_dataclass("test", 20, True, 10.4, encoded)
     user_schema = SchemaGenerator(user).avro_schema()
@@ -139,9 +131,6 @@ def test_not_implementd_methods():
     with pytest.raises(TypeError) as excinfo:
         BaseSchemaDefinition("avro", Aclass)
 
-    msg = (
-        f"Can't instantiate abstract class BaseSchemaDefinition with abstract "
-        f"methods get_rendered_fields, render"
-    )
+    msg = f"Can't instantiate abstract class BaseSchemaDefinition with abstract " f"methods get_rendered_fields, render"
 
     assert msg == str(excinfo.value)

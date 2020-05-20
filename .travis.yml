@@ -11,6 +11,4 @@ install: pip install -r requirements.txt
 matrix:
   include:	
     - name: Test 
-      script: ./scripts/test.sh && codecov && codecov --token=$CODECOV_TOKEN
-    - name: Lint
-      script: ./scripts/lint.sh
+      script: ./scripts/test && codecov && codecov --token=$CODECOV_TOKEN

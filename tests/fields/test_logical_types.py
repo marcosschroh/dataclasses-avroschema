@@ -8,9 +8,7 @@ from dataclasses_avroschema import fields
 from . import consts
 
 
-@pytest.mark.parametrize(
-    "python_type,avro_type,logical_type", consts.LOGICAL_TYPES_AND_DEFAULTS
-)
+@pytest.mark.parametrize("python_type,avro_type,logical_type", consts.LOGICAL_TYPES_AND_DEFAULTS)
 def test_logical_types(python_type, avro_type, logical_type):
     name = "a logical type"
     python_type = python_type
@@ -21,9 +19,7 @@ def test_logical_types(python_type, avro_type, logical_type):
     assert expected == field.to_dict()
 
 
-@pytest.mark.parametrize(
-    "python_type,avro_type,logical_type", consts.LOGICAL_TYPES_AND_DEFAULTS
-)
+@pytest.mark.parametrize("python_type,avro_type,logical_type", consts.LOGICAL_TYPES_AND_DEFAULTS)
 def test_logical_types_with_null_as_default(python_type, avro_type, logical_type):
     name = "a logical type"
     python_type = python_type
@@ -67,9 +63,7 @@ def test_logical_type_time_with_default():
         time.second,
         time.microsecond,
     )
-    miliseconds = int(
-        (((hour * 60 + minutes) * 60 + seconds) * 1000) + (microseconds / 1000)
-    )
+    miliseconds = int((((hour * 60 + minutes) * 60 + seconds) * 1000) + (microseconds / 1000))
 
     expected = {
         "name": name,
@@ -111,9 +105,7 @@ def test_logical_type_uuid_with_default():
     assert expected == field.to_dict()
 
 
-@pytest.mark.parametrize(
-    "logical_type,invalid_default,msg", consts.LOGICAL_TYPES_AND_INVALID_DEFAULTS
-)
+@pytest.mark.parametrize("logical_type,invalid_default,msg", consts.LOGICAL_TYPES_AND_INVALID_DEFAULTS)
 def test_invalid_default_values(logical_type, invalid_default, msg):
     name = "a_field"
     field = fields.Field(name, logical_type, invalid_default)

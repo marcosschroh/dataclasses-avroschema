@@ -2,14 +2,14 @@ import dataclasses
 import json
 import typing
 
-from dataclasses_avroschema.schema_definition import AvroSchemaDefinition
+from dataclasses_avroschema import schema_definition
 
 
 class SchemaGenerator:
     def __init__(self, klass_or_instance, include_schema_doc: bool = True) -> None:
         self.dataclass = self.generate_dataclass(klass_or_instance)
         self.include_schema_doc = include_schema_doc
-        self.schema_definition: AvroSchemaDefinition = None
+        self.schema_definition: schema_definition.AvroSchemaDefinition = None
 
     @staticmethod
     def generate_dataclass(klass_or_instance):
@@ -24,17 +24,17 @@ class SchemaGenerator:
         # let's live open the possibility to define different
         # schema definitions like json
         if schema_type == "avro":
-            schema_definition = self._generate_avro_schema()
+            schema_def = self._generate_avro_schema()
         else:
             raise ValueError("Invalid type. Expected avro schema type.")
 
         # cache the schema
-        self.schema_definition = schema_definition
+        self.schema_definition = schema_def
 
         return self.schema_definition.render()
 
-    def _generate_avro_schema(self) -> AvroSchemaDefinition:
-        return AvroSchemaDefinition(
+    def _generate_avro_schema(self) -> schema_definition.AvroSchemaDefinition:
+        return schema_definition.AvroSchemaDefinition(
             "record", self.dataclass, include_schema_doc=self.include_schema_doc
         )
 
@@ -45,7 +45,7 @@ class SchemaGenerator:
         return json.loads(self.avro_schema())
 
     @property
-    def get_fields(self) -> typing.List["Field"]:
+    def get_fields(self) -> typing.List["schema_definition.Field"]:
         if self.schema_definition is None:
             self.generate_schema()
 

@@ -38,9 +38,7 @@ def test_tuple_type():
     assert expected == field.to_dict()
 
 
-@pytest.mark.parametrize(
-    "sequence, python_primitive_type,python_type_str", consts.SEQUENCES_AND_TYPES
-)
+@pytest.mark.parametrize("sequence, python_primitive_type,python_type_str", consts.SEQUENCES_AND_TYPES)
 def test_sequence_type(sequence, python_primitive_type, python_type_str):
     """
     When the type is List, the Avro field type should be array
@@ -67,9 +65,7 @@ def test_sequence_type(sequence, python_primitive_type, python_type_str):
     assert expected == field.to_dict()
 
     values = faker.pylist(2, True, python_primitive_type)
-    field = fields.Field(
-        name, python_type, default=dataclasses.MISSING, default_factory=lambda: values
-    )
+    field = fields.Field(name, python_type, default=dataclasses.MISSING, default_factory=lambda: values)
 
     expected = {
         "name": name,
@@ -81,12 +77,9 @@ def test_sequence_type(sequence, python_primitive_type, python_type_str):
 
 
 @pytest.mark.parametrize(
-    "sequence,python_primitive_type,python_type_str,value",
-    consts.SEQUENCES_LOGICAL_TYPES,
+    "sequence,python_primitive_type,python_type_str,value", consts.SEQUENCES_LOGICAL_TYPES,
 )
-def test_sequence_with_logical_type(
-    sequence, python_primitive_type, python_type_str, value
-):
+def test_sequence_with_logical_type(sequence, python_primitive_type, python_type_str, value):
     """
     When the type is List, the Avro field type should be array
     with the items attribute present.
@@ -113,18 +106,13 @@ def test_sequence_with_logical_type(
 
     values = [value]
 
-    field = fields.Field(
-        name, python_type, default=dataclasses.MISSING, default_factory=lambda: values
-    )
+    field = fields.Field(name, python_type, default=dataclasses.MISSING, default_factory=lambda: values)
 
     expected = {
         "name": name,
         "type": {"type": "array", "name": name, "items": python_type_str},
         "default": [
-            fields.LOGICAL_TYPES_FIELDS_CLASSES[python_primitive_type].to_logical_type(
-                value
-            )
-            for value in values
+            fields.LOGICAL_TYPES_FIELDS_CLASSES[python_primitive_type].to_logical_type(value) for value in values
         ],
     }
 
@@ -161,9 +149,7 @@ def test_sequence_with_union_type(union, items, default):
     assert expected == field.to_dict()
 
 
-@pytest.mark.parametrize(
-    "mapping,python_primitive_type,python_type_str", consts.MAPPING_AND_TYPES
-)
+@pytest.mark.parametrize("mapping,python_primitive_type,python_type_str", consts.MAPPING_AND_TYPES)
 def test_mapping_type(mapping, python_primitive_type, python_type_str):
     """
     When the type is Dict, the Avro field type should be map
@@ -190,9 +176,7 @@ def test_mapping_type(mapping, python_primitive_type, python_type_str):
     assert expected == field.to_dict()
 
     value = faker.pydict(2, True, python_primitive_type)
-    field = fields.Field(
-        name, python_type, default=dataclasses.MISSING, default_factory=lambda: value
-    )
+    field = fields.Field(name, python_type, default=dataclasses.MISSING, default_factory=lambda: value)
 
     expected = {
         "name": name,
@@ -203,9 +187,7 @@ def test_mapping_type(mapping, python_primitive_type, python_type_str):
     assert expected == field.to_dict()
 
 
-@pytest.mark.parametrize(
-    "mapping,python_primitive_type,python_type_str,value", consts.MAPPING_LOGICAL_TYPES
-)
+@pytest.mark.parametrize("mapping,python_primitive_type,python_type_str,value", consts.MAPPING_LOGICAL_TYPES)
 def test_mapping_logical_type(mapping, python_primitive_type, python_type_str, value):
     """
     When the type is Dict, the Avro field type should be map
@@ -232,17 +214,13 @@ def test_mapping_logical_type(mapping, python_primitive_type, python_type_str, v
     assert expected == field.to_dict()
 
     values = {"key": value}
-    field = fields.Field(
-        name, python_type, default=dataclasses.MISSING, default_factory=lambda: values
-    )
+    field = fields.Field(name, python_type, default=dataclasses.MISSING, default_factory=lambda: values)
 
     expected = {
         "name": name,
         "type": {"type": "map", "name": name, "values": python_type_str},
         "default": {
-            key: fields.LOGICAL_TYPES_FIELDS_CLASSES[
-                python_primitive_type
-            ].to_logical_type(value)
+            key: fields.LOGICAL_TYPES_FIELDS_CLASSES[python_primitive_type].to_logical_type(value)
             for key, value in values.items()
         },
     }
@@ -279,18 +257,8 @@ def test_union_type_with_records():
     expected = {
         "name": name,
         "type": [
-            {
-                "name": "User",
-                "type": "record",
-                "doc": "User",
-                "fields": [{"name": "first_name", "type": "string"}],
-            },
-            {
-                "name": "Car",
-                "type": "record",
-                "doc": "Car",
-                "fields": [{"name": "engine_name", "type": "string"}],
-            },
+            {"name": "User", "type": "record", "doc": "User", "fields": [{"name": "first_name", "type": "string"}],},
+            {"name": "Car", "type": "record", "doc": "Car", "fields": [{"name": "engine_name", "type": "string"}],},
         ],
     }
 
@@ -314,18 +282,8 @@ def test_union_type_with_record_default():
         "name": name,
         "type": [
             fields.NULL,
-            {
-                "name": "User",
-                "type": "record",
-                "doc": "User",
-                "fields": [{"name": "first_name", "type": "string"}],
-            },
-            {
-                "name": "Car",
-                "type": "record",
-                "doc": "Car",
-                "fields": [{"name": "engine_name", "type": "string"}],
-            },
+            {"name": "User", "type": "record", "doc": "User", "fields": [{"name": "first_name", "type": "string"}],},
+            {"name": "Car", "type": "record", "doc": "Car", "fields": [{"name": "engine_name", "type": "string"}],},
         ],
         "default": fields.NULL,
     }
@@ -333,27 +291,14 @@ def test_union_type_with_record_default():
     assert expected == field.to_dict()
 
     field = fields.Field(
-        name,
-        python_type,
-        default=dataclasses.MISSING,
-        default_factory=lambda: {"first_name": "a name"},
+        name, python_type, default=dataclasses.MISSING, default_factory=lambda: {"first_name": "a name"},
     )
 
     expected = {
         "name": name,
         "type": [
-            {
-                "name": "User",
-                "type": "record",
-                "doc": "User",
-                "fields": [{"name": "first_name", "type": "string"}],
-            },
-            {
-                "name": "Car",
-                "type": "record",
-                "doc": "Car",
-                "fields": [{"name": "engine_name", "type": "string"}],
-            },
+            {"name": "User", "type": "record", "doc": "User", "fields": [{"name": "first_name", "type": "string"}],},
+            {"name": "Car", "type": "record", "doc": "Car", "fields": [{"name": "engine_name", "type": "string"}],},
         ],
         "default": {"first_name": "a name"},
     }
@@ -375,13 +320,7 @@ def test_fixed_type():
 
     expected = {
         "name": name,
-        "type": {
-            "type": "fixed",
-            "name": name,
-            "size": default.size,
-            "namespace": namespace,
-            "aliases": aliases,
-        },
+        "type": {"type": "fixed", "name": name, "size": default.size, "namespace": namespace, "aliases": aliases,},
     }
 
     assert expected == field.to_dict()
