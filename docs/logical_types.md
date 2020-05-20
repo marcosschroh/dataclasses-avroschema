@@ -9,7 +9,6 @@ The following list represent the avro logical types mapped to python types:
 | long      |  timestamp-millis | datetime.datetime |
 | string    |  uuid        | uuid.uuid4 |
 
-
 ### Date
 
 ```python

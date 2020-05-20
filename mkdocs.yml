@@ -15,6 +15,7 @@ nav:
     - Complex Types: 'complex_types.md'
     - Logical Types: 'logical_types.md'
     - Schema Relationships: 'schema_relationships.md'
+    - Serialization: 'serialization.md'
     - Faust Records: 'faust_records.md'
 
 markdown_extensions:

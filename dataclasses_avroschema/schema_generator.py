@@ -2,7 +2,8 @@ import dataclasses
 import json
 import typing
 
-from dataclasses_avroschema import schema_definition
+
+from dataclasses_avroschema import schema_definition, serialization
 
 
 class SchemaGenerator:
@@ -50,3 +51,14 @@ class SchemaGenerator:
             self.generate_schema()
 
         return self.schema_definition.fields
+
+    def serialize(self, serialization_type: str = "avro") -> bytes:
+        data = dataclasses.asdict(self.dataclass)
+        schema = self.avro_schema_to_python()
+
+        return serialization.serialize(data, schema, serialization_type=serialization_type)
+
+    def deserialize(self, data: bytes, serialization_type: str = "avro") -> typing.Any:
+        schema = self.avro_schema_to_python()
+
+        return serialization.deserialize(data, schema, serialization_type=serialization_type)
