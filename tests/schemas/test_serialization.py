@@ -91,3 +91,11 @@ def test_invalid_serialization_deserialization_types():
 
     with pytest.raises(ValueError):
         schema.deserialize(b"", serialization_type="json")
+
+
+def test_to_json():
+    user = create_user()
+    schema = SchemaGenerator(user)
+    payload = {"name": "john", "age": 20, "addresses": [{"street": "test", "street_number": 10}]}
+
+    assert schema.to_json() == payload

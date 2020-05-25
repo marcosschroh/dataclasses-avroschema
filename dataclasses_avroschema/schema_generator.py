@@ -2,8 +2,10 @@ import dataclasses
 import json
 import typing
 
-
 from dataclasses_avroschema import schema_definition, serialization
+
+AVRO = "avro"
+AVRO_JSON = "avro-json"
 
 
 class SchemaGenerator:
@@ -40,7 +42,7 @@ class SchemaGenerator:
         )
 
     def avro_schema(self) -> str:
-        return json.dumps(self.generate_schema(schema_type="avro"))
+        return json.dumps(self.generate_schema(schema_type=AVRO))
 
     def avro_schema_to_python(self) -> typing.Dict[str, typing.Any]:
         return json.loads(self.avro_schema())
@@ -52,13 +54,18 @@ class SchemaGenerator:
 
         return self.schema_definition.fields
 
-    def serialize(self, serialization_type: str = "avro") -> bytes:
+    def serialize(self, serialization_type: str = AVRO) -> bytes:
         data = dataclasses.asdict(self.dataclass)
         schema = self.avro_schema_to_python()
 
         return serialization.serialize(data, schema, serialization_type=serialization_type)
 
-    def deserialize(self, data: bytes, serialization_type: str = "avro") -> typing.Any:
+    def deserialize(self, data: bytes, serialization_type: str = AVRO) -> typing.Any:
         schema = self.avro_schema_to_python()
 
         return serialization.deserialize(data, schema, serialization_type=serialization_type)
+
+    def to_json(self):
+        data = self.serialize(serialization_type=AVRO_JSON)
+
+        return json.loads(data.decode())

@@ -1,5 +1,4 @@
 import io
-
 import typing
 
 import fastavro
