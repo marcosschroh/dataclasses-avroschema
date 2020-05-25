@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 import pytest
 
-from dataclasses_avroschema.schema_generator import SchemaGenerator
+from dataclasses_avroschema import SchemaGenerator
 
 
 def create_user():

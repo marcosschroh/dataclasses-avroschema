@@ -7,7 +7,7 @@ import uuid
 import faust
 
 from dataclasses_avroschema import schema_definition, types
-from dataclasses_avroschema.schema_generator import SchemaGenerator
+from dataclasses_avroschema import SchemaGenerator
 
 encoded = "test".encode()
 

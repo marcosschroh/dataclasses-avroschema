@@ -9,7 +9,7 @@ Generate [Avro](https://avro.apache.org/docs/1.8.2/spec.html) Schemas from a Pyt
 
 ## Requirements
 
-python 3.7+
+`python 3.7+`
 
 ## Installation
 
@@ -19,8 +19,10 @@ pip install dataclasses-avroschema
 
 ## Usage
 
+### Generating the avro schema
+
 ```python
-from dataclasses_avroschema.schema_generator import SchemaGenerator
+from dataclasses_avroschema import SchemaGenerator
 
 
 class User:
@@ -51,12 +53,3 @@ SchemaGenerator(User).avro_schema()
     ]
 }'
 ```
-
-## Features
-
-* [X] Primitive types: int, long, float, boolean, string and null support
-* [X] Complex types: enum, array, map, fixed, unions and records support
-* [x] Logical Types: date, time, datetime, uuid support
-* [X] Schema relations (oneToOne, oneToMany)
-* [X] Recursive Schemas
-* [X] Generate Avro Schemas from `faust.Record`

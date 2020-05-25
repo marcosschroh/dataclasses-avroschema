@@ -15,7 +15,7 @@ The following list represent the avro primitive types mapped to python types:
 Example:
 
 ```python
-from dataclasses_avroschema.schema_generator import SchemaGenerator
+from dataclasses_avroschema import SchemaGenerator
 
 
 class User:
@@ -56,7 +56,7 @@ SchemaGenerator(User).avro_schema()
 Example with defaults:
 
 ```python
-from dataclasses_avroschema.schema_generator import SchemaGenerator
+from dataclasses_avroschema import SchemaGenerator
 
 
 class User:

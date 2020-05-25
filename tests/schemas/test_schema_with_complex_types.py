@@ -4,7 +4,7 @@ import json
 import typing
 import uuid
 
-from dataclasses_avroschema.schema_generator import SchemaGenerator
+from dataclasses_avroschema import SchemaGenerator
 
 
 def test_schema_with_complex_types(user_advance_dataclass, user_advance_avro_json):

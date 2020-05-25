@@ -8,7 +8,7 @@ For serialization is neccesary to use python dataclasses instances and not just 
 ```python
 import typing
 
-from dataclasses_avroschema.schema_generator import SchemaGenerator
+from dataclasses_avroschema import SchemaGenerator
 
 
 @dataclass
@@ -56,7 +56,7 @@ Deserialization could take place with an instance dataclass or the dataclass its
 ```python
 import typing
 
-from dataclasses_avroschema.schema_generator import SchemaGenerator
+from dataclasses_avroschema import SchemaGenerator
 
 
 class Address:

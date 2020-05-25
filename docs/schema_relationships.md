@@ -5,7 +5,7 @@
 An User has one Address example:
 
 ```python
-from dataclasses_avroschema.schema_generator import SchemaGenerator
+from dataclasses_avroschema import SchemaGenerator
 
 
 class Address:
@@ -50,7 +50,7 @@ An User with only one friend :-( :
 ```python
 import typing
 
-from dataclasses_avroschema.schema_generator import SchemaGenerator
+from dataclasses_avroschema import SchemaGenerator
 
 
 class User:
@@ -89,7 +89,7 @@ An User has multiple Address example:
 ```python
 import typing
 
-from dataclasses_avroschema.schema_generator import SchemaGenerator
+from dataclasses_avroschema import SchemaGenerator
 
 
 class Address:
@@ -137,7 +137,7 @@ or OneToMany using a Map:
 ```python
 import typing
 
-from dataclasses_avroschema.schema_generator import SchemaGenerator
+from dataclasses_avroschema import SchemaGenerator
 
 
 class Address:
@@ -188,7 +188,7 @@ An User with multiple friends :-) :
 ```python
 import typing
 
-from dataclasses_avroschema.schema_generator import SchemaGenerator
+from dataclasses_avroschema import SchemaGenerator
 
 # Using a List (Avro Array)
 class User:

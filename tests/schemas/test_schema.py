@@ -3,7 +3,7 @@ import json
 import pytest
 
 from dataclasses_avroschema.schema_definition import BaseSchemaDefinition
-from dataclasses_avroschema.schema_generator import SchemaGenerator
+from dataclasses_avroschema import SchemaGenerator
 
 encoded = "test".encode()
 
