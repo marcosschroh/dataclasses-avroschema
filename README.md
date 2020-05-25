@@ -9,7 +9,7 @@ Generate [Avro](https://avro.apache.org/docs/1.8.2/spec.html) Schemas from a Pyt
 
 ## Requirements
 
-python 3.7+
+`python 3.7+`
 
 ## Installation
 
@@ -23,8 +23,10 @@ https://marcosschroh.github.io/dataclasses-avroschema/
 
 ## Usage
 
+### Generating the avro schema
+
 ```python
-from dataclasses_avroschema.schema_generator import SchemaGenerator
+from dataclasses_avroschema import SchemaGenerator
 
 
 class User:
@@ -55,12 +57,12 @@ SchemaGenerator(User).avro_schema()
 }'
 ```
 
-and serialization
+### Serialization to avro or avro-json
 
 ```python
 import typing
 
-from dataclasses_avroschema.schema_generator import SchemaGenerator
+from dataclasses_avroschema import SchemaGenerator
 
 
 @dataclass
@@ -99,6 +101,38 @@ schema.serialize()
 
 schema.serialize(serialization_type="avro-json")
 # >>> b'{"name": "john", "age": 20, "addresses": [{"street": "test", "street_number": 10}]}'
+```
+
+### Deserialization
+
+Deserialization could take place with an instance dataclass or the dataclass itself
+
+```python
+import typing
+
+from dataclasses_avroschema import SchemaGenerator
+
+
+class Address:
+    "An Address"
+    street: str
+    street_number: int
+
+class User:
+    "User with multiple Address"
+    name: str
+    age: int
+    addresses: typing.List[Address]
+
+avro_binary = b"\x08john(\x02\x08test\x14\x00"
+avro_json_binary = b'{"name": "john", "age": 20, "addresses": [{"street": "test", "street_number": 10}]}'
+schema = SchemaGenerator(user)
+
+schema.deserialize(avro_binary)
+# >>> {"name": "john", "age": 20, "addresses": [{"street": "test", "street_number": 10}]}
+
+schema.deserialize(avro_json_binary, serialization_type="avro-json")
+# >>> {"name": "john", "age": 20, "addresses": [{"street": "test", "street_number": 10}]}
 ```
 
 ## Features

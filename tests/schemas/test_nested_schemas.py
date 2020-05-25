@@ -1,7 +1,7 @@
 import json
 import typing
 
-from dataclasses_avroschema.schema_generator import SchemaGenerator
+from dataclasses_avroschema import SchemaGenerator
 
 
 def test_one_to_one_relationship(user_one_address_schema):

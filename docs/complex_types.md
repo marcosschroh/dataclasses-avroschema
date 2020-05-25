@@ -161,7 +161,7 @@ import typing
 
 
 from dataclasses_avroschema import types
-from dataclasses_avroschema.schema_generator import SchemaGenerator
+from dataclasses_avroschema import SchemaGenerator
 
 
 class UserAdvance:
@@ -188,7 +188,7 @@ import dataclasses
 import datetime
 import uuid
 
-from dataclasses_avroschema.schema_generator import SchemaGenerator
+from dataclasses_avroschema import SchemaGenerator
 
 class UnionSchema:
     "Some Unions"
@@ -335,7 +335,7 @@ There are some special avro attributes like `aliases`, `namespace` and `doc` (bo
 The `doc` attribute can be set via the docstring class. The `aliases` and `namespaces` must be set using the `extra_avro_attributes` static method.
 
 ```python
-from dataclasses_avroschema.schema_generator import SchemaGenerator
+from dataclasses_avroschema import SchemaGenerator
 
 
 class User:

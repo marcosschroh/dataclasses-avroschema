@@ -5,7 +5,7 @@ import uuid
 
 from fastavro import parse_schema
 
-from dataclasses_avroschema.schema_generator import SchemaGenerator
+from dataclasses_avroschema import SchemaGenerator
 
 
 def test_minimal_schema(user_dataclass):

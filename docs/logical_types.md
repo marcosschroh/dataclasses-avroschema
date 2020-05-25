@@ -14,7 +14,7 @@ The following list represent the avro logical types mapped to python types:
 ```python
 import datetime
 
-from dataclasses_avroschema.schema_generator import SchemaGenerator
+from dataclasses_avroschema import SchemaGenerator
 
 a_datetime = datetime.datetime(2019, 10, 12, 17, 57, 42)
 
@@ -64,7 +64,7 @@ SchemaGenerator(DateLogicalType).avro_schema()
 ```python
 import datetime
 
-from dataclasses_avroschema.schema_generator import SchemaGenerator
+from dataclasses_avroschema import SchemaGenerator
 
 a_datetime = datetime.datetime(2019, 10, 12, 17, 57, 42)
 
@@ -114,7 +114,7 @@ SchemaGenerator(TimeLogicalTypes).avro_schema()
 ```python
 import datetime
 
-from dataclasses_avroschema.schema_generator import SchemaGenerator
+from dataclasses_avroschema import SchemaGenerator
 
 a_datetime = datetime.datetime(2019, 10, 12, 17, 57, 42)
 
@@ -163,7 +163,7 @@ SchemaGenerator(DatetimeLogicalType).avro_schema()
 ```python
 import uuid
 
-from dataclasses_avroschema.schema_generator import SchemaGenerator
+from dataclasses_avroschema import SchemaGenerator
 
 
 class UUIDLogicalTypes:
