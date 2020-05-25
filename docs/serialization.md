@@ -3,9 +3,11 @@ In both cases we can do it with `avro` or `avro-json`.
 
 ### Serialization
 
-For serialization is neccesary to use python dataclasses instances and not just the dataclass.
+For serialization is neccesary to use python class/dataclasses instance:
 
 ```python
+from dataclasses import dataclass
+
 import typing
 
 from dataclasses_avroschema import SchemaGenerator
@@ -47,6 +49,9 @@ schema.serialize()
 
 schema.serialize(serialization_type="avro-json")
 # >>> b'{"name": "john", "age": 20, "addresses": [{"street": "test", "street_number": 10}]}'
+
+schema.to_json()
+# python dict >>> {'name': 'john', 'age': 20, 'addresses': [{'street': 'test', 'street_number': 10}]}
 ```
 
 ### Deserialization

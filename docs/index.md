@@ -22,6 +22,8 @@ pip install dataclasses-avroschema
 ### Generating the avro schema
 
 ```python
+import typing
+
 from dataclasses_avroschema import SchemaGenerator
 
 

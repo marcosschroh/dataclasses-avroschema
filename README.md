@@ -26,6 +26,8 @@ https://marcosschroh.github.io/dataclasses-avroschema/
 ### Generating the avro schema
 
 ```python
+import typing
+
 from dataclasses_avroschema import SchemaGenerator
 
 
@@ -57,9 +59,13 @@ SchemaGenerator(User).avro_schema()
 }'
 ```
 
-### Serialization to avro or avro-json
+### Serialization to avro or avro-json and json payload
+
+For serialization is neccesary to use python class/dataclasses instance
 
 ```python
+from dataclasses import dataclass
+
 import typing
 
 from dataclasses_avroschema import SchemaGenerator
@@ -101,6 +107,12 @@ schema.serialize()
 
 schema.serialize(serialization_type="avro-json")
 # >>> b'{"name": "john", "age": 20, "addresses": [{"street": "test", "street_number": 10}]}'
+
+# Get the json from the instance
+
+schema.to_json()
+# python dict >>> {'name': 'john', 'age': 20, 'addresses': [{'street': 'test', 'street_number': 10}]}
+
 ```
 
 ### Deserialization
@@ -145,6 +157,7 @@ schema.deserialize(avro_json_binary, serialization_type="avro-json")
 * [X] Generate Avro Schemas from `faust.Record`
 * [X] Instance serialization correspondent to `avro schema` generated
 * [X] Data deserialization
+* [X] Generate json from python class instance
 
 ## Development
 
