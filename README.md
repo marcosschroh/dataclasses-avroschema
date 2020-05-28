@@ -28,7 +28,7 @@ https://marcosschroh.github.io/dataclasses-avroschema/
 ```python
 import typing
 
-from dataclasses_avroschema import SchemaGenerator
+from dataclasses_avroschema import SchemaGenerator, types
 
 
 class User:
@@ -37,7 +37,7 @@ class User:
     age: int
     pets: typing.List[str]
     accounts: typing.Dict[str, int]
-    favorite_colors: typing.Tuple[str] = ("BLUE", "YELLOW", "GREEN")
+    favorite_colors: types.Enum = types.Enum(["BLUE", "YELLOW", "GREEN"])
     country: str = "Argentina"
     address: str = None
 

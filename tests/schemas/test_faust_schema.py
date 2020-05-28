@@ -31,7 +31,7 @@ def test_faust_record_schema_complex_types(user_advance_avro_json):
         pets: typing.List[str]
         accounts: typing.Dict[str, int]
         has_car: bool = False
-        favorite_colors: typing.Tuple[str] = ("BLUE", "YELLOW", "GREEN")
+        favorite_colors: types.Enum = types.Enum(["BLUE", "YELLOW", "GREEN"])
         country: str = "Argentina"
         address: str = None
         md5: types.Fixed = types.Fixed(16)
@@ -48,7 +48,7 @@ def test_faust_record_schema_complex_types_with_defaults(user_advance_with_defau
         pets: typing.List[str] = dataclasses.field(default_factory=lambda: ["dog", "cat"])
         accounts: typing.Dict[str, int] = dataclasses.field(default_factory=lambda: {"key": 1})
         has_car: bool = False
-        favorite_colors: typing.Tuple[str] = ("BLUE", "YELLOW", "GREEN")
+        favorite_colors: types.Enum = types.Enum(["BLUE", "YELLOW", "GREEN"], default="BLUE")
         country: str = "Argentina"
         address: str = None
 

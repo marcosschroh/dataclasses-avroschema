@@ -57,7 +57,7 @@ UNION_PRIMITIVE_ELEMENTS = (
 )
 
 
-SEQUENCE_TYPES = (typing.List, typing.Sequence, typing.MutableSequence)
+SEQUENCE_TYPES = (typing.List, typing.Tuple, typing.Sequence, typing.MutableSequence)
 MAPPING_TYPES = (typing.Dict, typing.Mapping, typing.MutableMapping)
 
 SEQUENCES_AND_TYPES = (

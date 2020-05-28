@@ -100,14 +100,15 @@ Python Type | Avro Type   | Logical Type |
 | float     | float       | do not apply |
 | None      | null        | do not apply |
 | bytes     | bytes       | do not apply |
-| tuple     | enum        | do not apply |
 | typing.List      | array       | do not apply |
+| typing.Tuple     | array       | do not apply |
 | typing.Sequence      | array       | do not apply |
 | typing.MutableSequence      | array       | do not apply |
 | typing.Dict      | map         | do not apply |
 | typing.Mapping      | map         | do not apply |
 | typing.MutableMapping      | map         | do not apply |
 | types.Fixed      | fixed         | do not apply |
+| types.Enum      | enum         | do not apply |
 | typing.Union| union     | do not apply |
 | Pythin classs | record  | do not apply |
 | datetime.date | int     |  date        |
