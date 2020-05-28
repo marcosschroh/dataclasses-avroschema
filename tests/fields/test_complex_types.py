@@ -20,24 +20,6 @@ def test_invalid_type_container_field():
         fields.Field(name, python_type, dataclasses.MISSING)
 
 
-def test_tuple_type():
-    """
-    When the type is Tuple, the Avro field type should be enum
-    with the symbols attribute present.
-    """
-    name = "an_enum_field"
-    default = ("BLUE", "YELOW", "RED")
-    python_type = typing.Tuple
-    field = fields.Field(name, python_type, default)
-
-    expected = {
-        "name": name,
-        "type": {"type": "enum", "name": name, "symbols": list(default)},
-    }
-
-    assert expected == field.to_dict()
-
-
 @pytest.mark.parametrize("sequence, python_primitive_type,python_type_str", consts.SEQUENCES_AND_TYPES)
 def test_sequence_type(sequence, python_primitive_type, python_type_str):
     """
@@ -324,3 +306,43 @@ def test_fixed_type():
     }
 
     assert expected == field.to_dict()
+
+
+def test_enum_type():
+    """
+    When the type is types.Enum, the Avro field type should be Enum
+    with symbols attribute present.
+    """
+    name = "an_enum_field"
+    namespace = "my_emum"
+    aliases = ["enum", "first enum"]
+    default = types.Enum(
+        ["SPADES", "HEARTS", "DIAMONDS", "CLUBS"], namespace=namespace, aliases=aliases, default="CLUBS"
+    )
+
+    python_type = types.Enum
+    field = fields.Field(name, python_type, default)
+
+    expected = {
+        "name": name,
+        "type": {"type": "enum", "name": name, "symbols": default.symbols, "namespace": namespace, "aliases": aliases,},
+        "default": default.default,
+    }
+
+    assert expected == field.to_dict()
+
+    default = types.Enum(["SPADES", "HEARTS", "DIAMONDS", "CLUBS"])
+    field = fields.Field(name, python_type, default)
+
+    expected = {
+        "name": name,
+        "type": {"type": "enum", "name": name, "symbols": default.symbols,},
+    }
+
+    assert expected == field.to_dict()
+
+    with pytest.raises(AssertionError):
+        default = types.Enum(["SPADES", "HEARTS", "DIAMONDS", "CLUBS"], default="BLUE")
+        field = fields.Field(name, python_type, default)
+
+        field.to_dict()

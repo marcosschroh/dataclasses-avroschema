@@ -1,8 +1,10 @@
+import dataclasses
 import typing
 
 T = typing.TypeVar("T")
 
 
+@dataclasses.dataclass
 class Fixed(typing.Generic[T]):
     """
     Represents an Avro Fixed type
@@ -10,10 +12,27 @@ class Fixed(typing.Generic[T]):
     size (int): Specifying the number of bytes per value
     """
 
-    def __init__(self, size: int, namespace: str = None, aliases: typing.List = None) -> None:
-        self.size = size
-        self.namespace = namespace
-        self.aliases = aliases
+    size: int
+    namespace: str = None
+    aliases: typing.List = None
 
     def __repr__(self):
         return f"{self.size}"
+
+
+@dataclasses.dataclass
+class Enum(typing.Generic[T]):
+    """
+    Represents an Avro Enum type
+
+    simbols (typing.List): Specifying the possible values for the enum
+    """
+
+    symbols: typing.List[typing.Any]
+    default: typing.Any = None
+    namespace: str = None
+    aliases: typing.List = None
+    docs: str = None
+
+    def __repr__(self):
+        return f"{self.symbols}"

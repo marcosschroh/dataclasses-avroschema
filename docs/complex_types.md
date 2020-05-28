@@ -4,8 +4,8 @@ The following list represent the avro complext types mapped to python types:
 
 | Avro Type | Python Type |
 |-----------|-------------|
-| enums     |   typing.Tuple     |
-| arrays    |   typing.List, typing.Sequence, typing.MutableSequence      |
+| enums     |   types.Enum     |
+| arrays    |   typing.List, typing.Tuple, typing.Sequence, typing.MutableSequence      |
 | maps      |   typing.Dict, typing.Mapping, typing.MutableMapping      |
 | fixed     | types.Fixed |
 | unions    |typing.Union |
@@ -18,12 +18,12 @@ Example:
 ```python
 import typing
 
-from dataclasses_avroschema.schema_generator import SchemaGenerator
+from dataclasses_avroschema import SchemaGenerator, types
 
 
 class User:
     "An User"
-    favorite_colors: typing.Tuple[str] = ("BLUE", "YELLOW", "GREEN")
+    favorite_colors: types.Enum = types.Enum(["BLUE", "YELLOW", "GREEN"], default="BLUE")
 
 SchemaGenerator(User).avro_schema()
 
@@ -38,7 +38,8 @@ SchemaGenerator(User).avro_schema()
         "type": "enum",
         "symbols": ["BLUE", "YELLOW", "GREEN"],
         "name": "favorite_color"
-      }
+      },
+      "default": "BLUE"
     }
   ],
   "doc": "An User"
@@ -53,7 +54,7 @@ Example:
 import typing
 import dataclasses
 
-from dataclasses_avroschema.schema_generator import SchemaGenerator
+from dataclasses_avroschema import SchemaGenerator
 
 
 class UserAdvance:
@@ -108,7 +109,7 @@ Example:
 import typing
 import dataclasses
 
-from dataclasses_avroschema.schema_generator import SchemaGenerator
+from dataclasses_avroschema import SchemaGenerator
 
 
 class UserAdvance:

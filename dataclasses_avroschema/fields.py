@@ -41,9 +41,10 @@ PYTHON_TYPE_TO_AVRO = {
     bytes: BYTES,
     str: STRING,
     list: {"type": ARRAY},
-    tuple: {"type": ENUM},
+    tuple: {"type": ARRAY},
     dict: {"type": MAP},
     types.Fixed: {"type": FIXED},
+    types.Enum: {"type": ENUM},
     datetime.date: {"type": INT, "logicalType": DATE},
     datetime.time: {"type": INT, "logicalType": TIME_MILLIS},
     datetime.datetime: {"type": LONG, "logicalType": TIMESTAMP_MILLIS},
@@ -198,25 +199,6 @@ class ContainerField(BaseField):
         avro_type["name"] = self.get_singular_name(self.name)
 
         return avro_type
-
-
-@dataclasses.dataclass
-class TupleField(ContainerField):
-    symbols: typing.Any = None
-    default_factory: typing.Any = None
-
-    def __post_init__(self):
-        self.generate_symbols()
-
-    @property
-    def avro_type(self) -> typing.Dict:
-        return {"type": ENUM, "symbols": self.symbols}
-
-    def get_default_value(self):
-        return
-
-    def generate_symbols(self):
-        self.symbols = list(self.default)
 
 
 @dataclasses.dataclass
@@ -386,6 +368,32 @@ class FixedField(BaseField):
 
     def get_default_value(self):
         return
+
+
+@dataclasses.dataclass
+class EnumField(BaseField):
+    def get_avro_type(self):
+        avro_type = {
+            "type": ENUM,
+            "name": self.get_singular_name(self.name),
+            "symbols": self.default.symbols,
+        }
+
+        if self.default.namespace is not None:
+            avro_type["namespace"] = self.default.namespace
+
+        if self.default.aliases is not None:
+            avro_type["aliases"] = self.default.aliases
+
+        return avro_type
+
+    def get_default_value(self):
+        default = self.default.default
+        if default is not None:
+            assert (
+                default in self.default.symbols
+            ), f"The default value should be on of {self.default.symbols}. Current is {default}"
+        return self.default.default
 
 
 @dataclasses.dataclass
@@ -561,7 +569,7 @@ INMUTABLE_FIELDS_CLASSES = {
 }
 
 CONTAINER_FIELDS_CLASSES = {
-    tuple: TupleField,
+    tuple: ListField,
     list: ListField,
     collections.abc.Sequence: ListField,
     collections.abc.MutableSequence: ListField,
@@ -583,6 +591,7 @@ PRIMITIVE_LOGICAL_TYPES_FIELDS_CLASSES = {
     **INMUTABLE_FIELDS_CLASSES,
     **LOGICAL_TYPES_FIELDS_CLASSES,
     types.Fixed: FixedField,
+    types.Enum: EnumField,
 }
 
 
@@ -592,7 +601,6 @@ FieldType = typing.Union[
     FloatField,
     BytesField,
     NoneField,
-    TupleField,
     ListField,
     DictField,
     UnionField,
@@ -621,6 +629,8 @@ def field_factory(
         return SelfReferenceField(name=name, type=native_type, default=default, metadata=metadata)
     elif native_type is types.Fixed:
         return FixedField(name=name, type=native_type, default=default, metadata=metadata)
+    elif native_type is types.Enum:
+        return EnumField(name=name, type=native_type, default=default, metadata=metadata)
     elif isinstance(native_type, typing._GenericAlias):
         origin = native_type.__origin__
 
