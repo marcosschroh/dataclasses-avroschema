@@ -5,7 +5,7 @@ import uuid
 
 from fastavro import parse_schema
 
-from dataclasses_avroschema import SchemaGenerator
+from dataclasses_avroschema import AvroModel
 
 
 def test_minimal_schema(user_dataclass):
@@ -19,7 +19,7 @@ def test_minimal_schema(user_dataclass):
         money: float
         encoded: bytes
     """
-    schema = SchemaGenerator(user_dataclass).avro_schema_to_python()
+    schema = user_dataclass.avro_schema_to_python()
 
     assert parse_schema(schema)
 
@@ -35,7 +35,7 @@ def test_schema_with_field_metadata(user_dataclass_with_field_metadata):
         money: float
         encoded: bytes
     """
-    schema = SchemaGenerator(user_dataclass_with_field_metadata).avro_schema_to_python()
+    schema = user_dataclass_with_field_metadata.avro_schema_to_python()
 
     assert parse_schema(schema)
 
@@ -54,7 +54,7 @@ def test_schema_with_extra_avro_attrs(user_extra_avro_atributes_dataclass):
                 "aliases": ["User", "My favorite User"]
             }
     """
-    schema = SchemaGenerator(user_extra_avro_atributes_dataclass).avro_schema_to_python()
+    schema = user_extra_avro_atributes_dataclass.avro_schema_to_python()
 
     assert parse_schema(schema)
 
@@ -75,10 +75,7 @@ def test_advance_schema(user_advance_dataclass):
         address: str = None
         md5: types.Fixed = types.Fixed(16)
     """
-    user_schema = SchemaGenerator(user_advance_dataclass).avro_schema()
-    schema = SchemaGenerator(user_advance_dataclass).avro_schema_to_python()
-
-    print("hola", user_schema)
+    schema = user_advance_dataclass.avro_schema_to_python()
 
     assert parse_schema(schema)
 
@@ -98,9 +95,9 @@ def test_advance_schema_with_defaults(user_advance_with_defaults_dataclass):
         country: str = "Argentina"
         address: str = None
     """
-    schema = SchemaGenerator(user_advance_with_defaults_dataclass)
+    schema = user_advance_with_defaults_dataclass.avro_schema_to_python()
 
-    assert parse_schema(schema.avro_schema_to_python())
+    assert parse_schema(schema)
 
 
 def test_one_to_one_schema():
@@ -108,18 +105,18 @@ def test_one_to_one_schema():
     Test relationship one-to-one
     """
 
-    class Address:
+    class Address(AvroModel):
         "An Address"
         street: str
         street_number: int
 
-    class User:
+    class User(AvroModel):
         "An User with Address"
         name: str
         age: int
         address: Address
 
-    assert parse_schema(SchemaGenerator(User).avro_schema_to_python())
+    assert parse_schema(User.avro_schema_to_python())
 
 
 def test_one_to_many_schema():
@@ -127,18 +124,18 @@ def test_one_to_many_schema():
     Test relationship one-to-many
     """
 
-    class Address:
+    class Address(AvroModel):
         "An Address"
         street: str
         street_number: int
 
-    class User:
+    class User(AvroModel):
         "User with multiple Address"
         name: str
         age: int
         addresses: typing.List[Address]
 
-    assert parse_schema(SchemaGenerator(User).avro_schema_to_python())
+    assert parse_schema(User.avro_schema_to_python())
 
 
 def test_one_to_many_with_map_schema():
@@ -146,18 +143,18 @@ def test_one_to_many_with_map_schema():
     Test relationship one-to-many using a map
     """
 
-    class Address:
+    class Address(AvroModel):
         "An Address"
         street: str
         street_number: int
 
-    class User:
+    class User(AvroModel):
         "User with multiple Address"
         name: str
         age: int
         addresses: typing.Dict[str, Address]
 
-    assert parse_schema(SchemaGenerator(User).avro_schema_to_python())
+    assert parse_schema(User.avro_schema_to_python())
 
 
 def test_one_to_one_self_relationship():
@@ -165,13 +162,13 @@ def test_one_to_one_self_relationship():
     Test self relationship one-to-one
     """
 
-    class User:
+    class User(AvroModel):
         "User with self reference as friend"
         name: str
         age: int
         friend: typing.Type["User"]
 
-    assert parse_schema(SchemaGenerator(User).avro_schema_to_python())
+    assert parse_schema(User.avro_schema_to_python())
 
 
 def test_one_to_many_self_reference_schema():
@@ -179,13 +176,13 @@ def test_one_to_many_self_reference_schema():
     Test self relationship one-to-many using an array
     """
 
-    class User:
+    class User(AvroModel):
         "User with self reference as friends"
         name: str
         age: int
         friends: typing.List[typing.Type["User"]]
 
-    assert parse_schema(SchemaGenerator(User).avro_schema_to_python())
+    assert parse_schema(User.avro_schema_to_python())
 
 
 def test_one_to_many_self_reference_map_schema():
@@ -193,13 +190,13 @@ def test_one_to_many_self_reference_map_schema():
     Test self relationship one-to-many using a map
     """
 
-    class User:
+    class User(AvroModel):
         "User with self reference as friends"
         name: str
         age: int
         friends: typing.Dict[str, typing.Type["User"]]
 
-    assert parse_schema(SchemaGenerator(User).avro_schema_to_python())
+    assert parse_schema(User.avro_schema_to_python())
 
 
 def test_logical_types_schema():
@@ -208,18 +205,18 @@ def test_logical_types_schema():
     """
     a_datetime = datetime.datetime(2019, 10, 12, 17, 57, 42, 179133)
 
-    class LogicalTypes:
+    class LogicalTypes(AvroModel):
         "Some logical types"
         birthday: datetime.date = a_datetime.date()
         meeting_time: datetime.time = a_datetime.time()
         release_datetime: datetime.datetime = a_datetime
         event_uuid: uuid.uuid4 = "09f00184-7721-4266-a955-21048a5cc235"
 
-    assert parse_schema(SchemaGenerator(LogicalTypes).avro_schema_to_python())
+    assert parse_schema(LogicalTypes.avro_schema_to_python())
 
 
 def test_schema_with_union_types():
-    class UnionSchema:
+    class UnionSchema(AvroModel):
         "Some Unions"
         first_union: typing.Union[str, int]
         logical_union: typing.Union[datetime.datetime, datetime.date, uuid.uuid4]
@@ -227,29 +224,29 @@ def test_schema_with_union_types():
         optional_union_with_default: typing.Optional[str] = None
         second_union: typing.Union[str, int] = dataclasses.field(default_factory=lambda: ["test"])
 
-    assert parse_schema(SchemaGenerator(UnionSchema).avro_schema_to_python())
+    assert parse_schema(UnionSchema.avro_schema_to_python())
 
 
 def test_schema_with_union_record_types():
-    class Bus:
+    class Bus(AvroModel):
         "A Bus"
         engine_name: str
 
-    class Car:
+    class Car(AvroModel):
         "A Car"
         engine_name: str
 
-    class UnionSchema:
+    class UnionSchema(AvroModel):
         "Some Unions"
         mountain_trip: typing.Union[Bus, Car] = dataclasses.field(default_factory=lambda: {"engine_name": "honda"})
 
-    assert parse_schema(SchemaGenerator(UnionSchema).avro_schema_to_python())
+    assert parse_schema(UnionSchema.avro_schema_to_python())
 
 
 def test_schema_array_with_union_types():
-    class ArrayUnionSchema:
+    class ArrayUnionSchema(AvroModel):
         "Array Some Unions"
         first_union: typing.List[typing.Union[str, int]]
         second_union: typing.List[typing.Union[str, int]] = dataclasses.field(default_factory=lambda: ["test"])
 
-    assert parse_schema(SchemaGenerator(ArrayUnionSchema).avro_schema_to_python())
+    assert parse_schema(ArrayUnionSchema.avro_schema_to_python())

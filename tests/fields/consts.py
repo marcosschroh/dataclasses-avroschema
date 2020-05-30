@@ -2,7 +2,7 @@ import datetime
 import typing
 import uuid
 
-from dataclasses_avroschema import fields
+from dataclasses_avroschema import AvroModel, fields
 
 now = datetime.datetime.now()
 
@@ -97,7 +97,7 @@ LOGICAL_TYPES_AND_INVALID_DEFAULTS = (
 )
 
 
-class User:
+class User(AvroModel):
     "User"
     first_name: str
 

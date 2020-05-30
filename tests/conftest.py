@@ -3,13 +3,29 @@ import typing
 
 import pytest
 
-from dataclasses_avroschema import types
+from dataclasses_avroschema import AvroModel, types
 
 
 @pytest.fixture
 def user_dataclass():
     @dataclasses.dataclass(repr=False)
-    class User:
+    class User(AvroModel):
+        name: str
+        age: int
+        has_pets: bool
+        money: float
+        encoded: bytes
+
+        class Meta:
+            schema_doc = False
+
+    return User
+
+
+@pytest.fixture
+def user_dataclass_with_doc():
+    @dataclasses.dataclass(repr=False)
+    class User(AvroModel):
         name: str
         age: int
         has_pets: bool
@@ -22,12 +38,15 @@ def user_dataclass():
 @pytest.fixture
 def user_dataclass_with_field_metadata():
     @dataclasses.dataclass(repr=False)
-    class User:
+    class User(AvroModel):
         name: str = dataclasses.field(metadata={"classification": "test"})
         age: int = dataclasses.field(metadata={"classification": "test"})
         has_pets: bool = dataclasses.field(metadata={"classification": "test"})
         money: float = dataclasses.field(metadata={"classification": "test"})
         encoded: bytes = dataclasses.field(metadata={"classification": "test"})
+
+        class Meta:
+            schema_doc = False
 
     return User
 
@@ -35,7 +54,7 @@ def user_dataclass_with_field_metadata():
 @pytest.fixture
 def user_v2_dataclass():
     @dataclasses.dataclass(repr=False)
-    class UserV2:
+    class UserV2(AvroModel):
         "A User V2"
         name: str
         age: int
@@ -46,7 +65,7 @@ def user_v2_dataclass():
 @pytest.fixture
 def user_extra_avro_atributes_dataclass():
     @dataclasses.dataclass(repr=False)
-    class UserAliasesNamespace:
+    class UserAliasesNamespace(AvroModel):
         name: str
         age: int
 
@@ -61,7 +80,7 @@ def user_extra_avro_atributes_dataclass():
 
 @pytest.fixture
 def user_advance_dataclass():
-    class UserAdvance:
+    class UserAdvance(AvroModel):
         name: str
         age: int
         pets: typing.List[str]
@@ -72,12 +91,15 @@ def user_advance_dataclass():
         address: str = None
         md5: types.Fixed = types.Fixed(16)
 
+        class Meta:
+            schema_doc = False
+
     return UserAdvance
 
 
 @pytest.fixture
 def user_advance_with_defaults_dataclass():
-    class UserAdvance:
+    class UserAdvance(AvroModel):
         name: str
         age: int
         pets: typing.List[str] = dataclasses.field(default_factory=lambda: ["dog", "cat"])
@@ -86,5 +108,8 @@ def user_advance_with_defaults_dataclass():
         favorite_colors: types.Enum = types.Enum(["BLUE", "YELLOW", "GREEN"], default="BLUE")
         country: str = "Argentina"
         address: str = None
+
+        class Meta:
+            schema_doc = False
 
     return UserAdvance
