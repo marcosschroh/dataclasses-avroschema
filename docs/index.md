@@ -24,10 +24,10 @@ pip install dataclasses-avroschema
 ```python
 import typing
 
-from dataclasses_avroschema import SchemaGenerator, types
+from dataclasses_avroschema import AvroModel, types
 
 
-class User:
+class User(AvroModel):
     "An User"
     name: str
     age: int
@@ -38,7 +38,7 @@ class User:
     address: str = None
 
 
-SchemaGenerator(User).avro_schema()
+User.avro_schema()
 
 '{
     "type": "record",

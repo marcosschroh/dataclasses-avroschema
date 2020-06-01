@@ -5,22 +5,22 @@
 An User has one Address example:
 
 ```python
-from dataclasses_avroschema import SchemaGenerator
+from dataclasses_avroschema import AvroModel
 
 
-class Address:
+class Address(AvroModel):
     "An Address"
     street: str
     street_number: int
 
 
-class User:
+class User(AvroModel):
     "An User with Address"
     name: str
     age: int
     address: Address
 
-SchemaGenerator(User).avro_schema()
+User.avro_schema()
 
 '{
   "type": "record",
@@ -50,16 +50,16 @@ An User with only one friend :-( :
 ```python
 import typing
 
-from dataclasses_avroschema import SchemaGenerator
+from dataclasses_avroschema import AvroModel
 
 
-class User:
+class User(AvroModel):
     "User with self reference as friend"
     name: str
     age: int
     friend: typing.Type["User"]
 
-schema = SchemaGenerator(User).avro_schema()
+User.avro_schema()
 
 '{
   "type": "record",
@@ -82,30 +82,30 @@ schema = SchemaGenerator(User).avro_schema()
 }'
 ```
 
-## OneToMany Schema Relationship 
+## OneToMany Schema Relationship
 
 An User has multiple Address example:
 
 ```python
 import typing
 
-from dataclasses_avroschema import SchemaGenerator
+from dataclasses_avroschema import AvroModel
 
 
-class Address:
+class Address(AvroModel):
     "An Address"
     street: str
     street_number: int
 
 
-class User:
+class User(AvroModel):
     "User with multiple Address"
     name: str
     age: int
     addresses: typing.List[Address]
 
 
-SchemaGenerator(User).avro_schema()
+User.avro_schema()
 
 '{
   "type": "record",
@@ -137,23 +137,23 @@ or OneToMany using a Map:
 ```python
 import typing
 
-from dataclasses_avroschema import SchemaGenerator
+from dataclasses_avroschema import AvroModel
 
 
-class Address:
+class Address(AvroModel):
     "An Address"
     street: str
     street_number: int
 
 
-class User:
+class User(AvroModel):
     "User with multiple Address"
     name: str
     age: int
     addresses: typing.Dict[str, Address]
 
 
-SchemaGenerator(User).avro_schema()
+User.avro_schema()
 
 
 '{
@@ -188,17 +188,17 @@ An User with multiple friends :-) :
 ```python
 import typing
 
-from dataclasses_avroschema import SchemaGenerator
+from dataclasses_avroschema import AvroModel
 
 # Using a List (Avro Array)
-class User:
+class User(AvroModel):
     "User with self reference as friends"
     name: str
     age: int
     friends: typing.List[typing.Type["User"]]
 
 
-schema = SchemaGenerator(User).avro_schema()
+User.avro_schema()
 
 '{
   "type": "record",
@@ -225,13 +225,13 @@ schema = SchemaGenerator(User).avro_schema()
 }'
 
 # Using a Dict (Avro Map)
-class User:
+class User(AvroModel):
   "User with self reference as friends"
   name: str
   age: int
   friends: typing.Dict[str, typing.Type["User"]]
 
-schema = SchemaGenerator(User).avro_schema()
+User.avro_schema()
 
 '{
   "type": "record",

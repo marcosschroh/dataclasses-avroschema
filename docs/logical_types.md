@@ -14,18 +14,18 @@ The following list represent the avro logical types mapped to python types:
 ```python
 import datetime
 
-from dataclasses_avroschema import SchemaGenerator
+from dataclasses_avroschema import AvroModel
 
 a_datetime = datetime.datetime(2019, 10, 12, 17, 57, 42)
 
-class DateLogicalType:
+class DateLogicalType(AvroModel):
     "Date type"
     birthday: datetime.date
     meeting_date: datetime.date = None
     release_datetime: datetime.date = a_datetime.date()
 
 
-SchemaGenerator(DateLogicalType).avro_schema()
+DateLogicalType.avro_schema()
 
 '{
   "type": "record",
@@ -64,18 +64,18 @@ SchemaGenerator(DateLogicalType).avro_schema()
 ```python
 import datetime
 
-from dataclasses_avroschema import SchemaGenerator
+from dataclasses_avroschema import AvroModel
 
 a_datetime = datetime.datetime(2019, 10, 12, 17, 57, 42)
 
 
-class TimeLogicalTypes:
+class TimeLogicalTypes(AvroModel):
     "Time logical types"
     birthday_time: datetime.time
     meeting_time: datetime.time = None
     release_time: datetime.time = a_datetime.time()
 
-SchemaGenerator(TimeLogicalTypes).avro_schema()
+TimeLogicalTypes.avro_schema()
 
 '{
   "type": "record",
@@ -114,17 +114,17 @@ SchemaGenerator(TimeLogicalTypes).avro_schema()
 ```python
 import datetime
 
-from dataclasses_avroschema import SchemaGenerator
+from dataclasses_avroschema import AvroModel
 
 a_datetime = datetime.datetime(2019, 10, 12, 17, 57, 42)
 
-class DatetimeLogicalType:
+class DatetimeLogicalType(AvroModel):
     "Datetime logical types"
     birthday: datetime.datetime
     meeting_time: datetime.datetime = None
     release_datetime: datetime.datetime = a_datetime
 
-SchemaGenerator(DatetimeLogicalType).avro_schema()
+DatetimeLogicalType.avro_schema()
 
 '{
   "type": "record",
@@ -163,16 +163,16 @@ SchemaGenerator(DatetimeLogicalType).avro_schema()
 ```python
 import uuid
 
-from dataclasses_avroschema import SchemaGenerator
+from dataclasses_avroschema import AvroModel
 
 
-class UUIDLogicalTypes:
+class UUIDLogicalTypes(AvroModel):
     "UUID logical types"
     uuid_1: uuid.uuid4
     uuid_2: uuid.uuid4 = None
     event_uuid: uuid.uuid4 = uuid.uuid4()
 
-SchemaGenerator(UUIDLogicalTypes).avro_schema()
+UUIDLogicalTypes.avro_schema()
 
 '{
   "type": "record",

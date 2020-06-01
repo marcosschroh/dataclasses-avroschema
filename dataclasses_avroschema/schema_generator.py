@@ -2,66 +2,79 @@ import dataclasses
 import json
 import typing
 
-from dataclasses_avroschema import schema_definition, serialization
+from dataclasses_avroschema import schema_definition, serialization, utils
 
 AVRO = "avro"
 AVRO_JSON = "avro-json"
 
 
-class SchemaGenerator:
-    def __init__(self, klass_or_instance, include_schema_doc: bool = True) -> None:
-        self.dataclass = self.generate_dataclass(klass_or_instance)
-        self.include_schema_doc = include_schema_doc
-        self.schema_definition: schema_definition.AvroSchemaDefinition = None
+class AvroModel:
 
-    @staticmethod
-    def generate_dataclass(klass_or_instance):
-        if dataclasses.is_dataclass(klass_or_instance):
-            return klass_or_instance
-        return dataclasses.dataclass(klass_or_instance)
+    schema_def: schema_definition.AvroSchemaDefinition = None
+    klass: typing.Any = None
+    metadata: typing.Dict = None
 
-    def generate_schema(self, schema_type: str = "avro"):
-        if self.schema_definition is not None:
-            return self.schema_definition.render()
+    @classmethod
+    def generate_dataclass(cls):
+        if dataclasses.is_dataclass(cls):
+            return cls
+        return dataclasses.dataclass(cls)
+
+    @classmethod
+    def generate_metadata(cls):
+        meta = getattr(cls.klass, "Meta", None)
+
+        if meta is None:
+            return utils.SchemaMetadata()
+        return utils.SchemaMetadata.create(meta)
+
+    @classmethod
+    def generate_schema(cls, schema_type: str = "avro"):
+        if cls.schema_def is not None:
+            return cls.schema_def.render()
+
+        # Generate metaclass and metadata
+        cls.klass = cls.generate_dataclass()
+        cls.metadata = cls.generate_metadata()
 
         # let's live open the possibility to define different
         # schema definitions like json
         if schema_type == "avro":
-            schema_def = self._generate_avro_schema()
+            # cache the schema
+            cls.schema_def = cls._generate_avro_schema()
         else:
             raise ValueError("Invalid type. Expected avro schema type.")
 
-        # cache the schema
-        self.schema_definition = schema_def
+        return cls.schema_def.render()
 
-        return self.schema_definition.render()
+    @classmethod
+    def _generate_avro_schema(cls) -> schema_definition.AvroSchemaDefinition:
+        return schema_definition.AvroSchemaDefinition("record", cls.klass, metadata=cls.metadata)
 
-    def _generate_avro_schema(self) -> schema_definition.AvroSchemaDefinition:
-        return schema_definition.AvroSchemaDefinition(
-            "record", self.dataclass, include_schema_doc=self.include_schema_doc
-        )
+    @classmethod
+    def avro_schema(cls) -> str:
+        return json.dumps(cls.generate_schema(schema_type=AVRO))
 
-    def avro_schema(self) -> str:
-        return json.dumps(self.generate_schema(schema_type=AVRO))
+    @classmethod
+    def avro_schema_to_python(cls) -> typing.Dict[str, typing.Any]:
+        return json.loads(cls.avro_schema())
 
-    def avro_schema_to_python(self) -> typing.Dict[str, typing.Any]:
-        return json.loads(self.avro_schema())
+    @classmethod
+    def get_fields(cls) -> typing.List["schema_definition.Field"]:
+        if cls.schema_def is None:
+            cls.generate_schema()
 
-    @property
-    def get_fields(self) -> typing.List["schema_definition.Field"]:
-        if self.schema_definition is None:
-            self.generate_schema()
-
-        return self.schema_definition.fields
+        return cls.schema_def.fields
 
     def serialize(self, serialization_type: str = AVRO) -> bytes:
-        data = dataclasses.asdict(self.dataclass)
+        data = dataclasses.asdict(self)
         schema = self.avro_schema_to_python()
 
         return serialization.serialize(data, schema, serialization_type=serialization_type)
 
-    def deserialize(self, data: bytes, serialization_type: str = AVRO) -> typing.Any:
-        schema = self.avro_schema_to_python()
+    @classmethod
+    def deserialize(cls, data: bytes, serialization_type: str = AVRO) -> typing.Any:
+        schema = cls.avro_schema_to_python()
 
         return serialization.deserialize(data, schema, serialization_type=serialization_type)
 

@@ -1,1 +1,1 @@
-from .schema_generator import SchemaGenerator  # noqa: 401
+from .schema_generator import AvroModel  # noqa: 401

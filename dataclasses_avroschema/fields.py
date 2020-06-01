@@ -9,7 +9,7 @@ from collections import OrderedDict
 
 import inflect
 
-from dataclasses_avroschema import schema_generator, types, utils
+from dataclasses_avroschema import types, utils
 
 p = inflect.engine()
 
@@ -247,7 +247,7 @@ class ListField(ContainerField):
             )
         else:
             # Is Avro Record Type
-            self.items_type = schema_generator.SchemaGenerator(items_type).avro_schema_to_python()
+            self.items_type = items_type.avro_schema_to_python()
 
 
 @dataclasses.dataclass
@@ -294,7 +294,7 @@ class DictField(ContainerField):
             # Checking for a self reference. Maybe is a typing.ForwardRef
             self.values_type = self._get_self_reference_type(values_type)
         else:
-            self.values_type = schema_generator.SchemaGenerator(values_type).avro_schema_to_python()
+            self.values_type = values_type.avro_schema_to_python()
 
 
 @dataclasses.dataclass
@@ -328,7 +328,7 @@ class UnionField(BaseField):
                 klass = PRIMITIVE_LOGICAL_TYPES_FIELDS_CLASSES[element]
                 union_element = klass.avro_type
             else:
-                union_element = schema_generator.SchemaGenerator(element).avro_schema_to_python()
+                union_element = element.avro_schema_to_python()
 
             unions.append(union_element)
 
@@ -556,7 +556,7 @@ class UUIDField(LogicalTypeField):
 @dataclasses.dataclass
 class RecordField(BaseField):
     def get_avro_type(self):
-        return schema_generator.SchemaGenerator(self.type).avro_schema_to_python()
+        return self.type.avro_schema_to_python()
 
 
 INMUTABLE_FIELDS_CLASSES = {

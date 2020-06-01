@@ -7,10 +7,10 @@ import faust
 import dataclasses
 import typing
 
-from dataclasses_avroschema import SchemaGenerator
+from dataclasses_avroschema import AvroModel
 
 
-class UserAdvance(faust.Record):
+class UserAdvance(faust.Record, AvroModel):
     name: str
     age: int
     pets: typing.List[str] = dataclasses.field(default_factory=lambda: ['dog', 'cat'])
@@ -20,8 +20,11 @@ class UserAdvance(faust.Record):
     country: str = "Argentina"
     address: str = None
 
+    class Meta:
+        schema_doc = False
 
-SchemaGenerator(UserAdvance, include_schema_doc=False).avro_schema()
+
+UserAdvance.avro_schema()
 
 '{
   "type": "record",

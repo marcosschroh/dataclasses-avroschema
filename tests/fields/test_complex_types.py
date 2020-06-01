@@ -4,7 +4,7 @@ import typing
 import pytest
 from faker import Faker
 
-from dataclasses_avroschema import fields, types
+from dataclasses_avroschema import AvroModel, fields, types
 
 from . import consts
 
@@ -224,11 +224,11 @@ def test_union_type(args):
 
 
 def test_union_type_with_records():
-    class User:
+    class User(AvroModel):
         "User"
         first_name: str
 
-    class Car:
+    class Car(AvroModel):
         "Car"
         engine_name: str
 
@@ -248,11 +248,11 @@ def test_union_type_with_records():
 
 
 def test_union_type_with_record_default():
-    class User:
+    class User(AvroModel):
         "User"
         first_name: str
 
-    class Car:
+    class Car(AvroModel):
         "Car"
         engine_name: str
 
