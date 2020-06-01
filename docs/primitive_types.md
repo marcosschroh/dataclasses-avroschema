@@ -15,10 +15,10 @@ The following list represent the avro primitive types mapped to python types:
 Example:
 
 ```python
-from dataclasses_avroschema import SchemaGenerator
+from dataclasses_avroschema import AvroModel
 
 
-class User:
+class User(AvroModel):
     "An User"
     name: str
     age: int
@@ -26,7 +26,7 @@ class User:
     money_available: float
 
 
-SchemaGenerator(User).avro_schema()
+User.avro_schema()
 
 '{
   "type": "record",
@@ -56,10 +56,10 @@ SchemaGenerator(User).avro_schema()
 Example with defaults:
 
 ```python
-from dataclasses_avroschema import SchemaGenerator
+from dataclasses_avroschema import AvroModel
 
 
-class User:
+class User(AvroModel):
     "An User"
     name: str = None
     age: int = None
@@ -67,7 +67,7 @@ class User:
     money_available: float = None
 
 
-SchemaGenerator(User).avro_schema()
+User.avro_schema()
 
 # We can see the use of null in the schema generated:
 
@@ -100,7 +100,7 @@ SchemaGenerator(User).avro_schema()
 
 # Or with null as a second type argument:
 
-class User:
+class User(AvroModel):
     "An User"
     name: str = 'Juan'
     age: int = 20
@@ -108,7 +108,7 @@ class User:
     money_available: float = 100.2
 
 
-SchemaGenerator(User).avro_schema()
+User.avro_schema()
 
 '{
   "type": "record",

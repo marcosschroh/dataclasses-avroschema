@@ -9,7 +9,6 @@ Avro is a row-oriented remote procedure call and data serialization framework de
 Our goal is to come up with an `avro schema` from `Python classes`.
 We can think a `avro Record` as an analogous to a `python class`, but first, let's explaine what a `record` is.
 
-
 ### Records
 
 Records are one of the `Complex Types` in avro. It use the type name `record` and support three attributes.
@@ -46,17 +45,17 @@ For example, a User may be defined with:
 Image that you have to define the previous `User` schema but you do not know avro, you know python:
 
 ```python
-from dataclasses_avroschema import SchemaGenerator
+from dataclasses_avroschema import AvroModel
 
-class User:
+class User(AvroModel):
     name: str
     age: int
     has_pets: bool
     money: float
 
-SchemaGenerator(User).avro_schema()
+User.avro_schema()
 
-{
+'{
   "type": "record",
   "name": "User",
   "fields": [

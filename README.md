@@ -28,10 +28,10 @@ https://marcosschroh.github.io/dataclasses-avroschema/
 ```python
 import typing
 
-from dataclasses_avroschema import SchemaGenerator, types
+from dataclasses_avroschema import AvroModel, types
 
 
-class User:
+class User(AvroModel):
     "An User"
     name: str
     age: int
@@ -41,12 +41,18 @@ class User:
     country: str = "Argentina"
     address: str = None
 
-SchemaGenerator(User).avro_schema()
+    class Meta:
+        namespace = "User.v1"
+        aliases = ["user-v1", "super user"]
+
+User.avro_schema()
 
 '{
     "type": "record",
     "name": "User",
     "doc": "An User",
+    "namespace": "User.v1",
+    "aliases": ["user-v1", "super user"],
     "fields": [
         {"name": "name", "type": "string"},
         {"name": "age", "type": "int"},
@@ -68,17 +74,17 @@ from dataclasses import dataclass
 
 import typing
 
-from dataclasses_avroschema import SchemaGenerator
+from dataclasses_avroschema import AvroModel
 
 
 @dataclass
-class Address:
+class Address(AvroModel):
     "An Address"
     street: str
     street_number: int
 
 @dataclass
-class User:
+class User(AvroModel):
     "User with multiple Address"
     name: str
     age: int
@@ -100,17 +106,16 @@ data_user = {
 
 # create an User instance
 user = User(**data_user)
-schema = SchemaGenerator(user)
 
-schema.serialize()
+user.serialize()
 # >>> b"\x08john(\x02\x08test\x14\x00"
 
-schema.serialize(serialization_type="avro-json")
+user.serialize(serialization_type="avro-json")
 # >>> b'{"name": "john", "age": 20, "addresses": [{"street": "test", "street_number": 10}]}'
 
 # Get the json from the instance
 
-schema.to_json()
+user.to_json()
 # python dict >>> {'name': 'john', 'age': 20, 'addresses': [{'street': 'test', 'street_number': 10}]}
 
 ```
@@ -122,15 +127,15 @@ Deserialization could take place with an instance dataclass or the dataclass its
 ```python
 import typing
 
-from dataclasses_avroschema import SchemaGenerator
+from dataclasses_avroschema import AvroModel
 
 
-class Address:
+class Address(AvroModel):
     "An Address"
     street: str
     street_number: int
 
-class User:
+class User(AvroModel):
     "User with multiple Address"
     name: str
     age: int
@@ -138,12 +143,11 @@ class User:
 
 avro_binary = b"\x08john(\x02\x08test\x14\x00"
 avro_json_binary = b'{"name": "john", "age": 20, "addresses": [{"street": "test", "street_number": 10}]}'
-schema = SchemaGenerator(user)
 
-schema.deserialize(avro_binary)
+User.deserialize(avro_binary)
 # >>> {"name": "john", "age": 20, "addresses": [{"street": "test", "street_number": 10}]}
 
-schema.deserialize(avro_json_binary, serialization_type="avro-json")
+User.deserialize(avro_json_binary, serialization_type="avro-json")
 # >>> {"name": "john", "age": 20, "addresses": [{"street": "test", "street_number": 10}]}
 ```
 

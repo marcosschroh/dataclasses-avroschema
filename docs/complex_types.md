@@ -18,14 +18,14 @@ Example:
 ```python
 import typing
 
-from dataclasses_avroschema import SchemaGenerator, types
+from dataclasses_avroschema import AvroModel, types
 
 
-class User:
+class User(AvroModel):
     "An User"
     favorite_colors: types.Enum = types.Enum(["BLUE", "YELLOW", "GREEN"], default="BLUE")
 
-SchemaGenerator(User).avro_schema()
+User.avro_schema()
 
 
 '{
@@ -51,20 +51,21 @@ SchemaGenerator(User).avro_schema()
 Example:
 
 ```python
-import typing
 import dataclasses
 
-from dataclasses_avroschema import SchemaGenerator
+import typing
+
+from dataclasses_avroschema import AvroModel
 
 
-class UserAdvance:
+class UserAdvance(AvroModel):
     "User advanced"
     pets: typing.List[str]
     cars: typing.List[str] = None
     favourites_numbers: typing.List[int] = dataclasses.field(default_factory=lambda: [7, 13])
 
 
-SchemaGenerator(UserAdvance).avro_schema()
+UserAdvance.avro_schema()
 
 '{
   "type": "record",
@@ -106,19 +107,20 @@ SchemaGenerator(UserAdvance).avro_schema()
 Example:
 
 ```python
-import typing
 import dataclasses
 
-from dataclasses_avroschema import SchemaGenerator
+import typing
+
+from dataclasses_avroschema import AvroModel
 
 
-class UserAdvance:
+class UserAdvance(AvroModel):
     "User advanced"
     accounts_money: typing.Dict[str, float]
     cars_brand_total: typing.Dict[str, int] = None
     family_ages: typing.Dict[str, int] = dataclasses.field(default_factory=lambda: {"father": 50}) 
 
-SchemaGenerator(UserAdvance).avro_schema()
+UserAdvance.avro_schema()
 
 '{
   "type": "record",
@@ -160,16 +162,14 @@ SchemaGenerator(UserAdvance).avro_schema()
 ```python
 import typing
 
-
-from dataclasses_avroschema import types
-from dataclasses_avroschema import SchemaGenerator
+from dataclasses_avroschema import AvroModel, types
 
 
-class UserAdvance:
+class UserAdvance(AvroModel):
     name: str
     md5: types.Fixed = types.Fixed(16, namespace='md5', aliases=["md5", "hash"])
 
-SchemaGenerator(UnionSchema).avro_schema()
+UnionSchema.avro_schema()
 
 {
   'type': 'record',
@@ -189,16 +189,16 @@ import dataclasses
 import datetime
 import uuid
 
-from dataclasses_avroschema import SchemaGenerator
+from dataclasses_avroschema import AvroModel
 
-class UnionSchema:
+class UnionSchema(AvroModel):
     "Some Unions"
     first_union: typing.Union[str, int]
     logical_union: typing.Union[datetime.datetime, datetime.date, uuid.uuid4]
     second_union: typing.Union[str, int] = dataclasses.field(
     default_factory=lambda: ["test"])
 
-SchemaGenerator(UnionSchema).avro_schema()
+UnionSchema.avro_schema()
 
 {
   "type": "record",
@@ -215,24 +215,24 @@ SchemaGenerator(UnionSchema).avro_schema()
 
 # Union with Records
 
-class Bus:
+class Bus(AvroModel):
     "A Bus"
     engine_name: str
 
 
-class Car:
+class Car(AvroModel):
     "A Car"
     engine_name: str
 
 
- class UnionSchema:
+ class UnionSchema(AvroModel):
     "Some Unions"
     lake_trip: typing.Union[Bus, Car]
     river_trip: typing.Union[Bus, Car] = None
     mountain_trip: typing.Union[Bus, Car] = dataclasses.field(
         default_factory=lambda: {"engine_name": "honda"})
 
-SchemaGenerator(UnionSchema).avro_schema()
+UnionSchema.avro_schema()
 
 '{
   "type": "record",
@@ -336,23 +336,21 @@ There are some special avro attributes like `aliases`, `namespace` and `doc` (bo
 The `doc` attribute can be set via the docstring class. The `aliases` and `namespaces` must be set using the `extra_avro_attributes` static method.
 
 ```python
-from dataclasses_avroschema import SchemaGenerator
+from dataclasses_avroschema import AvroModel
 
 
-class User:
+class User(AvroModel):
     "My User Class"
     name: str
     age: int
     has_pets: bool = False
     money: float = 100.3
 
-    def extra_avro_attributes() -> typing.Dict[str, typing.Any]:
-        return {
-            "namespace": "test.com.ar/user/v1",
-            "aliases": ["User", "My favorite User"]
-        }
+    class Meta:
+        namespace = "test.com.ar/user/v1"
+        aliases = ["User", "My favorite User"]
 
-SchemaGenerator(User).avro_schema()
+User.avro_schema()
 
 '{
   "type": "record",
@@ -368,3 +366,18 @@ SchemaGenerator(User).avro_schema()
   "aliases": ["User", "My favorite User"]
 }'
 ```
+
+#### Class Meta
+
+The `class Meta` is used to specify schema attributes that are not reprsented by the class fields like `namespace`, `aliases` and whether include the `schema documentation`.
+
+```python
+class Meta:
+    schema_doc = False
+    namespace = "test.com.ar/user/v1"
+    aliases = ["User", "My favorite User"]
+```
+
+`schema_doc (boolean)`: Whether include the `schema documentation` generated from `docstrings`. Default `True`
+`namespace (optional[str])`: Schema namespace. Default `None`
+`aliases (optional[List[str]])`: Schema aliases. Default `None`
