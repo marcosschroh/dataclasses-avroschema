@@ -2,7 +2,7 @@ import dataclasses
 import json
 import typing
 
-from dataclasses_avroschema import schema_definition, serialization
+from dataclasses_avroschema import schema_definition, serialization, utils
 
 AVRO = "avro"
 AVRO_JSON = "avro-json"
@@ -11,7 +11,7 @@ AVRO_JSON = "avro-json"
 class AvroModel:
 
     schema_def: schema_definition.AvroSchemaDefinition = None
-    klass_or_instance: typing.Any = None
+    klass: typing.Any = None
     metadata: typing.Dict = None
 
     @classmethod
@@ -22,11 +22,11 @@ class AvroModel:
 
     @classmethod
     def generate_metadata(cls):
-        meta = getattr(cls.klass_or_instance, "Meta", None)
+        meta = getattr(cls.klass, "Meta", None)
 
-        return {
-            "schema_doc": meta.schema_doc if meta else True
-        }
+        if meta is None:
+            return utils.SchemaMetadata()
+        return utils.SchemaMetadata.create(meta)
 
     @classmethod
     def generate_schema(cls, schema_type: str = "avro"):
@@ -34,7 +34,7 @@ class AvroModel:
             return cls.schema_def.render()
 
         # Generate metaclass and metadata
-        cls.klass_or_instance = cls.generate_dataclass()
+        cls.klass = cls.generate_dataclass()
         cls.metadata = cls.generate_metadata()
 
         # let's live open the possibility to define different
@@ -49,9 +49,7 @@ class AvroModel:
 
     @classmethod
     def _generate_avro_schema(cls) -> schema_definition.AvroSchemaDefinition:
-        return schema_definition.AvroSchemaDefinition(
-            "record", cls.klass_or_instance, include_schema_doc=cls.metadata["schema_doc"]
-        )
+        return schema_definition.AvroSchemaDefinition("record", cls.klass, metadata=cls.metadata)
 
     @classmethod
     def avro_schema(cls) -> str:

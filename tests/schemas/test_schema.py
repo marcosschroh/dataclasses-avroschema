@@ -2,6 +2,7 @@ import json
 
 import pytest
 
+from dataclasses_avroschema import AvroModel
 from dataclasses_avroschema.schema_definition import BaseSchemaDefinition
 
 encoded = "test".encode()
@@ -57,49 +58,37 @@ def test_schema_cached(user_v2_dataclass, user_v2_avro_json):
     assert user_schema == user_v2_dataclass.avro_schema()
 
 
-# def test_extra_avro_attributes(user_extra_avro_attributes):
-#     """
-#     This method is to test the extra avro attribute like
-#     namespace and aliases.
-#     """
-#     namespace = "test.com.ar/user/v1"
-#     aliases = ["User", "My favorite User"]
+def test_extra_avro_attributes(user_extra_avro_attributes):
+    """
+    This method is to test the extra avro attribute like
+    namespace and aliases.
+    """
 
-#     class User:
-#         "An User"
-#         name: str
-#         age: int
+    class User(AvroModel):
+        "An User"
+        name: str
+        age: int
 
-#         @staticmethod
-#         def extra_avro_attributes():
-#             return {"namespace": namespace, "aliases": aliases}
+        class Meta:
+            namespace = "test.com.ar/user/v1"
+            aliases = ["User", "My favorite User"]
 
-#     user_schema = SchemaGenerator(User).avro_schema()
-#     assert user_schema == json.dumps(user_extra_avro_attributes)
+    assert User.avro_schema() == json.dumps(user_extra_avro_attributes)
 
-#     # test with an instance
-#     user_schema = SchemaGenerator(User("test", 1)).avro_schema()
-#     assert user_schema == json.dumps(user_extra_avro_attributes)
+    # test with an instance
+    assert User("test", 1).avro_schema() == json.dumps(user_extra_avro_attributes)
 
 
-# def test_extra_avro_attributes_invalid(user_extra_avro_attributes):
-#     """
-#     This method is to test the extra avro attribute like
-#     namespace and aliases.
-#     """
+def test_class_empty_metaclass():
+    class User(AvroModel):
+        "An User"
+        name: str
+        age: int
 
-#     class User:
-#         "An User"
-#         name: str
-#         age: int
+        class Meta:
+            pass
 
-#         @staticmethod
-#         def extra_avro_attributes():
-#             return None
-
-#     msg = "Dict must be returned type in extra_avro_attributes method"
-#     with pytest.raises(AssertionError, match=msg):
-#         SchemaGenerator(User).avro_schema()
+    assert User.avro_schema()
 
 
 def test_invalid_schema_type(user_dataclass):

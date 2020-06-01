@@ -1,4 +1,5 @@
 import typing
+from dataclasses import dataclass
 
 
 def is_union(a_type: typing.Any) -> bool:
@@ -39,3 +40,18 @@ def is_self_referenced(a_type) -> bool:
         and a_type.__args__
         and isinstance(a_type.__args__[0], typing.ForwardRef)  # type: ignore
     )
+
+
+@dataclass
+class SchemaMetadata:
+    schema_doc: bool = True
+    namespace: typing.List[str] = None
+    aliases: typing.List[str] = None
+
+    @classmethod
+    def create(cls, klass: typing.Any):
+        return cls(
+            schema_doc=getattr(klass, "schema_doc", True),
+            namespace=getattr(klass, "namespace", None),
+            aliases=getattr(klass, "aliases", None),
+        )

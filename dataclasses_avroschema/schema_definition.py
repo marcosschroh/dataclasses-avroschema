@@ -1,10 +1,9 @@
 import abc
 import dataclasses
-import inspect
 import typing
 from collections import OrderedDict
 
-from dataclasses_avroschema import fields
+from dataclasses_avroschema import fields, utils
 
 try:
     import faust
@@ -19,7 +18,7 @@ class BaseSchemaDefinition(abc.ABC):
     """
 
     type: str
-    klass_or_instance: typing.Any
+    klass: typing.Any
 
     @abc.abstractmethod
     def get_rendered_fields(self):
@@ -30,12 +29,10 @@ class BaseSchemaDefinition(abc.ABC):
         ...  # pragma: no cover
 
     def get_schema_name(self):
-        if inspect.isclass(self.klass_or_instance):
-            return self.klass_or_instance.__name__
-        return self.klass_or_instance.__class__.__name__
+        return self.klass.__name__
 
     def generate_documentation(self):
-        doc = self.klass_or_instance.__doc__
+        doc = self.klass.__doc__
 
         if doc is not None:
             return doc.replace("\n", "")
@@ -43,10 +40,7 @@ class BaseSchemaDefinition(abc.ABC):
     @property
     def is_faust_record(self) -> bool:
         if faust:
-            if inspect.isclass(self.klass_or_instance):
-                return issubclass(self.klass_or_instance, faust.Record)
-            return issubclass(self.klass_or_instance.__class__, faust.Record)
-
+            return issubclass(self.klass, faust.Record)
         return False
 
 
@@ -55,10 +49,9 @@ class AvroSchemaDefinition(BaseSchemaDefinition):
     aliases: typing.List[str] = None
     namespace: str = None
     fields: typing.List["fields.FieldType"] = None
-    include_schema_doc: bool = True
+    metadata: utils.SchemaMetadata = None
 
     def __post_init__(self):
-        self.generate_extra_avro_attributes()
         self.fields = self.parse_dataclasses_fields()
 
     def parse_dataclasses_fields(self) -> typing.List["fields.Field"]:
@@ -75,13 +68,13 @@ class AvroSchemaDefinition(BaseSchemaDefinition):
                 dataclass_field.default_factory,
                 dataclass_field.metadata,
             )
-            for dataclass_field in dataclasses.fields(self.klass_or_instance)
+            for dataclass_field in dataclasses.fields(self.klass)
         ]
 
     def parse_faust_record_fields(self) -> typing.List["fields.Field"]:
         schema_fields = []
 
-        for dataclass_field in dataclasses.fields(self.klass_or_instance):
+        for dataclass_field in dataclasses.fields(self.klass):
             faust_field = dataclass_field.default
 
             if faust_field.required:
@@ -102,39 +95,20 @@ class AvroSchemaDefinition(BaseSchemaDefinition):
     def get_rendered_fields(self) -> typing.List["fields.Field"]:
         return [field.render() for field in self.fields]
 
-    def generate_extra_avro_attributes(self) -> None:
-        """
-        Look for the method in the dataclass.
-
-        After calling the method extra_avro_attributes a dict is expected:
-            typing.Dict[str, typing.Any]
-        """
-        extra_avro_attributes_fn = getattr(self.klass_or_instance, "extra_avro_attributes", None)
-
-        if extra_avro_attributes_fn:
-            extra_avro_attributes = extra_avro_attributes_fn()
-            assert isinstance(extra_avro_attributes, dict), "Dict must be returned type in extra_avro_attributes method"
-
-            aliases = extra_avro_attributes.get("aliases", self.aliases)
-            namespace = extra_avro_attributes.get("namespace", self.namespace)
-
-            self.aliases = aliases
-            self.namespace = namespace
-
     def render(self):
         schema = OrderedDict(
             [("type", self.type), ("name", self.get_schema_name()), ("fields", self.get_rendered_fields()),]
         )
 
-        if self.include_schema_doc:
+        if self.metadata.schema_doc:
             doc = self.generate_documentation()
             if doc is not None:
                 schema["doc"] = doc
 
-        if self.namespace is not None:
-            schema["namespace"] = self.namespace
+        if self.metadata.namespace is not None:
+            schema["namespace"] = self.metadata.namespace
 
-        if self.aliases is not None:
-            schema["aliases"] = self.aliases
+        if self.metadata.aliases is not None:
+            schema["aliases"] = self.metadata.aliases
 
         return schema
