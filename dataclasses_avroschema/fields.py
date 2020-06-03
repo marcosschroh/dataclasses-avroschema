@@ -407,6 +407,12 @@ class SelfReferenceField(BaseField):
 
 class LogicalTypeField(BaseField):
     def get_avro_type(self):
+        if self.default is not dataclasses.MISSING:
+            if self.default is not None:
+                return [self.avro_type, NULL]
+            # means that default value is None
+            return [NULL, self.avro_type]
+
         return self.avro_type
 
 
@@ -556,7 +562,12 @@ class UUIDField(LogicalTypeField):
 @dataclasses.dataclass
 class RecordField(BaseField):
     def get_avro_type(self):
-        return self.type.avro_schema_to_python()
+        record_type = self.type.avro_schema_to_python()
+        if self.default is not dataclasses.MISSING:
+            if self.default is not None:
+                return [record_type, NULL]
+        # means that default value is None
+        return [NULL, record_type]
 
 
 INMUTABLE_FIELDS_CLASSES = {
