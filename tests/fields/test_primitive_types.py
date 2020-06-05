@@ -31,6 +31,9 @@ def test_primitive_types_with_default_value(primitive_type, default):
     field = fields.Field(name, primitive_type, default)
     avro_type = [fields.PYTHON_TYPE_TO_AVRO[primitive_type], fields.NULL]
 
+    if primitive_type is bytes:
+        default = default.decode()
+
     assert {"name": name, "type": avro_type, "default": default} == field.to_dict()
 
 

@@ -46,13 +46,18 @@ def test_sequence_type(sequence, python_primitive_type, python_type_str):
 
     assert expected == field.to_dict()
 
-    values = faker.pylist(2, True, python_primitive_type)
+    if python_type_str == fields.BYTES:
+        values = [b"hola", b"hi"]
+        default = ["hola", "hi"]
+    else:
+        values = default = faker.pylist(2, True, python_primitive_type)
+
     field = fields.Field(name, python_type, default=dataclasses.MISSING, default_factory=lambda: values)
 
     expected = {
         "name": name,
         "type": {"type": "array", "name": name, "items": python_type_str},
-        "default": values,
+        "default": default,
     }
 
     assert expected == field.to_dict()
@@ -157,13 +162,18 @@ def test_mapping_type(mapping, python_primitive_type, python_type_str):
 
     assert expected == field.to_dict()
 
-    value = faker.pydict(2, True, python_primitive_type)
+    if python_type_str == fields.BYTES:
+        value = {"hola": b"hi"}
+        default = {"hola": "hi"}
+    else:
+        value = default = faker.pydict(2, True, python_primitive_type)
+
     field = fields.Field(name, python_type, default=dataclasses.MISSING, default_factory=lambda: value)
 
     expected = {
         "name": name,
         "type": {"type": "map", "name": name, "values": python_type_str},
-        "default": value,
+        "default": default,
     }
 
     assert expected == field.to_dict()
