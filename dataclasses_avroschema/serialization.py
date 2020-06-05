@@ -29,7 +29,7 @@ def serialize(payload: typing.Dict, schema: typing.Dict, serialization_type: str
     return value  # type: ignore
 
 
-def deserialize(data: bytes, schema: typing.Dict, serialization_type: str = "avro") -> typing.Any:
+def deserialize(data: bytes, schema: typing.Dict, serialization_type: str = "avro") -> typing.Dict:
     if serialization_type == "avro":
         input_stream: typing.Union[io.BytesIO, io.StringIO] = io.BytesIO(data)
 
