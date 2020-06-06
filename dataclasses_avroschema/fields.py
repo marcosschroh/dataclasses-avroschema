@@ -186,6 +186,18 @@ class FloatField(InmutableField):
 class BytesField(InmutableField):
     avro_type: typing.ClassVar = BYTES
 
+    def get_default_value(self):
+        if self.default is not dataclasses.MISSING:
+            if self.default is None:
+                return NULL
+
+            if self.validate_default():
+                return self.avro_to_json_type(self.default)
+
+    @staticmethod
+    def avro_to_json_type(item):
+        return item.decode()
+
 
 @dataclasses.dataclass
 class NoneField(InmutableField):
@@ -224,12 +236,17 @@ class ListField(ContainerField):
 
             logical_classes = LOGICAL_TYPES_FIELDS_CLASSES.keys()
 
-            return [
-                LOGICAL_TYPES_FIELDS_CLASSES[type(item)].to_logical_type(item)
-                if type(item) in logical_classes
-                else item
-                for item in default
-            ]
+            clean_items = []
+            for item in default:
+                if type(item) in logical_classes:
+                    clean_item = LOGICAL_TYPES_FIELDS_CLASSES[type(item)].to_logical_type(item)
+                elif type(item) is bytes:
+                    clean_item = BytesField.avro_to_json_type(item)
+                else:
+                    clean_item = item
+                clean_items.append(clean_item)
+
+            return clean_items
 
     def generate_items_type(self):
         # because avro can have only one type, we take the first one
@@ -273,12 +290,17 @@ class DictField(ContainerField):
 
             logical_classes = LOGICAL_TYPES_FIELDS_CLASSES.keys()
 
-            return {
-                key: LOGICAL_TYPES_FIELDS_CLASSES[type(value)].to_logical_type(value)
-                if type(value) in logical_classes
-                else value
-                for key, value in default.items()
-            }
+            clean_items = {}
+            for key, value in default.items():
+                if type(value) in logical_classes:
+                    clean_item = LOGICAL_TYPES_FIELDS_CLASSES[type(value)].to_logical_type(value)
+                elif type(value) is bytes:
+                    clean_item = BytesField.avro_to_json_type(value)
+                else:
+                    clean_item = value
+                clean_items[key] = clean_item
+
+            return clean_items
 
     def generate_values_type(self):
         """

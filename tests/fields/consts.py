@@ -11,7 +11,7 @@ PRIMITIVE_TYPES = (
     (int, fields.INT),
     (bool, fields.BOOLEAN),
     (float, fields.FLOAT),
-    # (bytes, "bytes"),
+    (bytes, fields.BYTES),
 )
 
 PRIMITIVE_TYPES_AND_DEFAULTS = (
@@ -19,7 +19,7 @@ PRIMITIVE_TYPES_AND_DEFAULTS = (
     (int, 1),
     (bool, True),
     (float, 10.4),
-    # (bytes, "test".encode()),
+    (bytes, b"test"),
 )
 
 PRIMITIVE_TYPES_AND_INVALID_DEFAULTS = (
@@ -27,7 +27,7 @@ PRIMITIVE_TYPES_AND_INVALID_DEFAULTS = (
     (int, "test"),
     (bool, 10),
     (float, False),
-    # (bytes, "test".encode()),
+    (bytes, "test"),
 )
 
 LIST_TYPE_AND_ITEMS_TYPE = (
