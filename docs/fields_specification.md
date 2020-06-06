@@ -1,5 +1,3 @@
-## Avro Fields and Python Fields
-
 Apache Avro has `Primitive Types`, `Complex Types` and `Logical Types`, so we need to match these types with python types.
 
 ## Primitive Types and python representation
@@ -24,7 +22,7 @@ So, the previous types can be matched to:
 | boolean   |     bool    |
 | float     |     float   |
 | null      |     None    |
-| bytes     |     wip     |
+| bytes     |     bytes   |
 
 ## Complex Types
 
