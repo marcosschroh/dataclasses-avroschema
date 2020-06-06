@@ -1,5 +1,3 @@
-## Primitive Types
-
 The following list represent the avro primitive types mapped to python types:
 
 | Avro Type | Python Type |
@@ -9,7 +7,7 @@ The following list represent the avro primitive types mapped to python types:
 | boolean   |     bool    |
 | float     |     float   |
 | null      |     None    |
-| bytes     |     wip     |
+| bytes     |     bytes     |
 
 
 Example:
@@ -24,6 +22,7 @@ class User(AvroModel):
     age: int
     is_student: bool
     money_available: float
+    encoded: bytes
 
 
 User.avro_schema()
@@ -47,6 +46,10 @@ User.avro_schema()
     {
       "name": "money_available",
       "type": "float"
+    },
+    {
+        "name": "encoded",
+        "type": "bytes"
     }
   ],
   "doc": "An User"
@@ -65,6 +68,7 @@ class User(AvroModel):
     age: int = None
     is_student: bool = None
     money_available: float = None
+    encoded: bytes = None
 
 
 User.avro_schema()
@@ -93,8 +97,14 @@ User.avro_schema()
     {
       "name": "money_available",
       "type": ["null", "float"],
-      "default": "null"}
-  ], 
+      "default": "null"
+    },
+    {
+      "name": "encoded",
+      "type": ["null", "bytes"],
+      "default": "null"
+    }
+  ],
   "doc": "An User"
 }'
 
@@ -106,6 +116,7 @@ class User(AvroModel):
     age: int = 20
     is_student: bool = True
     money_available: float = 100.2
+    encoded: bytes = b"hi"
 
 
 User.avro_schema()
@@ -133,6 +144,11 @@ User.avro_schema()
       "name": "money_available",
       "type": ["float", "null"],
       "default": 100.2
+    },
+    {
+        "name": "encoded",
+        "type": ["bytes", "null"],
+        "default": "hi"
     }
   ],
   "doc": "An User"
