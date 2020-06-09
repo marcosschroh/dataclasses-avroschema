@@ -92,6 +92,25 @@ def test_faust_record_one_to_one_relationship(user_one_address_schema):
     assert User.avro_schema() == json.dumps(user_one_address_schema)
 
 
+def test_faust_record_one_to_one_relationship_with_none_default(user_one_address_schema_with_none_default):
+    """
+    Test schema relationship one-to-one
+    """
+
+    class Address(faust.Record, AvroModel):
+        "An Address"
+        street: str
+        street_number: int
+
+    class User(faust.Record, AvroModel):
+        "An User with Address"
+        name: str
+        age: int
+        address: Address = None
+
+    assert User.avro_schema() == json.dumps(user_one_address_schema_with_none_default)
+
+
 def test_faust_record_one_to_many_relationship(user_many_address_schema):
     """
     Test schema relationship one-to-many
