@@ -588,7 +588,7 @@ class RecordField(BaseField):
         if self.default is not dataclasses.MISSING:
             if self.default is not None:
                 return record_type
-        # means that default value is None
+            # means that default value is None
             return [NULL, record_type]
 
         return record_type
