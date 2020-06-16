@@ -79,6 +79,8 @@ class AvroModel:
         return serialization.deserialize(data, schema, serialization_type=serialization_type)
 
     def to_json(self):
-        data = self.serialize(serialization_type=AVRO_JSON)
+        # Serialize using the current AVRO schema to get proper field representations
+        # and after that conver into python
+        data = self.deserialize(self.serialize())
 
-        return json.loads(data.decode())
+        return {field: value.decode() if isinstance(value, bytes) else value for field, value in data.items()}
