@@ -66,8 +66,17 @@ class AvroModel:
 
         return cls.schema_def.fields
 
+    @staticmethod
+    def standardize_custom_type(value):
+        if utils.is_custom_type(value):
+            return value["default"]
+        return value
+
     def serialize(self, serialization_type: str = AVRO) -> bytes:
         data = dataclasses.asdict(self)
+        # te standardize called can be replaced if we have a custom implementation of asdict
+        # for now I think is better to use the native implementation
+        data = {key: self.standardize_custom_type(value) for key, value in dataclasses.asdict(self).items()}
         schema = self.avro_schema_to_python()
 
         return serialization.serialize(data, schema, serialization_type=serialization_type)

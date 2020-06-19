@@ -1,6 +1,8 @@
 import typing
 from dataclasses import dataclass
 
+from .types import CUSTOM_TYPES
+
 
 def is_union(a_type: typing.Any) -> bool:
     """
@@ -40,6 +42,13 @@ def is_self_referenced(a_type) -> bool:
         and a_type.__args__
         and isinstance(a_type.__args__[0], typing.ForwardRef)  # type: ignore
     )
+
+
+def is_custom_type(value) -> bool:
+    """
+    Given a type, return True if is a custom type (Fixed, Enum)
+    """
+    return isinstance(value, dict) and value.get("_dataclasses_custom_type") in CUSTOM_TYPES
 
 
 @dataclass

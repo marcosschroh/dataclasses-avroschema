@@ -15,6 +15,7 @@ class Fixed(typing.Generic[T]):
     size: int
     namespace: str = None
     aliases: typing.List = None
+    _dataclasses_custom_type: str = "Fixed"
 
     def __repr__(self):
         return f"{self.size}"
@@ -33,6 +34,10 @@ class Enum(typing.Generic[T]):
     namespace: str = None
     aliases: typing.List = None
     docs: str = None
+    _dataclasses_custom_type: str = "Enum"
 
     def __repr__(self):
         return f"{self.symbols}"
+
+
+CUSTOM_TYPES = ("Fixed", "Enum")
