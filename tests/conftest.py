@@ -80,6 +80,7 @@ def user_extra_avro_atributes_dataclass():
 
 @pytest.fixture
 def user_advance_dataclass():
+    @dataclasses.dataclass
     class UserAdvance(AvroModel):
         name: str
         age: int
@@ -99,6 +100,7 @@ def user_advance_dataclass():
 
 @pytest.fixture
 def user_advance_with_defaults_dataclass():
+    @dataclasses.dataclass
     class UserAdvance(AvroModel):
         name: str
         age: int
