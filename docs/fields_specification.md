@@ -117,11 +117,11 @@ Python Type | Avro Type   | Logical Type |
 ### Adding custom field-level attributes
 You may want to add field-level attributes which are not automatically populated according to the typing semantics
 listed above. For example, you might want a `"doc"` attribute or even a custom attribute (which Avro supports as long
-as it doesn't conflict with any field names in the core Avro specification). An example of a cusom attribute is a flag
+as it doesn't conflict with any field names in the core Avro specification). An example of a custom attribute is a flag
 for whether a field contains sensitive data. e.g. `"sensitivty"`.
 
 When your Python class is serialised to Avro, each field will contain a number of attributes. Some of these of are common
-to all field like `"name"` and others are specific to the datatype (e.g. `array` will have the `items` attribute).
+to all fields such as `"name"` and others are specific to the datatype (e.g. `array` will have the `items` attribute).
 In order to add custom fields, you can use the `field` descriptor of the built-in `dataclasses` package and provide a
 `dict` of key-value pairs to the `metadata` parameter as in `dataclasses.field(metadata={'doc': 'foo'})`.
 
@@ -131,12 +131,15 @@ Adding a `doc` attribute to fields.
 ```python
 from dataclasses import dataclass, field
 from dataclasses_avroschema import AvroModel, types
+
 @dataclass
 class User(AvroModel):
     "An User"
     name: str = field(metadata={'doc': 'bar'})
     age: int = field(metadata={'doc': 'foo'})
+    
 User.avro_schema()
+
 {
     "type": "record",
     "name": "User",
@@ -152,12 +155,15 @@ Adding an additional `sensitivity` attribute to fields.
 ```python
 from dataclasses import dataclass, field
 from dataclasses_avroschema import AvroModel, types
+
 @dataclass
 class User(AvroModel):
     "An User"
     name: str = field(metadata={'doc': 'bar', 'sensitivity': 'HIGH'})
     age: int = field(metadata={'doc': 'foo', 'sensitivity': 'MEDIUM'})
+    
 User.avro_schema()
+
 {
     "type": "record",
     "name": "User",
