@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- documentation of `dataclasses.field` descriptor added
+- support for aware datetime added
 - `serialization` fixed for complex types
 
 ## [0.14.2] - 2020-06-16

@@ -1,5 +1,8 @@
 import typing
 from dataclasses import dataclass
+from datetime import datetime
+
+from pytz import utc
 
 from .types import CUSTOM_TYPES
 
@@ -64,3 +67,7 @@ class SchemaMetadata:
             namespace=getattr(klass, "namespace", None),
             aliases=getattr(klass, "aliases", None),
         )
+
+
+epoch: datetime = datetime(1970, 1, 1, tzinfo=utc)
+epoch_naive: datetime = datetime(1970, 1, 1)

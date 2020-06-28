@@ -72,14 +72,17 @@ class AvroModel:
             return value["default"]
         return value
 
-    def serialize(self, serialization_type: str = AVRO) -> bytes:
+    def asdict(self):
         data = dataclasses.asdict(self)
+
         # te standardize called can be replaced if we have a custom implementation of asdict
         # for now I think is better to use the native implementation
-        data = {key: self.standardize_custom_type(value) for key, value in dataclasses.asdict(self).items()}
+        return {key: self.standardize_custom_type(value) for key, value in data.items()}
+
+    def serialize(self, serialization_type: str = AVRO) -> bytes:
         schema = self.avro_schema_to_python()
 
-        return serialization.serialize(data, schema, serialization_type=serialization_type)
+        return serialization.serialize(self.asdict(), schema, serialization_type=serialization_type)
 
     @classmethod
     def deserialize(cls, data: bytes, serialization_type: str = AVRO) -> typing.Any:
@@ -90,6 +93,5 @@ class AvroModel:
     def to_json(self):
         # Serialize using the current AVRO schema to get proper field representations
         # and after that conver into python
-        data = self.deserialize(self.serialize())
-
-        return {field: value.decode() if isinstance(value, bytes) else value for field, value in data.items()}
+        data = self.asdict()
+        return serialization.to_json(data)
