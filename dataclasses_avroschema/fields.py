@@ -473,7 +473,7 @@ class DateField(LogicalTypeField):
             int
         """
         date_time = datetime.datetime.combine(date, datetime.datetime.min.time())
-        ts = (date_time - datetime.datetime(1970, 1, 1)).total_seconds()
+        ts = (date_time - utils.epoch_naive).total_seconds()
 
         return int(ts / (3600 * 24))
 
@@ -554,7 +554,11 @@ class DatetimeField(LogicalTypeField):
         Returns:
             float
         """
-        ts = (date_time - datetime.datetime(1970, 1, 1)).total_seconds()
+        if date_time.tzinfo:
+            ts = (date_time - utils.epoch).total_seconds()
+        else:
+            ts = (date_time - utils.epoch_naive).total_seconds()
+
         return ts * 1000
 
 

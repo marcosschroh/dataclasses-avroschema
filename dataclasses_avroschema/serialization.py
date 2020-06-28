@@ -1,7 +1,13 @@
+import datetime
 import io
 import typing
+import uuid
 
 import fastavro
+
+DATETIME_STR_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
+DATE_STR_FORMAT = "%Y-%m-%d"
+TIME_STR_FORMAT = "%H:%M:%S"
 
 
 def serialize(payload: typing.Dict, schema: typing.Dict, serialization_type: str = "avro") -> bytes:
@@ -41,3 +47,35 @@ def deserialize(data: bytes, schema: typing.Dict, serialization_type: str = "avr
     input_stream.flush()
 
     return payload
+
+
+def datetime_to_str(value: datetime.datetime) -> str:
+    return value.strftime(DATETIME_STR_FORMAT)
+
+
+def date_to_str(value: datetime.datetime) -> str:
+    return value.strftime(DATE_STR_FORMAT)
+
+
+def time_to_str(value: datetime.datetime) -> str:
+    return value.strftime(TIME_STR_FORMAT)
+
+
+def to_json(data: typing.Dict[str, typing.Any]) -> typing.Dict:
+    json_data = {}
+
+    for field, value in data.items():
+        if isinstance(value, bytes):
+            value = value.decode()
+        elif isinstance(value, datetime.datetime):
+            value = datetime_to_str(value)
+        elif isinstance(value, datetime.date):
+            value = date_to_str(value)
+        elif isinstance(value, datetime.time):
+            value = time_to_str(value)
+        elif isinstance(value, uuid.UUID):
+            value = str(value)
+
+        json_data[field] = value
+
+    return json_data
