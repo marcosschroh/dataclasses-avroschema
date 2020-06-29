@@ -114,7 +114,7 @@ Python Type | Avro Type   | Logical Type |
 | datetime.datetim| long  |  timestamp-millis |
 | uuid.uuid4  | string    |  uuid        |
 
-### Adding custom field-level attributes
+## Adding Custom Field-level Attributes
 You may want to add field-level attributes which are not automatically populated according to the typing semantics
 listed above. For example, you might want a `"doc"` attribute or even a custom attribute (which Avro supports as long
 as it doesn't conflict with any field names in the core Avro specification). An example of a custom attribute is a flag
@@ -125,7 +125,7 @@ to all fields such as `"name"` and others are specific to the datatype (e.g. `ar
 In order to add custom fields, you can use the `field` descriptor of the built-in `dataclasses` package and provide a
 `dict` of key-value pairs to the `metadata` parameter as in `dataclasses.field(metadata={'doc': 'foo'})`.
 
-#### Examples
+### Examples
 
 Adding a `doc` attribute to fields.
 ```python
