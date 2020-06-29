@@ -437,6 +437,15 @@ class LogicalTypeField(BaseField):
 
         return self.avro_type
 
+    def get_default_value(self):
+        if self.default is not dataclasses.MISSING:
+            if self.default is None:
+                return NULL
+
+            if self.validate_default():
+                # Convert to datetime and get the amount of days
+                return self.to_logical_type(self.default)
+
 
 @dataclasses.dataclass
 class DateField(LogicalTypeField):
@@ -449,15 +458,6 @@ class DateField(LogicalTypeField):
     """
 
     avro_type: typing.ClassVar = {"type": INT, "logicalType": DATE}
-
-    def get_default_value(self):
-        if self.default is not dataclasses.MISSING:
-            if self.default is None:
-                return NULL
-
-            if self.validate_default():
-                # Convert to datetime and get the amount of days
-                return self.to_logical_type(self.default)
 
     @staticmethod
     def to_logical_type(date):
@@ -490,14 +490,6 @@ class TimeField(LogicalTypeField):
     """
 
     avro_type: typing.ClassVar = {"type": INT, "logicalType": TIME_MILLIS}
-
-    def get_default_value(self):
-        if self.default is not dataclasses.MISSING:
-            if self.default is None:
-                return NULL
-
-            if self.validate_default():
-                return self.to_logical_type(self.default)
 
     @staticmethod
     def to_logical_type(time):
@@ -533,14 +525,6 @@ class DatetimeField(LogicalTypeField):
     """
 
     avro_type: typing.ClassVar = {"type": LONG, "logicalType": TIMESTAMP_MILLIS}
-
-    def get_default_value(self):
-        if self.default is not dataclasses.MISSING:
-            if self.default is None:
-                return NULL
-
-            if self.validate_default():
-                return self.to_logical_type(self.default)
 
     @staticmethod
     def to_logical_type(date_time):
