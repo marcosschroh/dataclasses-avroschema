@@ -220,15 +220,69 @@ def test_mapping_logical_type(mapping, python_primitive_type, python_type_str, v
     assert expected == field.to_dict()
 
 
-@pytest.mark.parametrize("args", consts.UNION_PRIMITIVE_ELEMENTS)
-def test_union_type(args):
-    primitive_types, avro_types = args[0], args[1]
-
+@pytest.mark.parametrize("primitive_types, avro_types", consts.UNION_PRIMITIVE_ELEMENTS)
+def test_union_type(primitive_types, avro_types):
     name = "an_union_field"
     python_type = typing.Union[primitive_types]
     field = fields.Field(name, python_type)
 
     expected = {"name": name, "type": [*avro_types]}
+
+    assert expected == field.to_dict()
+
+
+@pytest.mark.parametrize("complex_type, avro_types", consts.UNION_WITH_ARRAY)
+def test_union_with_arrays(complex_type, avro_types):
+    name = "an_union_field"
+    python_type = typing.Union[complex_type]
+    field = fields.Field(name, python_type)
+
+    expected = {"name": name, "type": [{"type": "array", "name": name, "items": avro_types[0]}, avro_types[1]]}
+
+    assert expected == field.to_dict()
+
+
+@pytest.mark.parametrize("complex_type, avro_types", consts.UNION_WITH_MAP)
+def test_union_with_maps(complex_type, avro_types):
+    name = "an_union_field"
+    python_type = typing.Union[complex_type]
+    field = fields.Field(name, python_type)
+
+    expected = {"name": name, "type": [{"type": "map", "name": name, "values": avro_types[0]}, avro_types[1]]}
+
+    assert expected == field.to_dict()
+
+
+@pytest.mark.parametrize("complex_type, avro_type", consts.OPTIONAL_UNION_COMPLEX_TYPES)
+def test_union_as_optional_with_complex_types(complex_type, avro_type):
+    """
+    Test cases when typing.Optional is used.
+    The result of typing.Optional[Any] is typing.Union[Any, NoneType]
+
+    Always NoneType is placed at the end
+    """
+    name = "optional_field"
+    python_type = typing.Optional[complex_type]
+    field = fields.Field(name, python_type)
+
+    expected = {"name": name, "type": [avro_type, "null"]}
+
+    assert expected == field.to_dict()
+
+
+@pytest.mark.parametrize("primitive_type, avro_type", consts.PRIMITIVE_TYPES)
+def test_union_as_optional_with_primitives(primitive_type, avro_type):
+    """
+    Test cases when typing.Optional is used.
+    The result of typing.Optional[Any] is typing.Union[Any, NoneType]
+
+    Always NoneType is placed at the end
+    """
+    name = "an_optional_union_field"
+    python_type = typing.Optional[primitive_type]
+    field = fields.Field(name, python_type)
+
+    expected = {"name": name, "type": [avro_type, "null"]}
 
     assert expected == field.to_dict()
 
