@@ -56,6 +56,33 @@ UNION_PRIMITIVE_ELEMENTS = (
     ((str, float, int, bool), (fields.STRING, fields.FLOAT, fields.INT, fields.BOOLEAN),),
 )
 
+UNION_WITH_ARRAY = (
+    ((typing.List[int], str), (fields.INT, fields.STRING),),
+    ((typing.List[str], float), (fields.STRING, fields.FLOAT),),
+    ((typing.List[datetime.datetime], datetime.datetime), (fields.LOGICAL_DATETIME, fields.LOGICAL_DATETIME),),
+    ((typing.List[uuid.uuid4], bytes), (fields.LOGICAL_UUID, fields.BYTES),),
+)
+
+UNION_WITH_MAP = (
+    ((typing.Dict[str, int], str), (fields.INT, fields.STRING),),
+    ((typing.Dict[str, str], float), (fields.STRING, fields.FLOAT),),
+    ((typing.Dict[str, datetime.datetime], datetime.datetime), (fields.LOGICAL_DATETIME, fields.LOGICAL_DATETIME),),
+    ((typing.Dict[str, uuid.uuid4], bytes), (fields.LOGICAL_UUID, fields.BYTES),),
+)
+
+OPTIONAL_UNION_COMPLEX_TYPES = (
+    (typing.List[str], {"type": fields.ARRAY, "items": fields.STRING, "name": "optional_field"}),
+    (
+        typing.List[datetime.datetime],
+        {"type": fields.ARRAY, "items": fields.LOGICAL_DATETIME, "name": "optional_field"},
+    ),
+    (typing.Dict[str, int], {"type": fields.MAP, "values": fields.INT, "name": "optional_field"}),
+    (
+        typing.Dict[str, datetime.datetime],
+        {"type": fields.MAP, "values": fields.LOGICAL_DATETIME, "name": "optional_field"},
+    ),
+)
+
 
 SEQUENCE_TYPES = (typing.List, typing.Tuple, typing.Sequence, typing.MutableSequence)
 MAPPING_TYPES = (typing.Dict, typing.Mapping, typing.MutableMapping)

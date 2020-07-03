@@ -250,3 +250,17 @@ def test_schema_array_with_union_types():
         second_union: typing.List[typing.Union[str, int]] = dataclasses.field(default_factory=lambda: ["test"])
 
     assert parse_schema(ArrayUnionSchema.avro_schema_to_python())
+
+
+def test_schema_with_optional_and_complex_types():
+    class UnionSchema(AvroModel):
+        "Some Unions"
+        first_union: typing.Union[typing.List[str], int]
+        logical_union: typing.Union[typing.List[datetime.datetime], datetime.date, uuid.uuid4]
+        dict_union: typing.Optional[typing.Dict[str, int]]
+        optional_union: typing.Optional[typing.List[str]]
+        dict_union_optional: typing.Optional[typing.Dict[str, int]]
+        optional_union_with_default: typing.Optional[typing.List[str]] = None
+        dict_union_optional_with_default: typing.Optional[typing.Dict[str, int]] = dataclasses.field(
+            default_factory=lambda: [{"test": 1}]
+        )

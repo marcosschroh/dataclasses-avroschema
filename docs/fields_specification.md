@@ -108,6 +108,7 @@ Python Type | Avro Type   | Logical Type |
 | types.Fixed      | fixed         | do not apply |
 | types.Enum      | enum         | do not apply |
 | typing.Union| union     | do not apply |
+| typing.Optional| union (with `null`)    | do not apply |
 | Pythin classs | record  | do not apply |
 | datetime.date | int     |  date        |
 | datetime.time | int     |  time-millis |
@@ -115,6 +116,7 @@ Python Type | Avro Type   | Logical Type |
 | uuid.uuid4  | string    |  uuid        |
 
 ## Adding Custom Field-level Attributes
+
 You may want to add field-level attributes which are not automatically populated according to the typing semantics
 listed above. For example, you might want a `"doc"` attribute or even a custom attribute (which Avro supports as long
 as it doesn't conflict with any field names in the core Avro specification). An example of a custom attribute is a flag
@@ -128,6 +130,7 @@ In order to add custom fields, you can use the `field` descriptor of the built-i
 ### Examples
 
 Adding a `doc` attribute to fields.
+
 ```python
 from dataclasses import dataclass, field
 from dataclasses_avroschema import AvroModel, types
@@ -137,7 +140,7 @@ class User(AvroModel):
     "An User"
     name: str = field(metadata={'doc': 'bar'})
     age: int = field(metadata={'doc': 'foo'})
-    
+
 User.avro_schema()
 
 {
@@ -152,6 +155,7 @@ User.avro_schema()
 ```
 
 Adding an additional `sensitivity` attribute to fields.
+
 ```python
 from dataclasses import dataclass, field
 from dataclasses_avroschema import AvroModel, types
@@ -161,7 +165,7 @@ class User(AvroModel):
     "An User"
     name: str = field(metadata={'doc': 'bar', 'sensitivity': 'HIGH'})
     age: int = field(metadata={'doc': 'foo', 'sensitivity': 'MEDIUM'})
-    
+
 User.avro_schema()
 
 {

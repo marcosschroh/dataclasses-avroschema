@@ -9,6 +9,7 @@ The following list represent the avro complext types mapped to python types:
 | maps      |   typing.Dict, typing.Mapping, typing.MutableMapping      |
 | fixed     | types.Fixed |
 | unions    |typing.Union |
+| unions with `null`  |typing.Optional |
 | records   |Python Class |
 
 ### Enums
@@ -326,6 +327,36 @@ UnionSchema.avro_schema()
   "doc": "Some Unions"
 }'
 ```
+
+### Unions with typing.Optional
+
+`typing.Optional[Any]` is translated as an optional Union: `typing.Union[Any, NoneType]` where `NoneType`
+is always at the end
+
+```python
+import typing
+import dataclasses
+
+from dataclasses_avroschema import AvroModel
+from dataclasses import dataclass, field
+
+@dataclasses.dataclass
+class X(AvroModel):
+    y: typing.Optional[typing.List[int]]
+
+
+X.avro_schema()
+
+'{
+    "type": "record",
+    "name": "X",
+    "fields": [
+        {"name": "y", "type": [{"type": "array", "items": "int", "name": "y"}, "null"]}
+    ],
+    "doc": "X(y: Union[List[int], NoneType])"
+}'
+```
+
 
 ### Records
 

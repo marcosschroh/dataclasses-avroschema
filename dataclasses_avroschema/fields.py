@@ -259,8 +259,9 @@ class ListField(ContainerField):
             # Checking for a self reference. Maybe is a typing.ForwardRef
             self.items_type = self._get_self_reference_type(items_type)
         elif utils.is_union(items_type):
+            name = self.get_singular_name(self.name)
             self.items_type = UnionField.generate_union(
-                items_type.__args__, default=self.default, default_factory=self.default_factory,
+                name, items_type.__args__, default=self.default, default_factory=self.default_factory,
             )
         else:
             # Is Avro Record Type
@@ -325,12 +326,16 @@ class UnionField(BaseField):
 
     def get_avro_type(self):
         elements = self.type.__args__
-
-        return self.generate_union(elements, default=self.default, default_factory=self.default_factory)
+        # generate the singular name in the case that we have array or map
+        name = self.get_singular_name(self.name)
+        return self.generate_union(name, elements, default=self.default, default_factory=self.default_factory)
 
     @staticmethod
     def generate_union(
-        elements: typing.List, default: typing.Any = None, default_factory: typing.Callable = dataclasses.MISSING,
+        name: str,
+        elements: typing.List,
+        default: typing.Any = None,
+        default_factory: typing.Callable = dataclasses.MISSING,
     ):
         """
         Generate union.
@@ -346,15 +351,11 @@ class UnionField(BaseField):
         """
         unions = []
         for element in elements:
-            if element in PRIMITIVE_AND_LOGICAL_TYPES:
-                klass = PRIMITIVE_LOGICAL_TYPES_FIELDS_CLASSES[element]
-                union_element = klass.avro_type
-            else:
-                union_element = element.avro_schema_to_python()
+            # create the field and get the avro type
+            field = Field(name, element)
+            unions.append(field.get_avro_type())
 
-            unions.append(union_element)
-
-        if default is None and default_factory is dataclasses.MISSING:
+        if default is None and default_factory is dataclasses.MISSING and NULL not in unions:
             unions.insert(0, NULL)
 
         return unions
@@ -457,7 +458,7 @@ class DateField(LogicalTypeField):
     the number of days from the unix epoch, 1 January 1970 (ISO calendar).
     """
 
-    avro_type: typing.ClassVar = {"type": INT, "logicalType": DATE}
+    avro_type: typing.ClassVar = LOGICAL_DATE
 
     @staticmethod
     def to_logical_type(date):
@@ -489,7 +490,7 @@ class TimeField(LogicalTypeField):
     where the int stores the number of milliseconds after midnight, 00:00:00.000.
     """
 
-    avro_type: typing.ClassVar = {"type": INT, "logicalType": TIME_MILLIS}
+    avro_type: typing.ClassVar = LOGICAL_TIME
 
     @staticmethod
     def to_logical_type(time):
@@ -524,7 +525,7 @@ class DatetimeField(LogicalTypeField):
     1 January 1970 00:00:00.000 UTC.
     """
 
-    avro_type: typing.ClassVar = {"type": LONG, "logicalType": TIMESTAMP_MILLIS}
+    avro_type: typing.ClassVar = LOGICAL_DATETIME
 
     @staticmethod
     def to_logical_type(date_time):
@@ -548,7 +549,7 @@ class DatetimeField(LogicalTypeField):
 
 @dataclasses.dataclass
 class UUIDField(LogicalTypeField):
-    avro_type: typing.ClassVar = {"type": STRING, "logicalType": UUID}
+    avro_type: typing.ClassVar = LOGICAL_UUID
 
     def get_default_value(self):
         if self.default is not dataclasses.MISSING:
