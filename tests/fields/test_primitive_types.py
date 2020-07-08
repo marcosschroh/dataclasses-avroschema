@@ -29,7 +29,7 @@ def test_primitive_types_with_default_value_none(primitive_type):
 def test_primitive_types_with_default_value(primitive_type, default):
     name = "a_field"
     field = fields.Field(name, primitive_type, default)
-    avro_type = [fields.PYTHON_TYPE_TO_AVRO[primitive_type], fields.NULL]
+    avro_type = fields.PYTHON_TYPE_TO_AVRO[primitive_type]
 
     if primitive_type is bytes:
         default = default.decode()

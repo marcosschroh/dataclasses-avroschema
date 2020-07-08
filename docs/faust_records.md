@@ -58,7 +58,7 @@ UserAdvance.avro_schema()
     },
     {
       "name": "has_car",
-      "type": ["boolean", "null"],
+      "type": "boolean",
       "default": false
     },
     {
@@ -71,7 +71,7 @@ UserAdvance.avro_schema()
     },
     {
       "name": "country",
-      "type": ["string", "null"],
+      "type": "string",
       "default": "Argentina"
     },
     {

@@ -119,7 +119,7 @@ class UserAdvance(AvroModel):
     "User advanced"
     accounts_money: typing.Dict[str, float]
     cars_brand_total: typing.Dict[str, int] = None
-    family_ages: typing.Dict[str, int] = dataclasses.field(default_factory=lambda: {"father": 50}) 
+    family_ages: typing.Dict[str, int] = dataclasses.field(default_factory=lambda: {"father": 50})
 
 UserAdvance.avro_schema()
 
@@ -357,7 +357,6 @@ X.avro_schema()
 }'
 ```
 
-
 ### Records
 
 Mapped as a Python class
@@ -389,8 +388,8 @@ User.avro_schema()
   "fields": [
     {"name": "name", "type": "string"},
     {"name": "age", "type": "int"},
-    {"name": "has_pets", "type": ["boolean", "null"], "default": false},
-    {"name": "money", "type": ["float", "null"], "default": 100.3}
+    {"name": "has_pets", "type": "boolean", "default": false},
+    {"name": "money", "type": "float", "default": 100.3}
   ],
   "doc": "My User Class",
   "namespace": "test.com.ar/user/v1",

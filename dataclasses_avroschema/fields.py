@@ -62,7 +62,9 @@ PYTHON_PRIMITIVE_TYPES = PYTHON_INMUTABLE_TYPES + PYTHON_PRIMITIVE_CONTAINERS
 
 PRIMITIVE_AND_LOGICAL_TYPES = PYTHON_INMUTABLE_TYPES + PYTHON_LOGICAL_TYPES
 
-PythonPrimitiveTypes = typing.Union[str, int, bool, float, list, tuple, dict]
+PythonImnutableTypes = typing.Union[
+    str, int, bool, float, list, tuple, dict, datetime.date, datetime.time, datetime.datetime, uuid.UUID
+]
 
 
 @dataclasses.dataclass
@@ -152,10 +154,10 @@ class BaseField:
 
 
 class InmutableField(BaseField):
-    def get_avro_type(self) -> PythonPrimitiveTypes:
+    def get_avro_type(self) -> PythonImnutableTypes:
         if self.default is not dataclasses.MISSING:
             if self.default is not None:
-                return [self.avro_type, NULL]
+                return self.avro_type
             # means that default value is None
             return [NULL, self.avro_type]
 
@@ -206,7 +208,7 @@ class NoneField(InmutableField):
 
 @dataclasses.dataclass
 class ContainerField(BaseField):
-    def get_avro_type(self) -> PythonPrimitiveTypes:
+    def get_avro_type(self) -> PythonImnutableTypes:
         avro_type = self.avro_type
         avro_type["name"] = self.get_singular_name(self.name)
 
@@ -251,21 +253,18 @@ class ListField(ContainerField):
     def generate_items_type(self):
         # because avro can have only one type, we take the first one
         items_type = self.type.__args__[0]
+        name = self.get_singular_name(self.name)
 
-        if items_type in PRIMITIVE_AND_LOGICAL_TYPES:
-            klass = PRIMITIVE_LOGICAL_TYPES_FIELDS_CLASSES[items_type]
-            self.items_type = klass.avro_type
-        elif utils.is_self_referenced(items_type):
+        if utils.is_self_referenced(items_type):
             # Checking for a self reference. Maybe is a typing.ForwardRef
             self.items_type = self._get_self_reference_type(items_type)
         elif utils.is_union(items_type):
-            name = self.get_singular_name(self.name)
             self.items_type = UnionField.generate_union(
                 name, items_type.__args__, default=self.default, default_factory=self.default_factory,
             )
         else:
-            # Is Avro Record Type
-            self.items_type = items_type.avro_schema_to_python()
+            field = Field(name, items_type)
+            self.items_type = field.get_avro_type()
 
 
 @dataclasses.dataclass
@@ -310,14 +309,13 @@ class DictField(ContainerField):
         """
         values_type = self.type.__args__[1]
 
-        if values_type in PRIMITIVE_AND_LOGICAL_TYPES:
-            klass = PRIMITIVE_LOGICAL_TYPES_FIELDS_CLASSES[values_type]
-            self.values_type = klass.avro_type
-        elif utils.is_self_referenced(values_type):
+        if utils.is_self_referenced(values_type):
             # Checking for a self reference. Maybe is a typing.ForwardRef
             self.values_type = self._get_self_reference_type(values_type)
         else:
-            self.values_type = values_type.avro_schema_to_python()
+            name = self.get_singular_name(self.name)
+            field = Field(name, values_type)
+            self.values_type = field.get_avro_type()
 
 
 @dataclasses.dataclass
@@ -428,16 +426,7 @@ class SelfReferenceField(BaseField):
         return
 
 
-class LogicalTypeField(BaseField):
-    def get_avro_type(self):
-        if self.default is not dataclasses.MISSING:
-            if self.default is not None:
-                return self.avro_type
-            # means that default value is None
-            return [NULL, self.avro_type]
-
-        return self.avro_type
-
+class LogicalTypeField(InmutableField):
     def get_default_value(self):
         if self.default is not dataclasses.MISSING:
             if self.default is None:
@@ -550,14 +539,6 @@ class DatetimeField(LogicalTypeField):
 @dataclasses.dataclass
 class UUIDField(LogicalTypeField):
     avro_type: typing.ClassVar = LOGICAL_UUID
-
-    def get_default_value(self):
-        if self.default is not dataclasses.MISSING:
-            if self.default is None:
-                return NULL
-
-            if self.validate_default():
-                return self.to_logical_type(self.default)
 
     def validate_default(self):
         msg = f"Invalid default type. Default should be {str} or {uuid.UUID}"
