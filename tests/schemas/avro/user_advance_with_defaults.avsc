@@ -32,7 +32,7 @@
       },
       {
         "name": "has_car",
-        "type": ["boolean", "null"],
+        "type": "boolean",
         "default": false
       },
       {
@@ -46,7 +46,7 @@
       },
       {
         "name": "country",
-        "type": ["string", "null"],
+        "type": "string",
         "default": "Argentina"
       },
       {

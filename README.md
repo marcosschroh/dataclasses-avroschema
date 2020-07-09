@@ -59,7 +59,7 @@ User.avro_schema()
         {"name": "pets", "type": "array", "items": "string"},
         {"name": "accounts", "type": "map", "values": "int"},
         {"name": "favorite_colors", "type": "enum", "symbols": ["BLUE", "YELLOW", "GREEN"]},
-        {"name": "country", "type": ["string", "null"], "default": "Argentina"},
+        {"name": "country", "type": "string", "default": "Argentina"},
         {"name": "address", "type": ["null", "string"], "default": "null"}
     ]
 }'

@@ -127,27 +127,27 @@ User.avro_schema()
   "fields": [
     {
       "name": "name",
-      "type": ["string", "null"],
+      "type": "string",
       "default": "Juan"
     },
     {
       "name": "age",
-      "type": ["int", "null"],
+      "type": "int",
       "default": 20
     },
     {
       "name": "is_student",
-      "type": ["boolean", "null"],
+      "type": "boolean",
       "default": true
     },
     {
       "name": "money_available",
-      "type": ["float", "null"],
+      "type": "float",
       "default": 100.2
     },
     {
         "name": "encoded",
-        "type": ["bytes", "null"],
+        "type": "bytes",
         "default": "hi"
     }
   ],
