@@ -255,10 +255,7 @@ class ListField(ContainerField):
         items_type = self.type.__args__[0]
         name = self.get_singular_name(self.name)
 
-        if utils.is_self_referenced(items_type):
-            # Checking for a self reference. Maybe is a typing.ForwardRef
-            self.items_type = self._get_self_reference_type(items_type)
-        elif utils.is_union(items_type):
+        if utils.is_union(items_type):
             self.items_type = UnionField.generate_union(
                 name, items_type.__args__, default=self.default, default_factory=self.default_factory,
             )
@@ -309,13 +306,9 @@ class DictField(ContainerField):
         """
         values_type = self.type.__args__[1]
 
-        if utils.is_self_referenced(values_type):
-            # Checking for a self reference. Maybe is a typing.ForwardRef
-            self.values_type = self._get_self_reference_type(values_type)
-        else:
-            name = self.get_singular_name(self.name)
-            field = Field(name, values_type)
-            self.values_type = field.get_avro_type()
+        name = self.get_singular_name(self.name)
+        field = Field(name, values_type)
+        self.values_type = field.get_avro_type()
 
 
 @dataclasses.dataclass
@@ -420,10 +413,17 @@ class EnumField(BaseField):
 @dataclasses.dataclass
 class SelfReferenceField(BaseField):
     def get_avro_type(self):
-        return self._get_self_reference_type(self.type)
+        str_type = self._get_self_reference_type(self.type)
+
+        if self.default is None:
+            # means that default value is None
+            return [NULL, str_type]
+        return str_type
 
     def get_default_value(self):
-        return
+        # Only check for None because self reference default value can be only None
+        if self.default is None:
+            return NULL
 
 
 class LogicalTypeField(InmutableField):

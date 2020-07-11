@@ -37,6 +37,10 @@ class User(AvroModel):
     country: str = "Argentina"
     address: str = None
 
+    class Meta:
+        namespace = "User.v1"
+        aliases = ["user-v1", "super user"]
+
 
 User.avro_schema()
 
@@ -44,6 +48,8 @@ User.avro_schema()
     "type": "record",
     "name": "User",
     "doc": "An User",
+    "namespace": "User.v1",
+    "aliases": ["user-v1", "super user"],
     "fields": [
         {"name": "name", "type": "string"},
         {"name": "age", "type": "int"},

@@ -17,6 +17,15 @@
                 "values": "User",
                 "name": "friend"
             }
+        },
+        {
+            "name": "teamates",
+            "type": {
+                "type": "map",
+                "values": "User",
+                "name": "teamate"
+            },
+            "default":  {}
         } 
     ],
     "doc": "User with self reference as friends"
