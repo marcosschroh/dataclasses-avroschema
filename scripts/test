@@ -7,6 +7,6 @@ fi
 
 tests=${1-"./tests"}
 
-${PREFIX}pytest --cov=dataclasses_avroschema ${tests} --cov-fail-under=98 --cov-report html  
+${PREFIX}pytest --cov=dataclasses_avroschema ${tests} ${2} --cov-fail-under=98 --cov-report html
 ${PREFIX}black dataclasses_avroschema tests --check
 ${PREFIX}flake8 dataclasses_avroschema

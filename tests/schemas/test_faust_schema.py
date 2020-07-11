@@ -159,6 +159,7 @@ def test_faust_record_self_one_to_one_relationship(user_self_reference_one_to_on
         name: str
         age: int
         friend: typing.Type["User"]
+        teamates: typing.Type["User"] = None
 
     assert User.avro_schema() == json.dumps(user_self_reference_one_to_one_schema)
 
@@ -173,6 +174,7 @@ def test_faust_record_self_one_to_many_relationship(user_self_reference_one_to_m
         name: str
         age: int
         friends: typing.List[typing.Type["User"]]
+        teamates: typing.List[typing.Type["User"]] = None
 
     assert User.avro_schema() == json.dumps(user_self_reference_one_to_many_schema)
 
@@ -187,6 +189,7 @@ def test_faust_record_self_one_to_many_map_relationship(user_self_reference_one_
         name: str
         age: int
         friends: typing.Dict[str, typing.Type["User"]]
+        teamates: typing.Dict[str, typing.Type["User"]] = None
 
     assert User.avro_schema() == json.dumps(user_self_reference_one_to_many_map_schema)
 

@@ -57,7 +57,7 @@ class User(AvroModel):
     "User with self reference as friend"
     name: str
     age: int
-    friend: typing.Type["User"]
+    friend: typing.Type["User"] = None
 
 User.avro_schema()
 
@@ -75,7 +75,8 @@ User.avro_schema()
     },
     {
       "name": "friend",
-      "type": "User"
+      "type": ["null", "User"],
+      "default": "null"
     }
   ],
   "doc": "User with self reference as friend"
@@ -181,7 +182,7 @@ User.avro_schema()
 }'
 ```
 
-## OneToMany Recursive Schema Relationship 
+## OneToMany Recursive Schema Relationship
 
 An User with multiple friends :-) :
 
@@ -195,7 +196,7 @@ class User(AvroModel):
     "User with self reference as friends"
     name: str
     age: int
-    friends: typing.List[typing.Type["User"]]
+    friends: typing.List[typing.Type["User"]] = None
 
 
 User.avro_schema()
@@ -218,7 +219,8 @@ User.avro_schema()
         "type": "array",
         "items": "User",
         "name": "friend"
-      }
+      },
+      "default": []
     }
   ],
   "doc": "User with self reference as friends"
@@ -229,7 +231,7 @@ class User(AvroModel):
   "User with self reference as friends"
   name: str
   age: int
-  friends: typing.Dict[str, typing.Type["User"]]
+  friends: typing.Dict[str, typing.Type["User"]] = None
 
 User.avro_schema()
 
@@ -251,7 +253,8 @@ User.avro_schema()
         "type": "map",
         "values": "User",
         "name": "friend"
-      }
+      },
+      "default": {}
     }
   ],
   "doc": "User with self reference as friends"
