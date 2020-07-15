@@ -155,12 +155,8 @@ class BaseField:
 
 class InmutableField(BaseField):
     def get_avro_type(self) -> PythonImnutableTypes:
-        if self.default is not dataclasses.MISSING:
-            if self.default is not None:
-                return self.avro_type
-            # means that default value is None
+        if self.default is None:
             return [NULL, self.avro_type]
-
         return self.avro_type
 
 
@@ -555,12 +551,9 @@ class UUIDField(LogicalTypeField):
 class RecordField(BaseField):
     def get_avro_type(self):
         record_type = self.type.avro_schema_to_python()
-        if self.default is not dataclasses.MISSING:
-            if self.default is not None:
-                return record_type
-            # means that default value is None
-            return [NULL, record_type]
 
+        if self.default is None:
+            return [NULL, record_type]
         return record_type
 
 
