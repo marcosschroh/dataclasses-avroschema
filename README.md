@@ -26,11 +26,14 @@ https://marcosschroh.github.io/dataclasses-avroschema/
 ### Generating the avro schema
 
 ```python
+from dataclasses import dataclass
+
 import typing
 
 from dataclasses_avroschema import AvroModel, types
 
 
+@dataclass
 class User(AvroModel):
     "An User"
     name: str
