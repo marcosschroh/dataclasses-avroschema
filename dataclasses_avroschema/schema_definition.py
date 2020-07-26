@@ -9,10 +9,10 @@ from dataclasses_avroschema.fields import AvroField, FieldType
 try:
     import faust
 except ImportError:  # pragma: no cover
-    faust = None  # pragma: no cover
+    faust = None  # type: ignore # pragma: no cover
 
 
-@dataclasses.dataclass
+@dataclasses.dataclass  # type: ignore
 class BaseSchemaDefinition(abc.ABC):
     """
     Minimal Schema definition
@@ -22,7 +22,7 @@ class BaseSchemaDefinition(abc.ABC):
     klass: typing.Any
 
     @abc.abstractmethod
-    def get_rendered_fields(self) -> typing.List["fields.FieldType"]:
+    def get_rendered_fields(self) -> typing.List[OrderedDict]:
         ...  # pragma: no cover
 
     @abc.abstractmethod
@@ -35,9 +35,7 @@ class BaseSchemaDefinition(abc.ABC):
     def generate_documentation(self) -> typing.Optional[str]:
         doc = self.klass.__doc__
 
-        if doc is not None:
-            return doc.replace("\n", "")
-        return None
+        return doc.replace("\n", "")
 
     @property
     def is_faust_record(self) -> bool:
@@ -67,7 +65,7 @@ class AvroSchemaDefinition(BaseSchemaDefinition):
                 dataclass_field.name,
                 dataclass_field.type,
                 dataclass_field.default,
-                dataclass_field.default_factory,
+                dataclass_field.default_factory,  # type: ignore  # TODO: resolve mypy
                 dataclass_field.metadata,
             )
             for dataclass_field in dataclasses.fields(self.klass)
@@ -78,16 +76,15 @@ class AvroSchemaDefinition(BaseSchemaDefinition):
 
         for dataclass_field in dataclasses.fields(self.klass):
             faust_field = dataclass_field.default
+            default_factory = dataclasses.MISSING
 
             if faust_field.required:
                 default = dataclasses.MISSING
-                default_factory = dataclasses.MISSING
             else:
                 default = faust_field.default
-                default_factory = dataclasses.MISSING
 
                 if isinstance(default, dataclasses.Field):
-                    default_factory = default.default_factory
+                    default_factory = default.default_factory  # type: ignore  # TODO: resolve mypy
                     default = dataclasses.MISSING
 
             schema_fields.append(AvroField(dataclass_field.name, dataclass_field.type, default, default_factory))

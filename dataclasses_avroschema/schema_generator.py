@@ -3,6 +3,7 @@ import json
 import typing
 
 from dataclasses_avroschema import schema_definition, serialization, utils
+
 from .fields import FieldType
 
 AVRO = "avro"
@@ -44,7 +45,7 @@ class AvroModel:
             else:
                 raise ValueError("Invalid type. Expected avro schema type.")
 
-        return cls.schema_def.render()
+        return cls.schema_def
 
     @classmethod
     def _generate_avro_schema(cls: typing.Any) -> schema_definition.AvroSchemaDefinition:
@@ -52,7 +53,7 @@ class AvroModel:
 
     @classmethod
     def avro_schema(cls: typing.Any) -> str:
-        return json.dumps(cls.generate_schema(schema_type=AVRO))
+        return json.dumps(cls.generate_schema(schema_type=AVRO).render())
 
     @classmethod
     def avro_schema_to_python(cls: typing.Any) -> typing.Dict[str, typing.Any]:
@@ -61,8 +62,7 @@ class AvroModel:
     @classmethod
     def get_fields(cls: typing.Any) -> typing.List[FieldType]:
         if cls.schema_def is None:
-            cls.generate_schema()
-
+            return cls.generate_schema().fields
         return cls.schema_def.fields
 
     @staticmethod
