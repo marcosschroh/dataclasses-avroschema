@@ -12,7 +12,7 @@ from . import consts
 def test_logical_types(python_type, avro_type, logical_type):
     name = "a logical type"
     python_type = python_type
-    field = fields.Field(name, python_type)
+    field = fields.AvroField(name, python_type)
 
     expected = {"name": name, "type": {"type": avro_type, "logicalType": logical_type}}
 
@@ -23,7 +23,7 @@ def test_logical_types(python_type, avro_type, logical_type):
 def test_logical_types_with_null_as_default(python_type, avro_type, logical_type):
     name = "a logical type"
     python_type = python_type
-    field = fields.Field(name, python_type, None)
+    field = fields.AvroField(name, python_type, None)
 
     expected = {
         "name": name,
@@ -37,7 +37,7 @@ def test_logical_types_with_null_as_default(python_type, avro_type, logical_type
 def test_logical_type_date_with_default():
     name = "a date"
     python_type = datetime.date
-    field = fields.Field(name, python_type, consts.now.date())
+    field = fields.AvroField(name, python_type, consts.now.date())
 
     date_time = datetime.datetime.combine(consts.now, datetime.datetime.min.time())
     ts = (date_time - datetime.datetime(1970, 1, 1)).total_seconds()
@@ -55,7 +55,7 @@ def test_logical_type_time_with_default():
     name = "a time"
     python_type = datetime.time
     time = consts.now.time()
-    field = fields.Field(name, python_type, time)
+    field = fields.AvroField(name, python_type, time)
 
     hour, minutes, seconds, microseconds = (
         time.hour,
@@ -77,7 +77,7 @@ def test_logical_type_time_with_default():
 def test_logical_type_datetime_with_default():
     name = "a datetime"
     python_type = datetime.datetime
-    field = fields.Field(name, python_type, consts.now)
+    field = fields.AvroField(name, python_type, consts.now)
 
     ts = (consts.now - datetime.datetime(1970, 1, 1)).total_seconds()
 
@@ -94,7 +94,7 @@ def test_logical_type_uuid_with_default():
     name = "a uuid"
     python_type = uuid.uuid4
     default = uuid.uuid4()
-    field = fields.Field(name, python_type, default)
+    field = fields.AvroField(name, python_type, default)
 
     expected = {
         "name": name,
@@ -108,7 +108,7 @@ def test_logical_type_uuid_with_default():
 @pytest.mark.parametrize("logical_type,invalid_default,msg", consts.LOGICAL_TYPES_AND_INVALID_DEFAULTS)
 def test_invalid_default_values(logical_type, invalid_default, msg):
     name = "a_field"
-    field = fields.Field(name, logical_type, invalid_default)
+    field = fields.AvroField(name, logical_type, invalid_default)
 
     msg = msg or f"Invalid default type. Default should be {logical_type}"
     with pytest.raises(AssertionError, match=msg):

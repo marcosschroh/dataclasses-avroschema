@@ -17,7 +17,7 @@ def test_invalid_type_container_field():
     msg = f"Invalid Type for field {name}. Accepted types are list, tuple, dict or typing.Union"
 
     with pytest.raises(ValueError, match=msg):
-        fields.Field(name, python_type, dataclasses.MISSING)
+        fields.AvroField(name, python_type, dataclasses.MISSING)
 
 
 @pytest.mark.parametrize("sequence, python_primitive_type,python_type_str", consts.SEQUENCES_AND_TYPES)
@@ -28,7 +28,7 @@ def test_sequence_type(sequence, python_primitive_type, python_type_str):
     """
     name = "an_array_field"
     python_type = sequence[python_primitive_type]
-    field = fields.Field(name, python_type, dataclasses.MISSING)
+    field = fields.AvroField(name, python_type, dataclasses.MISSING)
 
     expected = {
         "name": name,
@@ -37,7 +37,7 @@ def test_sequence_type(sequence, python_primitive_type, python_type_str):
 
     assert expected == field.to_dict()
 
-    field = fields.Field(name, python_type, None)
+    field = fields.AvroField(name, python_type, None)
     expected = {
         "name": name,
         "type": {"type": "array", "name": name, "items": python_type_str},
@@ -52,7 +52,7 @@ def test_sequence_type(sequence, python_primitive_type, python_type_str):
     else:
         values = default = faker.pylist(2, True, python_primitive_type)
 
-    field = fields.Field(name, python_type, default=dataclasses.MISSING, default_factory=lambda: values)
+    field = fields.AvroField(name, python_type, default=dataclasses.MISSING, default_factory=lambda: values)
 
     expected = {
         "name": name,
@@ -74,7 +74,7 @@ def test_sequence_with_logical_type(sequence, python_primitive_type, python_type
     name = "an_array_field"
     python_type = sequence[python_primitive_type]
 
-    field = fields.Field(name, python_type, dataclasses.MISSING)
+    field = fields.AvroField(name, python_type, dataclasses.MISSING)
     expected = {
         "name": name,
         "type": {"type": "array", "name": name, "items": python_type_str},
@@ -82,7 +82,7 @@ def test_sequence_with_logical_type(sequence, python_primitive_type, python_type
 
     assert expected == field.to_dict()
 
-    field = fields.Field(name, python_type, None)
+    field = fields.AvroField(name, python_type, None)
     expected = {
         "name": name,
         "type": {"type": "array", "name": name, "items": python_type_str},
@@ -93,7 +93,7 @@ def test_sequence_with_logical_type(sequence, python_primitive_type, python_type
 
     values = [value]
 
-    field = fields.Field(name, python_type, default=dataclasses.MISSING, default_factory=lambda: values)
+    field = fields.AvroField(name, python_type, default=dataclasses.MISSING, default_factory=lambda: values)
 
     expected = {
         "name": name,
@@ -111,12 +111,12 @@ def test_sequence_with_union_type(union, items, default):
     name = "an_array_field"
     python_type = typing.List[union]
 
-    field = fields.Field(name, python_type, default=dataclasses.MISSING)
+    field = fields.AvroField(name, python_type, default=dataclasses.MISSING)
     expected = {"name": name, "type": {"type": "array", "name": name, "items": items}}
 
     assert expected == field.to_dict()
 
-    field = fields.Field(name, python_type, default_factory=lambda: default)
+    field = fields.AvroField(name, python_type, default_factory=lambda: default)
     expected = {
         "name": name,
         "type": {"type": "array", "name": name, "items": items},
@@ -125,7 +125,7 @@ def test_sequence_with_union_type(union, items, default):
 
     assert expected == field.to_dict()
 
-    field = fields.Field(name, python_type, default=None)
+    field = fields.AvroField(name, python_type, default=None)
     items.insert(0, fields.NULL)
     expected = {
         "name": name,
@@ -145,7 +145,7 @@ def test_mapping_type(mapping, python_primitive_type, python_type_str):
     name = "a_map_field"
     python_type = mapping[str, python_primitive_type]
 
-    field = fields.Field(name, python_type, dataclasses.MISSING)
+    field = fields.AvroField(name, python_type, dataclasses.MISSING)
     expected = {
         "name": name,
         "type": {"type": "map", "name": name, "values": python_type_str},
@@ -153,7 +153,7 @@ def test_mapping_type(mapping, python_primitive_type, python_type_str):
 
     assert expected == field.to_dict()
 
-    field = fields.Field(name, python_type, None)
+    field = fields.AvroField(name, python_type, None)
     expected = {
         "name": name,
         "type": {"type": "map", "name": name, "values": python_type_str},
@@ -168,7 +168,7 @@ def test_mapping_type(mapping, python_primitive_type, python_type_str):
     else:
         value = default = faker.pydict(2, True, python_primitive_type)
 
-    field = fields.Field(name, python_type, default=dataclasses.MISSING, default_factory=lambda: value)
+    field = fields.AvroField(name, python_type, default=dataclasses.MISSING, default_factory=lambda: value)
 
     expected = {
         "name": name,
@@ -188,7 +188,7 @@ def test_mapping_logical_type(mapping, python_primitive_type, python_type_str, v
     name = "a_map_field"
     python_type = mapping[str, python_primitive_type]
 
-    field = fields.Field(name, python_type, dataclasses.MISSING)
+    field = fields.AvroField(name, python_type, dataclasses.MISSING)
     expected = {
         "name": name,
         "type": {"type": "map", "name": name, "values": python_type_str},
@@ -196,7 +196,7 @@ def test_mapping_logical_type(mapping, python_primitive_type, python_type_str, v
 
     assert expected == field.to_dict()
 
-    field = fields.Field(name, python_type, None)
+    field = fields.AvroField(name, python_type, None)
     expected = {
         "name": name,
         "type": {"type": "map", "name": name, "values": python_type_str},
@@ -206,7 +206,7 @@ def test_mapping_logical_type(mapping, python_primitive_type, python_type_str, v
     assert expected == field.to_dict()
 
     values = {"key": value}
-    field = fields.Field(name, python_type, default=dataclasses.MISSING, default_factory=lambda: values)
+    field = fields.AvroField(name, python_type, default=dataclasses.MISSING, default_factory=lambda: values)
 
     expected = {
         "name": name,
@@ -224,7 +224,7 @@ def test_mapping_logical_type(mapping, python_primitive_type, python_type_str, v
 def test_union_type(primitive_types, avro_types):
     name = "an_union_field"
     python_type = typing.Union[primitive_types]
-    field = fields.Field(name, python_type)
+    field = fields.AvroField(name, python_type)
 
     expected = {"name": name, "type": [*avro_types]}
 
@@ -235,7 +235,7 @@ def test_union_type(primitive_types, avro_types):
 def test_union_with_arrays(complex_type, avro_types):
     name = "an_union_field"
     python_type = typing.Union[complex_type]
-    field = fields.Field(name, python_type)
+    field = fields.AvroField(name, python_type)
 
     expected = {"name": name, "type": [{"type": "array", "name": name, "items": avro_types[0]}, avro_types[1]]}
 
@@ -246,7 +246,7 @@ def test_union_with_arrays(complex_type, avro_types):
 def test_union_with_maps(complex_type, avro_types):
     name = "an_union_field"
     python_type = typing.Union[complex_type]
-    field = fields.Field(name, python_type)
+    field = fields.AvroField(name, python_type)
 
     expected = {"name": name, "type": [{"type": "map", "name": name, "values": avro_types[0]}, avro_types[1]]}
 
@@ -263,7 +263,7 @@ def test_union_as_optional_with_complex_types(complex_type, avro_type):
     """
     name = "optional_field"
     python_type = typing.Optional[complex_type]
-    field = fields.Field(name, python_type)
+    field = fields.AvroField(name, python_type)
 
     expected = {"name": name, "type": [avro_type, "null"]}
 
@@ -280,7 +280,7 @@ def test_union_as_optional_with_primitives(primitive_type, avro_type):
     """
     name = "an_optional_union_field"
     python_type = typing.Optional[primitive_type]
-    field = fields.Field(name, python_type)
+    field = fields.AvroField(name, python_type)
 
     expected = {"name": name, "type": [avro_type, "null"]}
 
@@ -298,7 +298,7 @@ def test_union_type_with_records():
 
     name = "an_union_field"
     python_type = typing.Union[User, Car]
-    field = fields.Field(name, python_type)
+    field = fields.AvroField(name, python_type)
 
     expected = {
         "name": name,
@@ -322,7 +322,7 @@ def test_union_type_with_record_default():
 
     name = "an_union_field"
     python_type = typing.Union[User, Car]
-    field = fields.Field(name, python_type, None)
+    field = fields.AvroField(name, python_type, None)
 
     expected = {
         "name": name,
@@ -336,7 +336,7 @@ def test_union_type_with_record_default():
 
     assert expected == field.to_dict()
 
-    field = fields.Field(
+    field = fields.AvroField(
         name, python_type, default=dataclasses.MISSING, default_factory=lambda: {"first_name": "a name"},
     )
 
@@ -362,7 +362,7 @@ def test_fixed_type():
     aliases = ["md5", "hash"]
     default = types.Fixed(16, namespace=namespace, aliases=aliases)
     python_type = types.Fixed
-    field = fields.Field(name, python_type, default)
+    field = fields.AvroField(name, python_type, default)
 
     expected = {
         "name": name,
@@ -385,7 +385,7 @@ def test_enum_type():
     )
 
     python_type = types.Enum
-    field = fields.Field(name, python_type, default)
+    field = fields.AvroField(name, python_type, default)
 
     expected = {
         "name": name,
@@ -396,7 +396,7 @@ def test_enum_type():
     assert expected == field.to_dict()
 
     default = types.Enum(["SPADES", "HEARTS", "DIAMONDS", "CLUBS"])
-    field = fields.Field(name, python_type, default)
+    field = fields.AvroField(name, python_type, default)
 
     expected = {
         "name": name,
@@ -407,6 +407,6 @@ def test_enum_type():
 
     with pytest.raises(AssertionError):
         default = types.Enum(["SPADES", "HEARTS", "DIAMONDS", "CLUBS"], default="BLUE")
-        field = fields.Field(name, python_type, default)
+        field = fields.AvroField(name, python_type, default)
 
         field.to_dict()

@@ -104,6 +104,6 @@ def test_not_implementd_methods():
     with pytest.raises(TypeError) as excinfo:
         BaseSchemaDefinition("avro", Aclass)
 
-    msg = f"Can't instantiate abstract class BaseSchemaDefinition with abstract " f"methods get_rendered_fields, render"
+    msg = "Can't instantiate abstract class BaseSchemaDefinition with abstract methods get_rendered_fields, render"
 
     assert msg == str(excinfo.value)

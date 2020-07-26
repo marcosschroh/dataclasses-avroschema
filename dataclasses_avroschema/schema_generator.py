@@ -3,6 +3,7 @@ import json
 import typing
 
 from dataclasses_avroschema import schema_definition, serialization, utils
+from .fields import FieldType
 
 AVRO = "avro"
 AVRO_JSON = "avro-json"
@@ -10,18 +11,18 @@ AVRO_JSON = "avro-json"
 
 class AvroModel:
 
-    schema_def: schema_definition.AvroSchemaDefinition = None
+    schema_def: typing.Optional[schema_definition.AvroSchemaDefinition] = None
     klass: typing.Any = None
-    metadata: typing.Dict = None
+    metadata: typing.Optional[typing.Dict] = None
 
     @classmethod
-    def generate_dataclass(cls):
+    def generate_dataclass(cls: typing.Any) -> typing.Any:
         if dataclasses.is_dataclass(cls):
             return cls
         return dataclasses.dataclass(cls)
 
     @classmethod
-    def generate_metadata(cls):
+    def generate_metadata(cls: typing.Any) -> utils.SchemaMetadata:
         meta = getattr(cls.klass, "Meta", None)
 
         if meta is None:
@@ -29,50 +30,48 @@ class AvroModel:
         return utils.SchemaMetadata.create(meta)
 
     @classmethod
-    def generate_schema(cls, schema_type: str = "avro"):
-        if cls.schema_def is not None:
-            return cls.schema_def.render()
+    def generate_schema(cls: typing.Any, schema_type: str = "avro") -> typing.Dict:
+        if cls.schema_def is None:
+            # Generate metaclass and metadata
+            cls.klass = cls.generate_dataclass()
+            cls.metadata = cls.generate_metadata()
 
-        # Generate metaclass and metadata
-        cls.klass = cls.generate_dataclass()
-        cls.metadata = cls.generate_metadata()
-
-        # let's live open the possibility to define different
-        # schema definitions like json
-        if schema_type == "avro":
-            # cache the schema
-            cls.schema_def = cls._generate_avro_schema()
-        else:
-            raise ValueError("Invalid type. Expected avro schema type.")
+            # let's live open the possibility to define different
+            # schema definitions like json
+            if schema_type == "avro":
+                # cache the schema
+                cls.schema_def = cls._generate_avro_schema()
+            else:
+                raise ValueError("Invalid type. Expected avro schema type.")
 
         return cls.schema_def.render()
 
     @classmethod
-    def _generate_avro_schema(cls) -> schema_definition.AvroSchemaDefinition:
+    def _generate_avro_schema(cls: typing.Any) -> schema_definition.AvroSchemaDefinition:
         return schema_definition.AvroSchemaDefinition("record", cls.klass, metadata=cls.metadata)
 
     @classmethod
-    def avro_schema(cls) -> str:
+    def avro_schema(cls: typing.Any) -> str:
         return json.dumps(cls.generate_schema(schema_type=AVRO))
 
     @classmethod
-    def avro_schema_to_python(cls) -> typing.Dict[str, typing.Any]:
+    def avro_schema_to_python(cls: typing.Any) -> typing.Dict[str, typing.Any]:
         return json.loads(cls.avro_schema())
 
     @classmethod
-    def get_fields(cls) -> typing.List["schema_definition.Field"]:
+    def get_fields(cls: typing.Any) -> typing.List[FieldType]:
         if cls.schema_def is None:
             cls.generate_schema()
 
         return cls.schema_def.fields
 
     @staticmethod
-    def standardize_custom_type(value):
+    def standardize_custom_type(value: typing.Any) -> typing.Any:
         if utils.is_custom_type(value):
             return value["default"]
         return value
 
-    def asdict(self):
+    def asdict(self) -> typing.Dict:
         data = dataclasses.asdict(self)
 
         # te standardize called can be replaced if we have a custom implementation of asdict
@@ -90,7 +89,7 @@ class AvroModel:
 
         return serialization.deserialize(data, schema, serialization_type=serialization_type)
 
-    def to_json(self):
+    def to_json(self) -> typing.Dict:
         # Serialize using the current AVRO schema to get proper field representations
         # and after that conver into python
         data = self.asdict()

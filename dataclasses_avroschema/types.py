@@ -13,11 +13,11 @@ class Fixed(typing.Generic[T]):
     """
 
     size: int
-    namespace: str = None
-    aliases: typing.List = None
+    namespace: typing.Optional[str] = None
+    aliases: typing.Optional[typing.List] = None
     _dataclasses_custom_type: str = "Fixed"
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{self.size}"
 
 
@@ -30,13 +30,13 @@ class Enum(typing.Generic[T]):
     """
 
     symbols: typing.List[typing.Any]
-    default: typing.Any = None
-    namespace: str = None
-    aliases: typing.List = None
-    docs: str = None
+    default: typing.Optional[typing.Any] = None
+    namespace: typing.Optional[str] = None
+    aliases: typing.Optional[typing.List] = None
+    docs: typing.Optional[str] = None
     _dataclasses_custom_type: str = "Enum"
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{self.symbols}"
 
 

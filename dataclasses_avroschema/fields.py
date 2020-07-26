@@ -77,13 +77,13 @@ class BaseField:
     metadata: typing.Dict = dataclasses.MISSING
 
     @staticmethod
-    def _get_self_reference_type(a_type):
+    def _get_self_reference_type(a_type: typing.Any) -> str:
         internal_type = a_type.__args__[0]
 
         return internal_type.__forward_arg__
 
     @staticmethod
-    def get_singular_name(name):
+    def get_singular_name(name: str) -> str:
         singular = p.singular_noun(name)
 
         if singular:
@@ -213,10 +213,10 @@ class ContainerField(BaseField):
 
 @dataclasses.dataclass
 class ListField(ContainerField):
-    items_type: typing.Any = None
-    default_factory: typing.Any = None
+    items_type: typing.Optional[typing.Any] = None
+    default_factory: typing.Optional[typing.Any] = None
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         self.generate_items_type()
 
     @property
@@ -256,16 +256,16 @@ class ListField(ContainerField):
                 name, items_type.__args__, default=self.default, default_factory=self.default_factory,
             )
         else:
-            field = Field(name, items_type)
+            field = AvroField(name, items_type)
             self.items_type = field.get_avro_type()
 
 
 @dataclasses.dataclass
 class DictField(ContainerField):
-    default_factory: typing.Any = None
-    values_type: typing.Any = None
+    default_factory: typing.Optional[typing.Any] = None
+    values_type: typing.Optional[typing.Any] = None
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         self.generate_values_type()
 
     @property
@@ -303,7 +303,7 @@ class DictField(ContainerField):
         values_type = self.type.__args__[1]
 
         name = self.get_singular_name(self.name)
-        field = Field(name, values_type)
+        field = AvroField(name, values_type)
         self.values_type = field.get_avro_type()
 
 
@@ -321,7 +321,7 @@ class UnionField(BaseField):
     def generate_union(
         name: str,
         elements: typing.List,
-        default: typing.Any = None,
+        default: typing.Optional[typing.Any] = None,
         default_factory: typing.Callable = dataclasses.MISSING,
     ):
         """
@@ -339,7 +339,7 @@ class UnionField(BaseField):
         unions = []
         for element in elements:
             # create the field and get the avro type
-            field = Field(name, element)
+            field = AvroField(name, element)
             unions.append(field.get_avro_type())
 
         if default is None and default_factory is dataclasses.MISSING and NULL not in unions:
@@ -536,14 +536,14 @@ class DatetimeField(LogicalTypeField):
 class UUIDField(LogicalTypeField):
     avro_type: typing.ClassVar = LOGICAL_UUID
 
-    def validate_default(self):
+    def validate_default(self) -> bool:
         msg = f"Invalid default type. Default should be {str} or {uuid.UUID}"
         assert isinstance(self.default, (str, uuid.UUID)), msg
 
         return True
 
     @staticmethod
-    def to_logical_type(uuid4):
+    def to_logical_type(uuid4) -> str:
         return str(uuid4)
 
 
@@ -618,7 +618,7 @@ def field_factory(
     native_type: typing.Any,
     default: typing.Any = dataclasses.MISSING,
     default_factory: typing.Any = dataclasses.MISSING,
-    metadata: typing.Dict = dataclasses.MISSING,
+    metadata: typing.Optional[typing.Dict] = None,
 ) -> FieldType:
     if native_type in PYTHON_INMUTABLE_TYPES:
         klass = INMUTABLE_FIELDS_CLASSES[native_type]
@@ -657,4 +657,4 @@ def field_factory(
         return RecordField(name=name, type=native_type, default=default, metadata=metadata)
 
 
-Field = field_factory
+AvroField = field_factory

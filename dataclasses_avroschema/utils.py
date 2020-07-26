@@ -18,13 +18,12 @@ def is_union(a_type: typing.Any) -> bool:
         bool
     """
     return (
-        isinstance(a_type, typing._GenericAlias)
-        and a_type.__origin__  # type: ignore
-        is typing.Union
+        isinstance(a_type, typing._GenericAlias)  # type: ignore
+        and a_type.__origin__ is typing.Union
     )
 
 
-def is_self_referenced(a_type) -> bool:
+def is_self_referenced(a_type: typing.Any) -> bool:
     """
     Given a python type, return True if is self referenced, meaning
     that is instance of typing.ForwardRef, otherwise False
@@ -47,7 +46,7 @@ def is_self_referenced(a_type) -> bool:
     )
 
 
-def is_custom_type(value) -> bool:
+def is_custom_type(value: typing.Any) -> bool:
     """
     Given a type, return True if is a custom type (Fixed, Enum)
     """
@@ -57,11 +56,11 @@ def is_custom_type(value) -> bool:
 @dataclass
 class SchemaMetadata:
     schema_doc: bool = True
-    namespace: typing.List[str] = None
-    aliases: typing.List[str] = None
+    namespace: typing.Optional[typing.List[str]] = None
+    aliases: typing.Optional[typing.List[str]] = None
 
     @classmethod
-    def create(cls, klass: typing.Any):
+    def create(cls, klass: typing.Any) -> typing.Any:
         return cls(
             schema_doc=getattr(klass, "schema_doc", True),
             namespace=getattr(klass, "namespace", None),

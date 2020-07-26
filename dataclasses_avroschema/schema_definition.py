@@ -3,7 +3,8 @@ import dataclasses
 import typing
 from collections import OrderedDict
 
-from dataclasses_avroschema import fields, utils
+from dataclasses_avroschema import utils
+from dataclasses_avroschema.fields import AvroField, FieldType
 
 try:
     import faust
@@ -21,21 +22,22 @@ class BaseSchemaDefinition(abc.ABC):
     klass: typing.Any
 
     @abc.abstractmethod
-    def get_rendered_fields(self):
+    def get_rendered_fields(self) -> typing.List["fields.FieldType"]:
         ...  # pragma: no cover
 
     @abc.abstractmethod
-    def render(self):
+    def render(self) -> OrderedDict:
         ...  # pragma: no cover
 
-    def get_schema_name(self):
+    def get_schema_name(self) -> str:
         return self.klass.__name__
 
-    def generate_documentation(self):
+    def generate_documentation(self) -> typing.Optional[str]:
         doc = self.klass.__doc__
 
         if doc is not None:
             return doc.replace("\n", "")
+        return None
 
     @property
     def is_faust_record(self) -> bool:
@@ -46,22 +48,22 @@ class BaseSchemaDefinition(abc.ABC):
 
 @dataclasses.dataclass
 class AvroSchemaDefinition(BaseSchemaDefinition):
-    aliases: typing.List[str] = None
-    namespace: str = None
-    fields: typing.List["fields.FieldType"] = None
-    metadata: utils.SchemaMetadata = None
+    aliases: typing.List[str] = dataclasses.field(default_factory=list)
+    namespace: typing.Optional[str] = None
+    fields: typing.List[FieldType] = dataclasses.field(default_factory=list)
+    metadata: utils.SchemaMetadata = dataclasses.field(default_factory=utils.SchemaMetadata)
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         self.fields = self.parse_dataclasses_fields()
 
-    def parse_dataclasses_fields(self) -> typing.List["fields.Field"]:
+    def parse_dataclasses_fields(self) -> typing.List[FieldType]:
         if self.is_faust_record:
             return self.parse_faust_record_fields()
         return self.parse_fields()
 
-    def parse_fields(self):
+    def parse_fields(self) -> typing.List[FieldType]:
         return [
-            fields.Field(
+            AvroField(
                 dataclass_field.name,
                 dataclass_field.type,
                 dataclass_field.default,
@@ -71,7 +73,7 @@ class AvroSchemaDefinition(BaseSchemaDefinition):
             for dataclass_field in dataclasses.fields(self.klass)
         ]
 
-    def parse_faust_record_fields(self) -> typing.List["fields.Field"]:
+    def parse_faust_record_fields(self) -> typing.List[FieldType]:
         schema_fields = []
 
         for dataclass_field in dataclasses.fields(self.klass):
@@ -88,14 +90,14 @@ class AvroSchemaDefinition(BaseSchemaDefinition):
                     default_factory = default.default_factory
                     default = dataclasses.MISSING
 
-            schema_fields.append(fields.Field(dataclass_field.name, dataclass_field.type, default, default_factory))
+            schema_fields.append(AvroField(dataclass_field.name, dataclass_field.type, default, default_factory))
 
         return schema_fields
 
-    def get_rendered_fields(self) -> typing.List["fields.Field"]:
+    def get_rendered_fields(self) -> typing.List[OrderedDict]:
         return [field.render() for field in self.fields]
 
-    def render(self):
+    def render(self) -> OrderedDict:
         schema = OrderedDict(
             [("type", self.type), ("name", self.get_schema_name()), ("fields", self.get_rendered_fields()),]
         )
