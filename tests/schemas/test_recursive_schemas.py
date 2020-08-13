@@ -1,6 +1,5 @@
 import json
 import typing
-from dataclasses import field
 
 from dataclasses_avroschema import AvroModel
 

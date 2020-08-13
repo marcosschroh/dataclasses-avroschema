@@ -12,7 +12,7 @@ TIME_STR_FORMAT = "%H:%M:%S"
 
 def serialize(payload: typing.Dict, schema: typing.Dict, serialization_type: str = "avro") -> bytes:
     if serialization_type == "avro":
-        file_like_output = io.BytesIO()
+        file_like_output: typing.Union[io.BytesIO, io.StringIO] = io.BytesIO()
 
         fastavro.schemaless_writer(file_like_output, schema, payload)
 
@@ -26,12 +26,12 @@ def serialize(payload: typing.Dict, schema: typing.Dict, serialization_type: str
 
     file_like_output.flush()
 
-    return value
+    return value  # type: ignore
 
 
 def deserialize(data: bytes, schema: typing.Dict, serialization_type: str = "avro") -> typing.Any:
     if serialization_type == "avro":
-        input_stream = io.BytesIO(data)
+        input_stream: typing.Union[io.BytesIO, io.StringIO] = io.BytesIO(data)
 
         payload = fastavro.schemaless_reader(input_stream, schema)
 
@@ -53,11 +53,11 @@ def datetime_to_str(value: datetime.datetime) -> str:
     return value.strftime(DATETIME_STR_FORMAT)
 
 
-def date_to_str(value: datetime.datetime) -> str:
+def date_to_str(value: datetime.date) -> str:
     return value.strftime(DATE_STR_FORMAT)
 
 
-def time_to_str(value: datetime.datetime) -> str:
+def time_to_str(value: datetime.time) -> str:
     return value.strftime(TIME_STR_FORMAT)
 
 
