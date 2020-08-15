@@ -28,7 +28,7 @@ def test_logical_types_with_null_as_default(python_type, avro_type, logical_type
     expected = {
         "name": name,
         "type": ["null", {"type": avro_type, "logicalType": logical_type}],
-        "default": fields.NULL,
+        "default": None,
     }
 
     assert expected == field.to_dict()

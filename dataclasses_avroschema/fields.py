@@ -73,7 +73,7 @@ class BaseField:
 
     name: str
     type: typing.Any  # store the python primitive type
-    default: typing.Any = None
+    default: typing.Any
     metadata: typing.Mapping = dataclasses.field(default_factory=dict)
 
     @staticmethod
@@ -123,18 +123,17 @@ class BaseField:
         template = OrderedDict([("name", self.name), ("type", self.get_avro_type())] + self.get_metadata())
 
         default = self.get_default_value()
-        if default is not None:
+        if default is not dataclasses.MISSING:
             template["default"] = default
 
         return template
 
     def get_default_value(self) -> typing.Any:
-        if self.default is not dataclasses.MISSING:
-            if self.default is None:
-                return NULL
-
-            if self.validate_default():
-                return self.default
+        if self.default in (dataclasses.MISSING, None):
+            return self.default
+        else:
+            self.validate_default()
+            return self.default
 
     def validate_default(self) -> bool:
         msg = f"Invalid default type. Default should be {self.type}"
@@ -185,12 +184,11 @@ class BytesField(InmutableField):
     avro_type: typing.ClassVar = BYTES
 
     def get_default_value(self) -> typing.Any:
-        if self.default is not dataclasses.MISSING:
-            if self.default is None:
-                return NULL
-
-            if self.validate_default():
-                return self.avro_to_json_type(self.default)
+        if self.default in (dataclasses.MISSING, None):
+            return self.default
+        else:
+            self.validate_default()
+            return self.avro_to_json_type(self.default)
 
     @staticmethod
     def avro_to_json_type(item: bytes) -> str:
@@ -224,10 +222,9 @@ class ListField(ContainerField):
     def avro_type(self) -> typing.Dict:
         return {"type": ARRAY, "items": self.items_type}
 
-    def get_default_value(self) -> typing.Optional[typing.List]:
-        if self.default is not dataclasses.MISSING:
-            if self.default is None:
-                return []
+    def get_default_value(self) -> typing.Union[typing.List, dataclasses._MISSING_TYPE]:
+        if self.default is None:
+            return []
         elif callable(self.default_factory):
             # expecting a callable
             default = self.default_factory()
@@ -246,8 +243,7 @@ class ListField(ContainerField):
                 clean_items.append(clean_item)
 
             return clean_items
-
-        return None
+        return dataclasses.MISSING
 
     def generate_items_type(self) -> typing.Any:
         # because avro can have only one type, we take the first one
@@ -274,10 +270,9 @@ class DictField(ContainerField):
     def avro_type(self) -> typing.Dict[str, typing.Any]:
         return {"type": MAP, "values": self.values_type}
 
-    def get_default_value(self) -> typing.Optional[typing.Dict[str, typing.Any]]:
-        if self.default is not dataclasses.MISSING:
-            if self.default is None:
-                return {}
+    def get_default_value(self) -> typing.Union[typing.Dict[str, typing.Any], dataclasses._MISSING_TYPE]:
+        if self.default is None:
+            return {}
         elif callable(self.default_factory):
             # expeting a callable
             default = self.default_factory()
@@ -296,7 +291,7 @@ class DictField(ContainerField):
                 clean_items[key] = clean_item
 
             return clean_items
-        return None
+        return dataclasses.MISSING
 
     def generate_values_type(self) -> typing.Any:
         """
@@ -351,15 +346,17 @@ class UnionField(BaseField):
         return unions
 
     def get_default_value(self) -> typing.Any:
-        if self.default is not dataclasses.MISSING:
-            if self.default is None:
-                return NULL
-        elif callable(self.default_factory):
+        is_default_factory_callable = callable(self.default_factory)
+
+        if self.default in (dataclasses.MISSING, None) and not is_default_factory_callable:
+            return self.default
+        elif is_default_factory_callable:
             # expeting a callable
-            default = self.default_factory()
+            default = self.default_factory()  # type: ignore
             assert isinstance(default, (dict, list)), f"Dict or List is required as default for field {self.name}"
 
             return default
+        return self.default
 
 
 @dataclasses.dataclass
@@ -379,8 +376,8 @@ class FixedField(BaseField):
 
         return avro_type
 
-    def get_default_value(self) -> None:
-        return None
+    def get_default_value(self) -> dataclasses._MISSING_TYPE:
+        return dataclasses.MISSING
 
 
 @dataclasses.dataclass
@@ -400,13 +397,19 @@ class EnumField(BaseField):
 
         return avro_type
 
-    def get_default_value(self) -> typing.Optional[str]:
+    def get_default_value(self) -> typing.Union[str, dataclasses._MISSING_TYPE, None]:
         default = self.default.default
-        if default is not None:
+
+        if default == types.MissingSentinel:
+            return dataclasses.MISSING
+        elif default in (dataclasses.MISSING, None):
+            return default
+        else:
+            # check that the default value is listed in symbols
             assert (
                 default in self.default.symbols
             ), f"The default value should be on of {self.default.symbols}. Current is {default}"
-        return self.default.default
+            return default
 
 
 @dataclasses.dataclass
@@ -419,24 +422,21 @@ class SelfReferenceField(BaseField):
             return [NULL, str_type]
         return str_type
 
-    def get_default_value(self) -> typing.Optional[str]:
+    def get_default_value(self) -> typing.Union[dataclasses._MISSING_TYPE, None]:
         # Only check for None because self reference default value can be only None
         if self.default is None:
-            return NULL
-        return None
+            return None
+        return dataclasses.MISSING
 
 
 class LogicalTypeField(InmutableField):
     def get_default_value(self) -> typing.Union[None, str, int, float]:
-        if self.default is not dataclasses.MISSING:
-            if self.default is None:
-                return NULL
-
-            if self.validate_default():
-                # Convert to datetime and get the amount of days
-                return self.to_logical_type(self.default)
-
-        return None
+        if self.default in (dataclasses.MISSING, None):
+            return self.default
+        else:
+            self.validate_default()
+            # Convert to datetime and get the amount of days
+            return self.to_logical_type(self.default)
 
     @staticmethod
     def to_logical_type(value: typing.Any) -> typing.Union[int, float, str]:

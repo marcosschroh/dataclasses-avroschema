@@ -4,6 +4,14 @@ import typing
 T = typing.TypeVar("T")
 
 
+class MissingSentinel(typing.Generic[T]):
+    """
+    Class to detect when a field is not initialized
+    """
+
+    ...
+
+
 @dataclasses.dataclass
 class Fixed(typing.Generic[T]):
     """
@@ -30,7 +38,7 @@ class Enum(typing.Generic[T]):
     """
 
     symbols: typing.List[typing.Any]
-    default: typing.Optional[typing.Any] = None
+    default: typing.Any = dataclasses.field(default=MissingSentinel)
     namespace: typing.Optional[str] = None
     aliases: typing.Optional[typing.List] = None
     docs: typing.Optional[str] = None

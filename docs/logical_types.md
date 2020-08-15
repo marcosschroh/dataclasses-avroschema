@@ -44,7 +44,7 @@ DateLogicalType.avro_schema()
         "type": "int",
         "logicalType": "date"
       },
-      "default": "null"
+      "default": null
     },
     {
       "name": "release_datetime",
@@ -94,7 +94,7 @@ TimeLogicalTypes.avro_schema()
         "type": "int",
         "logicalType": "time-millis"
       },
-      "default": "null"
+      "default": null
     },
     {
       "name": "release_time",
@@ -143,7 +143,7 @@ DatetimeLogicalType.avro_schema()
         "type": "long",
         "logicalType": "timestamp-millis"
       },
-      "default": "null"
+      "default": null
     },
     {
       "name": "release_datetime",
@@ -190,7 +190,7 @@ UUIDLogicalTypes.avro_schema()
       "type": {
         "type": "string",
         "logicalType": "uuid"
-      },"default": "null"
+      },"default": null
     },
     {
       "name": "event_uuid",

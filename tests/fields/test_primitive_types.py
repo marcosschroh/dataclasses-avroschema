@@ -22,7 +22,7 @@ def test_primitive_types_with_default_value_none(primitive_type):
     field = fields.AvroField(name, primitive_type, None)
     avro_type = [fields.NULL, fields.PYTHON_TYPE_TO_AVRO[primitive_type]]
 
-    assert {"name": name, "type": avro_type, "default": fields.NULL} == field.to_dict()
+    assert {"name": name, "type": avro_type, "default": None} == field.to_dict()
 
 
 @pytest.mark.parametrize("primitive_type,default", consts.PRIMITIVE_TYPES_AND_DEFAULTS)
