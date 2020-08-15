@@ -66,11 +66,9 @@ User.avro_schema()
         {"name": "address", "type": ["null", "string"], "default": null}
     ]
 }'
-```
 
 User.avro_schema_to_python()
 
-```python
 {
     "type": "record",
     "name": "User",
