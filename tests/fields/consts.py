@@ -46,14 +46,16 @@ LOGICAL_TYPES = (
 )
 
 UNION_PRIMITIVE_ELEMENTS = (
-    ((str, int), (fields.STRING, fields.INT)),
-    ((str, None), (fields.STRING, fields.NULL)),
+    ((str, int), (fields.STRING, fields.INT), "test"),
+    ((str, bytes), (fields.STRING, fields.BYTES), b"test"),
+    ((str, None), (fields.STRING, fields.NULL), None),
     (
         (datetime.date, datetime.datetime),
         (fields.PYTHON_TYPE_TO_AVRO[datetime.date], fields.PYTHON_TYPE_TO_AVRO[datetime.datetime],),
+        now,
     ),
-    ((float, str, int), (fields.FLOAT, fields.STRING, fields.INT)),
-    ((str, float, int, bool), (fields.STRING, fields.FLOAT, fields.INT, fields.BOOLEAN),),
+    ((float, str, int), (fields.FLOAT, fields.STRING, fields.INT), 100.0),
+    ((str, float, int, bool), (fields.STRING, fields.FLOAT, fields.INT, fields.BOOLEAN), False),
 )
 
 UNION_WITH_ARRAY = (

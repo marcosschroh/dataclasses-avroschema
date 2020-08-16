@@ -188,10 +188,10 @@ class BytesField(InmutableField):
             return self.default
         else:
             self.validate_default()
-            return self.avro_to_json_type(self.default)
+            return self.to_avro(self.default)
 
     @staticmethod
-    def avro_to_json_type(item: bytes) -> str:
+    def to_avro(item: bytes) -> str:
         return item.decode()
 
 
@@ -230,14 +230,11 @@ class ListField(ContainerField):
             default = self.default_factory()
             assert isinstance(default, list), f"List is required as default for field {self.name}"
 
-            logical_classes = LOGICAL_TYPES_FIELDS_CLASSES.keys()
-
             clean_items = []
             for item in default:
-                if type(item) in logical_classes:
-                    clean_item = LOGICAL_TYPES_FIELDS_CLASSES[type(item)].to_logical_type(item)
-                elif type(item) is bytes:
-                    clean_item = BytesField.avro_to_json_type(item)
+                item_type = type(item)
+                if item_type in LOGICAL_CLASSES:
+                    clean_item = LOGICAL_TYPES_FIELDS_CLASSES[item_type].to_avro(item)  # type: ignore
                 else:
                     clean_item = item
                 clean_items.append(clean_item)
@@ -278,14 +275,11 @@ class DictField(ContainerField):
             default = self.default_factory()
             assert isinstance(default, dict), f"Dict is required as default for field {self.name}"
 
-            logical_classes = LOGICAL_TYPES_FIELDS_CLASSES.keys()
-
             clean_items = {}
             for key, value in default.items():
-                if type(value) in logical_classes:
-                    clean_item = LOGICAL_TYPES_FIELDS_CLASSES[type(value)].to_logical_type(value)
-                elif type(value) is bytes:
-                    clean_item = BytesField.avro_to_json_type(value)
+                value_type = type(value)
+                if value_type in LOGICAL_CLASSES:
+                    clean_item = LOGICAL_TYPES_FIELDS_CLASSES[value_type].to_avro(value)  # type: ignore
                 else:
                     clean_item = value
                 clean_items[key] = clean_item
@@ -356,6 +350,8 @@ class UnionField(BaseField):
             assert isinstance(default, (dict, list)), f"Dict or List is required as default for field {self.name}"
 
             return default
+        elif type(self.default) in LOGICAL_CLASSES:
+            return LOGICAL_TYPES_FIELDS_CLASSES[type(self.default)].to_avro(self.default)  # type: ignore
         return self.default
 
 
@@ -436,10 +432,10 @@ class LogicalTypeField(InmutableField):
         else:
             self.validate_default()
             # Convert to datetime and get the amount of days
-            return self.to_logical_type(self.default)
+            return self.to_avro(self.default)
 
     @staticmethod
-    def to_logical_type(value: typing.Any) -> typing.Union[int, float, str]:
+    def to_avro(value: typing.Any) -> typing.Union[int, float, str]:
         ...  # type: ignore  # pragma: no cover
 
 
@@ -456,7 +452,7 @@ class DateField(LogicalTypeField):
     avro_type: typing.ClassVar = LOGICAL_DATE
 
     @staticmethod
-    def to_logical_type(date: datetime.date) -> int:
+    def to_avro(date: datetime.date) -> int:
         """
         Convert to datetime and get the amount of days
         from the unix epoch, 1 January 1970 (ISO calendar)
@@ -488,7 +484,7 @@ class TimeField(LogicalTypeField):
     avro_type: typing.ClassVar = LOGICAL_TIME
 
     @staticmethod
-    def to_logical_type(time: datetime.time) -> int:
+    def to_avro(time: datetime.time) -> int:
         """
         Returns the number of milliseconds after midnight, 00:00:00.000
         for a given time object
@@ -523,7 +519,7 @@ class DatetimeField(LogicalTypeField):
     avro_type: typing.ClassVar = LOGICAL_DATETIME
 
     @staticmethod
-    def to_logical_type(date_time: datetime.datetime) -> float:
+    def to_avro(date_time: datetime.datetime) -> float:
         """
         Returns the number of milliseconds from the unix epoch,
         1 January 1970 00:00:00.000 UTC for a given datetime
@@ -553,7 +549,7 @@ class UUIDField(LogicalTypeField):
         return True
 
     @staticmethod
-    def to_logical_type(uuid4: uuid.UUID) -> str:
+    def to_avro(uuid4: uuid.UUID) -> str:
         return str(uuid4)
 
 
@@ -593,6 +589,7 @@ LOGICAL_TYPES_FIELDS_CLASSES = {
     datetime.datetime: DatetimeField,
     uuid.uuid4: UUIDField,
     uuid.UUID: UUIDField,
+    bytes: BytesField,
 }
 
 PRIMITIVE_LOGICAL_TYPES_FIELDS_CLASSES = {
@@ -602,6 +599,7 @@ PRIMITIVE_LOGICAL_TYPES_FIELDS_CLASSES = {
     types.Enum: EnumField,
 }
 
+LOGICAL_CLASSES = LOGICAL_TYPES_FIELDS_CLASSES.keys()
 
 FieldType = typing.Union[
     StringField,

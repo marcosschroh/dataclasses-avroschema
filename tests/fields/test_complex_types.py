@@ -1,4 +1,5 @@
 import dataclasses
+import datetime
 import typing
 
 import pytest
@@ -98,9 +99,7 @@ def test_sequence_with_logical_type(sequence, python_primitive_type, python_type
     expected = {
         "name": name,
         "type": {"type": "array", "name": name, "items": python_type_str},
-        "default": [
-            fields.LOGICAL_TYPES_FIELDS_CLASSES[python_primitive_type].to_logical_type(value) for value in values
-        ],
+        "default": [fields.LOGICAL_TYPES_FIELDS_CLASSES[python_primitive_type].to_avro(value) for value in values],
     }
 
     assert expected == field.to_dict()
@@ -123,7 +122,6 @@ def test_sequence_with_union_type(union, items, default):
         "default": default,
     }
 
-    print("The field:", field.to_dict())
     assert expected == field.to_dict()
 
     field = fields.AvroField(name, python_type, default=None)
@@ -213,7 +211,7 @@ def test_mapping_logical_type(mapping, python_primitive_type, python_type_str, v
         "name": name,
         "type": {"type": "map", "name": name, "values": python_type_str},
         "default": {
-            key: fields.LOGICAL_TYPES_FIELDS_CLASSES[python_primitive_type].to_logical_type(value)
+            key: fields.LOGICAL_TYPES_FIELDS_CLASSES[python_primitive_type].to_avro(value)
             for key, value in values.items()
         },
     }
@@ -221,13 +219,29 @@ def test_mapping_logical_type(mapping, python_primitive_type, python_type_str, v
     assert expected == field.to_dict()
 
 
-@pytest.mark.parametrize("primitive_types, avro_types", consts.UNION_PRIMITIVE_ELEMENTS)
-def test_union_type(primitive_types, avro_types):
+@pytest.mark.parametrize("primitive_types, avro_types, default", consts.UNION_PRIMITIVE_ELEMENTS)
+def test_union_type(primitive_types, avro_types, default):
     name = "an_union_field"
     python_type = typing.Union[primitive_types]
     field = fields.AvroField(name, python_type)
 
     expected = {"name": name, "type": [*avro_types]}
+
+    assert expected == field.to_dict()
+
+
+@pytest.mark.parametrize("primitive_types, avro_types, default", consts.UNION_PRIMITIVE_ELEMENTS)
+def test_union_type_with_default(primitive_types, avro_types, default):
+    name = "an_union_field"
+    python_type = typing.Union[primitive_types]
+    field = fields.AvroField(name, python_type, default=default)
+
+    if isinstance(default, datetime.datetime):
+        default = (default - datetime.datetime(1970, 1, 1)).total_seconds() * 1000
+    elif isinstance(default, bytes):
+        default = default.decode()
+
+    expected = {"name": name, "type": [*avro_types], "default": default}
 
     assert expected == field.to_dict()
 
