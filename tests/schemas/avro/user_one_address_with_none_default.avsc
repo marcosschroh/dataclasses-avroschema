@@ -30,7 +30,7 @@
                 "doc": "An Address"
                 }
             ],
-            "default": "null"
+            "default": null
         } 
     ],
     "doc": "An User with Address"

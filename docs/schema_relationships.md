@@ -76,7 +76,7 @@ User.avro_schema()
     {
       "name": "friend",
       "type": ["null", "User"],
-      "default": "null"
+      "default": null
     }
   ],
   "doc": "User with self reference as friend"

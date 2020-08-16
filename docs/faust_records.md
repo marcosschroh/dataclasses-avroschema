@@ -77,7 +77,7 @@ UserAdvance.avro_schema()
     {
       "name": "address",
       "type": ["null", "string"],
-      "default": "null"
+      "default": null
     }
   ]
 }'

@@ -293,7 +293,7 @@ UnionSchema.avro_schema()
           "doc": "A Car"
         }
       ],
-      "default": "null"
+      "default": null
     },
     {
       "name": "mountain_trip",

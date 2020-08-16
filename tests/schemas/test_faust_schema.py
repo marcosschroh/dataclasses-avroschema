@@ -149,7 +149,7 @@ def test_faust_record_one_to_many_map_relationship(user_many_address_map_schema)
     assert User.avro_schema() == json.dumps(user_many_address_map_schema)
 
 
-def test_faust_record_self_one_to_one_relationship(user_self_reference_one_to_one_schema,):
+def test_faust_record_self_one_to_one_relationship(user_self_reference_one_to_one_schema):
     """
     Test self relationship one-to-one
     """

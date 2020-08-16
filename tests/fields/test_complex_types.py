@@ -52,7 +52,7 @@ def test_sequence_type(sequence, python_primitive_type, python_type_str):
     else:
         values = default = faker.pylist(2, True, python_primitive_type)
 
-    field = fields.AvroField(name, python_type, default=dataclasses.MISSING, default_factory=lambda: values)
+    field = fields.AvroField(name, python_type, default=default, default_factory=lambda: values)
 
     expected = {
         "name": name,
@@ -93,7 +93,7 @@ def test_sequence_with_logical_type(sequence, python_primitive_type, python_type
 
     values = [value]
 
-    field = fields.AvroField(name, python_type, default=dataclasses.MISSING, default_factory=lambda: values)
+    field = fields.AvroField(name, python_type, default=values, default_factory=lambda: values)
 
     expected = {
         "name": name,
@@ -123,6 +123,7 @@ def test_sequence_with_union_type(union, items, default):
         "default": default,
     }
 
+    print("The field:", field.to_dict())
     assert expected == field.to_dict()
 
     field = fields.AvroField(name, python_type, default=None)
@@ -168,7 +169,7 @@ def test_mapping_type(mapping, python_primitive_type, python_type_str):
     else:
         value = default = faker.pydict(2, True, python_primitive_type)
 
-    field = fields.AvroField(name, python_type, default=dataclasses.MISSING, default_factory=lambda: value)
+    field = fields.AvroField(name, python_type, default=default, default_factory=lambda: value)
 
     expected = {
         "name": name,
@@ -331,7 +332,7 @@ def test_union_type_with_record_default():
             {"name": "User", "type": "record", "doc": "User", "fields": [{"name": "first_name", "type": "string"}],},
             {"name": "Car", "type": "record", "doc": "Car", "fields": [{"name": "engine_name", "type": "string"}],},
         ],
-        "default": fields.NULL,
+        "default": None,
     }
 
     assert expected == field.to_dict()

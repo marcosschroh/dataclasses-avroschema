@@ -82,27 +82,27 @@ User.avro_schema()
     {
       "name": "name",
       "type": ["null", "string"],
-      "default": "null"
+      "default": null
     },
     {
       "name": "age",
       "type": ["null", "int"],
-      "default": "null"
+      "default": null
     },
     {
       "name": "is_student",
       "type": ["null", "boolean"],
-      "default": "null"
+      "default": null
     },
     {
       "name": "money_available",
       "type": ["null", "float"],
-      "default": "null"
+      "default": null
     },
     {
       "name": "encoded",
       "type": ["null", "bytes"],
-      "default": "null"
+      "default": null
     }
   ],
   "doc": "An User"

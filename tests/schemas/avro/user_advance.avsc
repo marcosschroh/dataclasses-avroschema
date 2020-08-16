@@ -47,7 +47,7 @@
     {
       "name": "address",
       "type": ["null", "string"],
-      "default": "null"
+      "default": null
     },
     {
       "name": "md5",
