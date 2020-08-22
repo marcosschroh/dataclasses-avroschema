@@ -87,6 +87,7 @@ Language implementations must ignore unknown logical types when reading, and sho
 | int       |  time-millis | datetime.time     |
 | long      |  timestamp-millis | datetime.datetime |
 | string    |  uuid        | uuid.uuid4 |
+| string    |  uuid        | uuid.UUID |
 
 ### Avro Field and Python Types Summary
 

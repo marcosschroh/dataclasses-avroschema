@@ -68,13 +68,15 @@ User.avro_schema_to_python()
     "name": "User",
     "doc": "An User",
     "namespace": "User.v1",
-    "aliases": ["user-v1", "super user"]}
+    "aliases": ["user-v1", "super user"],
     "fields": [
         {"name": "name", "type": "string"},
-        {"name": "age", "type": "int"å},
+        {"name": "age", "type": "int"},
         {"name": "pets", "type": {"type": "array", "items": "string", "name": "pet"}},
         {"name": "accounts", "type": {"type": "map", "values": "int", "name": "account"}},
         {"name": "favorite_colors", "type": {"type": "enum", "name": "favorite_color", "symbols": ["BLUE", "YELLOW", "GREEN"]}},
         {"name": "country", "type": "string", "default": "Argentina"},
-        {"name": "address", "type": ["null", "string"], "default": None}],
+        {"name": "address", "type": ["null", "string"], "default": None}
+    ],
+}
 ```
