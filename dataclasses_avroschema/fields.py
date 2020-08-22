@@ -56,7 +56,7 @@ PYTHON_INMUTABLE_TYPES = (str, int, bool, float, bytes, type(None))
 
 PYTHON_PRIMITIVE_CONTAINERS = (list, tuple, dict)
 
-PYTHON_LOGICAL_TYPES = (datetime.date, datetime.time, datetime.datetime, uuid.uuid4)
+PYTHON_LOGICAL_TYPES = (datetime.date, datetime.time, datetime.datetime, uuid.uuid4, uuid.UUID)
 
 PYTHON_PRIMITIVE_TYPES = PYTHON_INMUTABLE_TYPES + PYTHON_PRIMITIVE_CONTAINERS
 
@@ -549,8 +549,8 @@ class UUIDField(LogicalTypeField):
         return True
 
     @staticmethod
-    def to_avro(uuid4: uuid.UUID) -> str:
-        return str(uuid4)
+    def to_avro(uuid: uuid.UUID) -> str:
+        return str(uuid)
 
 
 @dataclasses.dataclass

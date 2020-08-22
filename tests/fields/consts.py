@@ -116,6 +116,7 @@ LOGICAL_TYPES_AND_DEFAULTS = (
     (datetime.time, fields.INT, fields.TIME_MILLIS),
     (datetime.datetime, fields.LONG, fields.TIMESTAMP_MILLIS),
     (uuid.uuid4, fields.STRING, fields.UUID),
+    (uuid.UUID, fields.STRING, fields.UUID),
 )
 
 LOGICAL_TYPES_AND_INVALID_DEFAULTS = (
@@ -123,6 +124,7 @@ LOGICAL_TYPES_AND_INVALID_DEFAULTS = (
     (datetime.time, "test", None),
     (datetime.datetime, 10, None),
     (uuid.uuid4, 10, f"Invalid default type. Default should be {str} or {uuid.UUID}"),
+    (uuid.UUID, 10, f"Invalid default type. Default should be {str} or {uuid.UUID}"),
 )
 
 

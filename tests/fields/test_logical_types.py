@@ -90,10 +90,10 @@ def test_logical_type_datetime_with_default():
     assert expected == field.to_dict()
 
 
-def test_logical_type_uuid_with_default():
+@pytest.mark.parametrize("python_type", (uuid.uuid4, uuid.UUID,))
+def test_logical_type_uuid_with_default(python_type):
     name = "a uuid"
-    python_type = uuid.uuid4
-    default = uuid.uuid4()
+    default = uuid.UUID("d793fc4f-2eef-440a-af8b-a8e884d7b1a8")
     field = fields.AvroField(name, python_type, default)
 
     expected = {
