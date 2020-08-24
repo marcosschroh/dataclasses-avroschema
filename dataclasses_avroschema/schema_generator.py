@@ -4,8 +4,6 @@ import typing
 
 from dacite import Config, from_dict
 
-from dacite import Config, from_dict
-
 from dataclasses_avroschema import schema_definition, serialization, utils
 
 from .fields import FieldType

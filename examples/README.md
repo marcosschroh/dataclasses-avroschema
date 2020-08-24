@@ -9,7 +9,8 @@ You will find a series of example about how to use [dataclasses-avroschema](http
 ## Installation
 
 1. `python3.7 -m venv venv`
-2. `pip install -r requirements.txt`
+2. `source venv/bin/activate`
+3. `pip install -r requirements.txt`
 
 ## Run the examples
 
@@ -19,9 +20,9 @@ You will find a series of example about how to use [dataclasses-avroschema](http
 
 ## Examples
 
-### dataclasses-avroschema and aiokafka
+As examples you will find how to serialize/deserialize python dataclasses using the `AvroModel` provided by `dataclasses-avroschema` and how to produce/consume events using specifics python kafka drivers.
 
-In the file `aiokafka_example.py` you will find the integration between `dataclasses-avroschema` and `aiokafka`. We show you how to serialize/deserialize python dataclasses using the `AvroModel` and produce/consume the events with `aiokafka`. For this example we use the following model:
+The model is for the examples is the following:
 
 ```python
 @dataclass
@@ -38,8 +39,8 @@ class UserModel(AvroModel):
         aliases = ["user-v1", "super user"]
 ```
 
-and two `async` functions in order to produce and consume events.
+[Example of dataclasses-avroschema and aiokafka](https://github.com/marcosschroh/dataclasses-avroschema/blob/feat/return-instance-after-deserialization/examples/aiokafka_example.py)
 
-### dataclasses-avroschema and confluent
+[Example of dataclasses-avroschema and confluent](https://github.com/marcosschroh/dataclasses-avroschema/blob/feat/return-instance-after-deserialization/examples/aiokafka_example.py)
 
-### dataclasses-avroschema and kafka-python
+[Example of dataclasses-avroschema and kafka-python](https://github.com/marcosschroh/dataclasses-avroschema/blob/feat/return-instance-after-deserialization/examples/aiokafka_example.py)

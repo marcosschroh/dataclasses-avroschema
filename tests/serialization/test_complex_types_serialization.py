@@ -67,7 +67,11 @@ def test_complex_fields_with_defaults(user_advance_with_defaults_dataclass):
     }
 
     user = user_advance_with_defaults_dataclass(**data)
-    expected_user = user_advance_with_defaults_dataclass(name="juan", age=20, favorite_colors="BLUE",)
+    expected_user = user_advance_with_defaults_dataclass(
+        name="juan",
+        age=20,
+        favorite_colors="BLUE",
+    )
 
     avro_binary = user.serialize()
     avro_json = user.serialize(serialization_type="avro-json")
