@@ -1,8 +1,8 @@
 import dataclasses
 import json
-
 import typing
-from dacite import from_dict
+
+from dacite import Config, from_dict
 
 from dacite import Config, from_dict
 
@@ -91,6 +91,7 @@ class AvroModel:
     def deserialize(
         cls, data: bytes, serialization_type: str = AVRO, create_instance: bool = True
     ) -> typing.Union[typing.Dict, "AvroModel"]:
+
         schema = cls.avro_schema_to_python()
         payload = serialization.deserialize(data, schema, serialization_type=serialization_type)
 
