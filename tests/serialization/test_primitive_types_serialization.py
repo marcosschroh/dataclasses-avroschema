@@ -13,8 +13,12 @@ def test_primitive_types(user_dataclass):
     avro_binary = user.serialize()
     avro_json = user.serialize(serialization_type="avro-json")
 
-    assert user_dataclass.deserialize(avro_binary) == data
-    assert user_dataclass.deserialize(avro_json, serialization_type="avro-json") == data
+    assert user_dataclass.deserialize(avro_binary, create_instance=False) == data
+    assert user_dataclass.deserialize(avro_json, serialization_type="avro-json", create_instance=False) == data
+
+    assert user_dataclass.deserialize(avro_binary) == user
+    assert user_dataclass.deserialize(avro_json, serialization_type="avro-json") == user
+
     assert user.to_json() == data_json
 
 
@@ -35,8 +39,11 @@ def test_primitive_types_with_defaults():
     avro_binary = user.serialize()
     avro_json = user.serialize(serialization_type="avro-json")
 
-    assert user.deserialize(avro_binary) == data
-    assert user.deserialize(avro_json, serialization_type="avro-json") == data
+    assert user.deserialize(avro_binary, create_instance=False) == data
+    assert user.deserialize(avro_json, serialization_type="avro-json", create_instance=False) == data
+
+    assert user.deserialize(avro_binary) == user
+    assert user.deserialize(avro_json, serialization_type="avro-json") == user
 
     assert user.to_json() == data_json
 
@@ -57,8 +64,11 @@ def test_primitive_types_with_nulls():
     avro_binary = user.serialize()
     avro_json = user.serialize(serialization_type="avro-json")
 
-    assert user.deserialize(avro_binary) == data
-    assert user.deserialize(avro_json, serialization_type="avro-json") == data
+    assert user.deserialize(avro_binary, create_instance=False) == data
+    assert user.deserialize(avro_json, serialization_type="avro-json", create_instance=False) == data
+
+    assert user.deserialize(avro_binary) == user
+    assert user.deserialize(avro_json, serialization_type="avro-json") == user
 
     assert user.to_json() == data_json
 
@@ -68,7 +78,10 @@ def test_primitive_types_with_nulls():
     avro_binary = user.serialize()
     avro_json = user.serialize(serialization_type="avro-json")
 
-    assert user.deserialize(avro_binary) == data
-    assert user.deserialize(avro_json, serialization_type="avro-json") == data
+    assert user.deserialize(avro_binary, create_instance=False) == data
+    assert user.deserialize(avro_json, serialization_type="avro-json", create_instance=False) == data
+
+    assert user.deserialize(avro_binary) == user
+    assert user.deserialize(avro_json, serialization_type="avro-json") == user
 
     assert user.to_json() == data

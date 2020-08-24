@@ -38,8 +38,11 @@ def test_logical_types():
     avro_binary = logical_types.serialize()
     avro_json = logical_types.serialize(serialization_type="avro-json")
 
-    assert logical_types.deserialize(avro_binary) == data
-    assert logical_types.deserialize(avro_json, serialization_type="avro-json") == data
+    assert logical_types.deserialize(avro_binary, create_instance=False) == data
+    assert logical_types.deserialize(avro_json, serialization_type="avro-json", create_instance=False) == data
+
+    assert logical_types.deserialize(avro_binary) == logical_types
+    assert logical_types.deserialize(avro_json, serialization_type="avro-json") == logical_types
 
     assert logical_types.to_json() == data_json
 
@@ -72,7 +75,10 @@ def test_logical_types_with_defaults():
     avro_binary = logical_types.serialize()
     avro_json = logical_types.serialize(serialization_type="avro-json")
 
-    assert logical_types.deserialize(avro_binary) == data
-    assert logical_types.deserialize(avro_json, serialization_type="avro-json") == data
+    assert logical_types.deserialize(avro_binary, create_instance=False) == data
+    assert logical_types.deserialize(avro_json, serialization_type="avro-json", create_instance=False) == data
+
+    assert logical_types.deserialize(avro_binary) == logical_types
+    assert logical_types.deserialize(avro_json, serialization_type="avro-json") == logical_types
 
     assert logical_types.to_json() == data_json

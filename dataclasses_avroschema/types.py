@@ -21,6 +21,7 @@ class Fixed(typing.Generic[T]):
     """
 
     size: int
+    default: typing.Any = dataclasses.field(default=MissingSentinel)
     namespace: typing.Optional[str] = None
     aliases: typing.Optional[typing.List] = None
     _dataclasses_custom_type: str = "Fixed"

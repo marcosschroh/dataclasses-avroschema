@@ -56,7 +56,13 @@ PYTHON_INMUTABLE_TYPES = (str, int, bool, float, bytes, type(None))
 
 PYTHON_PRIMITIVE_CONTAINERS = (list, tuple, dict)
 
-PYTHON_LOGICAL_TYPES = (datetime.date, datetime.time, datetime.datetime, uuid.uuid4, uuid.UUID)
+PYTHON_LOGICAL_TYPES = (
+    datetime.date,
+    datetime.time,
+    datetime.datetime,
+    uuid.uuid4,
+    uuid.UUID,
+)
 
 PYTHON_PRIMITIVE_TYPES = PYTHON_INMUTABLE_TYPES + PYTHON_PRIMITIVE_CONTAINERS
 
