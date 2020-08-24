@@ -55,7 +55,7 @@ user.to_json()
 
 ### Deserialization
 
-Deserialization could take place with an instance dataclass or the dataclass itself
+Deserialization could take place with an instance dataclass or the dataclass itself. Can return the dict representation or a new class instance.
 
 ```python
 import typing
@@ -77,9 +77,19 @@ class User(AvroModel):
 avro_binary = b"\x08john(\x02\x08test\x14\x00"
 avro_json_binary = b'{"name": "john", "age": 20, "addresses": [{"street": "test", "street_number": 10}]}'
 
+# return a new class instance!!
 User.deserialize(avro_binary)
+# >>>> User(name='john', age=20, addresses=[Address(street='test', street_number=10)])
+
+# return a python dict
+User.deserialize(avro_binary, create_instance=False)
 # >>> {"name": "john", "age": 20, "addresses": [{"street": "test", "street_number": 10}]}
 
+# return a new class instance!!
 User.deserialize(avro_json_binary, serialization_type="avro-json")
+# >>>> User(name='john', age=20, addresses=[Address(street='test', street_number=10)])
+
+# return a python dict
+User.deserialize(avro_json_binary, serialization_type="avro-json", create_instance=False)
 # >>> {"name": "john", "age": 20, "addresses": [{"street": "test", "street_number": 10}]}
 ```
