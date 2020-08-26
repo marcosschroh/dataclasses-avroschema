@@ -51,7 +51,10 @@ UNION_PRIMITIVE_ELEMENTS = (
     ((str, None), (fields.STRING, fields.NULL), None),
     (
         (datetime.date, datetime.datetime),
-        (fields.PYTHON_TYPE_TO_AVRO[datetime.date], fields.PYTHON_TYPE_TO_AVRO[datetime.datetime],),
+        (
+            fields.PYTHON_TYPE_TO_AVRO[datetime.date],
+            fields.PYTHON_TYPE_TO_AVRO[datetime.datetime],
+        ),
         now,
     ),
     ((float, str, int), (fields.FLOAT, fields.STRING, fields.INT), 100.0),
@@ -59,17 +62,41 @@ UNION_PRIMITIVE_ELEMENTS = (
 )
 
 UNION_WITH_ARRAY = (
-    ((typing.List[int], str), (fields.INT, fields.STRING),),
-    ((typing.List[str], float), (fields.STRING, fields.FLOAT),),
-    ((typing.List[datetime.datetime], datetime.datetime), (fields.LOGICAL_DATETIME, fields.LOGICAL_DATETIME),),
-    ((typing.List[uuid.uuid4], bytes), (fields.LOGICAL_UUID, fields.BYTES),),
+    (
+        (typing.List[int], str),
+        (fields.INT, fields.STRING),
+    ),
+    (
+        (typing.List[str], float),
+        (fields.STRING, fields.FLOAT),
+    ),
+    (
+        (typing.List[datetime.datetime], datetime.datetime),
+        (fields.LOGICAL_DATETIME, fields.LOGICAL_DATETIME),
+    ),
+    (
+        (typing.List[uuid.uuid4], bytes),
+        (fields.LOGICAL_UUID, fields.BYTES),
+    ),
 )
 
 UNION_WITH_MAP = (
-    ((typing.Dict[str, int], str), (fields.INT, fields.STRING),),
-    ((typing.Dict[str, str], float), (fields.STRING, fields.FLOAT),),
-    ((typing.Dict[str, datetime.datetime], datetime.datetime), (fields.LOGICAL_DATETIME, fields.LOGICAL_DATETIME),),
-    ((typing.Dict[str, uuid.uuid4], bytes), (fields.LOGICAL_UUID, fields.BYTES),),
+    (
+        (typing.Dict[str, int], str),
+        (fields.INT, fields.STRING),
+    ),
+    (
+        (typing.Dict[str, str], float),
+        (fields.STRING, fields.FLOAT),
+    ),
+    (
+        (typing.Dict[str, datetime.datetime], datetime.datetime),
+        (fields.LOGICAL_DATETIME, fields.LOGICAL_DATETIME),
+    ),
+    (
+        (typing.Dict[str, uuid.uuid4], bytes),
+        (fields.LOGICAL_UUID, fields.BYTES),
+    ),
 )
 
 OPTIONAL_UNION_COMPLEX_TYPES = (
@@ -142,5 +169,9 @@ avro_user = {
 
 ARRAY_WITH_UNION_TYPES = (
     (typing.Union[int, str], [fields.INT, fields.STRING], [10, 20, "test"]),
-    (typing.Union[int, str, User], [fields.INT, fields.STRING, avro_user], [10, 20, "test"],),
+    (
+        typing.Union[int, str, User],
+        [fields.INT, fields.STRING, avro_user],
+        [10, 20, "test"],
+    ),
 )

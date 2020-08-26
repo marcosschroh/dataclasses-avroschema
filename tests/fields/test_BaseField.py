@@ -22,7 +22,10 @@ def test_render():
     assert expected == field.render()
 
     field = fields.AvroField(
-        "breed_name", str, "test", metadata={"encoding": "some_exotic_encoding", "doc": "Official Breed Name"},
+        "breed_name",
+        str,
+        "test",
+        metadata={"encoding": "some_exotic_encoding", "doc": "Official Breed Name"},
     )
 
     expected = {
@@ -50,7 +53,9 @@ def test_render_metadata():
     assert expected == field.get_metadata()
 
     field = fields.AvroField(
-        "breed_name", str, metadata={"encoding": "some_exotic_encoding", "doc": "Official Breed Name"},
+        "breed_name",
+        str,
+        metadata={"encoding": "some_exotic_encoding", "doc": "Official Breed Name"},
     )
 
     expected = [("encoding", "some_exotic_encoding"), ("doc", "Official Breed Name")]

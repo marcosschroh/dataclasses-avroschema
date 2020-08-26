@@ -43,7 +43,9 @@ def test_faust_record_schema_complex_types(user_advance_avro_json):
     assert UserAdvance.avro_schema() == json.dumps(user_advance_avro_json)
 
 
-def test_faust_record_schema_complex_types_with_defaults(user_advance_with_defaults_avro_json,):
+def test_faust_record_schema_complex_types_with_defaults(
+    user_advance_with_defaults_avro_json,
+):
     class UserAdvance(faust.Record, AvroModel):
         name: str
         age: int
@@ -164,7 +166,9 @@ def test_faust_record_self_one_to_one_relationship(user_self_reference_one_to_on
     assert User.avro_schema() == json.dumps(user_self_reference_one_to_one_schema)
 
 
-def test_faust_record_self_one_to_many_relationship(user_self_reference_one_to_many_schema,):
+def test_faust_record_self_one_to_many_relationship(
+    user_self_reference_one_to_many_schema,
+):
     """
     Test self relationship one-to-many
     """
@@ -179,7 +183,9 @@ def test_faust_record_self_one_to_many_relationship(user_self_reference_one_to_m
     assert User.avro_schema() == json.dumps(user_self_reference_one_to_many_schema)
 
 
-def test_faust_record_self_one_to_many_map_relationship(user_self_reference_one_to_many_map_schema,):
+def test_faust_record_self_one_to_many_map_relationship(
+    user_self_reference_one_to_many_map_schema,
+):
     """
     Test self relationship one-to-many Map
     """
