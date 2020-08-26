@@ -249,7 +249,10 @@ class ListField(ContainerField):
 
         if utils.is_union(items_type):
             self.items_type = UnionField.generate_union(
-                name, items_type.__args__, default=self.default, default_factory=self.default_factory,
+                name,
+                items_type.__args__,
+                default=self.default,
+                default_factory=self.default_factory,
             )
         else:
             field = AvroField(name, items_type)
@@ -659,7 +662,11 @@ def field_factory(
 
         container_klass = CONTAINER_FIELDS_CLASSES[origin]
         return container_klass(
-            name=name, type=native_type, default=default, metadata=metadata, default_factory=default_factory,
+            name=name,
+            type=native_type,
+            default=default,
+            metadata=metadata,
+            default_factory=default_factory,
         )
     elif native_type in PYTHON_LOGICAL_TYPES:
         klass = LOGICAL_TYPES_FIELDS_CLASSES[native_type]

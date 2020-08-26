@@ -65,7 +65,8 @@ def test_sequence_type(sequence, python_primitive_type, python_type_str):
 
 
 @pytest.mark.parametrize(
-    "sequence,python_primitive_type,python_type_str,value", consts.SEQUENCES_LOGICAL_TYPES,
+    "sequence,python_primitive_type,python_type_str,value",
+    consts.SEQUENCES_LOGICAL_TYPES,
 )
 def test_sequence_with_logical_type(sequence, python_primitive_type, python_type_str, value):
     """
@@ -318,8 +319,18 @@ def test_union_type_with_records():
     expected = {
         "name": name,
         "type": [
-            {"name": "User", "type": "record", "doc": "User", "fields": [{"name": "first_name", "type": "string"}],},
-            {"name": "Car", "type": "record", "doc": "Car", "fields": [{"name": "engine_name", "type": "string"}],},
+            {
+                "name": "User",
+                "type": "record",
+                "doc": "User",
+                "fields": [{"name": "first_name", "type": "string"}],
+            },
+            {
+                "name": "Car",
+                "type": "record",
+                "doc": "Car",
+                "fields": [{"name": "engine_name", "type": "string"}],
+            },
         ],
     }
 
@@ -343,8 +354,18 @@ def test_union_type_with_record_default():
         "name": name,
         "type": [
             fields.NULL,
-            {"name": "User", "type": "record", "doc": "User", "fields": [{"name": "first_name", "type": "string"}],},
-            {"name": "Car", "type": "record", "doc": "Car", "fields": [{"name": "engine_name", "type": "string"}],},
+            {
+                "name": "User",
+                "type": "record",
+                "doc": "User",
+                "fields": [{"name": "first_name", "type": "string"}],
+            },
+            {
+                "name": "Car",
+                "type": "record",
+                "doc": "Car",
+                "fields": [{"name": "engine_name", "type": "string"}],
+            },
         ],
         "default": None,
     }
@@ -352,14 +373,27 @@ def test_union_type_with_record_default():
     assert expected == field.to_dict()
 
     field = fields.AvroField(
-        name, python_type, default=dataclasses.MISSING, default_factory=lambda: {"first_name": "a name"},
+        name,
+        python_type,
+        default=dataclasses.MISSING,
+        default_factory=lambda: {"first_name": "a name"},
     )
 
     expected = {
         "name": name,
         "type": [
-            {"name": "User", "type": "record", "doc": "User", "fields": [{"name": "first_name", "type": "string"}],},
-            {"name": "Car", "type": "record", "doc": "Car", "fields": [{"name": "engine_name", "type": "string"}],},
+            {
+                "name": "User",
+                "type": "record",
+                "doc": "User",
+                "fields": [{"name": "first_name", "type": "string"}],
+            },
+            {
+                "name": "Car",
+                "type": "record",
+                "doc": "Car",
+                "fields": [{"name": "engine_name", "type": "string"}],
+            },
         ],
         "default": {"first_name": "a name"},
     }
@@ -381,7 +415,13 @@ def test_fixed_type():
 
     expected = {
         "name": name,
-        "type": {"type": "fixed", "name": name, "size": default.size, "namespace": namespace, "aliases": aliases,},
+        "type": {
+            "type": "fixed",
+            "name": name,
+            "size": default.size,
+            "namespace": namespace,
+            "aliases": aliases,
+        },
     }
 
     assert expected == field.to_dict()
@@ -404,7 +444,13 @@ def test_enum_type():
 
     expected = {
         "name": name,
-        "type": {"type": "enum", "name": name, "symbols": default.symbols, "namespace": namespace, "aliases": aliases,},
+        "type": {
+            "type": "enum",
+            "name": name,
+            "symbols": default.symbols,
+            "namespace": namespace,
+            "aliases": aliases,
+        },
         "default": default.default,
     }
 
@@ -415,7 +461,11 @@ def test_enum_type():
 
     expected = {
         "name": name,
-        "type": {"type": "enum", "name": name, "symbols": default.symbols,},
+        "type": {
+            "type": "enum",
+            "name": name,
+            "symbols": default.symbols,
+        },
     }
 
     assert expected == field.to_dict()

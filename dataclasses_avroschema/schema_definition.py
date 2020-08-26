@@ -96,7 +96,11 @@ class AvroSchemaDefinition(BaseSchemaDefinition):
 
     def render(self) -> OrderedDict:
         schema = OrderedDict(
-            [("type", self.type), ("name", self.get_schema_name()), ("fields", self.get_rendered_fields()),]
+            [
+                ("type", self.type),
+                ("name", self.get_schema_name()),
+                ("fields", self.get_rendered_fields()),
+            ]
         )
 
         if self.metadata.schema_doc:

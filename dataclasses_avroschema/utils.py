@@ -17,10 +17,7 @@ def is_union(a_type: typing.Any) -> bool:
     Returns:
         bool
     """
-    return (
-        isinstance(a_type, typing._GenericAlias)  # type: ignore
-        and a_type.__origin__ is typing.Union
-    )
+    return isinstance(a_type, typing._GenericAlias) and a_type.__origin__ is typing.Union  # type: ignore
 
 
 def is_self_referenced(a_type: typing.Any) -> bool:

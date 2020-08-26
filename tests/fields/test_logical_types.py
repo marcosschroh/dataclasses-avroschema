@@ -90,7 +90,13 @@ def test_logical_type_datetime_with_default():
     assert expected == field.to_dict()
 
 
-@pytest.mark.parametrize("python_type", (uuid.uuid4, uuid.UUID,))
+@pytest.mark.parametrize(
+    "python_type",
+    (
+        uuid.uuid4,
+        uuid.UUID,
+    ),
+)
 def test_logical_type_uuid_with_default(python_type):
     name = "a uuid"
     default = uuid.UUID("d793fc4f-2eef-440a-af8b-a8e884d7b1a8")
