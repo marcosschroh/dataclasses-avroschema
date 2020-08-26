@@ -194,6 +194,7 @@ User.deserialize(avro_json_binary, serialization_type="avro-json", create_instan
 * [X] Instance serialization correspondent to `avro schema` generated
 * [X] Data deserialization. Return python dict or class instance
 * [X] Generate json from python class instance
+* [X] Examples of integration with [aiokafka](https://github.com/aio-libs/aiokafka), [confluent](https://github.com/confluentinc/confluent-kafka-python) and [kafka-python](https://github.com/dpkp/kafka-python).
 
 ## Development
 
