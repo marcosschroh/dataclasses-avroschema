@@ -21,6 +21,15 @@ class UserModel(AvroModel):
         aliases = ["user-v1", "super user"]
 
 
+@dataclass
+class UserModelV2(UserModel):
+    "A User v2"
+    has_pets: bool = True
+
+    class Meta:
+        namespace = "User.v2"
+
+
 def consume():
     consumer = KafkaConsumer(
         'my_topic',
@@ -31,13 +40,14 @@ def consume():
     for msg in consumer:
         print(f"Message received: {msg.value} at {msg.timestamp}")
 
-        user = UserModel.deserialize(msg.value)
+        # create an instance of User v2
+        user = UserModelV2.deserialize(msg.value)
         print(f"Message deserialized: {user}")
 
     print("Stoping consumer...")
 
 
-def send(total_events=10):
+def send(total_events=2):
     producer = KafkaProducer(bootstrap_servers='localhost:9092')
 
     for event_number in range(1, total_events + 1):
@@ -49,6 +59,8 @@ def send(total_events=10):
             name=random.choice(["Juan", "Peter", "Michael", "Moby", "Kim",]),
             age=random.randint(1, 50)
         )
+
+        print(user)
 
         # create the message
         message = user.serialize()

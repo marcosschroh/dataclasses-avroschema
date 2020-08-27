@@ -183,6 +183,11 @@ User.deserialize(avro_json_binary, serialization_type="avro-json", create_instan
 # >>> {"name": "john", "age": 20, "addresses": [{"street": "test", "street_number": 10}]}
 ```
 
+## Examples with python kafka drivers
+
+Under [examples](https://github.com/marcosschroh/dataclasses-avroschema/tree/feat/return-instance-after-deserialization/examples) folder you can find 3 differents examples, one with [aiokafka](https://github.com/aio-libs/aiokafka) (`async`) showing the simplest use case when a `AvroModel` instance is serialized and sent it thorught kafka, and the event is consumed.
+The other two examples are `sync` using the [kafka-python](https://github.com/dpkp/kafka-python) driver, where the `avro-json` serialization and `schema evolution` (`FULL` compatibility) is shown.
+
 ## Features
 
 * [X] Primitive types: int, long, float, boolean, string and null support

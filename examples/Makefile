@@ -31,13 +31,12 @@ remove:
 	docker-compose rm --force -v
 
 remove-network:
-	docker network rm de-selfcare-esim_default || true
+	docker network rm examples_default || true
 
 stop-kafka-cluster:
 	docker-compose stop
 	@$(MAKE) remove
 	@$(MAKE) remove-network
-	rm -rf de-selfcare-esim-data || true
 
 kafka-cluster: build run
 
@@ -49,6 +48,14 @@ create-topic:
 	docker-compose exec kafka kafka-topics --create --zookeeper zookeeper:32181 --replication-factor ${replication-factor} --partitions ${partitions} --topic ${topic-name}
 
 
-start-app:
+aiokafka-example:
 	@$(MAKE) create-topic topic-name="my_topic" || true
 	python aiokafka_example.py
+
+kafka-python-example:
+	@$(MAKE) create-topic topic-name="my_topic" || true
+	python kafka_python_example.py
+
+schema-evolution-example:
+	@$(MAKE) create-topic topic-name="my_topic" || true
+	python schema_evolution_example.py
