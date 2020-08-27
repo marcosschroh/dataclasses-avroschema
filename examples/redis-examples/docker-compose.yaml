@@ -1,0 +1,9 @@
+version: '3'
+services:
+  redis-gears:
+    image: "redislabs/redisgears:latest"
+    hostname: redis-gears
+    container_name: redis-gears
+    ports:
+      - 6379:6379
+

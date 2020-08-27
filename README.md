@@ -183,10 +183,11 @@ User.deserialize(avro_json_binary, serialization_type="avro-json", create_instan
 # >>> {"name": "john", "age": 20, "addresses": [{"street": "test", "street_number": 10}]}
 ```
 
-## Examples with python kafka drivers
+## Examples with python streaming drivers (kafka and redis)
 
-Under [examples](https://github.com/marcosschroh/dataclasses-avroschema/tree/feat/return-instance-after-deserialization/examples) folder you can find 3 differents examples, one with [aiokafka](https://github.com/aio-libs/aiokafka) (`async`) showing the simplest use case when a `AvroModel` instance is serialized and sent it thorught kafka, and the event is consumed.
+Under [examples](https://github.com/marcosschroh/dataclasses-avroschema/tree/feat/master/examples) folder you can find 3 differents kafka examples, one with [aiokafka](https://github.com/aio-libs/aiokafka) (`async`) showing the simplest use case when a `AvroModel` instance is serialized and sent it thorught kafka, and the event is consumed.
 The other two examples are `sync` using the [kafka-python](https://github.com/dpkp/kafka-python) driver, where the `avro-json` serialization and `schema evolution` (`FULL` compatibility) is shown.
+Also, there are two `redis` examples using `redis streams` and `redis gears`.
 
 ## Features
 
@@ -199,7 +200,7 @@ The other two examples are `sync` using the [kafka-python](https://github.com/dp
 * [X] Instance serialization correspondent to `avro schema` generated
 * [X] Data deserialization. Return python dict or class instance
 * [X] Generate json from python class instance
-* [X] Examples of integration with [aiokafka](https://github.com/aio-libs/aiokafka), [confluent](https://github.com/confluentinc/confluent-kafka-python) and [kafka-python](https://github.com/dpkp/kafka-python).
+* [X] Examples of integration with [aiokafka](https://github.com/aio-libs/aiokafka), [kafka-python](https://github.com/dpkp/kafka-python) and [walrus](https://github.com/coleifer/walrus)
 
 ## Development
 

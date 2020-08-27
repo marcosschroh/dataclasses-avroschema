@@ -17,7 +17,8 @@ nav:
     - Schema Relationships: 'schema_relationships.md'
     - Serialization: 'serialization.md'
     - Faust Records: 'faust_records.md'
-    - Kafka examples: 'examples.md'
+    - Kafka examples: 'kafka_examples.md'
+    - Redis examples: 'redis_examples.md'
     - Migration Guide: 'migration_guide.md'
 
 markdown_extensions:

@@ -15,6 +15,7 @@ class UserModel(AvroModel):
     favorite_colors: types.Enum = types.Enum(["BLUE", "YELLOW", "GREEN"], default="BLUE")
     country: str = "Argentina"
     address: str = None
+    testing: bool = False
 
     class Meta:
         namespace = "User.v1"
@@ -22,9 +23,13 @@ class UserModel(AvroModel):
 
 
 @dataclass
-class UserModelV2(UserModel):
+class UserModelV2(AvroModel):
     "A User v2"
-    has_pets: bool = True
+    name: str
+    age: int
+    favorite_colors: types.Enum = types.Enum(["BLUE", "YELLOW", "GREEN"], default="BLUE")
+    country: str = "Argentina"
+    address: str = None
 
     class Meta:
         namespace = "User.v2"

@@ -47,7 +47,6 @@ list-topics:
 create-topic:
 	docker-compose exec kafka kafka-topics --create --zookeeper zookeeper:32181 --replication-factor ${replication-factor} --partitions ${partitions} --topic ${topic-name}
 
-
 aiokafka-example:
 	@$(MAKE) create-topic topic-name="my_topic" || true
 	python aiokafka_example.py
