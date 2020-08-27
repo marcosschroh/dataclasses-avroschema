@@ -42,7 +42,12 @@ def test_self_one_to_one_relationship():
 
     assert user.serialize() == avro_binary
     # assert user.serialize(serialization_type="avro-json") == avro_json_binary
-    assert User.deserialize(avro_binary) == expected
+
+    assert User.deserialize(avro_binary, create_instance=False) == expected
+
+    # TODO: Bug in typing or fastavro
+    # assert User.deserialize(avro_binary) == user
+
     # Seems a bug in fastavro
     # assert User.deserialize(avro_json_binary, serialization_type="avro-json") == expected
 
@@ -61,7 +66,7 @@ def test_self_one_to_many_relationship():
         age: int
         friends: typing.List[typing.Type["User"]] = None
 
-    data_friend = {"name": "john", "age": 20, "friends": None}
+    data_friend = {"name": "john", "age": 20, "friends": []}
     friend = User(**data_friend)
 
     data_user = {
@@ -71,14 +76,28 @@ def test_self_one_to_many_relationship():
     }
     user = User(**data_user)
 
-    # Bug in fastavro. Check adding the namespace
-    # Can not calculate the binary
-
     expected = {
         "name": "juan",
         "age": 20,
         "friends": [data_friend],
     }
+
+    avro_binary = b"\x08juan(\x02\x08john(\x00\x00"
+    # avro_json = b'{"name": "juan", "age": 20, "friends": [{"name": "john", "age": 20, "friends": []}]}'
+
+    assert user.serialize() == avro_binary
+
+    # TODO: Bug in fastavro
+    # assert user.serialize(serialization_type="avro-json") == avro_json_binary
+
+    assert User.deserialize(avro_binary, create_instance=False) == expected
+
+    # TODO: Bug in fastavro
+    # assert User.deserialize(avro_json, create_instance=False, serialization_type="avro-json") == expected
+
+    # TODO: Bug in dacite
+    # assert User.deserialize(avro_binary) == user
+
     assert user.to_json() == expected
 
 
@@ -97,7 +116,7 @@ def test_self_one_to_many_map_relationship():
     data_friend = {
         "name": "john",
         "age": 20,
-        "friends": None,
+        "friends": {},
     }
     friend = User(**data_friend)
 
@@ -108,12 +127,24 @@ def test_self_one_to_many_map_relationship():
     }
     user = User(**data_user)
 
-    # Bug in fastavro. Check adding the namespace
-    # Can not calculate the binary
+    avro_binary = b"\x08juan(\x02\x10a_friend\x08john(\x00\x00"
+    # avro_json = b'{"name": "juan", "age": 20, "friends": {"a_friend": {"name": "john", "age": 20, "friends": {}}}}'
 
     expected = {
         "name": "juan",
         "age": 20,
         "friends": {"a_friend": data_friend},
     }
+
+    assert user.serialize() == avro_binary
+    # TODO: Bug in fastavro
+    # assert user.serialize(serialization_type="avro-json") == avro_json_binary
+
+    assert User.deserialize(avro_binary, create_instance=False) == expected
+
+    # TODO: Bug in fastavro
+    # assert User.deserialize(avro_json, create_instance=False, serialization_type="avro-json") == expected
+
+    # TODO: Bug in dacite
+    # assert User.deserialize(avro_binary) == user
     assert user.to_json() == expected

@@ -144,7 +144,7 @@ user.to_json()
 
 ### Deserialization
 
-Deserialization could take place with an instance dataclass or the dataclass itself
+Deserialization could take place with an instance dataclass or the dataclass itself. Can return the dict representation or a new class instance
 
 ```python
 import typing
@@ -166,12 +166,27 @@ class User(AvroModel):
 avro_binary = b"\x08john(\x02\x08test\x14\x00"
 avro_json_binary = b'{"name": "john", "age": 20, "addresses": [{"street": "test", "street_number": 10}]}'
 
+# return a new class instance!!
 User.deserialize(avro_binary)
+# >>>> User(name='john', age=20, addresses=[Address(street='test', street_number=10)])
+
+# return a python dict
+User.deserialize(avro_binary, create_instance=False)
 # >>> {"name": "john", "age": 20, "addresses": [{"street": "test", "street_number": 10}]}
 
+# return a new class instance!!
 User.deserialize(avro_json_binary, serialization_type="avro-json")
+# >>>> User(name='john', age=20, addresses=[Address(street='test', street_number=10)])
+
+# return a python dict
+User.deserialize(avro_json_binary, serialization_type="avro-json", create_instance=False)
 # >>> {"name": "john", "age": 20, "addresses": [{"street": "test", "street_number": 10}]}
 ```
+
+## Examples with python kafka drivers
+
+Under [examples](https://github.com/marcosschroh/dataclasses-avroschema/tree/feat/return-instance-after-deserialization/examples) folder you can find 3 differents examples, one with [aiokafka](https://github.com/aio-libs/aiokafka) (`async`) showing the simplest use case when a `AvroModel` instance is serialized and sent it thorught kafka, and the event is consumed.
+The other two examples are `sync` using the [kafka-python](https://github.com/dpkp/kafka-python) driver, where the `avro-json` serialization and `schema evolution` (`FULL` compatibility) is shown.
 
 ## Features
 
@@ -182,8 +197,9 @@ User.deserialize(avro_json_binary, serialization_type="avro-json")
 * [X] Recursive Schemas
 * [X] Generate Avro Schemas from `faust.Record`
 * [X] Instance serialization correspondent to `avro schema` generated
-* [X] Data deserialization
+* [X] Data deserialization. Return python dict or class instance
 * [X] Generate json from python class instance
+* [X] Examples of integration with [aiokafka](https://github.com/aio-libs/aiokafka), [confluent](https://github.com/confluentinc/confluent-kafka-python) and [kafka-python](https://github.com/dpkp/kafka-python).
 
 ## Development
 

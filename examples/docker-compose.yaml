@@ -1,0 +1,28 @@
+version: '3'
+services:
+  zookeeper:
+    image: "confluentinc/cp-zookeeper:5.4.0"
+    hostname: zookeeper
+    container_name: zookeeper
+    ports:
+      - 32181:32181
+    environment:
+      - ZOOKEEPER_CLIENT_PORT=32181
+  kafka:
+    image: confluentinc/cp-kafka:5.4.0
+    hostname: kafka
+    container_name: kafka
+    ports:
+    - 9092:9092
+    - 9093:9093
+    depends_on:
+    - zookeeper
+    environment:
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:32181
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,PLAINTEXT2:PLAINTEXT
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://127.0.0.1:9092,PLAINTEXT2://kafka:9093
+      - KAFKA_BROKER_ID=1
+      - KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS=0
+      - CONFLUENT_METRICS_ENABLE=true
+      - CONFLUENT_SUPPORT_CUSTOMER_ID=anonymous

@@ -1,0 +1,3 @@
+aiokafka
+kafka_python
+dataclasses-avroschema

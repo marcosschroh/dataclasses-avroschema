@@ -2,6 +2,8 @@ import dataclasses
 import json
 import typing
 
+from dacite import Config, from_dict
+
 from dataclasses_avroschema import schema_definition, serialization, utils
 
 from .fields import FieldType
@@ -84,10 +86,16 @@ class AvroModel:
         return serialization.serialize(self.asdict(), schema, serialization_type=serialization_type)
 
     @classmethod
-    def deserialize(cls, data: bytes, serialization_type: str = AVRO) -> typing.Any:
-        schema = cls.avro_schema_to_python()
+    def deserialize(
+        cls, data: bytes, serialization_type: str = AVRO, create_instance: bool = True
+    ) -> typing.Union[typing.Dict, "AvroModel"]:
 
-        return serialization.deserialize(data, schema, serialization_type=serialization_type)
+        schema = cls.avro_schema_to_python()
+        payload = serialization.deserialize(data, schema, serialization_type=serialization_type)
+
+        if create_instance:
+            return from_dict(data_class=cls, data=payload, config=Config(check_types=False))
+        return payload
 
     def to_json(self) -> typing.Dict:
         # Serialize using the current AVRO schema to get proper field representations
