@@ -1,4 +1,4 @@
-Minimal redis example
+Minimal redis [example](https://github.com/marcosschroh/dataclasses-avroschema/tree/master/examples#dataclasses-avroschema-and-redis-streams-with-walrus) using `redis streams` with [walrus](https://github.com/coleifer/walrus) driver.
 
 ```python
 from dataclasses import dataclass
