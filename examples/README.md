@@ -1,6 +1,6 @@
 # Examples of dataclasses-avroschema
 
-You will find a series of example about how to use [dataclasses-avroschema](https://github.com/marcosschroh/dataclasses-avroschema) and the integration with python drivers like [aiokafka](https://github.com/aio-libs/aiokafka), [kafka-python](https://github.com/dpkp/kafka-python) in the case of `kafka` and [walrus](https://github.com/coleifer/walrus) in the case of `redis`.
+You will find a series of example about how to use [dataclasses-avroschema](https://github.com/marcosschroh/dataclasses-avroschema) and the integration with python drivers like [aiokafka](https://github.com/aio-libs/aiokafka), [kafka-python](https://github.com/dpkp/kafka-python) in the case of `kafka` and [walrus](https://github.com/coleifer/walrus) and [redisgears-py](https://github.com/RedisGears/redisgears-py) in the case of `redis`.
 
 ## Requirements
 
@@ -63,4 +63,8 @@ In the file [kafka-examples/schema_evolution_example.py](https://github.com/marc
 
 ### dataclasses-avroschema and redis streams with walrus
 
-In the file [redis-examples/redis_stream_example.py](https://github.com/marcosschroh/dataclasses-avroschema/blob/master/examples/redis-examples/redis_stream_example.py) you will find a the simplest use case of `redis streams` using the driver `walrus`. We create a consumer group and messages are read one by one.
+In the file [redis-examples/redis_stream_example.py](https://github.com/marcosschroh/dataclasses-avroschema/blob/master/examples/redis-examples/redis_stream_example.py) you will find a the simplest use case of `redis streams` using the driver `walrus`. We create a consumer group and messages are read one by one. Run it with `make redis-stream-example`
+
+### dataclasses-avroschema and RedisGears
+
+In the file [redis-examples/redis_gears_example.py](https://github.com/marcosschroh/dataclasses-avroschema/blob/master/examples/redis-examples/redis_stream_example.py) you will find an example of using `streaming` with `RedisGears`. As use case we produce records with random values and the consumer filters them by the `age` property. Run it with `make redis-gears-example`.

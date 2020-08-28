@@ -1,8 +1,6 @@
 from gearsclient import GearsRemoteBuilder as GearsBuilder
-
-# import redis
-
 from dataclasses import dataclass
+import json
 import random
 from time import sleep
 
@@ -26,27 +24,24 @@ class UserModel(AvroModel):
         aliases = ["user-v1", "super user"]
 
 
-def consume(conn):
-    result = GearsBuilder('StreamReader', r=conn).\
-        map(lambda x:execute('hget', x, 'genres')).\
-        filter(lambda x:x != '\\N').\
-        flatmap(lambda x: x.split(',')).\
-        map(lambda x: x.strip()).\
-        countby().\
-        run()
-
-    print(result)
+def consume(conn, stream_name):
+    """
+    Consume messages from Stream and filter the events by age >= 25
+    """
+    return GearsBuilder("StreamReader", r=conn).\
+        map(lambda x: (json.loads(x["value"]["message"]))).\
+        filter(lambda x: x["age"] >= 25).\
+        run(stream_name)
 
 
-def produce(consumer_group):
+def produce(stream):
     for i in range(10):
-        # create an instance of User v1
         user = UserModel(
             name=random.choice(["Juan", "Peter", "Michael", "Moby", "Kim",]),
             age=random.randint(1, 50)
         )
 
-        msgid = consumer_group.my_stream.add({"message": user.serialize()})
+        msgid = stream.add({"message": user.serialize(serialization_type="avro-json")})
         print(f"Producing message {msgid}")
 
     print("Producer finished....")
@@ -56,13 +51,10 @@ def produce(consumer_group):
 
 if __name__ == "__main__":
     db = Database()
-    stream_name = 'my-stream'
-    db.Stream(stream_name)  # Create a new stream instance
+    stream_name = "my_stream"
+    stream = db.Stream(stream_name)  # Create a new stream instance
 
-    # create the consumer group
-    consumer_group = db.consumer_group('my-consumer-group-1', [stream_name])
-    consumer_group.create()  # Create the consumer group.
-    consumer_group.set_id('$')
+    produce(stream)
+    results = consume(db, stream_name)
 
-    produce(consumer_group)
-    consume(db)
+    print(results)
