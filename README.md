@@ -187,7 +187,7 @@ User.deserialize(avro_json_binary, serialization_type="avro-json", create_instan
 
 Under [examples](https://github.com/marcosschroh/dataclasses-avroschema/tree/master/examples) folder you can find 3 differents kafka examples, one with [aiokafka](https://github.com/aio-libs/aiokafka) (`async`) showing the simplest use case when a `AvroModel` instance is serialized and sent it thorught kafka, and the event is consumed.
 The other two examples are `sync` using the [kafka-python](https://github.com/dpkp/kafka-python) driver, where the `avro-json` serialization and `schema evolution` (`FULL` compatibility) is shown.
-Also, there is one `redis` examples using `redis streams` with [walrus](https://github.com/coleifer/walrus).
+Also, there are two `redis` examples using `redis streams` with [walrus](https://github.com/coleifer/walrus) and [redisgears-py](https://github.com/RedisGears/redisgears-py)
 
 ## Features
 
@@ -200,7 +200,8 @@ Also, there is one `redis` examples using `redis streams` with [walrus](https://
 * [X] Instance serialization correspondent to `avro schema` generated
 * [X] Data deserialization. Return python dict or class instance
 * [X] Generate json from python class instance
-* [X] Examples of integration with [aiokafka](https://github.com/aio-libs/aiokafka), [kafka-python](https://github.com/dpkp/kafka-python) and [walrus](https://github.com/coleifer/walrus) (`redis`)
+* [X] Examples of integration with `kafka` drivers: [aiokafka](https://github.com/aio-libs/aiokafka), [kafka-python](https://github.com/dpkp/kafka-python)
+* [X] Example of integration  with `redis` drivers: [walrus](https://github.com/coleifer/walrus) and [redisgears-py](https://github.com/RedisGears/redisgears-py)
 
 ## Development
 
