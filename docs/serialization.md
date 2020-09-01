@@ -93,3 +93,48 @@ User.deserialize(avro_json_binary, serialization_type="avro-json")
 User.deserialize(avro_json_binary, serialization_type="avro-json", create_instance=False)
 # >>> {"name": "john", "age": 20, "addresses": [{"street": "test", "street_number": 10}]}
 ```
+
+### Custom Serialization
+
+The `serialization/deserialization` process is built over [fastavro](https://github.com/fastavro/fastavro). If you want to use another library or a different process, you can override the base `AvroModel`:
+
+```python
+from dataclasses_avroschema import AvroModel
+
+
+class MyAvroModel(AvroModel):
+
+    ...
+
+    def serialize(self, serialization_type: str = AVRO) -> bytes:
+        # Get the schema as a python dict
+        schema = self.avro_schema_to_python()
+
+        # instance as python dict
+        data = self.asdict()
+
+        # call your custom serialization withe the avro schema and the data
+        return custom_serialization(schema, datam serialization_type=serialization_type)
+
+    @classmethod
+    def deserialize(
+        cls, data: bytes, serialization_type: str = AVRO, create_instance: bool = True
+    ) -> typing.Union[typing.Dict, "AvroModel"]:
+        # Get the schema as a python dict
+        schema = cls.avro_schema_to_python()
+
+        # get the python dict with the schema and the data (bytes)
+        payload = custom_deserialize(data, schema, serialization_type=serialization_type)
+
+        if create_instance:
+            return from_dict(data_class=cls, data=payload, config=Config(check_types=False))
+        return payload
+
+
+# and then inherits from your custom AvroModel
+
+class Address(MyAvroModel):
+    "An Address"
+    street: str
+    street_number: int
+```
