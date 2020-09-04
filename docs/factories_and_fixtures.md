@@ -1,4 +1,4 @@
-With `dataclasses-avroschema` you can generate `fake` instances when you want to perform fast testing or maybe you want to do `e2e` tests in your data streaming pipelines. Fake instances can be genrated calling the `fake` method.
+[Dataclasses Avro Schema](https://github.com/marcosschroh/dataclasses-avroschema) also includes a `factory` feature, so you can generate `fast` python instances and use them, for example, to test your data streaming pipelines. Instances can be genrated using the `fake` method.
 
 ```python
 import typing
