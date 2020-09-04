@@ -3,14 +3,18 @@ import collections
 import dataclasses
 import datetime
 import json
+import random
 import typing
 import uuid
 from collections import OrderedDict
 
 import inflect
+from faker import Faker
+from pytz import utc
 
 from dataclasses_avroschema import types, utils
 
+fake = Faker()
 p = inflect.engine()
 
 BOOLEAN = "boolean"
@@ -157,6 +161,9 @@ class BaseField:
     def get_avro_type(self) -> typing.Any:
         ...  # pragma: no cover
 
+    def fake(self) -> typing.Any:
+        return None
+
 
 class InmutableField(BaseField):
     def get_avro_type(self) -> PythonImnutableTypes:
@@ -169,20 +176,32 @@ class InmutableField(BaseField):
 class StringField(InmutableField):
     avro_type: typing.ClassVar = STRING
 
+    def fake(self) -> str:
+        return fake.pystr()
+
 
 @dataclasses.dataclass
 class IntegerField(InmutableField):
     avro_type: typing.ClassVar = INT
+
+    def fake(self) -> int:
+        return fake.pyint()
 
 
 @dataclasses.dataclass
 class BooleanField(InmutableField):
     avro_type: typing.ClassVar = BOOLEAN
 
+    def fake(self) -> bool:
+        return fake.pybool()
+
 
 @dataclasses.dataclass
 class FloatField(InmutableField):
     avro_type: typing.ClassVar = FLOAT
+
+    def fake(self) -> float:
+        return fake.pyfloat()
 
 
 @dataclasses.dataclass
@@ -199,6 +218,9 @@ class BytesField(InmutableField):
     @staticmethod
     def to_avro(item: bytes) -> str:
         return item.decode()
+
+    def fake(self) -> bytes:
+        return fake.pystr().encode()
 
 
 @dataclasses.dataclass
@@ -220,6 +242,7 @@ class ContainerField(BaseField):
 @dataclasses.dataclass
 class ListField(ContainerField):
     items_type: typing.Any = None
+    internal_field: typing.Any = None
 
     def __post_init__(self) -> None:
         self.generate_items_type()
@@ -254,20 +277,22 @@ class ListField(ContainerField):
         name = self.get_singular_name(self.name)
 
         if utils.is_union(items_type):
-            self.items_type = UnionField.generate_union(
-                name,
-                items_type.__args__,
-                default=self.default,
-                default_factory=self.default_factory,
-            )
+            self.items_type = UnionField(
+                name, items_type, default=self.default, default_factory=self.default_factory
+            ).get_avro_type()
         else:
-            field = AvroField(name, items_type)
-            self.items_type = field.get_avro_type()
+            self.internal_field = AvroField(name, items_type)
+            self.items_type = self.internal_field.get_avro_type()
+
+    def fake(self) -> typing.List:
+        # return a list of one element with the type specified
+        return [self.internal_field.fake()]
 
 
 @dataclasses.dataclass
 class DictField(ContainerField):
     values_type: typing.Any = None
+    internal_field: typing.Any = None
 
     def __post_init__(self) -> None:
         self.generate_values_type()
@@ -304,27 +329,24 @@ class DictField(ContainerField):
         values_type = self.type.__args__[1]
 
         name = self.get_singular_name(self.name)
-        field = AvroField(name, values_type)
-        self.values_type = field.get_avro_type()
+        self.internal_field = AvroField(name, values_type)
+        self.values_type = self.internal_field.get_avro_type()
+
+    def fake(self) -> typing.Dict[str, typing.Any]:
+        # return a dict of one element with the items type specified
+        return {fake.pystr(): self.internal_field.fake()}
 
 
 @dataclasses.dataclass
 class UnionField(BaseField):
     default_factory: typing.Optional[typing.Callable] = None
+    unions: typing.List = dataclasses.field(default_factory=list)
+    internal_fields: typing.List = dataclasses.field(default_factory=list)
 
-    def get_avro_type(self) -> typing.List:
-        elements = self.type.__args__
-        # generate the singular name in the case that we have array or map
-        name = self.get_singular_name(self.name)
-        return self.generate_union(name, elements, default=self.default, default_factory=self.default_factory)
+    def __post_init__(self) -> None:
+        self.unions = self.generate_unions_type()
 
-    @staticmethod
-    def generate_union(
-        name: str,
-        elements: typing.List,
-        default: typing.Optional[typing.Any] = None,
-        default_factory: typing.Optional[typing.Callable] = None,
-    ) -> typing.List:
+    def generate_unions_type(self) -> typing.List:
         """
         Generate union.
 
@@ -337,16 +359,23 @@ class UnionField(BaseField):
         Returns:
             typing.List: List of avro types
         """
+        elements = self.type.__args__
+        name = self.get_singular_name(self.name)
+
         unions = []
         for element in elements:
             # create the field and get the avro type
             field = AvroField(name, element)
             unions.append(field.get_avro_type())
+            self.internal_fields.append(field)
 
-        if default is None and default_factory is dataclasses.MISSING and NULL not in unions:
+        if self.default is None and self.default_factory is dataclasses.MISSING and NULL not in unions:
             unions.insert(0, NULL)
 
         return unions
+
+    def get_avro_type(self) -> typing.List:
+        return self.unions
 
     def get_default_value(self) -> typing.Any:
         is_default_factory_callable = callable(self.default_factory)
@@ -362,6 +391,11 @@ class UnionField(BaseField):
         elif type(self.default) in LOGICAL_CLASSES:
             return LOGICAL_TYPES_FIELDS_CLASSES[type(self.default)].to_avro(self.default)  # type: ignore
         return self.default
+
+    def fake(self) -> typing.Any:
+        # get a random internal field and return a fake value
+        field = random.choice(self.internal_fields)
+        return field.fake()
 
 
 @dataclasses.dataclass
@@ -383,6 +417,9 @@ class FixedField(BaseField):
 
     def get_default_value(self) -> dataclasses._MISSING_TYPE:
         return dataclasses.MISSING
+
+    def fake(self) -> bytes:
+        return fake.pystr(max_chars=self.default.size).encode()
 
 
 @dataclasses.dataclass
@@ -415,6 +452,9 @@ class EnumField(BaseField):
                 default in self.default.symbols
             ), f"The default value should be on of {self.default.symbols}. Current is {default}"
             return default
+
+    def fake(self) -> typing.Any:
+        return random.choice(self.default.symbols)
 
 
 @dataclasses.dataclass
@@ -478,6 +518,9 @@ class DateField(LogicalTypeField):
 
         return int(ts / (3600 * 24))
 
+    def fake(self) -> datetime.date:
+        return fake.date_object()
+
 
 @dataclasses.dataclass
 class TimeField(LogicalTypeField):
@@ -513,6 +556,9 @@ class TimeField(LogicalTypeField):
 
         return int((((hour * 60 + minutes) * 60 + seconds) * 1000) + (microseconds / 1000))
 
+    def fake(self) -> datetime.time:
+        return fake.time_object()
+
 
 @dataclasses.dataclass
 class DatetimeField(LogicalTypeField):
@@ -546,6 +592,9 @@ class DatetimeField(LogicalTypeField):
 
         return ts * 1000
 
+    def fake(self) -> datetime.datetime:
+        return fake.date_time(tzinfo=utc)
+
 
 @dataclasses.dataclass
 class UUIDField(LogicalTypeField):
@@ -561,6 +610,9 @@ class UUIDField(LogicalTypeField):
     def to_avro(uuid: uuid.UUID) -> str:
         return str(uuid)
 
+    def fake(self) -> uuid.UUID:
+        return uuid.uuid4()
+
 
 @dataclasses.dataclass
 class RecordField(BaseField):
@@ -570,6 +622,9 @@ class RecordField(BaseField):
         if self.default is None:
             return [NULL, record_type]
         return record_type
+
+    def fake(self) -> typing.Any:
+        return self.type.fake()
 
 
 INMUTABLE_FIELDS_CLASSES = {
@@ -667,7 +722,7 @@ def field_factory(
             )
 
         container_klass = CONTAINER_FIELDS_CLASSES[origin]
-        return container_klass(
+        return container_klass(  # type: ignore
             name=name,
             type=native_type,
             default=default,

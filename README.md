@@ -189,6 +189,35 @@ Under [examples](https://github.com/marcosschroh/dataclasses-avroschema/tree/mas
 The other two examples are `sync` using the [kafka-python](https://github.com/dpkp/kafka-python) driver, where the `avro-json` serialization and `schema evolution` (`FULL` compatibility) is shown.
 Also, there are two `redis` examples using `redis streams` with [walrus](https://github.com/coleifer/walrus) and [redisgears-py](https://github.com/RedisGears/redisgears-py)
 
+## Generate fake instances for testing
+
+With `dataclasses-avroschema` you can generate `fake` instances when you want to perform fast testing or maybe you want to do `e2e` tests in your data streaming pipelines. Fake instances can be genrated calling the `fake` method.
+
+```python
+import typing
+
+from dataclasses_avroschema import AvroModel
+
+
+class Address(AvroModel):
+    "An Address"
+    street: str
+    street_number: int
+
+class User(AvroModel):
+    "User with multiple Address"
+    name: str
+    age: int
+    addresses: typing.List[Address]
+
+
+Address.fake()
+# >>>> Address(street='PxZJILDRgbXyhWrrPWxQ', street_number=2067)
+
+User.fake()
+# >>>> User(name='VGSBbOGfSGjkMDnefHIZ', age=8974, addresses=[Address(street='vNpPYgesiHUwwzGcmMiS', street_number=4790)])
+```
+
 ## Features
 
 * [X] Primitive types: int, long, float, boolean, string and null support
@@ -202,6 +231,7 @@ Also, there are two `redis` examples using `redis streams` with [walrus](https:/
 * [X] Generate json from python class instance
 * [X] Examples of integration with `kafka` drivers: [aiokafka](https://github.com/aio-libs/aiokafka), [kafka-python](https://github.com/dpkp/kafka-python)
 * [X] Example of integration  with `redis` drivers: [walrus](https://github.com/coleifer/walrus) and [redisgears-py](https://github.com/RedisGears/redisgears-py)
+* [X] Fake class instances generation
 
 ## Development
 

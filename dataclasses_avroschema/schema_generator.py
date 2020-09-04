@@ -94,7 +94,7 @@ class AvroModel:
         payload = serialization.deserialize(data, schema, serialization_type=serialization_type)
 
         if create_instance:
-            return from_dict(data_class=cls, data=payload, config=Config(check_types=False))
+            return from_dict(data_class=cls, data=payload, config=Config(**cls.config()))
         return payload
 
     def to_json(self) -> typing.Dict:
@@ -102,3 +102,21 @@ class AvroModel:
         # and after that conver into python
         data = self.asdict()
         return serialization.to_json(data)
+
+    @classmethod
+    def config(cls) -> typing.Dict:
+        """
+        Get the default config for dacite and always include the self reference
+        """
+        return {
+            "check_types": False,
+            "forward_references": {
+                cls.klass.__name__: cls.klass,
+            },
+        }
+
+    @classmethod
+    def fake(cls) -> typing.Any:
+        payload = {field.name: field.fake() for field in cls.get_fields()}
+
+        return from_dict(data_class=cls, data=payload, config=Config(**cls.config()))
