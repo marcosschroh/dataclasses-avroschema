@@ -19,7 +19,7 @@ nav:
     - Faust Records: 'faust_records.md'
     - Kafka examples: 'kafka_examples.md'
     - Redis examples: 'redis_examples.md'
-    - Generating Fake instances: 'fake_instances_and_testing.md'
+    - Factory and fixtures: 'factories_and_fixtures.md'
     - Migration Guide: 'migration_guide.md'
 
 markdown_extensions:
