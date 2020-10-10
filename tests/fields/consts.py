@@ -161,7 +161,7 @@ class User(AvroModel):
 
 
 avro_user = {
-    "name": "User",
+    "name": "an_array_field_user_record",
     "type": "record",
     "doc": "User",
     "fields": [{"name": "first_name", "type": "string"}],
