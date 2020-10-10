@@ -14,7 +14,7 @@
             "name": "address",
             "type": {
                 "type": "record",
-                "name": "Address",
+                "name": "address_record",
                 "fields": [
                     {
                         "name": "street",

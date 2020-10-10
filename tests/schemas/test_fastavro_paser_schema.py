@@ -119,6 +119,25 @@ def test_one_to_one_schema():
     assert parse_schema(User.avro_schema_to_python())
 
 
+def test_one_to_one_repeated_schema():
+    """
+    Test relationship one-to-one with more than once schema
+    """
+
+    class Location(AvroModel):
+        latitude: float
+        longitude: float
+
+    class Trip(AvroModel):
+
+        start_time: datetime.datetime
+        start_location: Location
+        finish_time: datetime.datetime
+        finish_location: Location
+
+    assert parse_schema(Trip.avro_schema_to_python())
+
+
 def test_one_to_many_schema():
     """
     Test relationship one-to-many

@@ -320,13 +320,13 @@ def test_union_type_with_records():
         "name": name,
         "type": [
             {
-                "name": "User",
+                "name": "an_union_field_user_record",
                 "type": "record",
                 "doc": "User",
                 "fields": [{"name": "first_name", "type": "string"}],
             },
             {
-                "name": "Car",
+                "name": "an_union_field_car_record",
                 "type": "record",
                 "doc": "Car",
                 "fields": [{"name": "engine_name", "type": "string"}],
@@ -355,13 +355,13 @@ def test_union_type_with_record_default():
         "type": [
             fields.NULL,
             {
-                "name": "User",
+                "name": "an_union_field_user_record",
                 "type": "record",
                 "doc": "User",
                 "fields": [{"name": "first_name", "type": "string"}],
             },
             {
-                "name": "Car",
+                "name": "an_union_field_car_record",
                 "type": "record",
                 "doc": "Car",
                 "fields": [{"name": "engine_name", "type": "string"}],
@@ -383,13 +383,13 @@ def test_union_type_with_record_default():
         "name": name,
         "type": [
             {
-                "name": "User",
+                "name": "an_union_field_user_record",
                 "type": "record",
                 "doc": "User",
                 "fields": [{"name": "first_name", "type": "string"}],
             },
             {
-                "name": "Car",
+                "name": "an_union_field_car_record",
                 "type": "record",
                 "doc": "Car",
                 "fields": [{"name": "engine_name", "type": "string"}],

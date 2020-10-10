@@ -19,7 +19,7 @@
       "type": [
         {
           "type": "record",
-          "name": "Bus",
+          "name": "lake_trip_bus_record",
           "fields": [
             {
               "name": "engine_name",
@@ -30,7 +30,7 @@
         },
         {
           "type": "record",
-          "name": "Car",
+          "name": "lake_trip_car_record",
           "fields": [
             {
               "name": "engine_name",
@@ -47,7 +47,7 @@
         "null",
         {
           "type": "record",
-          "name": "Bus",
+          "name": "river_trip_bus_record",
           "fields": [
             {
               "name": "engine_name",
@@ -58,7 +58,7 @@
         },
         {
           "type": "record",
-          "name": "Car",
+          "name": "river_trip_car_record",
           "fields": [
             {
               "name": "engine_name",
@@ -75,7 +75,7 @@
       "type": [
         {
           "type": "record",
-          "name": "Bus",
+          "name": "mountain_trip_bus_record",
           "fields": [
             {
               "name": "engine_name",
@@ -86,7 +86,7 @@
         },
         {
           "type": "record",
-          "name": "Car",
+          "name": "mountain_trip_car_record",
           "fields": [
             {
               "name": "engine_name",

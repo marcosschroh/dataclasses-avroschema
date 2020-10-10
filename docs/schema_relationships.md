@@ -118,7 +118,7 @@ User.avro_schema()
         "type": "array",
         "items": {
           "type": "record",
-          "name": "Address",
+          "name": "address_record",
           "fields": [
             {"name": "street", "type": "string"},
             {"name": "street_number", "type": "int"}
@@ -167,7 +167,7 @@ User.avro_schema()
         "type": "map",
         "values": {
           "type": "record",
-          "name": "Address",
+          "name": "address_record",
           "fields": [
             {"name": "street", "type": "string"},
             {"name": "street_number", "type": "int"}
@@ -258,5 +258,106 @@ User.avro_schema()
     }
   ],
   "doc": "User with self reference as friends"
+}'
+```
+
+## Avoid name colision in multiple relationships
+
+Sometimes we have relationships where a class is related more than once with a particular class,
+and the name for the nested schemas must be diferent, otherwise we will generate an invalid `avro schema`.
+
+For example:
+
+```python
+from dataclasses import dataclass
+from datetime import datetime
+import json
+
+from dataclasses_avroschema import AvroModel
+
+
+@dataclass
+class Location(AvroModel):
+    latitude: float
+    longitude: float
+
+
+@dataclass
+class Trip(AvroModel):
+    start_time: datetime
+    start_location: Location  # first relationship
+    finish_time: datetime
+    finish_location: Location  # second relationship
+```
+
+In order to avoid name colisions, the nested name is generated in the following way:
+
+1. Get the lower name of the related class
+2. Get the field name
+3. Is (1) included in (2)?
+   then: (2)_record as result
+   otherwise: (1)_(2)_record
+
+Example for start_location:
+
+1. Get the lower name of the related class = `location`
+2. Get the field name = `start_location`
+3. Is `location` included in `start_location`? yes, so the result is `start_location_record`
+
+```python
+'{
+  "type": "record",
+  "name": "Trip",
+  "fields": [
+    {
+      "name": "start_time",
+      "type": {
+        "type": "long", "logicalType": "timestamp-millis"
+      }
+    },
+    {
+      "name": "start_location",
+      "type": {
+        "type": "record",
+        "name": "start_location_record",
+        "fields": [
+          {
+            "name": "latitude",
+            "type": "float"
+          },
+          {
+           "name": "longitude",
+           "type": "float"
+          }
+        ],
+        "doc": "Location(latitude: float, longitude: float)"
+      }
+    },
+    {
+      "name": "finish_time",
+      "type": {
+        "type": "long", "logicalType": "timestamp-millis"
+      }
+    },
+    {
+      "name": "finish_location",
+      "type": {
+        "type": "record",
+        "name": "finish_location_record",
+        "fields": [
+          {
+            "name": "latitude",
+            "type": "float"
+          },
+          {
+            "name": "longitude",
+            "type": "float"
+          }
+        ],
+        "doc": "Location(latitude: float, longitude: float)"
+      }
+    }
+  ],
+  "doc": "Trip(start_time: datetime.datetime, start_location: __main__.Location, finish_time: datetime.datetime, finish_location: __main__.Location)"
 }'
 ```
