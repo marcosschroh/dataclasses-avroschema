@@ -3,11 +3,11 @@ The following list represent the avro primitive types mapped to python types:
 | Avro Type | Python Type |
 |-----------|-------------|
 | string    |     str     |
-| int       |     int     |
+| long      |     int     |
 | boolean   |     bool    |
-| float     |     float   |
+| double    |     float   |
 | null      |     None    |
-| bytes     |     bytes     |
+| bytes     |     bytes   |
 
 
 Example:

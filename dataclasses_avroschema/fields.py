@@ -22,6 +22,7 @@ NULL = "null"
 INT = "int"
 FLOAT = "float"
 LONG = "long"
+DOUBLE = "double"
 BYTES = "bytes"
 STRING = "string"
 ARRAY = "array"
@@ -36,24 +37,6 @@ LOGICAL_DATE = {"type": INT, "logicalType": DATE}
 LOGICAL_TIME = {"type": INT, "logicalType": TIME_MILLIS}
 LOGICAL_DATETIME = {"type": LONG, "logicalType": TIMESTAMP_MILLIS}
 LOGICAL_UUID = {"type": STRING, "logicalType": UUID}
-
-PYTHON_TYPE_TO_AVRO = {
-    bool: BOOLEAN,
-    type(None): NULL,
-    int: INT,
-    float: FLOAT,
-    bytes: BYTES,
-    str: STRING,
-    list: {"type": ARRAY},
-    tuple: {"type": ARRAY},
-    dict: {"type": MAP},
-    types.Fixed: {"type": FIXED},
-    types.Enum: {"type": ENUM},
-    datetime.date: {"type": INT, "logicalType": DATE},
-    datetime.time: {"type": INT, "logicalType": TIME_MILLIS},
-    datetime.datetime: {"type": LONG, "logicalType": TIMESTAMP_MILLIS},
-    uuid.uuid4: {"type": STRING, "logicalType": UUID},
-}
 
 # excluding tuple because is a container
 PYTHON_INMUTABLE_TYPES = (str, int, bool, float, bytes, type(None))
@@ -181,8 +164,8 @@ class StringField(InmutableField):
 
 
 @dataclasses.dataclass
-class IntegerField(InmutableField):
-    avro_type: typing.ClassVar = INT
+class LongField(InmutableField):
+    avro_type: typing.ClassVar = LONG
 
     def fake(self) -> int:
         return fake.pyint()
@@ -197,7 +180,7 @@ class BooleanField(InmutableField):
 
 
 @dataclasses.dataclass
-class FloatField(InmutableField):
+class DoubleField(InmutableField):
     avro_type: typing.ClassVar = FLOAT
 
     def fake(self) -> float:
@@ -639,8 +622,8 @@ class RecordField(BaseField):
 
 INMUTABLE_FIELDS_CLASSES = {
     bool: BooleanField,
-    int: IntegerField,
-    float: FloatField,
+    int: LongField,
+    float: DoubleField,
     bytes: BytesField,
     str: StringField,
     type(None): NoneField,
@@ -677,8 +660,9 @@ LOGICAL_CLASSES = LOGICAL_TYPES_FIELDS_CLASSES.keys()
 
 FieldType = typing.Union[
     StringField,
+    LongField,
     BooleanField,
-    FloatField,
+    DoubleField,
     BytesField,
     NoneField,
     ListField,
