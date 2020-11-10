@@ -3,7 +3,7 @@
   "name": "User",
   "fields": [
      {"name": "name", "type": "string"},
-     {"name": "age", "type": "int"}
+     {"name": "age", "type": "long"}
   ],
   "doc": "An User",
   "namespace": "test.com.ar/user/v1",
