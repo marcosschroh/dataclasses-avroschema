@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.19.0] - 2020-11-12
+
+### Added
+
+- Default Avro type for Python ints has been changed from `int` to `long` and `float` to `double` [83](https://github.com/marcosschroh/dataclasses-avroschema/pull/83). Reason:
+  - [Integers have unlimited precision](https://docs.python.org/3.4/library/stdtypes.html#typesnumeric)
+  - Floating point numbers are usually implemented using `double` in C
+  - [almost all platforms map Python floats to IEEE-754 `double` precision](https://docs.python.org/3/tutorial/floatingpoint.html#representation-error)
+
 ## [0.18.0] - 2020-10-10
 
 ### Added
