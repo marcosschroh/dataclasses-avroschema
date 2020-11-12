@@ -8,7 +8,7 @@
     },
     {
       "name": "age",
-      "type": "int"
+      "type": "long"
     },
     {
       "name": "pets",
@@ -22,7 +22,7 @@
       "name": "accounts",
       "type": {
         "type": "map",
-        "values": "int",
+        "values": "long",
         "name": "account"
       }
     },

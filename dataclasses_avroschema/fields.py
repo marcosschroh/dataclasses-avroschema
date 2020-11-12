@@ -22,6 +22,7 @@ NULL = "null"
 INT = "int"
 FLOAT = "float"
 LONG = "long"
+DOUBLE = "double"
 BYTES = "bytes"
 STRING = "string"
 ARRAY = "array"
@@ -40,8 +41,8 @@ LOGICAL_UUID = {"type": STRING, "logicalType": UUID}
 PYTHON_TYPE_TO_AVRO = {
     bool: BOOLEAN,
     type(None): NULL,
-    int: INT,
-    float: FLOAT,
+    int: LONG,
+    float: DOUBLE,
     bytes: BYTES,
     str: STRING,
     list: {"type": ARRAY},
@@ -181,8 +182,8 @@ class StringField(InmutableField):
 
 
 @dataclasses.dataclass
-class IntegerField(InmutableField):
-    avro_type: typing.ClassVar = INT
+class LongField(InmutableField):
+    avro_type: typing.ClassVar = LONG
 
     def fake(self) -> int:
         return fake.pyint()
@@ -197,8 +198,8 @@ class BooleanField(InmutableField):
 
 
 @dataclasses.dataclass
-class FloatField(InmutableField):
-    avro_type: typing.ClassVar = FLOAT
+class DoubleField(InmutableField):
+    avro_type: typing.ClassVar = DOUBLE
 
     def fake(self) -> float:
         return fake.pyfloat()
@@ -639,8 +640,8 @@ class RecordField(BaseField):
 
 INMUTABLE_FIELDS_CLASSES = {
     bool: BooleanField,
-    int: IntegerField,
-    float: FloatField,
+    int: LongField,
+    float: DoubleField,
     bytes: BytesField,
     str: StringField,
     type(None): NoneField,
@@ -677,8 +678,9 @@ LOGICAL_CLASSES = LOGICAL_TYPES_FIELDS_CLASSES.keys()
 
 FieldType = typing.Union[
     StringField,
+    LongField,
     BooleanField,
-    FloatField,
+    DoubleField,
     BytesField,
     NoneField,
     ListField,

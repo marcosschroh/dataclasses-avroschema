@@ -8,9 +8,9 @@ now = datetime.datetime.now()
 
 PRIMITIVE_TYPES = (
     (str, fields.STRING),
-    (int, fields.INT),
+    (int, fields.LONG),
     (bool, fields.BOOLEAN),
-    (float, fields.FLOAT),
+    (float, fields.DOUBLE),
     (bytes, fields.BYTES),
 )
 
@@ -32,9 +32,9 @@ PRIMITIVE_TYPES_AND_INVALID_DEFAULTS = (
 
 LIST_TYPE_AND_ITEMS_TYPE = (
     (str, "string"),
-    (int, "int"),
+    (int, "long"),
     (bool, "boolean"),
-    (float, "float"),
+    (float, "double"),
     (bytes, "bytes"),
 )
 
@@ -46,7 +46,7 @@ LOGICAL_TYPES = (
 )
 
 UNION_PRIMITIVE_ELEMENTS = (
-    ((str, int), (fields.STRING, fields.INT), "test"),
+    ((str, int), (fields.STRING, fields.LONG), "test"),
     ((str, bytes), (fields.STRING, fields.BYTES), b"test"),
     ((str, None), (fields.STRING, fields.NULL), None),
     (
@@ -57,18 +57,18 @@ UNION_PRIMITIVE_ELEMENTS = (
         ),
         now,
     ),
-    ((float, str, int), (fields.FLOAT, fields.STRING, fields.INT), 100.0),
-    ((str, float, int, bool), (fields.STRING, fields.FLOAT, fields.INT, fields.BOOLEAN), False),
+    ((float, str, int), (fields.DOUBLE, fields.STRING, fields.LONG), 100.0),
+    ((str, float, int, bool), (fields.STRING, fields.DOUBLE, fields.LONG, fields.BOOLEAN), False),
 )
 
 UNION_WITH_ARRAY = (
     (
         (typing.List[int], str),
-        (fields.INT, fields.STRING),
+        (fields.LONG, fields.STRING),
     ),
     (
         (typing.List[str], float),
-        (fields.STRING, fields.FLOAT),
+        (fields.STRING, fields.DOUBLE),
     ),
     (
         (typing.List[datetime.datetime], datetime.datetime),
@@ -83,11 +83,11 @@ UNION_WITH_ARRAY = (
 UNION_WITH_MAP = (
     (
         (typing.Dict[str, int], str),
-        (fields.INT, fields.STRING),
+        (fields.LONG, fields.STRING),
     ),
     (
         (typing.Dict[str, str], float),
-        (fields.STRING, fields.FLOAT),
+        (fields.STRING, fields.DOUBLE),
     ),
     (
         (typing.Dict[str, datetime.datetime], datetime.datetime),
@@ -105,7 +105,7 @@ OPTIONAL_UNION_COMPLEX_TYPES = (
         typing.List[datetime.datetime],
         {"type": fields.ARRAY, "items": fields.LOGICAL_DATETIME, "name": "optional_field"},
     ),
-    (typing.Dict[str, int], {"type": fields.MAP, "values": fields.INT, "name": "optional_field"}),
+    (typing.Dict[str, int], {"type": fields.MAP, "values": fields.LONG, "name": "optional_field"}),
     (
         typing.Dict[str, datetime.datetime],
         {"type": fields.MAP, "values": fields.LOGICAL_DATETIME, "name": "optional_field"},
@@ -168,10 +168,10 @@ avro_user = {
 }
 
 ARRAY_WITH_UNION_TYPES = (
-    (typing.Union[int, str], [fields.INT, fields.STRING], [10, 20, "test"]),
+    (typing.Union[int, str], [fields.LONG, fields.STRING], [10, 20, "test"]),
     (
         typing.Union[int, str, User],
-        [fields.INT, fields.STRING, avro_user],
+        [fields.LONG, fields.STRING, avro_user],
         [10, 20, "test"],
     ),
 )

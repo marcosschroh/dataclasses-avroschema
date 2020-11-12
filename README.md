@@ -7,6 +7,11 @@ Generate [Avro](https://avro.apache.org/docs/1.8.2/spec.html) Schemas from a Pyt
 [![codecov](https://codecov.io/gh/marcosschroh/dataclasses-avroschema/branch/master/graph/badge.svg)](https://codecov.io/gh/marcosschroh/dataclasses-avroschema)
 ![python version](https://img.shields.io/badge/python-3.7%2B-yellowgreen)
 
+## Notice of breaking change
+
+As of version **0.19.0**, the default Avro type for Python ints has been changed from `int` to `long` and the default Avro
+type for Python floats has been changed from `float` to `double`. Please take care when upgrading.
+
 ## Requirements
 
 `python 3.7+`

@@ -8,7 +8,7 @@
         },
         {
             "name": "age",
-            "type": "int"
+            "type": "long"
         },
         {
             "name": "address",
@@ -22,7 +22,7 @@
                     },
                     {
                         "name": "street_number",
-                        "type": "int"
+                        "type": "long"
                     }
                 ],
                 "doc": "An Address"
