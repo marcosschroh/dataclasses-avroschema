@@ -27,13 +27,13 @@ User.avro_schema()
   "name": "User",
   "fields": [
     {"name": "name", "type": "string"},
-    {"name": "age", "type": "int"},
+    {"name": "age", "type": "long"},
     {"name": "address", "type": {
       "type": "record",
       "name": "Address",
       "fields": [
         {"name": "street","type": "string"},
-        {"name": "street_number", "type": "int"}
+        {"name": "street_number", "type": "long"}
       ],
       "doc": "An Address"
       }
@@ -71,7 +71,7 @@ User.avro_schema()
     },
     {
       "name": "age",
-      "type": "int"
+      "type": "long"
     },
     {
       "name": "friend",
@@ -113,7 +113,7 @@ User.avro_schema()
   "name": "User",
   "fields": [
     {"name": "name", "type": "string"},
-    {"name": "age", "type": "int"},
+    {"name": "age", "type": "long"},
     {"name": "addresses", "type": {
         "type": "array",
         "items": {
@@ -121,7 +121,7 @@ User.avro_schema()
           "name": "address_record",
           "fields": [
             {"name": "street", "type": "string"},
-            {"name": "street_number", "type": "int"}
+            {"name": "street_number", "type": "long"}
           ],
           "doc": "An Address"
         },
@@ -162,7 +162,7 @@ User.avro_schema()
   "name": "User",
   "fields": [
     {"name": "name", "type": "string"},
-    {"name": "age", "type": "int"},
+    {"name": "age", "type": "long"},
     {"name": "addresses", "type": {
         "type": "map",
         "values": {
@@ -170,7 +170,7 @@ User.avro_schema()
           "name": "address_record",
           "fields": [
             {"name": "street", "type": "string"},
-            {"name": "street_number", "type": "int"}
+            {"name": "street_number", "type": "long"}
           ],
           "doc": "An Address"
         },
@@ -211,7 +211,7 @@ User.avro_schema()
     },
     {
       "name": "age",
-      "type": "int"
+      "type": "long"
     },
     {
       "name": "friends",
@@ -245,7 +245,7 @@ User.avro_schema()
     },
     {
       "name": "age",
-      "type": "int"
+      "type": "long"
     },
     {
       "name": "friends",
@@ -323,11 +323,11 @@ Example for start_location:
         "fields": [
           {
             "name": "latitude",
-            "type": "float"
+            "type": "double"
           },
           {
            "name": "longitude",
-           "type": "float"
+           "type": "double"
           }
         ],
         "doc": "Location(latitude: float, longitude: float)"
@@ -347,11 +347,11 @@ Example for start_location:
         "fields": [
           {
             "name": "latitude",
-            "type": "float"
+            "type": "double"
           },
           {
             "name": "longitude",
-            "type": "float"
+            "type": "double"
           }
         ],
         "doc": "Location(latitude: float, longitude: float)"

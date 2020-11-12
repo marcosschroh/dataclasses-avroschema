@@ -93,7 +93,7 @@ UserAdvance.avro_schema()
       "name": "favourites_numbers",
       "type": {
         "type": "array",
-        "items": "int",
+        "items": "long",
         "name": "favourites_number"
       },
       "default": [7, 13]
@@ -139,7 +139,7 @@ UserAdvance.avro_schema()
       "name": "cars_brand_total",
       "type": {
         "type": "map",
-        "values": "int",
+        "values": "long",
         "name": "cars_brand_total"
       },
       "default": {}
@@ -148,7 +148,7 @@ UserAdvance.avro_schema()
       "name": "family_ages",
       "type": {
         "type": "map",
-        "values": "int",
+        "values": "long",
         "name": "family_age"
       },
       "default": {"father": 50}
@@ -205,12 +205,12 @@ UnionSchema.avro_schema()
   "type": "record",
   "name": "UnionSchema",
   "fields": [
-  {"name": "first_union", "type": ["string", "int"]},
+  {"name": "first_union", "type": ["string", "long"]},
   {"name": "logical_union", "type": [
     {"type": "long", "logicalType": "timestamp-millis"},
-    {"type": "int", "logicalType": "date"},
+    {"type": "long", "logicalType": "date"},
     {"type": "string", "logicalType": "uuid"}]},
-  {"name": "second_union", "type": ["string", "int"], "default": ["test"]}],
+  {"name": "second_union", "type": ["string", "long"], "default": ["test"]}],
   "doc": "Some Unions"
 }
 
@@ -351,7 +351,7 @@ X.avro_schema()
     "type": "record",
     "name": "X",
     "fields": [
-        {"name": "y", "type": [{"type": "array", "items": "int", "name": "y"}, "null"]}
+        {"name": "y", "type": [{"type": "array", "items": "long", "name": "y"}, "null"]}
     ],
     "doc": "X(y: Union[List[int], NoneType])"
 }'
@@ -387,9 +387,9 @@ User.avro_schema()
   "name": "User",
   "fields": [
     {"name": "name", "type": "string"},
-    {"name": "age", "type": "int"},
+    {"name": "age", "type": "long"},
     {"name": "has_pets", "type": "boolean", "default": false},
-    {"name": "money", "type": "float", "default": 100.3}
+    {"name": "money", "type": "double", "default": 100.3}
   ],
   "doc": "My User Class",
   "namespace": "test.com.ar/user/v1",

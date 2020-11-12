@@ -36,7 +36,7 @@ UserAdvance.avro_schema()
     },
     {
       "name": "age",
-      "type": "int"
+      "type": "long"
     },
     {
       "name": "pets",
@@ -51,7 +51,7 @@ UserAdvance.avro_schema()
       "name": "accounts",
       "type": {
         "type": "map",
-        "values": "int",
+        "values": "long",
         "name": "account"
       },
       "default": {"key": 1}

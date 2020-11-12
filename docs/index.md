@@ -57,9 +57,9 @@ User.avro_schema()
     "aliases": ["user-v1", "super user"],
     "fields": [
         {"name": "name", "type": "string"},
-        {"name": "age", "type": "int"},
+        {"name": "age", "type": "long"},
         {"name": "pets", "type": "array", "items": "string"},
-        {"name": "accounts", "type": "map", "values": "int"},
+        {"name": "accounts", "type": "map", "values": "long"},
         {"name": "favorite_colors", "type": "enum", "symbols": ["BLUE", "YELLOW", "GREEN"]},
         {"name": "country", "type": "string", "default": "Argentina"},
         {"name": "address", "type": ["null", "string"], "default": null}
@@ -76,9 +76,9 @@ User.avro_schema_to_python()
     "aliases": ["user-v1", "super user"],
     "fields": [
         {"name": "name", "type": "string"},
-        {"name": "age", "type": "int"},
+        {"name": "age", "type": "long"},
         {"name": "pets", "type": {"type": "array", "items": "string", "name": "pet"}},
-        {"name": "accounts", "type": {"type": "map", "values": "int", "name": "account"}},
+        {"name": "accounts", "type": {"type": "map", "values": "long", "name": "account"}},
         {"name": "favorite_colors", "type": {"type": "enum", "name": "favorite_color", "symbols": ["BLUE", "YELLOW", "GREEN"]}},
         {"name": "country", "type": "string", "default": "Argentina"},
         {"name": "address", "type": ["null", "string"], "default": None}

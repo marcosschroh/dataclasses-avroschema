@@ -18,9 +18,9 @@ So, the previous types can be matched to:
 | Avro Type | Python Type |
 |-----------|-------------|
 | string    |     str     |
-| int       |     int     |
+| long      |     int     |
 | boolean   |     bool    |
-| float     |     float   |
+| double    |     float   |
 | null      |     None    |
 | bytes     |     bytes   |
 
@@ -94,9 +94,9 @@ Language implementations must ignore unknown logical types when reading, and sho
 Python Type | Avro Type   | Logical Type |
 |-----------|-------------|--------------|
 | str       | string      | do not apply |
-| int       | int         | do not apply |
+| long      | int         | do not apply |
 | bool      | boolean     | do not apply |
-| float     | float       | do not apply |
+| double    | float       | do not apply |
 | None      | null        | do not apply |
 | bytes     | bytes       | do not apply |
 | typing.List      | array       | do not apply |
@@ -150,7 +150,7 @@ User.avro_schema()
     "doc": "An User",
     "fields": [
         {"name": "name", "type": "string", "doc": "bar"},
-        {"name": "age", "type": "int", "doc": "foo"}
+        {"name": "age", "type": "long", "doc": "foo"}
     ]
 }
 ```
@@ -175,7 +175,7 @@ User.avro_schema()
     "doc": "An User",
     "fields": [
         {"name": "name", "type": "string", "doc": "bar", "sensitivity": "HIGH"},
-        {"name": "age", "type": "int", "doc": "foo", "sensitivity": "MEDIUM"}
+        {"name": "age", "type": "long", "doc": "foo", "sensitivity": "MEDIUM"}
     ]
 }
 ```

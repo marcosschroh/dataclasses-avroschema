@@ -7,11 +7,6 @@ Generate [Avro](https://avro.apache.org/docs/1.8.2/spec.html) Schemas from a Pyt
 [![codecov](https://codecov.io/gh/marcosschroh/dataclasses-avroschema/branch/master/graph/badge.svg)](https://codecov.io/gh/marcosschroh/dataclasses-avroschema)
 ![python version](https://img.shields.io/badge/python-3.7%2B-yellowgreen)
 
-## Notice of breaking change
-
-As of version **0.19.0**, the default Avro type for Python ints has been changed from `int` to `long` and the default Avro
-type for Python floats has been changed from `float` to `double`. Please take care when upgrading.
-
 ## Requirements
 
 `python 3.7+`
@@ -63,9 +58,9 @@ User.avro_schema()
     "aliases": ["user-v1", "super user"],
     "fields": [
         {"name": "name", "type": "string"},
-        {"name": "age", "type": "int"},
+        {"name": "age", "type": "long"},
         {"name": "pets", "type": "array", "items": "string"},
-        {"name": "accounts", "type": "map", "values": "int"},
+        {"name": "accounts", "type": "map", "values": "long"},
         {"name": "favorite_colors", "type": "enum", "symbols": ["BLUE", "YELLOW", "GREEN"]},
         {"name": "country", "type": "string", "default": "Argentina"},
         {"name": "address", "type": ["null", "string"], "default": null}
@@ -82,9 +77,9 @@ User.avro_schema_to_python()
     "aliases": ["user-v1", "super user"],
     "fields": [
         {"name": "name", "type": "string"},
-        {"name": "age", "type": "int"},
+        {"name": "age", "type": "long"},
         {"name": "pets", "type": {"type": "array", "items": "string", "name": "pet"}},
-        {"name": "accounts", "type": {"type": "map", "values": "int", "name": "account"}},
+        {"name": "accounts", "type": {"type": "map", "values": "long", "name": "account"}},
         {"name": "favorite_colors", "type": {"type": "enum", "name": "favorite_color", "symbols": ["BLUE", "YELLOW", "GREEN"]}},
         {"name": "country", "type": "string", "default": "Argentina"},
         {"name": "address", "type": ["null", "string"], "default": None}

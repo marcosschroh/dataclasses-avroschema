@@ -7,14 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.18.0] - 2020-10-10
 
+### Added
+
 - Allow multiple references to the same class in record relationships
 - Correct name generation for nested records [81](https://github.com/marcosschroh/dataclasses-avroschema/pull/81)
 
 ## [0.17.0] - 2020-09-04
 
+### Added
+
 - Fake instances generation added
 
 ## [0.16.0] - 2020-08-27
+
+### Added
 
 - Deserialization process generate class instances instead a pythn dict
 - In order to get a python dict in the deserialiation process the flag `create_instance=False` should be used

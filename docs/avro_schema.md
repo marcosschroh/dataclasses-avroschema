@@ -60,7 +60,7 @@ User.avro_schema()
   "name": "User",
   "fields": [
     {"name": "name", "type": "string"},
-    {"name": "age", "type": "int"},
+    {"name": "age", "type": "long"},
     {"name": "has_pets", "type": "boolean"},
     {"name": "money", "type": "float"}
   ],

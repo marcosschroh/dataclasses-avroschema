@@ -37,7 +37,7 @@ User.avro_schema()
     },
     {
       "name": "age",
-      "type": "int"
+      "type": "long"
     },
     {
       "name": "is_student",
@@ -45,7 +45,7 @@ User.avro_schema()
     },
     {
       "name": "money_available",
-      "type": "float"
+      "type": "double"
     },
     {
         "name": "encoded",
@@ -86,7 +86,7 @@ User.avro_schema()
     },
     {
       "name": "age",
-      "type": ["null", "int"],
+      "type": ["null", "long"],
       "default": null
     },
     {
@@ -96,7 +96,7 @@ User.avro_schema()
     },
     {
       "name": "money_available",
-      "type": ["null", "float"],
+      "type": ["null", "double"],
       "default": null
     },
     {
@@ -132,7 +132,7 @@ User.avro_schema()
     },
     {
       "name": "age",
-      "type": "int",
+      "type": "long",
       "default": 20
     },
     {
@@ -142,7 +142,7 @@ User.avro_schema()
     },
     {
       "name": "money_available",
-      "type": "float",
+      "type": "double",
       "default": 100.2
     },
     {
