@@ -1,7 +1,7 @@
 import typing
 from dataclasses import dataclass
 from datetime import datetime
-
+import decimal
 from pytz import utc
 
 from .types import CUSTOM_TYPES
@@ -49,6 +49,40 @@ def is_custom_type(value: typing.Any) -> bool:
     """
     return isinstance(value, dict) and value.get("_dataclasses_custom_type") in CUSTOM_TYPES
 
+
+# This is an almost complete copy of fastavro's _logical_writers_py.prepare_bytes_decimal
+# the only tweak is to pass in scale/precision directly instead of a schema
+def prepare_bytes_decimal(data, precision, scale=0):
+    """Convert decimal.Decimal to bytes"""
+    # print(data, precision, scale)
+
+    if not isinstance(data, decimal.Decimal):
+        return data
+
+    sign, digits, exp = data.as_tuple()
+
+    if len(digits) > precision:
+        raise ValueError(
+            'The decimal precision is bigger than allowed by schema')
+
+    delta = exp + scale
+
+    if delta < 0:
+        raise ValueError(
+            'Scale provided in schema does not match the decimal')
+
+    unscaled_datum = 0
+    for digit in digits:
+        unscaled_datum = (unscaled_datum * 10) + digit
+
+    unscaled_datum = 10 ** delta * unscaled_datum
+
+    bytes_req = (unscaled_datum.bit_length() + 8) // 8
+
+    if sign:
+        unscaled_datum = -unscaled_datum
+
+    return unscaled_datum.to_bytes(bytes_req, byteorder='big', signed=True)
 
 @dataclass
 class SchemaMetadata:

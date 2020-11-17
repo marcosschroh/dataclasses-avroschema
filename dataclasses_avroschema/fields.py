@@ -2,6 +2,7 @@ import abc
 import collections
 import dataclasses
 import datetime
+import decimal
 import json
 import random
 import typing
@@ -33,6 +34,7 @@ DATE = "date"
 TIME_MILLIS = "time-millis"
 TIMESTAMP_MILLIS = "timestamp-millis"
 UUID = "uuid"
+DECIMAL = "decimal"
 LOGICAL_DATE = {"type": INT, "logicalType": DATE}
 LOGICAL_TIME = {"type": INT, "logicalType": TIME_MILLIS}
 LOGICAL_DATETIME = {"type": LONG, "logicalType": TIMESTAMP_MILLIS}
@@ -67,6 +69,7 @@ PYTHON_LOGICAL_TYPES = (
     datetime.datetime,
     uuid.uuid4,
     uuid.UUID,
+    decimal.Decimal
 )
 
 PYTHON_PRIMITIVE_TYPES = PYTHON_INMUTABLE_TYPES + PYTHON_PRIMITIVE_CONTAINERS
@@ -75,6 +78,7 @@ PRIMITIVE_AND_LOGICAL_TYPES = PYTHON_INMUTABLE_TYPES + PYTHON_LOGICAL_TYPES
 
 PythonImnutableTypes = typing.Union[
     str, int, bool, float, list, tuple, dict, datetime.date, datetime.time, datetime.datetime, uuid.UUID
+    , decimal.Decimal
 ]
 
 
@@ -638,13 +642,68 @@ class RecordField(BaseField):
         return self.type.fake()
 
 
+@dataclasses.dataclass
+class DecimalField(BaseField):
+
+    precision: int = None
+    scale: int = 0
+
+    def get_avro_type(self) -> typing.Dict[str, typing.Any]:
+        if self.default != types.MissingSentinel:
+            if isinstance(self.default, decimal.Decimal):
+                sign, digits, scale = self.default.as_tuple()
+                self.scale = scale * -1  # Make scale positive, as that's what Avro expects
+                # decimal.Context has a precision property
+                # BUT the precision property is independent of the number of digits stored in the Decimal instance
+                # # # FROM THE DOCS HERE https://docs.python.org/3/library/decimal.html
+                #  The context precision does not affect how many digits are stored.
+                #  That is determined exclusively by the number of digits in value.
+                #  For example, Decimal('3.00000') records all five zeros even if the context precision is only three.
+                # # #
+                # Avro is concerned with *what form the number takes* and not with *handling errors in the Python env*
+                # so we take the number of digits stored in the decimal as Avro precision
+                self.precision = len(digits)
+            elif isinstance(self.default, types.Decimal):
+                self.scale = self.default.scale
+                self.precision = self.default.precision
+            else:
+                pass
+        else:
+            # Just pull the precision from default context and default out scale
+            # Not ideal
+            self.precision = decimal.Context().prec
+
+        avro_type = {
+                "type": BYTES,
+                "logicalType": DECIMAL,
+                "precision": self.precision,
+                "scale": self.scale
+            }
+
+        return avro_type
+
+    def get_default_value(self):
+        default = self.default
+        if isinstance(default, types.Decimal):
+            default = default.default
+
+        if default == types.MissingSentinel:
+            return dataclasses.MISSING
+        else:
+            def_bytes = utils.prepare_bytes_decimal(default, self.precision, self.scale)
+            return def_bytes.decode()
+
+    def fake(self):
+        return fake.pydecimal()
+
+
 INMUTABLE_FIELDS_CLASSES = {
     bool: BooleanField,
     int: LongField,
     float: DoubleField,
     bytes: BytesField,
     str: StringField,
-    type(None): NoneField,
+    type(None): NoneField
 }
 
 CONTAINER_FIELDS_CLASSES = {
@@ -665,6 +724,7 @@ LOGICAL_TYPES_FIELDS_CLASSES = {
     uuid.uuid4: UUIDField,
     uuid.UUID: UUIDField,
     bytes: BytesField,
+    decimal.Decimal: DecimalField
 }
 
 PRIMITIVE_LOGICAL_TYPES_FIELDS_CLASSES = {

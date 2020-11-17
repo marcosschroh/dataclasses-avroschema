@@ -1,0 +1,16 @@
+{
+  "type": "record",
+  "name": "DecimalTest",
+  "fields": [
+    {
+      "name": "decimal_types_default",
+      "type": {
+        "type": "bytes",
+        "logicalType": "decimal",
+        "precision": 3,
+        "scale": 2
+      }
+    }
+  ],
+  "doc": "Some Decimal Tests"
+}

@@ -90,3 +90,8 @@ def logical_types_schema():
 @pytest.fixture
 def union_type_schema():
     return load_json("union_type.avsc")
+
+
+@pytest.fixture
+def decimal_types_schema():
+    return load_json("decimal.avsc")
