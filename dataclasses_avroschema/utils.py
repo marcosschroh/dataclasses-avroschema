@@ -52,9 +52,9 @@ def is_custom_type(value: typing.Any) -> bool:
 
 # This is an almost complete copy of fastavro's _logical_writers_py.prepare_bytes_decimal
 # the only tweak is to pass in scale/precision directly instead of a schema
+# This is needed to properly serialize a default decimal.Decimal into the avro schema
 def prepare_bytes_decimal(data, precision, scale=0):
     """Convert decimal.Decimal to bytes"""
-    # print(data, precision, scale)
 
     if not isinstance(data, decimal.Decimal):
         return data
