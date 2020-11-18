@@ -2,8 +2,9 @@ import dataclasses
 import datetime
 import typing
 import uuid
+import decimal
 
-from dataclasses_avroschema import AvroModel
+from dataclasses_avroschema import AvroModel, types
 
 
 def test_fake_primitive_types(user_dataclass):
@@ -129,5 +130,18 @@ def test_self_one_to_many_map_relationship():
         age: int
         friends: typing.Dict[str, typing.Type["User"]]
         teamates: typing.Dict[str, typing.Type["User"]] = None
+
+    assert isinstance(User.fake(), User)
+
+
+def test_decimals():
+    """
+    Test Decimal logical types
+    """
+    class User(AvroModel):
+        name: str
+        age: int
+        test_score_1: decimal.Decimal = decimal.Decimal('100.00')
+        test_score_2: decimal.Decimal = types.Decimal(scale=5, precision=11)
 
     assert isinstance(User.fake(), User)

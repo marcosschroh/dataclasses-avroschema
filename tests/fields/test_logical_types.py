@@ -176,24 +176,40 @@ def test_decimal_type():
   }
 
     assert expected == field.to_dict()
+    # Just making sure a double-internal-call to set_precision_scale doesn't break things and is hit for coverage
+    assert expected == field.to_dict()
 
     # If default is missing, default out scale by Avro spec and pull precision from default decimal context
     # On my machine, this makes the "decimal" field a glorified 28-digit int, which is likely not what is wanted
     # so there is a good argument to error this out and force the dev to provide a default
-    default = types.MissingSentinel
-    field = fields.AvroField(name, python_type, default)
+    # default = types.MissingSentinel
+    # field = fields.AvroField(name, python_type, default)
+    #
+    # expected = {
+    #     "name": name,
+    #     "type": {
+    #         "type": "bytes",
+    #         "logicalType": "decimal",
+    #         "precision": decimal.Context().prec,
+    #         "scale": 0,
+    #     },
+    # }
+    #
+    # assert expected == field.to_dict()
 
-    expected = {
-        "name": name,
-        "type": {
-            "type": "bytes",
-            "logicalType": "decimal",
-            "precision": decimal.Context().prec,
-            "scale": 0,
-        },
-    }
+    # Require a default be provided for decimal.Decimal
+    with pytest.raises(ValueError):
+        default = types.MissingSentinel
+        field = fields.AvroField(name, python_type, default)
 
-    assert expected == field.to_dict()
+        field.to_dict()
+
+    # Catch unexpected default value for decimal.Decimal
+    with pytest.raises(ValueError):
+        default = 7
+        field = fields.AvroField(name, python_type, default)
+
+        field.to_dict()
 
     # Default decimal.Decimal has more digits than listed precision
     with pytest.raises(ValueError):

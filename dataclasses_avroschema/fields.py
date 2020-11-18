@@ -647,8 +647,12 @@ class DecimalField(BaseField):
 
     precision: int = None
     scale: int = 0
+    has_set_prec_scale = False
 
-    def get_avro_type(self) -> typing.Dict[str, typing.Any]:
+    def set_precision_scale(self):
+        if self.has_set_prec_scale:
+            return
+        self.has_set_prec_scale = True
         if self.default != types.MissingSentinel:
             if isinstance(self.default, decimal.Decimal):
                 sign, digits, scale = self.default.as_tuple()
@@ -667,12 +671,18 @@ class DecimalField(BaseField):
                 self.scale = self.default.scale
                 self.precision = self.default.precision
             else:
-                pass
+                raise ValueError("decimal.Decimal default types must be either decimal.Decimal or types.Decimal")
         else:
+            raise ValueError("decimal.Decimal default types must be specified to provide precision and scale,"
+                             " and must be either decimal.Decimal or types.Decimal")
+
             # Just pull the precision from default context and default out scale
             # Not ideal
-            self.precision = decimal.Context().prec
+            #
+            # self.precision = decimal.Context().prec
 
+    def get_avro_type(self) -> typing.Dict[str, typing.Any]:
+        self.set_precision_scale()
         avro_type = {
                 "type": BYTES,
                 "logicalType": DECIMAL,
@@ -683,6 +693,7 @@ class DecimalField(BaseField):
         return avro_type
 
     def get_default_value(self):
+        self.set_precision_scale()
         default = self.default
         if isinstance(default, types.Decimal):
             default = default.default
@@ -694,7 +705,8 @@ class DecimalField(BaseField):
             return def_bytes.decode()
 
     def fake(self):
-        return fake.pydecimal()
+        self.set_precision_scale()
+        return fake.pydecimal(right_digits=self.scale, left_digits=self.precision-self.scale)
 
 
 INMUTABLE_FIELDS_CLASSES = {
