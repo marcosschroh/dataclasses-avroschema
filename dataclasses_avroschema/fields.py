@@ -813,7 +813,7 @@ def field_factory(
             default_factory=default_factory,
         )
     elif native_type in PYTHON_LOGICAL_TYPES:
-        klass = LOGICAL_TYPES_FIELDS_CLASSES[native_type]
+        klass = LOGICAL_TYPES_FIELDS_CLASSES[native_type]  # type: ignore
         return klass(name=name, type=native_type, default=default, metadata=metadata)
     else:
         return RecordField(name=name, type=native_type, default=default, metadata=metadata)
