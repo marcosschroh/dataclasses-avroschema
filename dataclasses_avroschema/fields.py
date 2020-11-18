@@ -13,7 +13,7 @@ import inflect
 from faker import Faker
 from pytz import utc
 
-from dataclasses_avroschema import types, utils
+from dataclasses_avroschema import types, utils, serialization
 
 fake = Faker()
 p = inflect.engine()
@@ -701,8 +701,7 @@ class DecimalField(BaseField):
         if default == types.MissingSentinel:
             return dataclasses.MISSING
         else:
-            def_bytes = utils.prepare_bytes_decimal(default, self.precision, self.scale)
-            return def_bytes.decode()
+            return serialization.decimal_to_str(default, self.precision, self.scale)
 
     def fake(self):
         self.set_precision_scale()
