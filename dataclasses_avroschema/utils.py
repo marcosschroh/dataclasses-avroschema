@@ -1,7 +1,7 @@
 import typing
 from dataclasses import dataclass
 from datetime import datetime
-import decimal
+
 from pytz import utc
 
 from .types import CUSTOM_TYPES

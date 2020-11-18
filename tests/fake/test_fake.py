@@ -1,8 +1,8 @@
 import dataclasses
 import datetime
+import decimal
 import typing
 import uuid
-import decimal
 
 from dataclasses_avroschema import AvroModel, types
 
@@ -138,10 +138,11 @@ def test_decimals():
     """
     Test Decimal logical types
     """
+
     class User(AvroModel):
         name: str
         age: int
-        test_score_1: decimal.Decimal = decimal.Decimal('100.00')
+        test_score_1: decimal.Decimal = decimal.Decimal("100.00")
         test_score_2: decimal.Decimal = types.Decimal(scale=5, precision=11)
 
     assert isinstance(User.fake(), User)

@@ -13,7 +13,7 @@ import inflect
 from faker import Faker
 from pytz import utc
 
-from dataclasses_avroschema import types, utils, serialization
+from dataclasses_avroschema import serialization, types, utils
 
 fake = Faker()
 p = inflect.engine()
@@ -63,22 +63,25 @@ PYTHON_INMUTABLE_TYPES = (str, int, bool, float, bytes, type(None))
 
 PYTHON_PRIMITIVE_CONTAINERS = (list, tuple, dict)
 
-PYTHON_LOGICAL_TYPES = (
-    datetime.date,
-    datetime.time,
-    datetime.datetime,
-    uuid.uuid4,
-    uuid.UUID,
-    decimal.Decimal
-)
+PYTHON_LOGICAL_TYPES = (datetime.date, datetime.time, datetime.datetime, uuid.uuid4, uuid.UUID, decimal.Decimal)
 
 PYTHON_PRIMITIVE_TYPES = PYTHON_INMUTABLE_TYPES + PYTHON_PRIMITIVE_CONTAINERS
 
 PRIMITIVE_AND_LOGICAL_TYPES = PYTHON_INMUTABLE_TYPES + PYTHON_LOGICAL_TYPES
 
 PythonImnutableTypes = typing.Union[
-    str, int, bool, float, list, tuple, dict, datetime.date, datetime.time, datetime.datetime, uuid.UUID
-    , decimal.Decimal
+    str,
+    int,
+    bool,
+    float,
+    list,
+    tuple,
+    dict,
+    datetime.date,
+    datetime.time,
+    datetime.datetime,
+    uuid.UUID,
+    decimal.Decimal,
 ]
 
 
@@ -645,11 +648,11 @@ class RecordField(BaseField):
 @dataclasses.dataclass
 class DecimalField(BaseField):
 
-    precision: int = None
+    precision: int = -1
     scale: int = 0
     has_set_prec_scale = False
 
-    def set_precision_scale(self):
+    def set_precision_scale(self) -> None:
         if self.has_set_prec_scale:
             return
         self.has_set_prec_scale = True
@@ -673,8 +676,10 @@ class DecimalField(BaseField):
             else:
                 raise ValueError("decimal.Decimal default types must be either decimal.Decimal or types.Decimal")
         else:
-            raise ValueError("decimal.Decimal default types must be specified to provide precision and scale,"
-                             " and must be either decimal.Decimal or types.Decimal")
+            raise ValueError(
+                "decimal.Decimal default types must be specified to provide precision and scale,"
+                " and must be either decimal.Decimal or types.Decimal"
+            )
 
             # Just pull the precision from default context and default out scale
             # Not ideal
@@ -683,16 +688,11 @@ class DecimalField(BaseField):
 
     def get_avro_type(self) -> typing.Dict[str, typing.Any]:
         self.set_precision_scale()
-        avro_type = {
-                "type": BYTES,
-                "logicalType": DECIMAL,
-                "precision": self.precision,
-                "scale": self.scale
-            }
+        avro_type = {"type": BYTES, "logicalType": DECIMAL, "precision": self.precision, "scale": self.scale}
 
         return avro_type
 
-    def get_default_value(self):
+    def get_default_value(self) -> typing.Union[str, dataclasses._MISSING_TYPE, None]:
         self.set_precision_scale()
         default = self.default
         if isinstance(default, types.Decimal):
@@ -703,9 +703,9 @@ class DecimalField(BaseField):
         else:
             return serialization.decimal_to_str(default, self.precision, self.scale)
 
-    def fake(self):
+    def fake(self) -> decimal.Decimal:
         self.set_precision_scale()
-        return fake.pydecimal(right_digits=self.scale, left_digits=self.precision-self.scale)
+        return fake.pydecimal(right_digits=self.scale, left_digits=self.precision - self.scale)
 
 
 INMUTABLE_FIELDS_CLASSES = {
@@ -714,7 +714,7 @@ INMUTABLE_FIELDS_CLASSES = {
     float: DoubleField,
     bytes: BytesField,
     str: StringField,
-    type(None): NoneField
+    type(None): NoneField,
 }
 
 CONTAINER_FIELDS_CLASSES = {
@@ -735,7 +735,7 @@ LOGICAL_TYPES_FIELDS_CLASSES = {
     uuid.uuid4: UUIDField,
     uuid.UUID: UUIDField,
     bytes: BytesField,
-    decimal.Decimal: DecimalField
+    decimal.Decimal: DecimalField,
 }
 
 PRIMITIVE_LOGICAL_TYPES_FIELDS_CLASSES = {

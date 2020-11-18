@@ -1,8 +1,9 @@
 import datetime
+import decimal
 import io
 import typing
 import uuid
-import decimal
+
 import fastavro
 
 DATETIME_STR_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
@@ -63,28 +64,29 @@ def time_to_str(value: datetime.time) -> str:
 
 def decimal_to_str(value: decimal.Decimal, precision: int, scale: int = 0) -> str:
     value_bytes = prepare_bytes_decimal(value, precision, scale)
-    return r'\u' + value_bytes.hex()
+    return r"\u" + value_bytes.hex()
+
 
 # This is an almost complete copy of fastavro's _logical_writers_py.prepare_bytes_decimal
 # the only tweak is to pass in scale/precision directly instead of a schema
 # This is needed to properly serialize a default decimal.Decimal into the avro schema
-def prepare_bytes_decimal(data, precision, scale=0):
+def prepare_bytes_decimal(data: decimal.Decimal, precision: int, scale: int = 0) -> bytes:
     """Convert decimal.Decimal to bytes"""
 
     if not isinstance(data, decimal.Decimal):
-        return data
+        raise ValueError(
+            "Object type different from decimal.Decimal was passed into serialization.prepare_bytes_decimal"
+        )
 
     sign, digits, exp = data.as_tuple()
 
     if len(digits) > precision:
-        raise ValueError(
-            'The decimal precision is bigger than allowed by schema')
+        raise ValueError("The decimal precision is bigger than allowed by schema")
 
     delta = exp + scale
 
     if delta < 0:
-        raise ValueError(
-            'Scale provided in schema does not match the decimal')
+        raise ValueError("Scale provided in schema does not match the decimal")
 
     unscaled_datum = 0
     for digit in digits:
@@ -97,7 +99,7 @@ def prepare_bytes_decimal(data, precision, scale=0):
     if sign:
         unscaled_datum = -unscaled_datum
 
-    return unscaled_datum.to_bytes(bytes_req, byteorder='big', signed=True)
+    return unscaled_datum.to_bytes(bytes_req, byteorder="big", signed=True)
 
 
 def to_json(data: typing.Dict[str, typing.Any]) -> typing.Dict:

@@ -1,11 +1,11 @@
 import datetime
+import decimal
 import uuid
 from dataclasses import dataclass
-import decimal
+
 import pytz
 
 from dataclasses_avroschema import AvroModel, serialization, types
-
 
 a_datetime = datetime.datetime(2019, 10, 12, 17, 57, 42)
 a_datetime = pytz.utc.localize(a_datetime)
@@ -56,18 +56,20 @@ def test_logical_types_with_defaults():
         meeting_time: datetime.time = a_datetime.time()
         release_datetime: datetime.datetime = a_datetime
         event_uuid: uuid.uuid4 = "09f00184-7721-4266-a955-21048a5cc235"
-        implicit_decimal: decimal.Decimal = decimal.Decimal('3.14')
+        implicit_decimal: decimal.Decimal = decimal.Decimal("3.14")
         explicit_decimal: decimal.Decimal = types.Decimal(scale=5, precision=7)
-        explicit_decimal_with_default: decimal.Decimal = types.Decimal(scale=5, precision=6, default=decimal.Decimal('3.14159'))
+        explicit_decimal_with_default: decimal.Decimal = types.Decimal(
+            scale=5, precision=6, default=decimal.Decimal("3.14159")
+        )
 
     data = {
         "birthday": a_datetime.date(),
         "meeting_time": a_datetime.time(),
         "release_datetime": a_datetime,
         "event_uuid": uuid.UUID("09f00184-7721-4266-a955-21048a5cc235"),
-        "implicit_decimal": decimal.Decimal('2.72'),
-        "explicit_decimal": decimal.Decimal('1.00'),
-        "explicit_decimal_with_default": decimal.Decimal('3.14159')
+        "implicit_decimal": decimal.Decimal("2.72"),
+        "explicit_decimal": decimal.Decimal("1.00"),
+        "explicit_decimal_with_default": decimal.Decimal("3.14159"),
     }
 
     data_json = {
@@ -77,7 +79,7 @@ def test_logical_types_with_defaults():
         "event_uuid": "09f00184-7721-4266-a955-21048a5cc235",
         "implicit_decimal": "2.72",
         "explicit_decimal": "1.00",
-        "explicit_decimal_with_default": "3.14159"
+        "explicit_decimal_with_default": "3.14159",
     }
 
     logical_types = LogicalTypes(**data)
@@ -100,18 +102,14 @@ def test_decimals_defaults():
     @dataclass
     class LogicalTypes(AvroModel):
         "Some logical types"
-        implicit_decimal: decimal.Decimal = decimal.Decimal('3.14')
-        explicit_decimal_with_default: decimal.Decimal = types.Decimal(scale=5, precision=6, default=decimal.Decimal('3.14159'))
+        implicit_decimal: decimal.Decimal = decimal.Decimal("3.14")
+        explicit_decimal_with_default: decimal.Decimal = types.Decimal(
+            scale=5, precision=6, default=decimal.Decimal("3.14159")
+        )
 
-    data = {
-        "implicit_decimal": decimal.Decimal('3.14'),
-        "explicit_decimal_with_default": decimal.Decimal('3.14159')
-    }
+    data = {"implicit_decimal": decimal.Decimal("3.14"), "explicit_decimal_with_default": decimal.Decimal("3.14159")}
 
-    data_json = {
-        "implicit_decimal": "3.14",
-        "explicit_decimal_with_default": "3.14159"
-    }
+    data_json = {"implicit_decimal": "3.14", "explicit_decimal_with_default": "3.14159"}
 
     logical_types = LogicalTypes()
 

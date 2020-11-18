@@ -1,11 +1,10 @@
 import datetime
+import decimal
 import json
 import uuid
-import decimal
-
-from dataclasses_avroschema import AvroModel, types
 from dataclasses import field
 
+from dataclasses_avroschema import AvroModel, types
 
 
 def test_logical_types_schema(logical_types_schema):
@@ -31,8 +30,8 @@ def test_decimal_types_schema(decimal_types_schema):
 
     class DecimalTest(AvroModel):
         "Some Decimal Tests"
-        implicit: decimal.Decimal = decimal.Decimal('3.14')
+        implicit: decimal.Decimal = decimal.Decimal("3.14")
         explicit: decimal.Decimal = types.Decimal(scale=11, precision=13)
-        explicit_with_default: decimal.Decimal = types.Decimal(scale=5, precision=7, default=decimal.Decimal('3.14159'))
+        explicit_with_default: decimal.Decimal = types.Decimal(scale=5, precision=7, default=decimal.Decimal("3.14159"))
 
     assert DecimalTest.avro_schema() == json.dumps(decimal_types_schema)

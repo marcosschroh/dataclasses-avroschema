@@ -1,10 +1,11 @@
 import datetime
-import uuid
 import decimal
+import uuid
+from dataclasses import field
+
 import pytest
 
 from dataclasses_avroschema import fields, types
-from dataclasses import field
 
 from . import consts
 
@@ -121,6 +122,7 @@ def test_invalid_default_values(logical_type, invalid_default, msg):
     with pytest.raises(AssertionError, match=msg):
         field.to_dict()
 
+
 def test_decimal_type():
     """
     When the type is types.Decimal, the Avro field type should be bytes,
@@ -128,7 +130,7 @@ def test_decimal_type():
     """
     name = "a_decimal_field"
     # A default decimal.Decimal sets precision and scale implicitly
-    default = decimal.Decimal('3.14')
+    default = decimal.Decimal("3.14")
     python_type = decimal.Decimal
     field = fields.AvroField(name, python_type, default)
 
@@ -140,7 +142,7 @@ def test_decimal_type():
             "precision": 3,
             "scale": 2,
         },
-        "default": '\\u013a',
+        "default": "\\u013a",
     }
 
     assert expected == field.to_dict()
@@ -161,7 +163,7 @@ def test_decimal_type():
 
     assert expected == field.to_dict()
 
-    default = types.Decimal(scale=5, precision=7, default=decimal.Decimal('3.14'))
+    default = types.Decimal(scale=5, precision=7, default=decimal.Decimal("3.14"))
     field = fields.AvroField(name, python_type, default)
 
     expected = {
@@ -172,8 +174,8 @@ def test_decimal_type():
             "precision": 7,
             "scale": 5,
         },
-        "default": '\\u04ca90',
-  }
+        "default": "\\u04ca90",
+    }
 
     assert expected == field.to_dict()
     # Just making sure a double-internal-call to set_precision_scale doesn't break things and is hit for coverage
@@ -213,14 +215,14 @@ def test_decimal_type():
 
     # Default decimal.Decimal has more digits than listed precision
     with pytest.raises(ValueError):
-        default = types.Decimal(scale=2, precision=3, default=decimal.Decimal('3.14159'))
+        default = types.Decimal(scale=2, precision=3, default=decimal.Decimal("3.14159"))
         field = fields.AvroField(name, python_type, default)
 
         field.to_dict()
 
     # Default decimal.Decimal has more digits past decimal than scale
     with pytest.raises(ValueError):
-        default = types.Decimal(scale=1, precision=3, default=decimal.Decimal('3.14'))
+        default = types.Decimal(scale=1, precision=3, default=decimal.Decimal("3.14"))
         field = fields.AvroField(name, python_type, default)
 
         field.to_dict()

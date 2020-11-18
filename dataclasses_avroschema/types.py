@@ -48,6 +48,7 @@ class Enum(typing.Generic[T]):
     def __repr__(self) -> str:
         return f"{self.symbols}"
 
+
 @dataclasses.dataclass
 class Decimal(typing.Generic[T]):
     """
@@ -56,6 +57,7 @@ class Decimal(typing.Generic[T]):
     precision (int): Specifying the number precision
     scale(int): Specifying the number scale. Default 0
     """
+
     precision: int
     scale: int = 0
     default: typing.Any = dataclasses.field(default=MissingSentinel)
