@@ -106,10 +106,15 @@ def test_decimals_defaults():
         explicit_decimal_with_default: decimal.Decimal = types.Decimal(
             scale=5, precision=6, default=decimal.Decimal("3.14159")
         )
+        negative_default: decimal.Decimal = types.Decimal(scale=2, precision=3, default=decimal.Decimal("-1.23"))
 
-    data = {"implicit_decimal": decimal.Decimal("3.14"), "explicit_decimal_with_default": decimal.Decimal("3.14159")}
+    data = {
+        "implicit_decimal": decimal.Decimal("3.14"),
+        "explicit_decimal_with_default": decimal.Decimal("3.14159"),
+        "negative_default": decimal.Decimal("-1.23"),
+    }
 
-    data_json = {"implicit_decimal": "3.14", "explicit_decimal_with_default": "3.14159"}
+    data_json = {"implicit_decimal": "3.14", "explicit_decimal_with_default": "3.14159", "negative_default": "-1.23"}
 
     logical_types = LogicalTypes()
 

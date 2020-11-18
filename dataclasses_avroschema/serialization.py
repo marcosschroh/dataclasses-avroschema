@@ -73,11 +73,6 @@ def decimal_to_str(value: decimal.Decimal, precision: int, scale: int = 0) -> st
 def prepare_bytes_decimal(data: decimal.Decimal, precision: int, scale: int = 0) -> bytes:
     """Convert decimal.Decimal to bytes"""
 
-    if not isinstance(data, decimal.Decimal):
-        raise ValueError(
-            "Object type different from decimal.Decimal was passed into serialization.prepare_bytes_decimal"
-        )
-
     sign, digits, exp = data.as_tuple()
 
     if len(digits) > precision:

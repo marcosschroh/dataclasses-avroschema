@@ -226,3 +226,10 @@ def test_decimal_type():
         field = fields.AvroField(name, python_type, default)
 
         field.to_dict()
+
+    # Just for code coverage
+    with pytest.raises(ValueError):
+        default = types.Decimal(scale=1, precision=3, default=decimal.Decimal("3.14"))
+        field = fields.AvroField(name, python_type, default)
+
+        field.to_dict()
