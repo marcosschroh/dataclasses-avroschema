@@ -24,20 +24,15 @@ def test_logical_types_schema(logical_types_schema):
     assert LogicalTypes.avro_schema() == json.dumps(logical_types_schema)
 
 
-# def test_decimal_types_schema(decimal_types_schema):
-#     """
-#     Test a schema with decimal types
-#     """
-#
-#     class DecimalTest(AvroModel):
-#         "Some Decimal Tests"
-#         # Implicit scale and precision
-#         decimal_nodefault: decimal.Decimal  # Error out? Pull precision from context and default scale?
-#         decimal_decimal_default: decimal.Decimal = decimal.Decimal('3.14')  # Precision from context, scale from .as_tuple
-#
-#         # Explicit scale and precision
-#         # decimal_default_typed: decimal.Decimal = field(scale=2, precision=3)
-#
-#     print(DecimalTest.avro_schema())
-#
-#     assert DecimalTest.avro_schema() == json.dumps(decimal_types_schema)
+def test_decimal_types_schema(decimal_types_schema):
+    """
+    Test a schema with decimal types
+    """
+
+    class DecimalTest(AvroModel):
+        "Some Decimal Tests"
+        implicit: decimal.Decimal = decimal.Decimal('3.14')
+        explicit: decimal.Decimal = types.Decimal(scale=11, precision=13)
+        explicit_with_default: decimal.Decimal = types.Decimal(scale=5, precision=7, default=decimal.Decimal('3.14159'))
+
+    assert DecimalTest.avro_schema() == json.dumps(decimal_types_schema)

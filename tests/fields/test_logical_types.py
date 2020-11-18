@@ -140,7 +140,7 @@ def test_decimal_type():
             "precision": 3,
             "scale": 2,
         },
-        "default": '\x01:',
+        "default": '\\u013a',
     }
 
     assert expected == field.to_dict()
@@ -172,7 +172,7 @@ def test_decimal_type():
             "precision": 7,
             "scale": 5,
         },
-        "default": '\x04ʐ',
+        "default": '\\u04ca90',
   }
 
     assert expected == field.to_dict()

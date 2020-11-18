@@ -3,13 +3,33 @@
   "name": "DecimalTest",
   "fields": [
     {
-      "name": "decimal_types_default",
+      "name": "implicit",
       "type": {
         "type": "bytes",
         "logicalType": "decimal",
         "precision": 3,
         "scale": 2
+      },
+      "default": "\\u013a"
+    },
+    {
+      "name": "explicit",
+      "type": {
+        "type": "bytes",
+        "logicalType": "decimal",
+        "precision": 13,
+        "scale": 11
       }
+    },
+    {
+      "name": "explicit_with_default",
+      "type": {
+        "type": "bytes",
+        "logicalType": "decimal",
+        "precision": 7,
+        "scale": 5
+      },
+      "default": "\\u04cb2f"
     }
   ],
   "doc": "Some Decimal Tests"
