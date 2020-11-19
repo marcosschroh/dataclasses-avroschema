@@ -61,6 +61,22 @@ UNION_PRIMITIVE_ELEMENTS = (
     ((str, float, int, bool), (fields.STRING, fields.DOUBLE, fields.LONG, fields.BOOLEAN), False),
 )
 
+UNION_PRIMITIVE_ELEMENTS_DEFAULTS = (
+    ((str, int), (fields.STRING, fields.LONG), "test"),
+    ((str, bytes), (fields.BYTES, fields.STRING), b"test"),
+    ((str, None), (fields.NULL, fields.STRING), None),
+    (
+        (datetime.date, datetime.datetime),
+        (
+            fields.PYTHON_TYPE_TO_AVRO[datetime.datetime],
+            fields.PYTHON_TYPE_TO_AVRO[datetime.date],
+        ),
+        now,
+    ),
+    ((float, str, int), (fields.DOUBLE, fields.STRING, fields.LONG), 100.0),
+    ((str, float, int, bool), (fields.BOOLEAN, fields.STRING, fields.DOUBLE, fields.LONG), False),
+)
+
 UNION_WITH_ARRAY = (
     (
         (typing.List[int], str),
