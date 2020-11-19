@@ -1,0 +1,11 @@
+{
+   "type": "record",
+   "name": "User",
+   "fields": [
+       {"name": "name", "type": "string"},
+       {"name": "age", "type": "long"},
+       {"name": "school_name", "type": ["null", "string"], "default": null},
+       {"name": "school_id", "type": ["string", "long"], "default": ""}
+   ],
+   "doc": "An User"
+}

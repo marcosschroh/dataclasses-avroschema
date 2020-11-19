@@ -35,3 +35,31 @@ def test_schema_with_unions_type(union_type_schema):
         mountain_trip: typing.Union[Bus, Car] = dataclasses.field(default_factory=lambda: {"engine_name": "honda"})
 
     assert UnionSchema.avro_schema() == json.dumps(union_type_schema)
+
+
+# The following two tests were written for Issue 85 - Union field with default generating out-of-spec schema
+# This test is written explicitly to adhere to the Avro. The general behavior is covered in other tests,
+#   but the schemas generated are out-of-spec
+def test_schema_with_unions_defaults(default_union_schema):
+    class User(AvroModel):
+        "An User"
+        name: str
+        age: int
+        school_name: typing.Optional[str] = None
+        school_id: typing.Union[int, str] = ''
+
+    assert User.avro_schema() == json.dumps(default_union_schema)
+
+# This is to explicitly test the behavior for a typing.Optional[T] field with no default
+# Current (as of 2020-11-19) is to generate a union [T, null], which is what this tests for
+# This isn't out-of-spec, but does seem a little odd in accordance with defaults
+# It means a typing.Optional[T] field can never have a default of None, and must be explicitly assigned None/null
+def test_schema_typing_optional_behavior(typing_optional_schema):
+    class User(AvroModel):
+        "An User"
+        name: str
+        age: int
+        school_grade: typing.Optional[int]
+
+    assert User.avro_schema() == json.dumps(typing_optional_schema)
+

@@ -90,3 +90,11 @@ def logical_types_schema():
 @pytest.fixture
 def union_type_schema():
     return load_json("union_type.avsc")
+
+@pytest.fixture
+def default_union_schema():
+    return load_json("union_default_type.avsc")
+
+@pytest.fixture
+def typing_optional_schema():
+    return load_json("union_typing_optional.avsc")
