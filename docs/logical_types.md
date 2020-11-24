@@ -9,6 +9,7 @@ The following list represent the avro logical types mapped to python types:
 | long      |  timestamp-millis | datetime.datetime |
 | string    |  uuid        | uuid.uuid4 |
 | string    |  uuid        | uuid.UUID |
+| bytes     | decimal      | decimal.Decimal
 
 ### Date
 
@@ -203,5 +204,78 @@ UUIDLogicalTypes.avro_schema()
     }
   ],
   "doc": "UUID logical types"
+}'
+```
+
+### Decimal
+
+The below code shows an example on how to use decimals. There's a few important things to note:
+* A default IS REQUIRED in order to set scale and precision on the Avro schema
+* It is strongly recommended to set these explicitly using `types.Decimal(scale=, precision=)`
+* They can be set implicitly by using a default `decimal.Decimal`
+* If set implicitly, scale and precision will be derived from the default as follows:
+```python
+    default: decimal.Decimal = decimal.Decimal('3.14')
+    sign, digits, exp = default.as_tuple()
+    precision = len(digits)
+    scale = exp * -1  # Avro schema defines scale as a positive, as_tuple provides negative
+```
+* This CAN and WILL have strange consequences if not careful, ESPECIALLY if constructing `decimal.Decimal` with a float. For example:
+```python
+    string_definition: decimal.Decimal = decimal.Decimal('3.14')
+    # scale = 2, precision = 3
+    float_definition: decimal.Decimal = decimal.Decimal(3.14)
+    # scale = 51, precision = 52
+```
+
+```python
+import decimal
+
+from dataclasses_avroschema import AvroModel, types
+
+
+class DecimalLogicalTypes(AvroModel):
+    "Decimal logical types"
+    explicit: decimal.Decimal = types.Decimal(scale=2, precision=3)
+    explicit_with_default: decimal.Decimal = types.Decimal(scale=2, precision=3, default=decimal.Decimal('3.14'))
+    implicit: decimal.Decimal = decimal.Decimal('3.14') # sets scale = 2, precision = 3, derived from provided default
+    # will_error: decimal.Decimal  # THIS WILL ERROR
+DecimalLogicalTypes.avro_schema()
+
+'{
+  "type": "record",
+  "name": "DecimalLogicalTypes",
+  "fields": [
+    {
+      "name": "explicit",
+      "type": {
+        "type": "bytes",
+        "logicalType": "decimal",
+        "precision": 3,
+        "scale": 2
+      }
+    },
+    {
+      "name": "explicit_with_default",
+      "type": {
+        "type": "bytes",
+        "logicalType": "decimal",
+        "precision": 3,
+        "scale": 2
+      },
+      "default": "\\u013a"
+    },
+    {
+      "name": "implicit",
+      "type": {
+        "type": "bytes",
+        "logicalType": "decimal",
+        "precision": 3,
+        "scale": 2
+      },
+      "default": "\\u013a"
+    }
+  ],
+  "doc": "Decimal logical types"
 }'
 ```

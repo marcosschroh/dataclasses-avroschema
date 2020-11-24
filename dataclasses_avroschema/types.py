@@ -49,4 +49,25 @@ class Enum(typing.Generic[T]):
         return f"{self.symbols}"
 
 
-CUSTOM_TYPES = ("Fixed", "Enum")
+@dataclasses.dataclass
+class Decimal(typing.Generic[T]):
+    """
+    Represents an Avro Decimal type
+
+    precision (int): Specifying the number precision
+    scale(int): Specifying the number scale. Default 0
+    """
+
+    precision: int
+    scale: int = 0
+    default: typing.Any = dataclasses.field(default=MissingSentinel)
+    _dataclasses_custom_type: str = "Decimal"
+
+    # Decimal serializes to bytes, which doesn't support namespace
+    aliases: typing.Optional[typing.List] = None
+
+    def __repr__(self) -> str:
+        return f"Decimal precision: {self.precision} scale:{self.scale}"
+
+
+CUSTOM_TYPES = ("Fixed", "Enum", "Decimal")

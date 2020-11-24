@@ -2,6 +2,7 @@ import abc
 import collections
 import dataclasses
 import datetime
+import decimal
 import json
 import random
 import typing
@@ -12,7 +13,7 @@ import inflect
 from faker import Faker
 from pytz import utc
 
-from dataclasses_avroschema import types, utils
+from dataclasses_avroschema import serialization, types, utils
 
 fake = Faker()
 p = inflect.engine()
@@ -33,6 +34,7 @@ DATE = "date"
 TIME_MILLIS = "time-millis"
 TIMESTAMP_MILLIS = "timestamp-millis"
 UUID = "uuid"
+DECIMAL = "decimal"
 LOGICAL_DATE = {"type": INT, "logicalType": DATE}
 LOGICAL_TIME = {"type": INT, "logicalType": TIME_MILLIS}
 LOGICAL_DATETIME = {"type": LONG, "logicalType": TIMESTAMP_MILLIS}
@@ -61,20 +63,25 @@ PYTHON_INMUTABLE_TYPES = (str, int, bool, float, bytes, type(None))
 
 PYTHON_PRIMITIVE_CONTAINERS = (list, tuple, dict)
 
-PYTHON_LOGICAL_TYPES = (
-    datetime.date,
-    datetime.time,
-    datetime.datetime,
-    uuid.uuid4,
-    uuid.UUID,
-)
+PYTHON_LOGICAL_TYPES = (datetime.date, datetime.time, datetime.datetime, uuid.uuid4, uuid.UUID, decimal.Decimal)
 
 PYTHON_PRIMITIVE_TYPES = PYTHON_INMUTABLE_TYPES + PYTHON_PRIMITIVE_CONTAINERS
 
 PRIMITIVE_AND_LOGICAL_TYPES = PYTHON_INMUTABLE_TYPES + PYTHON_LOGICAL_TYPES
 
 PythonImnutableTypes = typing.Union[
-    str, int, bool, float, list, tuple, dict, datetime.date, datetime.time, datetime.datetime, uuid.UUID
+    str,
+    int,
+    bool,
+    float,
+    list,
+    tuple,
+    dict,
+    datetime.date,
+    datetime.time,
+    datetime.datetime,
+    uuid.UUID,
+    decimal.Decimal,
 ]
 
 
@@ -638,6 +645,71 @@ class RecordField(BaseField):
         return self.type.fake()
 
 
+@dataclasses.dataclass
+class DecimalField(BaseField):
+
+    precision: int = -1
+    scale: int = 0
+
+    def __post_init__(self) -> None:
+        self.set_precision_scale()
+
+    def set_precision_scale(self) -> None:
+        if self.default != types.MissingSentinel:
+            if isinstance(self.default, decimal.Decimal):
+                sign, digits, scale = self.default.as_tuple()
+                self.scale = scale * -1  # Make scale positive, as that's what Avro expects
+                # decimal.Context has a precision property
+                # BUT the precision property is independent of the number of digits stored in the Decimal instance
+                # # # FROM THE DOCS HERE https://docs.python.org/3/library/decimal.html
+                #  The context precision does not affect how many digits are stored.
+                #  That is determined exclusively by the number of digits in value.
+                #  For example, Decimal('3.00000') records all five zeros even if the context precision is only three.
+                # # #
+                # Avro is concerned with *what form the number takes* and not with *handling errors in the Python env*
+                # so we take the number of digits stored in the decimal as Avro precision
+                self.precision = len(digits)
+            elif isinstance(self.default, types.Decimal):
+                self.scale = self.default.scale
+                self.precision = self.default.precision
+            else:
+                raise ValueError("decimal.Decimal default types must be either decimal.Decimal or types.Decimal")
+        else:
+            raise ValueError(
+                "decimal.Decimal default types must be specified to provide precision and scale,"
+                " and must be either decimal.Decimal or types.Decimal"
+            )
+
+        # Validation on precision and scale per Avro schema
+        if self.precision <= 0:
+            raise ValueError("Precision must be a positive integer greater than zero")
+
+        if self.scale < 0 or self.precision < self.scale:
+            raise ValueError("Scale must be zero or a positive integer less than or equal to the precision.")
+
+            # Just pull the precision from default context and default out scale
+            # Not ideal
+            #
+            # self.precision = decimal.Context().prec
+
+    def get_avro_type(self) -> typing.Dict[str, typing.Any]:
+        avro_type = {"type": BYTES, "logicalType": DECIMAL, "precision": self.precision, "scale": self.scale}
+
+        return avro_type
+
+    def get_default_value(self) -> typing.Union[str, dataclasses._MISSING_TYPE, None]:
+        default = self.default
+        if isinstance(default, types.Decimal):
+            default = default.default
+
+        if default == types.MissingSentinel:
+            return dataclasses.MISSING
+        return serialization.decimal_to_str(default, self.precision, self.scale)
+
+    def fake(self) -> decimal.Decimal:
+        return fake.pydecimal(right_digits=self.scale, left_digits=self.precision - self.scale)
+
+
 INMUTABLE_FIELDS_CLASSES = {
     bool: BooleanField,
     int: LongField,
@@ -665,6 +737,7 @@ LOGICAL_TYPES_FIELDS_CLASSES = {
     uuid.uuid4: UUIDField,
     uuid.UUID: UUIDField,
     bytes: BytesField,
+    decimal.Decimal: DecimalField,
 }
 
 PRIMITIVE_LOGICAL_TYPES_FIELDS_CLASSES = {
@@ -742,7 +815,7 @@ def field_factory(
             default_factory=default_factory,
         )
     elif native_type in PYTHON_LOGICAL_TYPES:
-        klass = LOGICAL_TYPES_FIELDS_CLASSES[native_type]
+        klass = LOGICAL_TYPES_FIELDS_CLASSES[native_type]  # type: ignore
         return klass(name=name, type=native_type, default=default, metadata=metadata)
     else:
         return RecordField(name=name, type=native_type, default=default, metadata=metadata)
