@@ -471,6 +471,21 @@ def test_enum_type():
 
     assert expected == field.to_dict()
 
+    default = types.Enum(["SPADES", "HEARTS", "DIAMONDS", "CLUBS"], default=None)
+    field = fields.AvroField(name, python_type, default)
+
+    expected = {
+        "name": name,
+        "type": {
+            "type": "enum",
+            "name": name,
+            "symbols": default.symbols,
+        },
+        "default": default.default,
+    }
+
+    assert expected == field.to_dict()
+
     with pytest.raises(AssertionError):
         default = types.Enum(["SPADES", "HEARTS", "DIAMONDS", "CLUBS"], default="BLUE")
         field = fields.AvroField(name, python_type, default)
