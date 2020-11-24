@@ -100,3 +100,8 @@ def default_union_schema():
 @pytest.fixture
 def typing_optional_schema():
     return load_json("union_typing_optional.avsc")
+
+
+@pytest.fixture
+def decimal_types_schema():
+    return load_json("decimal.avsc")

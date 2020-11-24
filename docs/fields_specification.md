@@ -81,6 +81,8 @@ Language implementations must ignore unknown logical types when reading, and sho
 
 * UUID: Represents a uuid as a string
 
+* Decimal: Represents a decimal.Decimal as bytes
+
 | Avro Type | Logical Type |Python Type |
 |-----------|--------------|-------------|
 | int       |  date        | datetime.date
@@ -88,6 +90,7 @@ Language implementations must ignore unknown logical types when reading, and sho
 | long      |  timestamp-millis | datetime.datetime |
 | string    |  uuid        | uuid.uuid4 |
 | string    |  uuid        | uuid.UUID |
+| bytes     | decimal      | decimal.Decimal |
 
 ### Avro Field and Python Types Summary
 
@@ -115,6 +118,7 @@ Python Type | Avro Type   | Logical Type |
 | datetime.time | int     |  time-millis |
 | datetime.datetim| long  |  timestamp-millis |
 | uuid.uuid4  | string    |  uuid        |
+| decimal.Decimal | bytes | decimal      |
 
 ## Adding Custom Field-level Attributes
 
