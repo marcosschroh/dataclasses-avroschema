@@ -650,12 +650,11 @@ class DecimalField(BaseField):
 
     precision: int = -1
     scale: int = 0
-    has_set_prec_scale = False
+
+    def __post_init__(self) -> None:
+        self.set_precision_scale()
 
     def set_precision_scale(self) -> None:
-        if self.has_set_prec_scale:
-            return
-        self.has_set_prec_scale = True
         if self.default != types.MissingSentinel:
             if isinstance(self.default, decimal.Decimal):
                 sign, digits, scale = self.default.as_tuple()
@@ -681,30 +680,33 @@ class DecimalField(BaseField):
                 " and must be either decimal.Decimal or types.Decimal"
             )
 
+        # Validation on precision and scale per Avro schema
+        if self.precision <= 0:
+            raise ValueError("Precision must be a positive integer greater than zero")
+
+        if self.scale < 0 or self.precision < self.scale:
+            raise ValueError("Scale must be zero or a positive integer less than or equal to the precision.")
+
             # Just pull the precision from default context and default out scale
             # Not ideal
             #
             # self.precision = decimal.Context().prec
 
     def get_avro_type(self) -> typing.Dict[str, typing.Any]:
-        self.set_precision_scale()
         avro_type = {"type": BYTES, "logicalType": DECIMAL, "precision": self.precision, "scale": self.scale}
 
         return avro_type
 
     def get_default_value(self) -> typing.Union[str, dataclasses._MISSING_TYPE, None]:
-        self.set_precision_scale()
         default = self.default
         if isinstance(default, types.Decimal):
             default = default.default
 
         if default == types.MissingSentinel:
             return dataclasses.MISSING
-        else:
-            return serialization.decimal_to_str(default, self.precision, self.scale)
+        return serialization.decimal_to_str(default, self.precision, self.scale)
 
     def fake(self) -> decimal.Decimal:
-        self.set_precision_scale()
         return fake.pydecimal(right_digits=self.scale, left_digits=self.precision - self.scale)
 
 

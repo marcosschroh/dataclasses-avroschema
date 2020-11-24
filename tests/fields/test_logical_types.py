@@ -178,8 +178,6 @@ def test_decimal_type():
     }
 
     assert expected == field.to_dict()
-    # Just making sure a double-internal-call to set_precision_scale doesn't break things and is hit for coverage
-    assert expected == field.to_dict()
 
     # If default is missing, default out scale by Avro spec and pull precision from default decimal context
     # On my machine, this makes the "decimal" field a glorified 28-digit int, which is likely not what is wanted
@@ -198,6 +196,31 @@ def test_decimal_type():
     # }
     #
     # assert expected == field.to_dict()
+
+    # Validate 0 <= scale <= precision
+    with pytest.raises(
+        ValueError, match="Scale must be zero or a positive integer less than or equal to the precision."
+    ):
+        default = types.Decimal(scale=-1, precision=1)
+        field = fields.AvroField(name, python_type, default)
+
+        field.to_dict()
+
+    # Validate 0 <= scale <= precision
+    with pytest.raises(
+        ValueError, match="Scale must be zero or a positive integer less than or equal to the precision."
+    ):
+        default = types.Decimal(scale=3, precision=1)
+        field = fields.AvroField(name, python_type, default)
+
+        field.to_dict()
+
+    # Validate precision >= 0
+    with pytest.raises(ValueError, match="Precision must be a positive integer greater than zero"):
+        default = types.Decimal(scale=2, precision=-1)
+        field = fields.AvroField(name, python_type, default)
+
+        field.to_dict()
 
     # Require a default be provided for decimal.Decimal
     with pytest.raises(ValueError):

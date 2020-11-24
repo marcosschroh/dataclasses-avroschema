@@ -109,7 +109,7 @@ def to_json(data: typing.Dict[str, typing.Any]) -> typing.Dict:
             value = date_to_str(value)
         elif isinstance(value, datetime.time):
             value = time_to_str(value)
-        elif isinstance(value, uuid.UUID) or isinstance(value, decimal.Decimal):
+        elif isinstance(value, (uuid.UUID, decimal.Decimal)):
             value = str(value)
 
         json_data[field] = value
