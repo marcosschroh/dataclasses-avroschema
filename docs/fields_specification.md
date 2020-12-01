@@ -61,7 +61,10 @@ In future version we will have a custom enum type to avoid this
   3. aliases: a JSON array of strings, providing alternate names for this enum (optional).
   4. size: an integer, specifying the number of bytes per value (required).
 
-* Unions: `Unions` are represented using JSON arrays. For example, `["null", "string"]` declares a schema which may be either a null or string.
+* Unions: `Unions` are represented using JSON arrays. For example, `["null", "string"]` declares a schema which may be either a null or string. 
+Under the Avro specifications, if a union field as a default, the type of the default must be the first listed type in the array. 
+Dataclasses-avroschema will automatically generate the appropriate array if a default is provided. Note that an optional field (typing.Optional[T]) generates the union `[T, null]`, where `T` is the first element in the union. 
+`None` will need to be explicitly declared the default to generate the appropriate schema, if the default should be `None/null`. 
 
 * Records: `Records` use the type name `record` and will represent the `Schema`.
 
@@ -113,10 +116,10 @@ Python Type | Avro Type   | Logical Type |
 | types.Enum      | enum         | do not apply |
 | typing.Union| union     | do not apply |
 | typing.Optional| union (with `null`)    | do not apply |
-| Pythin classs | record  | do not apply |
+| Python class | record  | do not apply |
 | datetime.date | int     |  date        |
 | datetime.time | int     |  time-millis |
-| datetime.datetim| long  |  timestamp-millis |
+| datetime.datetime| long  |  timestamp-millis |
 | uuid.uuid4  | string    |  uuid        |
 | decimal.Decimal | bytes | decimal      |
 
