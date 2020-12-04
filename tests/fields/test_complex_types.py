@@ -231,7 +231,8 @@ def test_union_type(primitive_types, avro_types, default):
     assert expected == field.to_dict()
 
 
-@pytest.mark.parametrize("primitive_types, avro_types, default", consts.UNION_PRIMITIVE_ELEMENTS)
+# Tests to make sure defaults work, and that defaults are sorted to the beginning of the union
+@pytest.mark.parametrize("primitive_types, avro_types, default", consts.UNION_PRIMITIVE_ELEMENTS_DEFAULTS)
 def test_union_type_with_default(primitive_types, avro_types, default):
     name = "an_union_field"
     python_type = typing.Union[primitive_types]
@@ -466,6 +467,21 @@ def test_enum_type():
             "name": name,
             "symbols": default.symbols,
         },
+    }
+
+    assert expected == field.to_dict()
+
+    default = types.Enum(["SPADES", "HEARTS", "DIAMONDS", "CLUBS"], default=None)
+    field = fields.AvroField(name, python_type, default)
+
+    expected = {
+        "name": name,
+        "type": {
+            "type": "enum",
+            "name": name,
+            "symbols": default.symbols,
+        },
+        "default": default.default,
     }
 
     assert expected == field.to_dict()

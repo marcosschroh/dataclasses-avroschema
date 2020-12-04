@@ -198,6 +198,7 @@ class UnionSchema(AvroModel):
     logical_union: typing.Union[datetime.datetime, datetime.date, uuid.uuid4]
     second_union: typing.Union[str, int] = dataclasses.field(
     default_factory=lambda: ["test"])
+    third_union: typing.Union[int, str] = 'STRING TYPE'
 
 UnionSchema.avro_schema()
 
@@ -210,7 +211,8 @@ UnionSchema.avro_schema()
     {"type": "long", "logicalType": "timestamp-millis"},
     {"type": "long", "logicalType": "date"},
     {"type": "string", "logicalType": "uuid"}]},
-  {"name": "second_union", "type": ["string", "long"], "default": ["test"]}],
+  {"name": "second_union", "type": ["string", "long"], "default": ["test"]},
+  {"name": "third_union", "type": ["string", "long"], "default": "STRING TYPE"}],
   "doc": "Some Unions"
 }
 

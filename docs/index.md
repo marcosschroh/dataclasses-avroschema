@@ -12,6 +12,12 @@ Generate [Avro](https://avro.apache.org/docs/1.8.2/spec.html) Schemas from a Pyt
 As of version **0.19.0**, the default Avro type for Python ints has been changed from `int` to `long` and the default Avro
 type for Python floats has been changed from `float` to `double`. Please take care when upgrading.
 
+## Notice of non-breaking schema changes
+
+As of version **0.21.0** the logic used generate schemas for unions has been updated to match the Avro specification. 
+Previously a field like `typing.Union[int, str] = 'STRING TYPE'` would generate the union field `["long", "string"]`, which was incorrect - the Avro specification requires the type of a provided default to match the type of the first element in the union array. 
+This update was tested under Full compatibility, and while it wasn't a breaking change (changes to defaults generally go through cleanly), it did generate a new schema version.
+
 ## Requirements
 
 `python 3.7+`

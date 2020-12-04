@@ -370,15 +370,25 @@ class UnionField(BaseField):
         elements = self.type.__args__
         name = self.get_singular_name(self.name)
 
-        unions = []
+        unions: typing.List = []
+
+        # Place default at front of list
+        default_type = None
+        if self.default is None and self.default_factory is dataclasses.MISSING:
+            unions.insert(0, NULL)
+        elif type(self.default) is not dataclasses._MISSING_TYPE:
+            default_type = type(self.default)
+            default_field = AvroField(name, default_type)
+            unions.append(default_field.get_avro_type())
+            self.internal_fields.append(default_field)
+
         for element in elements:
             # create the field and get the avro type
             field = AvroField(name, element)
-            unions.append(field.get_avro_type())
-            self.internal_fields.append(field)
 
-        if self.default is None and self.default_factory is dataclasses.MISSING and NULL not in unions:
-            unions.insert(0, NULL)
+            if field.get_avro_type() not in unions:
+                unions.append(field.get_avro_type())
+                self.internal_fields.append(field)
 
         return unions
 
