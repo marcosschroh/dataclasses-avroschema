@@ -32,7 +32,6 @@ def test_primitive_types_with_defaults():
         encoded: bytes = b"hola"
 
     data = {"name": "marcos", "age": 20, "has_pets": False, "money": 100.0, "encoded": b"hola"}
-
     data_json = {"name": "marcos", "age": 20, "has_pets": False, "money": 100.0, "encoded": "hola"}
 
     user = User()
@@ -45,6 +44,20 @@ def test_primitive_types_with_defaults():
     assert user.deserialize(avro_binary) == user
     assert user.deserialize(avro_json, serialization_type="avro-json") == user
 
+    assert user.to_json() == data_json
+
+    # check that works with schema evolution
+    user = User(name="Juan", age=30)
+    avro_json = user.serialize(serialization_type="avro-json")
+
+    data = {"name": "Juan", "age": 30, "has_pets": False, "money": 100.0, "encoded": b"hola"}
+    data_json = {"name": "Juan", "age": 30, "has_pets": False, "money": 100.0, "encoded": "hola"}
+
+    # assert user.deserialize(avro_binary, create_instance=False) == data
+    assert user.deserialize(avro_json, serialization_type="avro-json", create_instance=False) == data
+
+    # assert user.deserialize(avro_binary) == user
+    assert user.deserialize(avro_json, serialization_type="avro-json") == user
     assert user.to_json() == data_json
 
 

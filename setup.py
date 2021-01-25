@@ -18,7 +18,7 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     author="Marcos Schroh",
-    install_requires=["inflect", "fastavro", "pytz", "dacite", "faker",],
+    install_requires=["inflect", "fastavro==1.3.0", "pytz", "dacite", "faker",],
     author_email="schrohm@gmail.com",
     url="https://github.com/marcosschroh/dataclasses-avroschema",
     download_url="",
