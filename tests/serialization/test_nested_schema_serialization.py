@@ -93,7 +93,7 @@ def test_one_to_many_relationship():
     assert user.serialize() == avro_binary
 
     # Bug in fastavro
-    # assert user.serialize(serialization_type="avro-json") == avro_json_binary
+    assert user.serialize(serialization_type="avro-json") == avro_json_binary
 
     assert User.deserialize(avro_binary, create_instance=False) == expected
     assert User.deserialize(avro_json_binary, serialization_type="avro-json", create_instance=False) == expected
