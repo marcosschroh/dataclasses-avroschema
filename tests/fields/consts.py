@@ -132,25 +132,25 @@ OPTIONAL_UNION_COMPLEX_TYPES = (
 SEQUENCE_TYPES = (typing.List, typing.Tuple, typing.Sequence, typing.MutableSequence)
 MAPPING_TYPES = (typing.Dict, typing.Mapping, typing.MutableMapping)
 
-SEQUENCES_AND_TYPES = (
+SEQUENCES_AND_TYPES = [
     (sequence, python_type, items_type) for sequence in SEQUENCE_TYPES for python_type, items_type in PRIMITIVE_TYPES
-)
+]
 
-SEQUENCES_LOGICAL_TYPES = (
+SEQUENCES_LOGICAL_TYPES = [
     (sequence, python_type, items_type, value)
     for sequence in SEQUENCE_TYPES
     for python_type, items_type, value in LOGICAL_TYPES
-)
+]
 
-MAPPING_AND_TYPES = (
+MAPPING_AND_TYPES = [
     (mapping, python_type, items_type) for mapping in MAPPING_TYPES for python_type, items_type in PRIMITIVE_TYPES
-)
+]
 
-MAPPING_LOGICAL_TYPES = (
+MAPPING_LOGICAL_TYPES = [
     (mapping, python_type, items_type, value)
     for mapping in MAPPING_TYPES
     for python_type, items_type, value in LOGICAL_TYPES
-)
+]
 
 # Represent the logical types
 # (python_type, avro_internal_type, logical_type)
