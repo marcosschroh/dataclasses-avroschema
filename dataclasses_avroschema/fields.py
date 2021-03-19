@@ -3,6 +3,7 @@ import collections
 import dataclasses
 import datetime
 import decimal
+import inspect
 import json
 import random
 import typing
@@ -13,7 +14,7 @@ import inflect
 from faker import Faker
 from pytz import utc
 
-from dataclasses_avroschema import serialization, types, utils
+from dataclasses_avroschema import schema_generator, serialization, types, utils
 
 fake = Faker()
 p = inflect.engine()
@@ -827,8 +828,15 @@ def field_factory(
     elif native_type in PYTHON_LOGICAL_TYPES:
         klass = LOGICAL_TYPES_FIELDS_CLASSES[native_type]  # type: ignore
         return klass(name=name, type=native_type, default=default, metadata=metadata)
-    else:
+    elif inspect.isclass(native_type) and issubclass(native_type, schema_generator.AvroModel):
         return RecordField(name=name, type=native_type, default=default, metadata=metadata)
+    else:
+        msg = (
+            f"Type {native_type} is unknown. Please check the valid types at "
+            "https://marcosschroh.github.io/dataclasses-avroschema/fields_specification/#avro-field-and-python-types-summary"  # noqa: E501
+        )
+
+        raise ValueError(msg)
 
 
 AvroField = field_factory
