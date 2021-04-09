@@ -25,6 +25,7 @@ setup(
         "dacite>=1.6.0",
         "faker>=8.1.1",
         'typing_extensions>=3.7.4;python_version<"3.9"',
+        "stringcase>=1.2.0",
     ],
     author_email="schrohm@gmail.com",
     url="https://github.com/marcosschroh/dataclasses-avroschema",

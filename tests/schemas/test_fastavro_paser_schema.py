@@ -135,8 +135,8 @@ def test_one_to_one_repeated_schema():
         start_time: datetime.datetime
         start_location: Location
         finish_time: datetime.datetime
-        finish_location: Location
         middle_location: Location
+        finish_location: typing.List[Location]
 
     assert parse_schema(Trip.avro_schema_to_python())
     assert Trip.fake()
