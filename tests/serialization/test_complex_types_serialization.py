@@ -6,7 +6,7 @@ def test_complex_fields(user_advance_dataclass):
         "accounts": {"ing": 100},
         "has_car": True,
         "favorite_colors": "GREEN",
-        "md5": b"u00ff",
+        "md5": b"u00ffffffffffffx",
     }
 
     expected_data = {
@@ -16,7 +16,7 @@ def test_complex_fields(user_advance_dataclass):
         "accounts": {"ing": 100},
         "has_car": True,
         "favorite_colors": "GREEN",
-        "md5": b"u00ff",
+        "md5": b"u00ffffffffffffx",
         "country": "Argentina",
         "address": None,
     }
@@ -28,7 +28,7 @@ def test_complex_fields(user_advance_dataclass):
         "accounts": {"ing": 100},
         "has_car": True,
         "favorite_colors": "GREEN",
-        "md5": "u00ff",
+        "md5": "u00ffffffffffffx",
         "country": "Argentina",
         "address": None,
     }
