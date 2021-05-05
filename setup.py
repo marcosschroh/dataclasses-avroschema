@@ -5,7 +5,7 @@
 
 from setuptools import find_packages, setup
 
-__version__ = "0.20.3"
+__version__ = "0.20.4"
 
 
 with open("README.md") as readme_file:
