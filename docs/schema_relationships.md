@@ -261,10 +261,10 @@ User.avro_schema()
 }'
 ```
 
-## Avoid name colision in multiple relationships
+## Avoid name collision in multiple relationships
 
 Sometimes we have relationships where a class is related more than once with a particular class,
-and the name for the nested schemas must be diferent, otherwise we will generate an invalid `avro schema`.
+and the name for the nested schemas must be different, otherwise we will generate an invalid `avro schema`.
 
 For example:
 
@@ -290,7 +290,7 @@ class Trip(AvroModel):
     finish_location: Location  # second relationship
 ```
 
-In order to avoid name colisions, the nested name is generated in the following way:
+In order to avoid name collision, the nested name is generated in the following way:
 
 1. Get the lower name of the related class
 2. Get the field name
@@ -360,4 +360,63 @@ Example for start_location:
   ],
   "doc": "Trip(start_time: datetime.datetime, start_location: __main__.Location, finish_time: datetime.datetime, finish_location: __main__.Location)"
 }'
+```
+
+If you want, also you can use custom name for nested items (`nested records`, `arrays` or `maps`) using the property `alias_nested_items` in `class Meta`:
+
+```python
+from dataclasses_avroschema import AvroModel
+
+
+class Address(AvroModel):
+    "An Address"
+    street: str
+    street_number: int
+
+class User(AvroModel):
+    "An User with Address"
+    name: str
+    age: int
+    address: Address  # default name address_record
+
+    class Meta:
+        alias_nested_items = {"address": "MySuperAddress"}
+```
+
+`User.avro_schema()` will generate:
+
+```json
+{
+    "type": "record",
+    "name": "User",
+    "fields": [
+        {
+            "name": "name",
+            "type": "string"
+        },
+        {
+            "name": "age",
+            "type": "long"
+        },
+        {
+            "name": "address",
+            "type": {
+                "type": "record",
+                "name": "MySuperAddress",  // renamed it using alias_nested_items
+                "fields": [
+                    {
+                        "name": "street",
+                        "type": "string"
+                    },
+                    {
+                        "name": "street_number",
+                        "type": "long"
+                    }
+                ],
+                "doc": "An Address"
+            }
+        } 
+    ],
+    "doc": "An User with Address"
+}
 ```

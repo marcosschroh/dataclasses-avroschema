@@ -33,8 +33,6 @@ class AvroModel:
     def generate_metadata(cls: typing.Any) -> SchemaMetadata:
         meta = getattr(cls.klass, "Meta", None)
 
-        if meta is None:
-            return SchemaMetadata()
         return SchemaMetadata.create(meta)
 
     @classmethod

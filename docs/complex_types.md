@@ -401,7 +401,7 @@ User.avro_schema()
 
 #### Class Meta
 
-The `class Meta` is used to specify schema attributes that are not represented by the class fields like `namespace`, `aliases` and whether to include the `schema documentation`. One can also provide a custom schema name (the default is the class' name) via `schema_name` attribute.
+The `class Meta` is used to specify schema attributes that are not represented by the class fields like `namespace`, `aliases` and whether to include the `schema documentation`. One can also provide a custom schema name (the default is the class' name) via `schema_name` attribute and `alias_nested_items` when you have nested items and you want to use custom naming for them.
 
 ```python
 class Meta:
@@ -409,8 +409,10 @@ class Meta:
     schema_doc = False
     namespace = "test.com.ar/user/v1"
     aliases = ["User", "My favorite User"]
+    alias_nested_items = {"address": "Address"}
 ```
 
 `schema_doc (boolean)`: Whether include the `schema documentation` generated from `docstrings`. Default `True`
 `namespace (optional[str])`: Schema namespace. Default `None`
 `aliases (optional[List[str]])`: Schema aliases. Default `None`
+`alias_nested_items (optional[Dict[str, str]])`: Nested items names

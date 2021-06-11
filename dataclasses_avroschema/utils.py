@@ -1,5 +1,5 @@
 import typing
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 
 from pytz import utc
@@ -56,6 +56,7 @@ class SchemaMetadata:
     schema_doc: bool = True
     namespace: typing.Optional[typing.List[str]] = None
     aliases: typing.Optional[typing.List[str]] = None
+    alias_nested_items: typing.Dict[str, str] = field(default_factory=dict)
 
     @classmethod
     def create(cls, klass: typing.Any) -> typing.Any:
@@ -64,7 +65,11 @@ class SchemaMetadata:
             schema_doc=getattr(klass, "schema_doc", True),
             namespace=getattr(klass, "namespace", None),
             aliases=getattr(klass, "aliases", None),
+            alias_nested_items=getattr(klass, "alias_nested_items", {}),
         )
+
+    def get_alias(self, name: str) -> typing.Optional[str]:
+        return self.alias_nested_items.get(name)
 
 
 epoch: datetime = datetime(1970, 1, 1, tzinfo=utc)
