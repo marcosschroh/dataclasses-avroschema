@@ -70,4 +70,17 @@ class Decimal(typing.Generic[T]):
         return f"Decimal precision: {self.precision} scale:{self.scale}"
 
 
-CUSTOM_TYPES = ("Fixed", "Enum", "Decimal")
+@dataclasses.dataclass
+class Int32(int):
+    """
+    Represents an Avro int type
+    """
+
+    default: typing.Any = dataclasses.field(default=MissingSentinel)
+    _dataclasses_custom_type: str = "Int32"
+
+    def __repr__(self) -> str:
+        return f"{self}"
+
+
+CUSTOM_TYPES = ("Fixed", "Enum", "Decimal", "Int32")

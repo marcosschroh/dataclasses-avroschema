@@ -53,6 +53,7 @@ PYTHON_TYPE_TO_AVRO = {
     dict: {"type": MAP},
     types.Fixed: {"type": FIXED},
     types.Enum: {"type": ENUM},
+    types.Int32: {"type": INT},
     datetime.date: {"type": INT, "logicalType": DATE},
     datetime.time: {"type": INT, "logicalType": TIME_MILLIS},
     datetime.datetime: {"type": LONG, "logicalType": TIMESTAMP_MILLIS},
@@ -60,7 +61,7 @@ PYTHON_TYPE_TO_AVRO = {
 }
 
 # excluding tuple because is a container
-PYTHON_INMUTABLE_TYPES = (str, int, bool, float, bytes, type(None))
+PYTHON_INMUTABLE_TYPES = (str, int, types.Int32, bool, float, bytes, type(None))
 
 PYTHON_PRIMITIVE_CONTAINERS = (list, tuple, dict)
 
@@ -73,6 +74,7 @@ PRIMITIVE_AND_LOGICAL_TYPES = PYTHON_INMUTABLE_TYPES + PYTHON_LOGICAL_TYPES
 PythonImnutableTypes = typing.Union[
     str,
     int,
+    types.Int32,
     bool,
     float,
     list,
@@ -187,6 +189,14 @@ class StringField(InmutableField):
 
     def fake(self) -> str:
         return fake.pystr()
+
+
+@dataclasses.dataclass
+class IntField(InmutableField):
+    avro_type: typing.ClassVar = INT
+
+    def fake(self) -> int:
+        return fake.pyint()
 
 
 @dataclasses.dataclass
@@ -724,6 +734,7 @@ class DecimalField(BaseField):
 INMUTABLE_FIELDS_CLASSES = {
     bool: BooleanField,
     int: LongField,
+    types.Int32: IntField,
     float: DoubleField,
     bytes: BytesField,
     str: StringField,
