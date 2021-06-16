@@ -87,11 +87,22 @@ class AvroModel:
 
     @classmethod
     def deserialize(
-        cls, data: bytes, serialization_type: str = AVRO, create_instance: bool = True
+        cls,
+        data: bytes,
+        serialization_type: str = AVRO,
+        create_instance: bool = True,
+        writer_schema: typing.Optional[typing.Union[typing.Dict[str, typing.Any], "AvroModel"]] = None,
     ) -> typing.Union[typing.Dict, "AvroModel"]:
 
+        try:
+            writer_schema = writer_schema.avro_schema_to_python()
+        except AttributeError:
+            pass
+
         schema = cls.avro_schema_to_python()
-        payload = serialization.deserialize(data, schema, serialization_type=serialization_type)
+        payload = serialization.deserialize(
+            data, schema, serialization_type=serialization_type, writer_schema=writer_schema
+        )
 
         if create_instance:
             return from_dict(data_class=cls, data=payload, config=Config(**cls.config()))
@@ -99,7 +110,7 @@ class AvroModel:
 
     def to_json(self) -> typing.Dict:
         # Serialize using the current AVRO schema to get proper field representations
-        # and after that conver into python
+        # and after that convert into python
         data = self.asdict()
         return serialization.to_json(data)
 

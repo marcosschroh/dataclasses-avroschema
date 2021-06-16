@@ -26,6 +26,18 @@ class User(AvroModel):
     addresses: typing.List[Address]
 
 
+@dataclass
+class UserCompatible(AvroModel):
+    "User with multiple Address"
+    name: str
+    age: int
+    addresses: typing.List[Address]
+    nickname: typing.Optional[str] = None
+
+    class Meta:
+        schema_name = "User"
+
+
 address_data = {
     "street": "test",
     "street_number": 10,
@@ -169,3 +181,14 @@ def test_invalid_serialization_deserialization_types():
 
     with pytest.raises(ValueError):
         user.deserialize(b"", serialization_type="json")
+
+
+def test_deserialization_with_writer_schema__dict():
+    user = User(**data_user)
+    writer_schema = User.avro_schema_to_python()
+    UserCompatible.deserialize(user.serialize(), writer_schema=writer_schema)
+
+
+def test_deserialization_with_writer_schema__avro_model():
+    user = User(**data_user)
+    UserCompatible.deserialize(user.serialize(), writer_schema=User)

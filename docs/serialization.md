@@ -79,7 +79,7 @@ avro_json_binary = b'{"name": "john", "age": 20, "addresses": [{"street": "test"
 
 # return a new class instance!!
 User.deserialize(avro_binary)
-# >>>> User(name='john', age=20, addresses=[Address(street='test', street_number=10)])
+# >>> User(name='john', age=20, addresses=[Address(street='test', street_number=10)])
 
 # return a python dict
 User.deserialize(avro_binary, create_instance=False)
@@ -87,11 +87,44 @@ User.deserialize(avro_binary, create_instance=False)
 
 # return a new class instance!!
 User.deserialize(avro_json_binary, serialization_type="avro-json")
-# >>>> User(name='john', age=20, addresses=[Address(street='test', street_number=10)])
+# >>> User(name='john', age=20, addresses=[Address(street='test', street_number=10)])
 
 # return a python dict
 User.deserialize(avro_json_binary, serialization_type="avro-json", create_instance=False)
 # >>> {"name": "john", "age": 20, "addresses": [{"street": "test", "street_number": 10}]}
+```
+
+#### Deserialization of records encoded via a different schema
+To deserialize data encoded via a different schema, one can pass an optional `writer_schema: AvroModel | dict[str, Any]` attribute. It will be used by the **fastavro**s `schemaless_reader`.
+
+```python
+@dataclass
+class User(AvroModel):
+    name: str
+    age: int
+
+
+@dataclass
+class UserCompatible(AvroModel):
+    name: str
+    age: int
+    nickname: Optional[str] = None
+
+    class Meta:
+        schema_name = "User"
+
+
+user_data = {
+    "name": "G.R. Emlin",
+    "age": 52,
+}
+
+# serialize data with the User schema
+>>> serialized_user = User(**user_data).serialize()
+
+# deserialize user using a new, but compatible schema
+>>> deserialized_user = UserCompatible.deserialize(serialized_user, writer_schema=User)
+
 ```
 
 ### Custom Serialization
