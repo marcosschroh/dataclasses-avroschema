@@ -2,15 +2,15 @@
 
 The following list represent the avro complext types mapped to python types:
 
-| Avro Type | Python Type |
-|-----------|-------------|
-| enums     |   types.Enum     |
-| arrays    |   typing.List, typing.Tuple, typing.Sequence, typing.MutableSequence      |
-| maps      |   typing.Dict, typing.Mapping, typing.MutableMapping      |
-| fixed     | types.Fixed |
-| unions    |typing.Union |
-| unions with `null`  |typing.Optional |
-| records   |Python Class |
+| Avro Type          | Python Type                                                        |
+| ------------------ | ------------------------------------------------------------------ |
+| enums              | types.Enum                                                         |
+| arrays             | typing.List, typing.Tuple, typing.Sequence, typing.MutableSequence |
+| maps               | typing.Dict, typing.Mapping, typing.MutableMapping                 |
+| fixed              | types.Fixed                                                        |
+| unions             | typing.Union                                                       |
+| unions with `null` | typing.Optional                                                    |
+| records            | Python Class                                                       |
 
 ### Enums
 
@@ -401,10 +401,11 @@ User.avro_schema()
 
 #### Class Meta
 
-The `class Meta` is used to specify schema attributes that are not reprsented by the class fields like `namespace`, `aliases` and whether include the `schema documentation`.
+The `class Meta` is used to specify schema attributes that are not represented by the class fields like `namespace`, `aliases` and whether to include the `schema documentation`. One can also provide a custom schema name (the default is the class' name) via `schema_name` attribute.
 
 ```python
 class Meta:
+    schema_name = "Name other than the class name"
     schema_doc = False
     namespace = "test.com.ar/user/v1"
     aliases = ["User", "My favorite User"]
