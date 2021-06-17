@@ -52,6 +52,7 @@ def is_custom_type(value: typing.Any) -> bool:
 
 @dataclass
 class SchemaMetadata:
+    schema_name: typing.Optional[str] = None
     schema_doc: bool = True
     namespace: typing.Optional[typing.List[str]] = None
     aliases: typing.Optional[typing.List[str]] = None
@@ -59,6 +60,7 @@ class SchemaMetadata:
     @classmethod
     def create(cls, klass: typing.Any) -> typing.Any:
         return cls(
+            schema_name=getattr(klass, "schema_name", None),
             schema_doc=getattr(klass, "schema_doc", True),
             namespace=getattr(klass, "namespace", None),
             aliases=getattr(klass, "aliases", None),
