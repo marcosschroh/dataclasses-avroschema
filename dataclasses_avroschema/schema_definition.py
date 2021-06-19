@@ -30,7 +30,7 @@ class BaseSchemaDefinition(abc.ABC):
         ...  # pragma: no cover
 
     def get_schema_name(self) -> str:
-        return self.klass.__name__
+        return self.klass.metadata.schema_name or self.klass.__name__
 
     def generate_documentation(self) -> typing.Optional[str]:
         doc = self.klass.__doc__

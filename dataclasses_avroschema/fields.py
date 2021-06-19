@@ -6,6 +6,7 @@ import decimal
 import inspect
 import json
 import random
+import sys
 import typing
 import uuid
 from collections import OrderedDict
@@ -15,6 +16,14 @@ from faker import Faker
 from pytz import utc
 
 from dataclasses_avroschema import schema_generator, serialization, types, utils
+
+PY_VER = sys.version_info
+
+if PY_VER >= (3, 9):
+    GenericAlias = (typing._GenericAlias, typing._SpecialGenericAlias, typing._UnionGenericAlias)
+else:
+    GenericAlias = typing._GenericAlias
+
 
 fake = Faker()
 p = inflect.engine()
@@ -798,7 +807,7 @@ def field_factory(
         return FixedField(name=name, type=native_type, default=default, metadata=metadata)
     elif native_type is types.Enum:
         return EnumField(name=name, type=native_type, default=default, metadata=metadata)
-    elif isinstance(native_type, typing._GenericAlias):  # type: ignore
+    elif isinstance(native_type, GenericAlias):  # type: ignore
         origin = native_type.__origin__
 
         if origin not in (

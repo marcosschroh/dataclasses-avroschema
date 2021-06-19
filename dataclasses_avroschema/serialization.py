@@ -30,11 +30,20 @@ def serialize(payload: typing.Dict, schema: typing.Dict, serialization_type: str
     return value  # type: ignore
 
 
-def deserialize(data: bytes, schema: typing.Dict, serialization_type: str = "avro") -> typing.Dict:
+def deserialize(
+    data: bytes,
+    schema: typing.Dict,
+    serialization_type: str = "avro",
+    writer_schema: typing.Optional[typing.Dict] = None,
+) -> typing.Dict:
     if serialization_type == "avro":
         input_stream: typing.Union[io.BytesIO, io.StringIO] = io.BytesIO(data)
 
-        payload = fastavro.schemaless_reader(input_stream, schema)
+        payload = fastavro.schemaless_reader(
+            input_stream,
+            writer_schema=writer_schema or schema,
+            reader_schema=schema,
+        )
 
     elif serialization_type == "avro-json":
         input_stream = io.StringIO(data.decode())
