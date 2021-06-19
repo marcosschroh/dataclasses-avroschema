@@ -45,7 +45,7 @@ def is_self_referenced(a_type: typing.Any) -> bool:
 
 def is_custom_type(value: typing.Any) -> bool:
     """
-    Given a type, return True if is a custom type (Fixed, Enum)
+    Given a type, return True if is a custom type (Fixed, Decimal)
     """
     return isinstance(value, dict) and value.get("_dataclasses_custom_type") in CUSTOM_TYPES
 

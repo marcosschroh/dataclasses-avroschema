@@ -1,5 +1,6 @@
 import dataclasses
 import datetime
+import enum
 import json
 import typing
 import uuid
@@ -26,6 +27,13 @@ def test_schema_with_unions_type(union_type_schema):
         "A Car"
         engine_name: str
 
+    class TripDistance(enum.Enum):
+        CLOSE = "Close"
+        FAR = "Far"
+
+        class Meta:
+            doc = "Distance of the trip"
+
     class UnionSchema(AvroModel):
         "Some Unions"
         first_union: typing.Union[str, int]
@@ -33,6 +41,7 @@ def test_schema_with_unions_type(union_type_schema):
         lake_trip: typing.Union[Bus, Car]
         river_trip: typing.Union[Bus, Car] = None
         mountain_trip: typing.Union[Bus, Car] = dataclasses.field(default_factory=lambda: {"engine_name": "honda"})
+        trip_distance: typing.Union[int, TripDistance] = None
 
     assert UnionSchema.avro_schema() == json.dumps(union_type_schema)
 
@@ -41,10 +50,18 @@ def test_schema_with_unions_type(union_type_schema):
 # This test is written explicitly to adhere to the Avro spec. The general behavior is covered in other tests,
 #   but the schemas generated are out-of-spec currently
 def test_schema_with_unions_defaults(default_union_schema):
+    class UserType(enum.Enum):
+        BASIC = "Basic"
+        PREMIUM = "Premium"
+
+        class Meta:
+            doc = "Type of user"
+
     class User(AvroModel):
         "An User"
         name: str
         age: int
+        user_type: typing.Optional[UserType] = None
         school_name: typing.Optional[str] = None
         school_id: typing.Union[int, str] = ""
 

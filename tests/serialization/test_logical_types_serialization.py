@@ -1,5 +1,6 @@
 import datetime
 import decimal
+import typing
 import uuid
 from dataclasses import dataclass
 
@@ -35,6 +36,34 @@ def test_logical_types():
     }
 
     logical_types = LogicalTypes(**data)
+
+    avro_binary = logical_types.serialize()
+    avro_json = logical_types.serialize(serialization_type="avro-json")
+
+    assert logical_types.deserialize(avro_binary, create_instance=False) == data
+    assert logical_types.deserialize(avro_json, serialization_type="avro-json", create_instance=False) == data
+
+    assert logical_types.deserialize(avro_binary) == logical_types
+    assert logical_types.deserialize(avro_json, serialization_type="avro-json") == logical_types
+
+    assert logical_types.to_json() == data_json
+
+
+def test_logical_union():
+    @dataclass
+    class UnionSchema(AvroModel):
+        "Some Unions"
+        logical_union: typing.Union[datetime.datetime, datetime.date, uuid.uuid4]
+
+    data = {
+        "logical_union": a_datetime.date(),
+    }
+
+    data_json = {
+        "logical_union": serialization.date_to_str(a_datetime.date()),
+    }
+
+    logical_types = UnionSchema(**data)
 
     avro_binary = logical_types.serialize()
     avro_json = logical_types.serialize(serialization_type="avro-json")

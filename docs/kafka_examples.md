@@ -5,20 +5,26 @@ The other two examples are `sync` using the [kafka-python](https://github.com/dp
 
 ```python
 import asyncio
+import enum
 from dataclasses import dataclass
 import random
 
 from aiokafka import AIOKafkaConsumer, AIOKafkaProducer
 
-from dataclasses_avroschema import AvroModel, types
+from dataclasses_avroschema import AvroModel
 
+
+class FavoriteColor(enum.Enum):
+    BLUE = "Blue"
+    YELLOW = "Yellow"
+    GREEN = "Green"
 
 @dataclass
 class UserModel(AvroModel):
     "An User"
     name: str
     age: int
-    favorite_colors: types.Enum = types.Enum(["BLUE", "YELLOW", "GREEN"], default="BLUE")
+    favorite_colors: FavoriteColor = FavoriteColor.BLUE
     country: str = "Argentina"
     address: str = None
 

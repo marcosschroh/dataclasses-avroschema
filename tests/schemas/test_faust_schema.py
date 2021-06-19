@@ -1,5 +1,6 @@
 import dataclasses
 import datetime
+import enum
 import json
 import typing
 import uuid
@@ -25,14 +26,14 @@ def test_faust_record_schema_primitive_types(user_dataclass, user_avro_json):
     assert User.avro_schema() == json.dumps(user_avro_json)
 
 
-def test_faust_record_schema_complex_types(user_advance_avro_json):
+def test_faust_record_schema_complex_types(user_advance_avro_json, color_enum):
     class UserAdvance(faust.Record, AvroModel):
         name: str
         age: int
         pets: typing.List[str]
         accounts: typing.Dict[str, int]
+        favorite_colors: color_enum
         has_car: bool = False
-        favorite_colors: types.Enum = types.Enum(["BLUE", "YELLOW", "GREEN"])
         country: str = "Argentina"
         address: str = None
         md5: types.Fixed = types.Fixed(16)
@@ -43,16 +44,14 @@ def test_faust_record_schema_complex_types(user_advance_avro_json):
     assert UserAdvance.avro_schema() == json.dumps(user_advance_avro_json)
 
 
-def test_faust_record_schema_complex_types_with_defaults(
-    user_advance_with_defaults_avro_json,
-):
+def test_faust_record_schema_complex_types_with_defaults(user_advance_with_defaults_avro_json, color_enum):
     class UserAdvance(faust.Record, AvroModel):
         name: str
         age: int
         pets: typing.List[str] = dataclasses.field(default_factory=lambda: ["dog", "cat"])
         accounts: typing.Dict[str, int] = dataclasses.field(default_factory=lambda: {"key": 1})
         has_car: bool = False
-        favorite_colors: types.Enum = types.Enum(["BLUE", "YELLOW", "GREEN"], default="BLUE")
+        favorite_colors: color_enum = color_enum.BLUE
         country: str = "Argentina"
         address: str = None
 
@@ -209,6 +208,13 @@ def test_faust_record_schema_with_unions_type(union_type_schema):
         "A Car"
         engine_name: str
 
+    class TripDistance(enum.Enum):
+        CLOSE = "Close"
+        FAR = "Far"
+
+        class Meta:
+            doc = "Distance of the trip"
+
     class UnionSchema(faust.Record, AvroModel):
         "Some Unions"
         first_union: typing.Union[str, int]
@@ -216,6 +222,7 @@ def test_faust_record_schema_with_unions_type(union_type_schema):
         lake_trip: typing.Union[Bus, Car]
         river_trip: typing.Union[Bus, Car] = None
         mountain_trip: typing.Union[Bus, Car] = dataclasses.field(default_factory=lambda: {"engine_name": "honda"})
+        trip_distance: typing.Union[int, TripDistance] = None
 
     assert UnionSchema.avro_schema() == json.dumps(union_type_schema)
 

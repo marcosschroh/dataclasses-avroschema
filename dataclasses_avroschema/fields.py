@@ -3,6 +3,7 @@ import collections
 import dataclasses
 import datetime
 import decimal
+import enum
 import inspect
 import json
 import random
@@ -60,8 +61,8 @@ PYTHON_TYPE_TO_AVRO = {
     list: {"type": ARRAY},
     tuple: {"type": ARRAY},
     dict: {"type": MAP},
+    enum.Enum: {"type": ENUM},
     types.Fixed: {"type": FIXED},
-    types.Enum: {"type": ENUM},
     datetime.date: {"type": INT, "logicalType": DATE},
     datetime.time: {"type": INT, "logicalType": TIME_MILLIS},
     datetime.datetime: {"type": LONG, "logicalType": TIMESTAMP_MILLIS},
@@ -79,7 +80,7 @@ PYTHON_PRIMITIVE_TYPES = PYTHON_INMUTABLE_TYPES + PYTHON_PRIMITIVE_CONTAINERS
 
 PRIMITIVE_AND_LOGICAL_TYPES = PYTHON_INMUTABLE_TYPES + PYTHON_LOGICAL_TYPES
 
-PythonImnutableTypes = typing.Union[
+PythonImmutableTypes = typing.Union[
     str,
     int,
     bool,
@@ -188,7 +189,7 @@ class BaseField:
 
 
 class ImmutableField(BaseField):
-    def get_avro_type(self) -> PythonImnutableTypes:
+    def get_avro_type(self) -> PythonImmutableTypes:
         if self.default is None:
             return [NULL, self.avro_type]
         return self.avro_type
@@ -254,7 +255,7 @@ class NoneField(ImmutableField):
 class ContainerField(BaseField):
     default_factory: typing.Optional[typing.Callable] = None
 
-    def get_avro_type(self) -> PythonImnutableTypes:
+    def get_avro_type(self) -> PythonImmutableTypes:
         avro_type = self.avro_type
         avro_type["name"] = self.get_singular_name(self.name)
 
@@ -428,6 +429,8 @@ class UnionField(BaseField):
             return default
         elif type(self.default) in LOGICAL_CLASSES:
             return LOGICAL_TYPES_FIELDS_CLASSES[type(self.default)].to_avro(self.default)  # type: ignore
+        elif issubclass(type(self.default), enum.Enum):
+            return self.default.value
         return self.default
 
     def fake(self) -> typing.Any:
@@ -462,37 +465,44 @@ class FixedField(BaseField):
 
 @dataclasses.dataclass
 class EnumField(BaseField):
+    _VALID_META_FIELDS = ["aliases", "doc", "namespace"]
+
+    def _get_meta_class_attributes(self) -> typing.Dict[str, typing.Any]:
+        meta_dict = {}
+        if "Meta" in self.type.__members__:
+            meta = self.type.__members__["Meta"].value
+            meta_dict = {k: v for k, v in vars(meta).items() if k in self._VALID_META_FIELDS}
+        return meta_dict
+
+    def get_symbols(self) -> typing.List[str]:
+        return [e.value for e in self.type if e.name != "Meta"]
+
     def get_avro_type(self) -> typing.Dict[str, typing.Any]:
+
         avro_type = {
             "type": ENUM,
             "name": self.get_singular_name(self.name),
-            "symbols": self.default.symbols,
+            "symbols": self.get_symbols(),
+            **self._get_meta_class_attributes(),
         }
-
-        if self.default.namespace is not None:
-            avro_type["namespace"] = self.default.namespace
-
-        if self.default.aliases is not None:
-            avro_type["aliases"] = self.default.aliases
 
         return avro_type
 
     def get_default_value(self) -> typing.Union[str, dataclasses._MISSING_TYPE, None]:
-        default = self.default.default
 
-        if default == types.MissingSentinel:
+        if self.default == types.MissingSentinel:
             return dataclasses.MISSING
-        elif default in (dataclasses.MISSING, None):
-            return default
+        elif self.default in (dataclasses.MISSING, None):
+            return self.default
         else:
             # check that the default value is listed in symbols
             assert (
-                default in self.default.symbols
-            ), f"The default value should be on of {self.default.symbols}. Current is {default}"
-            return default
+                self.default.value in self.get_symbols()
+            ), f"The default value should be one of {self.get_symbols()}. Current is {self.default}"
+            return self.default.value
 
     def fake(self) -> typing.Any:
-        return random.choice(self.default.symbols)
+        return random.choice(self.get_symbols())
 
 
 @dataclasses.dataclass
@@ -782,7 +792,6 @@ PRIMITIVE_LOGICAL_TYPES_FIELDS_CLASSES = {
     **INMUTABLE_FIELDS_CLASSES,
     **LOGICAL_TYPES_FIELDS_CLASSES,  # type: ignore
     types.Fixed: FixedField,
-    types.Enum: EnumField,
 }
 
 LOGICAL_CLASSES = LOGICAL_TYPES_FIELDS_CLASSES.keys()
@@ -828,8 +837,6 @@ def field_factory(
         return FixedField(
             name=name, type=native_type, default=default, metadata=metadata, model_metadata=model_metadata
         )
-    elif native_type is types.Enum:
-        return EnumField(name=name, type=native_type, default=default, metadata=metadata, model_metadata=model_metadata)
     elif isinstance(native_type, GenericAlias):  # type: ignore
         origin = native_type.__origin__
 
@@ -865,6 +872,8 @@ def field_factory(
         return RecordField(
             name=name, type=native_type, default=default, metadata=metadata, model_metadata=model_metadata
         )
+    elif inspect.isclass(native_type) and issubclass(native_type, enum.Enum):
+        return EnumField(name=name, type=native_type, default=default, metadata=metadata)
     else:
         msg = (
             f"Type {native_type} is unknown. Please check the valid types at "

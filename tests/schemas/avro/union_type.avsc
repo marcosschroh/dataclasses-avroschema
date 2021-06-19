@@ -97,6 +97,23 @@
         }
       ],
       "default": {"engine_name": "honda"}
+    },
+    {
+      "name": "trip_distance",
+      "type": [
+        "null",
+        "long",
+        {
+          "type": "enum",
+          "name": "trip_distance",
+          "symbols": [
+            "Close",
+            "Far"
+          ],
+          "doc": "Distance of the trip"
+        }
+      ],
+      "default": null
     }
   ],
   "doc": "Some Unions"

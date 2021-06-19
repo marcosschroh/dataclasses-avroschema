@@ -113,15 +113,15 @@ Python Type | Avro Type   | Logical Type |
 | typing.Mapping      | map         | do not apply |
 | typing.MutableMapping      | map         | do not apply |
 | types.Fixed      | fixed         | do not apply |
-| types.Enum      | enum         | do not apply |
 | typing.Union| union     | do not apply |
 | typing.Optional| union (with `null`)    | do not apply |
 | Python class | record  | do not apply |
 | datetime.date | int     |  date        |
 | datetime.time | int     |  time-millis |
 | datetime.datetime| long  |  timestamp-millis |
-| uuid.uuid4  | string    |  uuid        |
 | decimal.Decimal | bytes | decimal      |
+| enum.Enum      | enum         | do not apply |
+| uuid.uuid4  | string    |  uuid        |
 
 ## Adding Custom Field-level Attributes
 

@@ -1,4 +1,5 @@
 import datetime
+import enum
 import typing
 import uuid
 from dataclasses import dataclass
@@ -54,6 +55,18 @@ user_avro_json = b'{"name": "john", "age": 20, "addresses": [{"street": "test", 
 user_json = {"name": "john", "age": 20, "addresses": [{"street": "test", "street_number": 10}]}
 
 
+class FavoriteColor(enum.Enum):
+    BLUE = "BLUE"
+    YELLOW = "YELLOW"
+    GREEN = "GREEN"
+
+
+class FavoriteLanguage(enum.Enum):
+    PYTHON = "PYTHON"
+    JAVA = "JAVA"
+    JS = "JS"
+
+
 @dataclass
 class UserAdvance(AvroModel):
     name: str
@@ -61,9 +74,9 @@ class UserAdvance(AvroModel):
     is_developer: bool
     pets: typing.List[str]
     accounts: typing.Dict[str, int]
+    favorite_colors: FavoriteColor
+    favorite_language: FavoriteLanguage = FavoriteLanguage.JS
     has_car: bool = False
-    favorite_colors: types.Enum = types.Enum(["BLUE", "YELLOW", "GREEN"])
-    favorite_language: types.Enum = types.Enum(["PYTHON", "JAVA", "JS"], default="JS")
     country: str = "Argentina"
     years_of_expirience: int = 5
     md5: bytes = b"u00ff"
@@ -80,8 +93,8 @@ advance_data = {
     "is_developer": True,
     "pets": ["dog", "cat"],
     "accounts": {"ing": 100},
-    "favorite_colors": "GREEN",
-    "favorite_language": "JS",
+    "favorite_colors": FavoriteColor.GREEN,
+    "favorite_language": FavoriteLanguage.JS,
 }
 
 advance_user_json = {
@@ -109,8 +122,8 @@ advance_user_python_dict = {
     "pets": ["dog", "cat"],
     "accounts": {"ing": 100},
     "has_car": False,
-    "favorite_colors": "GREEN",
-    "favorite_language": "JS",
+    "favorite_colors": FavoriteColor.GREEN,
+    "favorite_language": FavoriteLanguage.JS,
     "country": "Argentina",
     "years_of_expirience": 5,
     "md5": b"u00ff",
@@ -120,8 +133,8 @@ advance_user_python_dict = {
     "event_uuid": uuid.UUID("09f00184-7721-4266-a955-21048a5cc235"),
 }
 
-advance_user_avro_binary = b"\x08juan(\x01\x04\x06dog\x06cat\x00\x02\x06ing\xc8\x01\x00\x00\x04\x04\x12Argentina\n\nu00ff\x8a\x9c\x02\xe0\xa7\xd5=\xe0\xd7\xf3\x91\xb8[H09f00184-7721-4266-a955-21048a5cc235"
-advance_user_avro_json = b'{"name": "juan", "age": 20, "is_developer": true, "pets": ["dog", "cat"], "accounts": {"ing": 100}, "has_car": false, "favorite_colors": "GREEN", "favorite_language": "JS", "country": "Argentina", "years_of_expirience": 5, "md5": "u00ff", "birthday": 18181, "meeting_time": 64662000, "release_datetime": 1570903062000, "event_uuid": "09f00184-7721-4266-a955-21048a5cc235"}'
+advance_user_avro_binary = b"\x08juan(\x01\x04\x06dog\x06cat\x00\x02\x06ing\xc8\x01\x00\x04\x04\x00\x12Argentina\n\nu00ff\x8a\x9c\x02\xe0\xa7\xd5=\xe0\xd7\xf3\x91\xb8[H09f00184-7721-4266-a955-21048a5cc235"
+advance_user_avro_json = b'{"name": "juan", "age": 20, "is_developer": true, "pets": ["dog", "cat"], "accounts": {"ing": 100}, "favorite_colors": "GREEN", "favorite_language": "JS", "has_car": false, "country": "Argentina", "years_of_expirience": 5, "md5": "u00ff", "birthday": 18181, "meeting_time": 64662000, "release_datetime": 1570903062000, "event_uuid": "09f00184-7721-4266-a955-21048a5cc235"}'
 
 CLASSES_DATA_BINARY = (
     (User, data_user, user_avro_binary, user_avro_json, user_json, user_json),
