@@ -183,7 +183,7 @@ class BaseField:
         return None
 
 
-class InmutableField(BaseField):
+class ImmutableField(BaseField):
     def get_avro_type(self) -> PythonImnutableTypes:
         if self.default is None:
             return [NULL, self.avro_type]
@@ -191,7 +191,7 @@ class InmutableField(BaseField):
 
 
 @dataclasses.dataclass
-class StringField(InmutableField):
+class StringField(ImmutableField):
     avro_type: typing.ClassVar = STRING
 
     def fake(self) -> str:
@@ -199,7 +199,7 @@ class StringField(InmutableField):
 
 
 @dataclasses.dataclass
-class LongField(InmutableField):
+class LongField(ImmutableField):
     avro_type: typing.ClassVar = LONG
 
     def fake(self) -> int:
@@ -207,7 +207,7 @@ class LongField(InmutableField):
 
 
 @dataclasses.dataclass
-class BooleanField(InmutableField):
+class BooleanField(ImmutableField):
     avro_type: typing.ClassVar = BOOLEAN
 
     def fake(self) -> bool:
@@ -215,7 +215,7 @@ class BooleanField(InmutableField):
 
 
 @dataclasses.dataclass
-class DoubleField(InmutableField):
+class DoubleField(ImmutableField):
     avro_type: typing.ClassVar = DOUBLE
 
     def fake(self) -> float:
@@ -223,7 +223,7 @@ class DoubleField(InmutableField):
 
 
 @dataclasses.dataclass
-class BytesField(InmutableField):
+class BytesField(ImmutableField):
     avro_type: typing.ClassVar = BYTES
 
     def get_default_value(self) -> typing.Any:
@@ -242,7 +242,7 @@ class BytesField(InmutableField):
 
 
 @dataclasses.dataclass
-class NoneField(InmutableField):
+class NoneField(ImmutableField):
     avro_type: typing.ClassVar = NULL
 
 
@@ -502,7 +502,7 @@ class SelfReferenceField(BaseField):
         return dataclasses.MISSING
 
 
-class LogicalTypeField(InmutableField):
+class LogicalTypeField(ImmutableField):
     def get_default_value(self) -> typing.Union[None, str, int, float]:
         if self.default in (dataclasses.MISSING, None):
             return self.default
@@ -787,7 +787,7 @@ FieldType = typing.Union[
     DatetimeField,
     UUIDField,
     RecordField,
-    InmutableField,
+    ImmutableField,
 ]
 
 

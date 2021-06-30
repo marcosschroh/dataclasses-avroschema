@@ -4,19 +4,24 @@ import typing
 
 from dacite import Config, from_dict
 
-from dataclasses_avroschema import schema_definition, serialization, utils
+from dataclasses_avroschema.schema_definition import AvroSchemaDefinition
+from dataclasses_avroschema.serialization import deserialize, serialize, to_json
+from dataclasses_avroschema.utils import SchemaMetadata, is_custom_type
 
 from .fields import FieldType
 
 AVRO = "avro"
 AVRO_JSON = "avro-json"
 
+JsonDict = typing.Dict[str, typing.Any]
+CT = typing.TypeVar("CT", bound="AvroModel")
+
 
 class AvroModel:
 
-    schema_def: typing.Optional[schema_definition.AvroSchemaDefinition] = None
+    schema_def: typing.Optional[AvroSchemaDefinition] = None
     klass: typing.Any = None
-    metadata: typing.Optional[typing.Dict] = None
+    metadata: typing.Optional[SchemaMetadata] = None
 
     @classmethod
     def generate_dataclass(cls: typing.Any) -> typing.Any:
@@ -25,15 +30,15 @@ class AvroModel:
         return dataclasses.dataclass(cls)
 
     @classmethod
-    def generate_metadata(cls: typing.Any) -> utils.SchemaMetadata:
+    def generate_metadata(cls: typing.Any) -> SchemaMetadata:
         meta = getattr(cls.klass, "Meta", None)
 
         if meta is None:
-            return utils.SchemaMetadata()
-        return utils.SchemaMetadata.create(meta)
+            return SchemaMetadata()
+        return SchemaMetadata.create(meta)
 
     @classmethod
-    def generate_schema(cls: typing.Any, schema_type: str = "avro") -> typing.Dict:
+    def generate_schema(cls: typing.Type[CT], schema_type: str = "avro") -> AvroSchemaDefinition:
         if cls.schema_def is None:
             # Generate metaclass and metadata
             cls.klass = cls.generate_dataclass()
@@ -50,8 +55,8 @@ class AvroModel:
         return cls.schema_def
 
     @classmethod
-    def _generate_avro_schema(cls: typing.Any) -> schema_definition.AvroSchemaDefinition:
-        return schema_definition.AvroSchemaDefinition("record", cls.klass, metadata=cls.metadata)
+    def _generate_avro_schema(cls: typing.Any) -> AvroSchemaDefinition:
+        return AvroSchemaDefinition("record", cls.klass, metadata=cls.metadata)
 
     @classmethod
     def avro_schema(cls: typing.Any) -> str:
@@ -69,11 +74,11 @@ class AvroModel:
 
     @staticmethod
     def standardize_custom_type(value: typing.Any) -> typing.Any:
-        if utils.is_custom_type(value):
+        if is_custom_type(value):
             return value["default"]
         return value
 
-    def asdict(self) -> typing.Dict:
+    def asdict(self) -> JsonDict:
         data = dataclasses.asdict(self)
 
         # te standardize called can be replaced if we have a custom implementation of asdict
@@ -83,16 +88,16 @@ class AvroModel:
     def serialize(self, serialization_type: str = AVRO) -> bytes:
         schema = self.avro_schema_to_python()
 
-        return serialization.serialize(self.asdict(), schema, serialization_type=serialization_type)
+        return serialize(self.asdict(), schema, serialization_type=serialization_type)
 
     @classmethod
     def deserialize(
-        cls,
+        cls: typing.Type[CT],
         data: bytes,
         serialization_type: str = AVRO,
         create_instance: bool = True,
-        writer_schema: typing.Optional[typing.Union[typing.Dict[str, typing.Any], "AvroModel"]] = None,
-    ) -> typing.Union[typing.Dict, "AvroModel"]:
+        writer_schema: typing.Optional[typing.Union[JsonDict, CT]] = None,
+    ) -> typing.Union[JsonDict, CT]:
 
         try:
             writer_schema = writer_schema.avro_schema_to_python()
@@ -100,22 +105,20 @@ class AvroModel:
             pass
 
         schema = cls.avro_schema_to_python()
-        payload = serialization.deserialize(
-            data, schema, serialization_type=serialization_type, writer_schema=writer_schema
-        )
+        payload = deserialize(data, schema, serialization_type=serialization_type, writer_schema=writer_schema)
 
         if create_instance:
             return from_dict(data_class=cls, data=payload, config=Config(**cls.config()))
         return payload
 
-    def to_json(self) -> typing.Dict:
+    def to_json(self) -> JsonDict:
         # Serialize using the current AVRO schema to get proper field representations
         # and after that convert into python
         data = self.asdict()
-        return serialization.to_json(data)
+        return to_json(data)
 
     @classmethod
-    def config(cls) -> typing.Dict:
+    def config(cls) -> JsonDict:
         """
         Get the default config for dacite and always include the self reference
         """
@@ -127,7 +130,7 @@ class AvroModel:
         }
 
     @classmethod
-    def fake(cls) -> typing.Any:
+    def fake(cls: typing.Type[CT]) -> CT:
         payload = {field.name: field.fake() for field in cls.get_fields()}
 
         return from_dict(data_class=cls, data=payload, config=Config(**cls.config()))

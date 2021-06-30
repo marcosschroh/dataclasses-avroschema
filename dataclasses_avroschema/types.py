@@ -35,7 +35,7 @@ class Enum(typing.Generic[T]):
     """
     Represents an Avro Enum type
 
-    simbols (typing.List): Specifying the possible values for the enum
+    symbols (typing.List): Specifying the possible values for the enum
     """
 
     symbols: typing.List[typing.Any]
