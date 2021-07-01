@@ -103,6 +103,10 @@ class BaseField:
     type: typing.Any  # store the python primitive type
     default: typing.Any
     metadata: typing.Mapping = dataclasses.field(default_factory=dict)
+    model_metadata: typing.Optional[utils.SchemaMetadata] = None
+
+    def __post_init__(self) -> None:
+        self.model_metadata = self.model_metadata or utils.SchemaMetadata()
 
     @staticmethod
     def _get_self_reference_type(a_type: typing.Any) -> str:
@@ -183,7 +187,7 @@ class BaseField:
         return None
 
 
-class InmutableField(BaseField):
+class ImmutableField(BaseField):
     def get_avro_type(self) -> PythonImnutableTypes:
         if self.default is None:
             return [NULL, self.avro_type]
@@ -191,7 +195,7 @@ class InmutableField(BaseField):
 
 
 @dataclasses.dataclass
-class StringField(InmutableField):
+class StringField(ImmutableField):
     avro_type: typing.ClassVar = STRING
 
     def fake(self) -> str:
@@ -199,7 +203,7 @@ class StringField(InmutableField):
 
 
 @dataclasses.dataclass
-class LongField(InmutableField):
+class LongField(ImmutableField):
     avro_type: typing.ClassVar = LONG
 
     def fake(self) -> int:
@@ -207,7 +211,7 @@ class LongField(InmutableField):
 
 
 @dataclasses.dataclass
-class BooleanField(InmutableField):
+class BooleanField(ImmutableField):
     avro_type: typing.ClassVar = BOOLEAN
 
     def fake(self) -> bool:
@@ -215,7 +219,7 @@ class BooleanField(InmutableField):
 
 
 @dataclasses.dataclass
-class DoubleField(InmutableField):
+class DoubleField(ImmutableField):
     avro_type: typing.ClassVar = DOUBLE
 
     def fake(self) -> float:
@@ -223,7 +227,7 @@ class DoubleField(InmutableField):
 
 
 @dataclasses.dataclass
-class BytesField(InmutableField):
+class BytesField(ImmutableField):
     avro_type: typing.ClassVar = BYTES
 
     def get_default_value(self) -> typing.Any:
@@ -242,7 +246,7 @@ class BytesField(InmutableField):
 
 
 @dataclasses.dataclass
-class NoneField(InmutableField):
+class NoneField(ImmutableField):
     avro_type: typing.ClassVar = NULL
 
 
@@ -296,10 +300,14 @@ class ListField(ContainerField):
 
         if utils.is_union(items_type):
             self.items_type = UnionField(
-                name, items_type, default=self.default, default_factory=self.default_factory
+                name,
+                items_type,
+                default=self.default,
+                default_factory=self.default_factory,
+                model_metadata=self.model_metadata,
             ).get_avro_type()
         else:
-            self.internal_field = AvroField(name, items_type)
+            self.internal_field = AvroField(name, items_type, model_metadata=self.model_metadata)
             self.items_type = self.internal_field.get_avro_type()
 
     def fake(self) -> typing.List:
@@ -347,7 +355,7 @@ class DictField(ContainerField):
         values_type = self.type.__args__[1]
 
         name = self.get_singular_name(self.name)
-        self.internal_field = AvroField(name, values_type)
+        self.internal_field = AvroField(name, values_type, model_metadata=self.model_metadata)
         self.values_type = self.internal_field.get_avro_type()
 
     def fake(self) -> typing.Dict[str, typing.Any]:
@@ -388,13 +396,15 @@ class UnionField(BaseField):
             unions.insert(0, NULL)
         elif type(self.default) is not dataclasses._MISSING_TYPE:
             default_type = type(self.default)
-            default_field = AvroField(name, default_type)
+            default_field = AvroField(name, default_type, model_metadata=self.model_metadata)
             unions.append(default_field.get_avro_type())
             self.internal_fields.append(default_field)
 
         for element in elements:
+
+            print(self.model_metadata, "jjsjs")
             # create the field and get the avro type
-            field = AvroField(name, element)
+            field = AvroField(name, element, model_metadata=self.model_metadata)
 
             if field.get_avro_type() not in unions:
                 unions.append(field.get_avro_type())
@@ -502,7 +512,7 @@ class SelfReferenceField(BaseField):
         return dataclasses.MISSING
 
 
-class LogicalTypeField(InmutableField):
+class LogicalTypeField(ImmutableField):
     def get_default_value(self) -> typing.Union[None, str, int, float]:
         if self.default in (dataclasses.MISSING, None):
             return self.default
@@ -646,20 +656,28 @@ class UUIDField(LogicalTypeField):
 class RecordField(BaseField):
     def get_avro_type(self) -> typing.Union[typing.List, typing.Dict]:
         record_type = self.type.avro_schema_to_python()
+        record_type["name"] = self.record_name
+
+        if self.default is None:
+            return [NULL, record_type]
+        return record_type
+
+    @property
+    def record_name(self) -> str:
+        alias = self.model_metadata.get_alias(self.name)  # type: ignore
+
+        if alias:
+            return alias
 
         # when there is a nested record replace its name
-        # to avoid name colisions
+        # to avoid name collisions
         record_name = self.type.__name__.lower()
         if record_name not in self.name:
             name = f"{self.name}_{record_name}_record"
         else:
             name = f"{self.name}_record"
 
-        record_type["name"] = name
-
-        if self.default is None:
-            return [NULL, record_type]
-        return record_type
+        return name
 
     def fake(self) -> typing.Any:
         return self.type.fake()
@@ -787,7 +805,7 @@ FieldType = typing.Union[
     DatetimeField,
     UUIDField,
     RecordField,
-    InmutableField,
+    ImmutableField,
 ]
 
 
@@ -797,16 +815,21 @@ def field_factory(
     default: typing.Any = dataclasses.MISSING,
     default_factory: typing.Any = dataclasses.MISSING,
     metadata: typing.Mapping = dataclasses.field(default_factory=dict),
+    model_metadata: typing.Optional[utils.SchemaMetadata] = None,
 ) -> FieldType:
     if native_type in PYTHON_INMUTABLE_TYPES:
         klass = INMUTABLE_FIELDS_CLASSES[native_type]
-        return klass(name=name, type=native_type, default=default, metadata=metadata)
+        return klass(name=name, type=native_type, default=default, metadata=metadata, model_metadata=model_metadata)
     elif utils.is_self_referenced(native_type):
-        return SelfReferenceField(name=name, type=native_type, default=default, metadata=metadata)
+        return SelfReferenceField(
+            name=name, type=native_type, default=default, metadata=metadata, model_metadata=model_metadata
+        )
     elif native_type is types.Fixed:
-        return FixedField(name=name, type=native_type, default=default, metadata=metadata)
+        return FixedField(
+            name=name, type=native_type, default=default, metadata=metadata, model_metadata=model_metadata
+        )
     elif native_type is types.Enum:
-        return EnumField(name=name, type=native_type, default=default, metadata=metadata)
+        return EnumField(name=name, type=native_type, default=default, metadata=metadata, model_metadata=model_metadata)
     elif isinstance(native_type, GenericAlias):  # type: ignore
         origin = native_type.__origin__
 
@@ -833,12 +856,15 @@ def field_factory(
             default=default,
             metadata=metadata,
             default_factory=default_factory,
+            model_metadata=model_metadata,
         )
     elif native_type in PYTHON_LOGICAL_TYPES:
         klass = LOGICAL_TYPES_FIELDS_CLASSES[native_type]  # type: ignore
-        return klass(name=name, type=native_type, default=default, metadata=metadata)
+        return klass(name=name, type=native_type, default=default, metadata=metadata, model_metadata=model_metadata)
     elif inspect.isclass(native_type) and issubclass(native_type, schema_generator.AvroModel):
-        return RecordField(name=name, type=native_type, default=default, metadata=metadata)
+        return RecordField(
+            name=name, type=native_type, default=default, metadata=metadata, model_metadata=model_metadata
+        )
     else:
         msg = (
             f"Type {native_type} is unknown. Please check the valid types at "

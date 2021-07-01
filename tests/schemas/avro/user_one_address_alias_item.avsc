@@ -1,0 +1,33 @@
+{
+    "type": "record",
+    "name": "User",
+    "fields": [
+        {
+            "name": "name",
+            "type": "string"
+        },
+        {
+            "name": "age",
+            "type": "long"
+        },
+        {
+            "name": "address",
+            "type": {
+                "type": "record",
+                "name": "Address",
+                "fields": [
+                    {
+                        "name": "street",
+                        "type": "string"
+                    },
+                    {
+                        "name": "street_number",
+                        "type": "long"
+                    }
+                ],
+                "doc": "An Address"
+            }
+        } 
+    ],
+    "doc": "An User with Address"
+}

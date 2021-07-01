@@ -53,6 +53,11 @@ def user_one_address_schema():
 
 
 @pytest.fixture
+def user_one_address_alias_item():
+    return load_json("user_one_address_alias_item.avsc")
+
+
+@pytest.fixture
 def user_one_address_schema_with_none_default():
     return load_json("user_one_address_with_none_default.avsc")
 
@@ -65,6 +70,11 @@ def user_many_address_schema():
 @pytest.fixture
 def user_many_address_map_schema():
     return load_json("user_many_address_map.avsc")
+
+
+@pytest.fixture
+def user_many_address_map_schema_alias_item():
+    return load_json("user_many_address_map_alias_item.avsc")
 
 
 @pytest.fixture

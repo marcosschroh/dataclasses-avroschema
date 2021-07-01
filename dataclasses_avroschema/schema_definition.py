@@ -46,10 +46,8 @@ class BaseSchemaDefinition(abc.ABC):
 
 @dataclasses.dataclass
 class AvroSchemaDefinition(BaseSchemaDefinition):
-    aliases: typing.List[str] = dataclasses.field(default_factory=list)
-    namespace: typing.Optional[str] = None
+    metadata: utils.SchemaMetadata
     fields: typing.List[FieldType] = dataclasses.field(default_factory=list)
-    metadata: utils.SchemaMetadata = dataclasses.field(default_factory=utils.SchemaMetadata)
 
     def __post_init__(self) -> None:
         self.fields = self.parse_dataclasses_fields()
@@ -67,6 +65,7 @@ class AvroSchemaDefinition(BaseSchemaDefinition):
                 dataclass_field.default,
                 dataclass_field.default_factory,  # type: ignore  # TODO: resolve mypy
                 dataclass_field.metadata,
+                self.metadata,
             )
             for dataclass_field in dataclasses.fields(self.klass)
         ]
@@ -87,7 +86,11 @@ class AvroSchemaDefinition(BaseSchemaDefinition):
                     default_factory = default.default_factory  # type: ignore  # TODO: resolve mypy
                     default = dataclasses.MISSING
 
-            schema_fields.append(AvroField(dataclass_field.name, dataclass_field.type, default, default_factory))
+            schema_fields.append(
+                AvroField(
+                    dataclass_field.name, dataclass_field.type, default, default_factory, model_metadata=self.metadata
+                )
+            )
 
         return schema_fields
 
