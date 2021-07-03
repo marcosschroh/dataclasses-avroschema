@@ -553,6 +553,42 @@ def test_enum_field():
     assert enum_field.get_default_value() == "Blue"
 
 
+def test_enum_field_with_type_level_default():
+    class FavoriteColor(enum.Enum):
+        BLUE = "Blue"
+        GREEN = "Green"
+        YELLOW = "Yellow"
+
+        @classmethod
+        def get_default(cls) -> 'FavoriteColor':
+            return cls.GREEN
+
+        class Meta:
+            aliases = ["one", "two"]
+            doc = "favorite colors"
+            namespace = "some.name.space"
+
+    enum_field = EnumField("field_name", FavoriteColor, FavoriteColor.BLUE, metadata={"key": "value"})
+
+    assert enum_field.get_symbols() == ["Blue", "Green", "Yellow"]
+    assert enum_field._get_meta_class_attributes() == {
+        "aliases": ["one", "two"],
+        "doc": "favorite colors",
+        "namespace": "some.name.space",
+    }
+    assert enum_field.get_avro_type() == {
+        "type": "enum",
+        "name": "field_name",
+        "symbols": ["Blue", "Green", "Yellow"],
+        "aliases": ["one", "two"],
+        "doc": "favorite colors",
+        "namespace": "some.name.space",
+        "default": "Green"
+    }
+
+    assert enum_field.get_default_value() == "Blue"
+
+
 def test_enum_field_default():
     enum_field1 = EnumField("field_name", Color, types.MissingSentinel, metadata={"key": "value"})
 
