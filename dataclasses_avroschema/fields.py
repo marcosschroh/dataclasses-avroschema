@@ -402,8 +402,6 @@ class UnionField(BaseField):
             self.internal_fields.append(default_field)
 
         for element in elements:
-
-            print(self.model_metadata, "jjsjs")
             # create the field and get the avro type
             field = AvroField(name, element, model_metadata=self.model_metadata)
 
