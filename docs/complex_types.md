@@ -66,7 +66,60 @@ User.avro_schema()
   ],
   "doc": "An User"
 }'
+```
 
+In addition to a *field-level* default value, you can optionally supply a *type-level* default symbol by adding a static 
+or class method to the enum called `get_default`:
+
+```python
+import enum
+from typing import Optional
+
+from dataclasses_avroschema import AvroModel
+
+class FavoriteColor(enum.Enum):
+    BLUE = "Blue"
+    YELLOW = "Yellow"
+    GREEN = "Green"
+    
+    @classmethod
+    def get_default(cls) -> 'FavoriteColor':
+        return cls.GREEN
+
+
+class User(AvroModel):
+    "An User"
+    favorite_color: Optional[FavoriteColor] = None
+
+User.avro_schema()
+
+'{
+  "type": "record",
+  "name": "User",
+  "fields":
+  [
+    {
+      "name": "favorite_color",
+      "type":
+      [
+        "null",
+        {
+          "type": "enum",
+          "name": "favorite_color",
+          "symbols":
+          [
+            "Blue",
+            "Yellow",
+            "Green"
+          ],
+          "default": "Green"
+        }
+      ],
+      "default": null
+    }
+  ],
+  "doc": "An User"
+}'
 ```
 
 ### Arrays

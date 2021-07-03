@@ -484,8 +484,8 @@ class EnumField(BaseField):
             **self._get_meta_class_attributes(),
         }
 
-        if hasattr(self.type, 'get_default'):
-            avro_type['default'] = self.type.get_default().value
+        if hasattr(self.type, "get_default"):
+            avro_type["default"] = self.type.get_default().value
 
         return avro_type
 

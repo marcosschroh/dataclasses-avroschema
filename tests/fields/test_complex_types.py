@@ -560,7 +560,7 @@ def test_enum_field_with_type_level_default():
         YELLOW = "Yellow"
 
         @classmethod
-        def get_default(cls) -> 'FavoriteColor':
+        def get_default(cls) -> "FavoriteColor":
             return cls.GREEN
 
         class Meta:
@@ -583,7 +583,7 @@ def test_enum_field_with_type_level_default():
         "aliases": ["one", "two"],
         "doc": "favorite colors",
         "namespace": "some.name.space",
-        "default": "Green"
+        "default": "Green",
     }
 
     assert enum_field.get_default_value() == "Blue"
