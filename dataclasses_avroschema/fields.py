@@ -463,13 +463,21 @@ class FixedField(BaseField):
 
 @dataclasses.dataclass
 class EnumField(BaseField):
-    _VALID_META_FIELDS = ["aliases", "doc", "namespace"]
+    _VALID_META_FIELDS = ["aliases", "default", "doc", "namespace"]
 
     def _get_meta_class_attributes(self) -> typing.Dict[str, typing.Any]:
         meta_dict = {}
         if "Meta" in self.type.__members__:
             meta = self.type.__members__["Meta"].value
             meta_dict = {k: v for k, v in vars(meta).items() if k in self._VALID_META_FIELDS}
+
+        default = meta_dict.get("default")
+        if default:
+            try:
+                self.type(default)
+            except ValueError as e:
+                raise ValueError(f"Default enum symbol must be one of {self.get_symbols()}", e)
+
         return meta_dict
 
     def get_symbols(self) -> typing.List[str]:
@@ -483,9 +491,6 @@ class EnumField(BaseField):
             "symbols": self.get_symbols(),
             **self._get_meta_class_attributes(),
         }
-
-        if hasattr(self.type, "get_default"):
-            avro_type["default"] = self.type.get_default().value
 
         return avro_type
 

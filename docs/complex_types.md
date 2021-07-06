@@ -1,6 +1,6 @@
 ## Complex Types
 
-The following list represent the avro complext types mapped to python types:
+The following list represent the avro complex types mapped to python types:
 
 | Avro Type          | Python Type                                                        |
 | ------------------ | ------------------------------------------------------------------ |
@@ -18,6 +18,7 @@ Example:
 
 ```python
 import enum
+from typing import Optional
 
 from dataclasses_avroschema import AvroModel
 
@@ -31,61 +32,7 @@ class FavoriteColor(enum.Enum):
         doc = "A favorite color"
         namespace = "some.name.space"
         aliases = ["Color", "My favorite color"]
-
-class User(AvroModel):
-    "An User"
-    favorite_color: FavoriteColor = FavoriteColor.BLUE
-
-
-User.avro_schema()
-
-'{
-  "type": "record",
-  "name": "User",
-  "fields":
-  [
-    {
-      "name": "favorite_color",
-      "type":
-      {
-        "type": "enum",
-        "name": "favorite_color",
-        "symbols":
-        [
-          "Blue",
-          "Yellow",
-          "Green"
-        ],
-        "doc": "A favorite color",
-        "namespace": "some.name.space",
-        "aliases":
-        ["Color", "My favorite color"]
-      },
-      "default": "Blue"
-    }
-  ],
-  "doc": "An User"
-}'
-```
-
-In addition to a *field-level* default value, you can optionally supply a *type-level* default symbol by adding a static 
-or class method to the enum called `get_default`:
-
-```python
-import enum
-from typing import Optional
-
-from dataclasses_avroschema import AvroModel
-
-class FavoriteColor(enum.Enum):
-    BLUE = "Blue"
-    YELLOW = "Yellow"
-    GREEN = "Green"
-    
-    @classmethod
-    def get_default(cls) -> 'FavoriteColor':
-        return cls.GREEN
-
+        default = "Green"
 
 class User(AvroModel):
     "An User"
@@ -106,12 +53,10 @@ User.avro_schema()
         {
           "type": "enum",
           "name": "favorite_color",
-          "symbols":
-          [
-            "Blue",
-            "Yellow",
-            "Green"
-          ],
+          "symbols": ["Blue", "Yellow", "Green"],
+          "doc": "A favorite color",
+          "namespace": "some.name.space",
+          "aliases": ["Color", "My favorite color"],
           "default": "Green"
         }
       ],
@@ -120,6 +65,12 @@ User.avro_schema()
   ],
   "doc": "An User"
 }'
+
+```
+
+Note that in addition to a *field-level* default value, you can optionally supply a *type-level* default symbol for the 
+enum by supplying the `default` attribute under the `Meta` class.
+
 ```
 
 ### Arrays

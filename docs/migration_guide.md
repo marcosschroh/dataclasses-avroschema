@@ -1,3 +1,29 @@
+## Migration from previous versions to 0.23.0
+
+The `types.Enum` class has been removed and replaced with Python's native `enum.Enum`. 
+The user will now need to separately define the enum class and reference it in the `AvroModel`.
+
+```python
+# Versions < 0.23.0
+from dataclasses_avroschema import AvroModel, types
+
+class User(AvroModel):
+    favorite_color: types.Enum = types.Enum(["Blue", "Yellow", "Green"])
+
+
+# New versions
+import enum
+from dataclasses_avroschema import AvroModel
+
+class Color(enum.Enum):
+    BLUE = "Blue"
+    YELLOW = "Yellow"
+    GREEN = "Green"
+
+class User(AvroModel):
+    favorite_color: Color
+```
+
 ## Migration from previous versions to 0.14.0
 
 Now all the dataclasses should inheritance from `AvroModel` and not use anymore the `SchemaGenerator`:

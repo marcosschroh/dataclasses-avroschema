@@ -559,14 +559,11 @@ def test_enum_field_with_type_level_default():
         GREEN = "Green"
         YELLOW = "Yellow"
 
-        @classmethod
-        def get_default(cls) -> "FavoriteColor":
-            return cls.GREEN
-
         class Meta:
             aliases = ["one", "two"]
             doc = "favorite colors"
             namespace = "some.name.space"
+            default = "Green"
 
     enum_field = EnumField("field_name", FavoriteColor, FavoriteColor.BLUE, metadata={"key": "value"})
 
@@ -575,6 +572,7 @@ def test_enum_field_with_type_level_default():
         "aliases": ["one", "two"],
         "doc": "favorite colors",
         "namespace": "some.name.space",
+        "default": "Green",
     }
     assert enum_field.get_avro_type() == {
         "type": "enum",
@@ -587,6 +585,24 @@ def test_enum_field_with_type_level_default():
     }
 
     assert enum_field.get_default_value() == "Blue"
+
+
+def test_enum_field_with_invalid_type_level_default():
+    class FavoriteColor(enum.Enum):
+        BLUE = "Blue"
+        GREEN = "Green"
+        YELLOW = "Yellow"
+
+        class Meta:
+            aliases = ["one", "two"]
+            doc = "favorite colors"
+            namespace = "some.name.space"
+            default = "Red"
+
+    enum_field = EnumField("field_name", FavoriteColor, FavoriteColor.BLUE, metadata={"key": "value"})
+
+    with pytest.raises(ValueError, match=r"^.*Default enum symbol must be one of \['Blue', 'Green', 'Yellow'\].*$"):
+        enum_field._get_meta_class_attributes()
 
 
 def test_enum_field_default():
