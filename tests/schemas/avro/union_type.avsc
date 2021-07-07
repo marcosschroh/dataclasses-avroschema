@@ -105,7 +105,7 @@
         "long",
         {
           "type": "enum",
-          "name": "trip_distance",
+          "name": "TripDistance",
           "symbols": [
             "Close",
             "Far"

@@ -52,7 +52,7 @@ User.avro_schema()
         "null",
         {
           "type": "enum",
-          "name": "favorite_color",
+          "name": "FavoriteColor",
           "symbols": ["Blue", "Yellow", "Green"],
           "doc": "A favorite color",
           "namespace": "some.name.space",

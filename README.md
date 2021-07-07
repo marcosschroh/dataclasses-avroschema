@@ -28,10 +28,16 @@ https://marcosschroh.github.io/dataclasses-avroschema/
 ```python
 from dataclasses import dataclass
 
+import enum
 import typing
 
-from dataclasses_avroschema import AvroModel, types
+from dataclasses_avroschema import AvroModel
 
+
+class Color(enum.Enum):
+    BLUE = "Blue"
+    YELLOW = "Yellow"
+    GREEN = "Green"
 
 @dataclass
 class User(AvroModel):
@@ -40,7 +46,7 @@ class User(AvroModel):
     age: int
     pets: typing.List[str]
     accounts: typing.Dict[str, int]
-    favorite_colors: types.Enum = types.Enum(["BLUE", "YELLOW", "GREEN"])
+    favorite_color: Color
     country: str = "Argentina"
     address: str = None
 
@@ -51,40 +57,40 @@ class User(AvroModel):
 User.avro_schema()
 
 '{
-    "type": "record",
-    "name": "User",
-    "doc": "An User",
-    "namespace": "User.v1",
-    "aliases": ["user-v1", "super user"],
-    "fields": [
-        {"name": "name", "type": "string"},
-        {"name": "age", "type": "long"},
-        {"name": "pets", "type": "array", "items": "string"},
-        {"name": "accounts", "type": "map", "values": "long"},
-        {"name": "favorite_colors", "type": "enum", "symbols": ["BLUE", "YELLOW", "GREEN"]},
-        {"name": "country", "type": "string", "default": "Argentina"},
-        {"name": "address", "type": ["null", "string"], "default": null}
-    ]
+  "type":"record",
+  "name":"User",
+  "doc":"An User",
+  "namespace":"User.v1",
+  "aliases":["user-v1","super user"],
+  "fields":[
+    {"name":"name","type":"string"},
+    {"name":"age","type":"long"},
+    {"name":"pets","type":{"type":"array","items":"string","name":"pet"}},
+    {"name":"accounts","type":{"type":"map","values":"long","name":"account"}},
+    {"name":"favorite_color","type":{"type":"enum","name":"Color","symbols":["Blue","Yellow","Green"]}},
+    {"name":"country","type":"string","default":"Argentina"},
+    {"name":"address","type":["null","string"],"default":null}
+  ]
 }'
 
 User.avro_schema_to_python()
 
 {
-    "type": "record",
-    "name": "User",
-    "doc": "An User",
-    "namespace": "User.v1",
-    "aliases": ["user-v1", "super user"],
-    "fields": [
-        {"name": "name", "type": "string"},
-        {"name": "age", "type": "long"},
-        {"name": "pets", "type": {"type": "array", "items": "string", "name": "pet"}},
-        {"name": "accounts", "type": {"type": "map", "values": "long", "name": "account"}},
-        {"name": "favorite_colors", "type": {"type": "enum", "name": "favorite_color", "symbols": ["BLUE", "YELLOW", "GREEN"]}},
-        {"name": "country", "type": "string", "default": "Argentina"},
-        {"name": "address", "type": ["null", "string"], "default": None}
-    ],
+  "type": "record",
+  "name": "User",
+  "doc": "An User",
+  "namespace": "User.v1",
+  "aliases": ["user-v1", "super user"],
+  "fields": [
+    {"name": "name", "type": "string"},
+    {"name": "age", "type": "long"},
+    {"name": "pets", "type": {"type": "array", "items": "string", "name": "pet"}},
+    {"name": "accounts", "type": {"type": "map", "values": "long", "name": "account"}},
+    {"name": "favorite_color", "type": {"type": "enum", "name": "Color", "symbols": ["Blue", "Yellow", "Green"]}},
+    {"name": "country", "type": "string", "default": "Argentina"},
+    {"name": "address", "type": ["null", "string"], "default": None}]
 }
+
 ```
 
 ### Serialization to avro or avro-json and json payload

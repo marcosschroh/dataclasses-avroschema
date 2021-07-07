@@ -457,7 +457,7 @@ def test_enum_type():
         "name": name,
         "type": {
             "type": "enum",
-            "name": name,
+            "name": "CardType",
             "symbols": symbols,
             "namespace": namespace,
             "aliases": aliases,
@@ -479,7 +479,7 @@ def test_enum_type():
     python_type = CardType
     field = fields.AvroField(name, python_type)
 
-    expected = {"name": name, "type": {"type": "enum", "name": name, "symbols": symbols, "namespace": namespace}}
+    expected = {"name": name, "type": {"type": "enum", "name": "CardType", "symbols": symbols, "namespace": namespace}}
 
     assert expected == field.to_dict()
 
@@ -496,7 +496,7 @@ def test_enum_type():
         "name": name,
         "type": {
             "type": "enum",
-            "name": name,
+            "name": "CardType",
             "symbols": symbols,
         },
         "default": None,
@@ -543,7 +543,7 @@ def test_enum_field():
     }
     assert enum_field.get_avro_type() == {
         "type": "enum",
-        "name": "field_name",
+        "name": "Color",
         "symbols": ["Blue", "Green", "Yellow"],
         "aliases": ["one", "two"],
         "doc": "colors",
@@ -576,7 +576,7 @@ def test_enum_field_with_type_level_default():
     }
     assert enum_field.get_avro_type() == {
         "type": "enum",
-        "name": "field_name",
+        "name": "FavoriteColor",
         "symbols": ["Blue", "Green", "Yellow"],
         "aliases": ["one", "two"],
         "doc": "favorite colors",

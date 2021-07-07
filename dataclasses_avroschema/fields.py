@@ -487,7 +487,7 @@ class EnumField(BaseField):
 
         avro_type = {
             "type": ENUM,
-            "name": self.get_singular_name(self.name),
+            "name": self.type.__name__,
             "symbols": self.get_symbols(),
             **self._get_meta_class_attributes(),
         }
