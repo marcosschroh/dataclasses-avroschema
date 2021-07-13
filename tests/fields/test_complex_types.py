@@ -7,7 +7,7 @@ import pytest
 from faker import Faker
 
 from dataclasses_avroschema import AvroModel, fields, types
-from dataclasses_avroschema.fields import EnumField
+from dataclasses_avroschema.fields import EnumField, UnionField
 
 from . import consts
 
@@ -402,6 +402,11 @@ def test_union_type_with_record_default():
     }
 
     assert expected == field.to_dict()
+
+
+def test_union_field_enum_default():
+    union_field = UnionField("some_field", typing.Union[None, Color], Color.BLUE)
+    assert union_field.get_default_value() == "Blue"
 
 
 def test_fixed_type():
