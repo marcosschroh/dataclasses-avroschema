@@ -222,7 +222,7 @@ def test_faust_record_schema_with_unions_type(union_type_schema):
         lake_trip: typing.Union[Bus, Car]
         river_trip: typing.Union[Bus, Car] = None
         mountain_trip: typing.Union[Bus, Car] = dataclasses.field(default_factory=lambda: {"engine_name": "honda"})
-        trip_distance: typing.Union[int, TripDistance] = None
+        trip_distance: typing.Union[int, TripDistance, None] = None
 
     assert UnionSchema.avro_schema() == json.dumps(union_type_schema)
 
