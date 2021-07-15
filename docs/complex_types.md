@@ -69,7 +69,8 @@ User.avro_schema()
 ```
 
 Note that in addition to a *field-level* default value, you can optionally supply a *type-level* default symbol for the 
-enum by supplying the `default` attribute under the `Meta` class.
+enum by supplying the `default` attribute under the `Meta` class. See the 
+[Avro specification](https://avro.apache.org/docs/1.10.2/spec.html#Enums) for more details.
 
 ```
 
