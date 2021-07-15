@@ -106,7 +106,7 @@ def user_advance_dataclass(color_enum):
         age: int
         pets: typing.List[str]
         accounts: typing.Dict[str, int]
-        favorite_colors: color_enum
+        favorite_color: color_enum
         has_car: bool = False
         country: str = "Argentina"
         address: str = None
@@ -126,7 +126,7 @@ def user_advance_dataclass_with_enum(color_enum: type, user_type_enum: type):
         age: int
         pets: typing.List[str]
         accounts: typing.Dict[str, int]
-        favorite_colors: color_enum
+        favorite_color: color_enum
         has_car: bool = False
         country: str = "Argentina"
         address: str = None
@@ -147,7 +147,7 @@ def user_advance_dataclass_with_union_enum(color_enum: type, user_type_enum: typ
         age: int
         pets: typing.List[str]
         accounts: typing.Dict[str, int]
-        favorite_colors: color_enum
+        favorite_color: color_enum
         has_car: bool = False
         country: str = "Argentina"
         address: str = None
@@ -170,7 +170,7 @@ def user_advance_dataclass_with_sub_record_and_enum(color_enum: type, user_type_
     @dataclasses.dataclass
     class UserWithSubRecordAndEnum(AvroModel):
         name: str
-        favorite_colors: color_enum
+        favorite_color: color_enum
         sub_record: SubRecord
         has_car: bool = False
 
@@ -189,7 +189,7 @@ def user_advance_with_defaults_dataclass(color_enum):
         pets: typing.List[str] = dataclasses.field(default_factory=lambda: ["dog", "cat"])
         accounts: typing.Dict[str, int] = dataclasses.field(default_factory=lambda: {"key": 1})
         has_car: bool = False
-        favorite_colors: color_enum = color_enum.BLUE
+        favorite_color: color_enum = color_enum.BLUE
         country: str = "Argentina"
         address: str = None
 
@@ -208,7 +208,7 @@ def user_advance_with_defaults_dataclass_with_enum(color_enum, user_type_enum):
         pets: typing.List[str] = dataclasses.field(default_factory=lambda: ["dog", "cat"])
         accounts: typing.Dict[str, int] = dataclasses.field(default_factory=lambda: {"key": 1})
         has_car: bool = False
-        favorite_colors: color_enum = color_enum.BLUE
+        favorite_color: color_enum = color_enum.BLUE
         country: str = "Argentina"
         address: str = None
         user_type: typing.Optional[user_type_enum] = None

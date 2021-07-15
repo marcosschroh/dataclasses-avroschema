@@ -36,7 +36,7 @@
         "default": false
       },
       {
-        "name": "favorite_colors",
+        "name": "favorite_color",
         "type": {
           "type": "enum",
           "name": "FavoriteColor",

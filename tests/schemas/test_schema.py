@@ -111,21 +111,21 @@ def test_not_implementd_methods():
 
 def test_get_enum_type_map(user_advance_dataclass_with_enum, color_enum, user_type_enum):
     assert user_advance_dataclass_with_enum._get_enum_type_map() == {
-        "favorite_colors": color_enum,
+        "favorite_color": color_enum,
         "user_type": user_type_enum,
     }
 
 
 def test_get_enum_type_map_with_unions(user_advance_dataclass_with_union_enum, color_enum, user_type_enum):
     assert user_advance_dataclass_with_union_enum._get_enum_type_map() == {
-        "favorite_colors": color_enum,
+        "favorite_color": color_enum,
         "user_type": user_type_enum,
     }
 
 
 def test_get_enum_type_map_with_sub_record(user_advance_dataclass_with_sub_record_and_enum, color_enum, user_type_enum):
     assert user_advance_dataclass_with_sub_record_and_enum._get_enum_type_map() == {
-        "favorite_colors": color_enum,
+        "favorite_color": color_enum,
         "user_type": user_type_enum,
     }
 
@@ -133,7 +133,7 @@ def test_get_enum_type_map_with_sub_record(user_advance_dataclass_with_sub_recor
 def test_deserialize_complex_types(user_advance_dataclass_with_sub_record_and_enum, color_enum, user_type_enum):
     payload = {
         "name": "Name",
-        "favorite_colors": "BLUE",
+        "favorite_color": "BLUE",
         "sub_record": {"sub_name": "Sub Name", "user_type": "PREMIUM"},
         "has_car": True,
     }
@@ -142,7 +142,7 @@ def test_deserialize_complex_types(user_advance_dataclass_with_sub_record_and_en
 
     assert deserialized_payload == {
         "name": "Name",
-        "favorite_colors": color_enum.BLUE,
+        "favorite_color": color_enum.BLUE,
         "sub_record": {"sub_name": "Sub Name", "user_type": user_type_enum.PREMIUM},
         "has_car": True,
     }
@@ -153,7 +153,7 @@ def test_deserialize_complex_types_invalid_enum_instance(
 ):
     payload = {
         "name": "Name",
-        "favorite_colors": "RED",
+        "favorite_color": "RED",
         "sub_record": {"sub_name": "Sub Name", "user_type": "PREMIUM"},
         "has_car": True,
     }

@@ -11,7 +11,7 @@ def test_complex_fields(user_advance_dataclass, color_enum):
         "pets": ["dog"],
         "accounts": {"ing": 100},
         "has_car": True,
-        "favorite_colors": color_enum.GREEN,
+        "favorite_color": color_enum.GREEN,
         "md5": b"u00ffffffffffffx",
     }
 
@@ -21,7 +21,7 @@ def test_complex_fields(user_advance_dataclass, color_enum):
         "pets": ["dog"],
         "accounts": {"ing": 100},
         "has_car": True,
-        "favorite_colors": color_enum.GREEN,
+        "favorite_color": color_enum.GREEN,
         "md5": b"u00ffffffffffffx",
         "country": "Argentina",
         "address": None,
@@ -33,7 +33,7 @@ def test_complex_fields(user_advance_dataclass, color_enum):
         "pets": ["dog"],
         "accounts": {"ing": 100},
         "has_car": True,
-        "favorite_colors": color_enum.GREEN.value,
+        "favorite_color": color_enum.GREEN.value,
         "md5": "u00ffffffffffffx",
         "country": "Argentina",
         "address": None,
@@ -67,7 +67,7 @@ def test_complex_fields_with_defaults(user_advance_with_defaults_dataclass, colo
         "pets": ["dog", "cat"],
         "accounts": {"key": 1},
         "has_car": False,
-        "favorite_colors": color_enum.BLUE,
+        "favorite_color": color_enum.BLUE,
         "country": "Argentina",
         "address": None,
     }
@@ -78,7 +78,7 @@ def test_complex_fields_with_defaults(user_advance_with_defaults_dataclass, colo
         "pets": ["dog", "cat"],
         "accounts": {"key": 1},
         "has_car": False,
-        "favorite_colors": color_enum.BLUE.value,
+        "favorite_color": color_enum.BLUE.value,
         "country": "Argentina",
         "address": None,
     }
@@ -87,7 +87,7 @@ def test_complex_fields_with_defaults(user_advance_with_defaults_dataclass, colo
     expected_user = user_advance_with_defaults_dataclass(
         name="juan",
         age=20,
-        favorite_colors=color_enum.BLUE,
+        favorite_color=color_enum.BLUE,
     )
 
     avro_binary = user.serialize()
@@ -106,7 +106,7 @@ def test_complex_fields_with_defaults(user_advance_with_defaults_dataclass, colo
     assert user_advance_with_defaults_dataclass.deserialize(avro_json, serialization_type="avro-json") == expected_user
 
     # check that is possible to continue doing serialization and dedesialization operations
-    expected_user.favorite_colors = "YELLOW"
+    expected_user.favorite_color = "YELLOW"
     assert expected_user.serialize() == b"\x08juan(\x04\x06dog\x06cat\x00\x02\x06key\x02\x00\x00\x02\x12Argentina\x00"
     assert user.avro_schema() == expected_user.avro_schema()
 
@@ -118,7 +118,7 @@ def test_complex_fields_with_enum(user_advance_dataclass_with_enum, color_enum):
         "pets": ["dog"],
         "accounts": {"ing": 100},
         "has_car": True,
-        "favorite_colors": color_enum.GREEN,
+        "favorite_color": color_enum.GREEN,
         "md5": b"u00ffffffffffffx",
     }
 
@@ -128,7 +128,7 @@ def test_complex_fields_with_enum(user_advance_dataclass_with_enum, color_enum):
         "pets": ["dog"],
         "accounts": {"ing": 100},
         "has_car": True,
-        "favorite_colors": color_enum.GREEN,
+        "favorite_color": color_enum.GREEN,
         "md5": b"u00ffffffffffffx",
         "country": "Argentina",
         "address": None,
@@ -141,7 +141,7 @@ def test_complex_fields_with_enum(user_advance_dataclass_with_enum, color_enum):
         "pets": ["dog"],
         "accounts": {"ing": 100},
         "has_car": True,
-        "favorite_colors": "GREEN",
+        "favorite_color": "GREEN",
         "md5": "u00ffffffffffffx",
         "country": "Argentina",
         "address": None,
@@ -176,7 +176,7 @@ def test_complex_fields_with_defaults_with_enum(user_advance_with_defaults_datac
         "pets": ["dog", "cat"],
         "accounts": {"key": 1},
         "has_car": False,
-        "favorite_colors": color_enum.BLUE,
+        "favorite_color": color_enum.BLUE,
         "country": "Argentina",
         "address": None,
         "user_type": None,
@@ -188,7 +188,7 @@ def test_complex_fields_with_defaults_with_enum(user_advance_with_defaults_datac
         "pets": ["dog", "cat"],
         "accounts": {"key": 1},
         "has_car": False,
-        "favorite_colors": color_enum.BLUE.value,
+        "favorite_color": color_enum.BLUE.value,
         "country": "Argentina",
         "address": None,
         "user_type": None,
@@ -198,7 +198,7 @@ def test_complex_fields_with_defaults_with_enum(user_advance_with_defaults_datac
     expected_user = user_advance_with_defaults_dataclass_with_enum(
         name="juan",
         age=20,
-        favorite_colors=color_enum.BLUE,
+        favorite_color=color_enum.BLUE,
     )
 
     avro_binary = user.serialize()
@@ -222,7 +222,7 @@ def test_complex_fields_with_defaults_with_enum(user_advance_with_defaults_datac
     )
 
     # check that is possible to continue doing serialization and dedesialization operations
-    expected_user.favorite_colors = color_enum.YELLOW
+    expected_user.favorite_color = color_enum.YELLOW
     assert (
         expected_user.serialize() == b"\x08juan(\x04\x06dog\x06cat\x00\x02\x06key\x02\x00\x00\x02\x12Argentina\x00\x00"
     )
