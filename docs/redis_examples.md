@@ -21,7 +21,7 @@ class UserModel(AvroModel):
     "An User"
     name: str
     age: int
-    favorite_colors: FavoriteColor = FavoriteColor.BLUE
+    favorite_color: FavoriteColor = FavoriteColor.BLUE
     country: str = "Argentina"
     address: str = None
     testing: bool = False
