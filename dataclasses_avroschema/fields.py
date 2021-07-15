@@ -504,7 +504,7 @@ class EnumField(BaseField):
             # check that the default value is listed in symbols
             assert (
                 self.default.value in self.get_symbols()
-            ), f"The default value should be one of {self.get_symbols()}. Current is {self.default}"
+            ), f"The default value should be one of {', '.join(self.get_symbols())}. Current is {self.default}"
             return self.default.value
 
     def fake(self) -> typing.Any:
