@@ -61,7 +61,7 @@ def test_one_to_many_map_relationship(user_many_address_map_schema):
     assert User.avro_schema() == json.dumps(user_many_address_map_schema)
 
 
-def test_one_to_many_map_relationship(user_many_address_map_schema_alias_item):
+def test_one_to_many_map_relationship_with_alias(user_many_address_map_schema_alias_item):
     """
     Test schema relationship one-to-many using a map
     """

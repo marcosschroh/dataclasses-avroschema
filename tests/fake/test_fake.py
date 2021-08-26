@@ -30,8 +30,14 @@ def test_fake_union():
     class Bus(AvroModel):
         engine_name: str
 
+        class Meta:
+            namespace = "types.bus_type"
+
     class Car(AvroModel):
         engine_name: str
+
+        class Meta:
+            namespace = "types.car_type"
 
     class UnionSchema(AvroModel):
         first_union: typing.Union[str, int]

@@ -19,25 +19,27 @@
       "type": [
         {
           "type": "record",
-          "name": "lake_trip_bus_record",
+          "name": "Bus",
           "fields": [
             {
               "name": "engine_name",
               "type": "string"
             }
           ],
-          "doc": "A Bus"
+          "doc": "A Bus",
+          "namespace": "types.bus_type"
         },
         {
           "type": "record",
-          "name": "lake_trip_car_record",
+          "name": "Car",
           "fields": [
             {
               "name": "engine_name",
               "type": "string"
             }
           ],
-          "doc": "A Car"
+          "doc": "A Car",
+          "namespace": "types.car_type"
         }
       ]
     },
@@ -45,56 +47,16 @@
       "name": "river_trip",
       "type": [
         "null",
-        {
-          "type": "record",
-          "name": "river_trip_bus_record",
-          "fields": [
-            {
-              "name": "engine_name",
-              "type": "string"
-            }
-          ],
-          "doc": "A Bus"
-        },
-        {
-          "type": "record",
-          "name": "river_trip_car_record",
-          "fields": [
-            {
-              "name": "engine_name",
-              "type": "string"
-            }
-          ],
-          "doc": "A Car"
-        }
+        "types.bus_type.Bus",
+        "types.car_type.Car"
       ],
       "default": null
     },
     {
       "name": "mountain_trip",
       "type": [
-        {
-          "type": "record",
-          "name": "mountain_trip_bus_record",
-          "fields": [
-            {
-              "name": "engine_name",
-              "type": "string"
-            }
-          ],
-          "doc": "A Bus"
-        },
-        {
-          "type": "record",
-          "name": "mountain_trip_car_record",
-          "fields": [
-            {
-              "name": "engine_name",
-              "type": "string"
-            }
-          ],
-          "doc": "A Car"
-        }
+        "types.bus_type.Bus",
+        "types.car_type.Car"
       ],
       "default": {"engine_name": "honda"}
     }

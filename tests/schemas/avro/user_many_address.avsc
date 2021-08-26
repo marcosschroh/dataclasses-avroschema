@@ -16,7 +16,7 @@
                 "type": "array",
                 "items": {
                     "type": "record",
-                    "name": "address_record",
+                    "name": "Address",
                     "fields": [
                         {
                             "name": "street",

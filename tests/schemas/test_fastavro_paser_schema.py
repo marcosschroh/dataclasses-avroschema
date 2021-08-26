@@ -128,14 +128,17 @@ def test_one_to_one_repeated_schema():
         latitude: float
         longitude: float
 
-    class Trip(AvroModel):
+        class Meta:
+            namespace = "types.location_type"
 
+    class Trip(AvroModel):
         start_time: datetime.datetime
         start_location: Location
         finish_time: datetime.datetime
         finish_location: Location
 
     assert parse_schema(Trip.avro_schema_to_python())
+    assert Trip.fake()
 
 
 def test_one_to_many_schema():
@@ -271,15 +274,18 @@ def test_schema_array_with_union_types():
     assert parse_schema(ArrayUnionSchema.avro_schema_to_python())
 
 
-def test_schema_with_optional_and_complex_types():
-    class UnionSchema(AvroModel):
-        "Some Unions"
-        first_union: typing.Union[typing.List[str], int]
-        logical_union: typing.Union[typing.List[datetime.datetime], datetime.date, uuid.uuid4]
-        dict_union: typing.Optional[typing.Dict[str, int]]
-        optional_union: typing.Optional[typing.List[str]]
-        dict_union_optional: typing.Optional[typing.Dict[str, int]]
-        optional_union_with_default: typing.Optional[typing.List[str]] = None
-        dict_union_optional_with_default: typing.Optional[typing.Dict[str, int]] = dataclasses.field(
-            default_factory=lambda: [{"test": 1}]
-        )
+def test_namespaces():
+    class C(AvroModel):
+        pass
+
+    class B(AvroModel):
+        c: C
+
+        class Meta:
+            namespace = "my.namespace"
+
+    class A(AvroModel):
+        b1: B
+        b2: B
+
+    parse_schema(A.avro_schema_to_python())

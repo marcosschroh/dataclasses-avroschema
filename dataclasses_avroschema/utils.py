@@ -72,5 +72,10 @@ class SchemaMetadata:
         return self.alias_nested_items.get(name)
 
 
+class DataclassFieldEmulator(typing.NamedTuple):
+    name: str
+    type: typing.Any
+
+
 epoch: datetime = datetime(1970, 1, 1, tzinfo=utc)
 epoch_naive: datetime = datetime(1970, 1, 1)

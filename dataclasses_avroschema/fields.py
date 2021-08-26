@@ -17,6 +17,8 @@ from pytz import utc
 
 from dataclasses_avroschema import schema_generator, serialization, types, utils
 
+from .exceptions import NameSpaceRequiredException
+
 PY_VER = sys.version_info
 
 if PY_VER >= (3, 9):
@@ -102,6 +104,7 @@ class BaseField:
     name: str
     type: typing.Any  # store the python primitive type
     default: typing.Any
+    parent: typing.Tuple[dataclasses.Field]
     metadata: typing.Mapping = dataclasses.field(default_factory=dict)
     model_metadata: typing.Optional[utils.SchemaMetadata] = None
 
@@ -305,9 +308,10 @@ class ListField(ContainerField):
                 default=self.default,
                 default_factory=self.default_factory,
                 model_metadata=self.model_metadata,
+                parent=self.parent,
             ).get_avro_type()
         else:
-            self.internal_field = AvroField(name, items_type, model_metadata=self.model_metadata)
+            self.internal_field = AvroField(name, items_type, model_metadata=self.model_metadata, parent=self.parent)
             self.items_type = self.internal_field.get_avro_type()
 
     def fake(self) -> typing.List:
@@ -355,7 +359,7 @@ class DictField(ContainerField):
         values_type = self.type.__args__[1]
 
         name = self.get_singular_name(self.name)
-        self.internal_field = AvroField(name, values_type, model_metadata=self.model_metadata)
+        self.internal_field = AvroField(name, values_type, model_metadata=self.model_metadata, parent=self.parent)
         self.values_type = self.internal_field.get_avro_type()
 
     def fake(self) -> typing.Dict[str, typing.Any]:
@@ -396,13 +400,13 @@ class UnionField(BaseField):
             unions.insert(0, NULL)
         elif type(self.default) is not dataclasses._MISSING_TYPE:
             default_type = type(self.default)
-            default_field = AvroField(name, default_type, model_metadata=self.model_metadata)
+            default_field = AvroField(name, default_type, model_metadata=self.model_metadata, parent=self.parent)
             unions.append(default_field.get_avro_type())
             self.internal_fields.append(default_field)
 
         for element in elements:
             # create the field and get the avro type
-            field = AvroField(name, element, model_metadata=self.model_metadata)
+            field = AvroField(name, element, model_metadata=self.model_metadata, parent=self.parent)
 
             if field.get_avro_type() not in unions:
                 unions.append(field.get_avro_type())
@@ -419,7 +423,7 @@ class UnionField(BaseField):
         if self.default in (dataclasses.MISSING, None) and not is_default_factory_callable:
             return self.default
         elif is_default_factory_callable:
-            # expeting a callable
+            # expecting a callable
             default = self.default_factory()  # type: ignore
             assert isinstance(default, (dict, list)), f"Dict or List is required as default for field {self.name}"
 
@@ -653,32 +657,39 @@ class UUIDField(LogicalTypeField):
 @dataclasses.dataclass
 class RecordField(BaseField):
     def get_avro_type(self) -> typing.Union[typing.List, typing.Dict]:
-        record_type = self.type.avro_schema_to_python()
-        record_type["name"] = self.record_name
+        alias = self.model_metadata.get_alias(self.name)  # type: ignore
+        name = alias or self.type.__name__
+
+        if not self.exist_type():
+            raw_field = utils.DataclassFieldEmulator(name=name, type=self.type)
+            self.parent.raw_fields = self.parent.raw_fields + (raw_field,)
+
+            record_type = self.type.avro_schema_to_python()
+            record_type["name"] = name
+        else:
+            meta = getattr(self.type, "Meta", None)
+            metadata = utils.SchemaMetadata.create(meta)
+
+            if metadata.namespace is None:
+                raise NameSpaceRequiredException(field_type=self.type, field_name=self.name)
+            record_type = f"{metadata.namespace}.{name}"
 
         if self.default is None:
             return [NULL, record_type]
         return record_type
 
-    @property
-    def record_name(self) -> str:
-        alias = self.model_metadata.get_alias(self.name)  # type: ignore
-
-        if alias:
-            return alias
-
-        # when there is a nested record replace its name
-        # to avoid name collisions
-        record_name = self.type.__name__.lower()
-        if record_name not in self.name:
-            name = f"{self.name}_{record_name}_record"
-        else:
-            name = f"{self.name}_record"
-
-        return name
-
     def fake(self) -> typing.Any:
         return self.type.fake()
+
+    def exist_type(self):
+        # filter by the same field types
+        same_types = [
+            field.name for field in self.parent.raw_fields if field.type == self.type and field.name != self.name
+        ]
+
+        # check the index of self. If the index is 0, means that it is the first appearance
+        # of this type, otherwise exist already.
+        return len(same_types) > 1
 
 
 @dataclasses.dataclass
@@ -810,6 +821,8 @@ FieldType = typing.Union[
 def field_factory(
     name: str,
     native_type: typing.Any,
+    parent: typing.Any = None,
+    *,
     default: typing.Any = dataclasses.MISSING,
     default_factory: typing.Any = dataclasses.MISSING,
     metadata: typing.Mapping = dataclasses.field(default_factory=dict),
@@ -817,17 +830,41 @@ def field_factory(
 ) -> FieldType:
     if native_type in PYTHON_INMUTABLE_TYPES:
         klass = INMUTABLE_FIELDS_CLASSES[native_type]
-        return klass(name=name, type=native_type, default=default, metadata=metadata, model_metadata=model_metadata)
+        return klass(
+            name=name,
+            type=native_type,
+            default=default,
+            metadata=metadata,
+            model_metadata=model_metadata,
+            parent=parent,
+        )
     elif utils.is_self_referenced(native_type):
         return SelfReferenceField(
-            name=name, type=native_type, default=default, metadata=metadata, model_metadata=model_metadata
+            name=name,
+            type=native_type,
+            default=default,
+            metadata=metadata,
+            model_metadata=model_metadata,
+            parent=parent,
         )
     elif native_type is types.Fixed:
         return FixedField(
-            name=name, type=native_type, default=default, metadata=metadata, model_metadata=model_metadata
+            name=name,
+            type=native_type,
+            default=default,
+            metadata=metadata,
+            model_metadata=model_metadata,
+            parent=parent,
         )
     elif native_type is types.Enum:
-        return EnumField(name=name, type=native_type, default=default, metadata=metadata, model_metadata=model_metadata)
+        return EnumField(
+            name=name,
+            type=native_type,
+            default=default,
+            metadata=metadata,
+            model_metadata=model_metadata,
+            parent=parent,
+        )
     elif isinstance(native_type, GenericAlias):  # type: ignore
         origin = native_type.__origin__
 
@@ -855,13 +892,26 @@ def field_factory(
             metadata=metadata,
             default_factory=default_factory,
             model_metadata=model_metadata,
+            parent=parent,
         )
     elif native_type in PYTHON_LOGICAL_TYPES:
         klass = LOGICAL_TYPES_FIELDS_CLASSES[native_type]  # type: ignore
-        return klass(name=name, type=native_type, default=default, metadata=metadata, model_metadata=model_metadata)
+        return klass(
+            name=name,
+            type=native_type,
+            default=default,
+            metadata=metadata,
+            model_metadata=model_metadata,
+            parent=parent,
+        )
     elif inspect.isclass(native_type) and issubclass(native_type, schema_generator.AvroModel):
         return RecordField(
-            name=name, type=native_type, default=default, metadata=metadata, model_metadata=model_metadata
+            name=name,
+            type=native_type,
+            default=default,
+            metadata=metadata,
+            model_metadata=model_metadata,
+            parent=parent,
         )
     else:
         msg = (

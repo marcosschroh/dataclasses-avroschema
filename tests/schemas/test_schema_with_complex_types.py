@@ -4,6 +4,8 @@ import json
 import typing
 import uuid
 
+from fastavro import parse_schema
+
 from dataclasses_avroschema import AvroModel
 
 
@@ -22,9 +24,15 @@ def test_schema_with_unions_type(union_type_schema):
         "A Bus"
         engine_name: str
 
+        class Meta:
+            namespace = "types.bus_type"
+
     class Car(AvroModel):
         "A Car"
         engine_name: str
+
+        class Meta:
+            namespace = "types.car_type"
 
     class UnionSchema(AvroModel):
         "Some Unions"
@@ -34,6 +42,7 @@ def test_schema_with_unions_type(union_type_schema):
         river_trip: typing.Union[Bus, Car] = None
         mountain_trip: typing.Union[Bus, Car] = dataclasses.field(default_factory=lambda: {"engine_name": "honda"})
 
+    assert parse_schema(UnionSchema.avro_schema_to_python())
     assert UnionSchema.avro_schema() == json.dumps(union_type_schema)
 
 
