@@ -4,6 +4,7 @@ import typing
 
 from dacite import Config, from_dict
 
+from dataclasses_avroschema import utils
 from dataclasses_avroschema.schema_definition import AvroSchemaDefinition
 from dataclasses_avroschema.serialization import deserialize, serialize, to_json
 from dataclasses_avroschema.utils import SchemaMetadata, is_custom_type
@@ -22,6 +23,7 @@ class AvroModel:
     schema_def: typing.Optional[AvroSchemaDefinition] = None
     klass: typing.Any = None
     metadata: typing.Optional[SchemaMetadata] = None
+    raw_fields: typing.Optional[typing.Tuple[dataclasses.Field, utils.DataclassFieldEmulator]] = None
 
     @classmethod
     def generate_dataclass(cls: typing.Any) -> typing.Any:
@@ -41,6 +43,7 @@ class AvroModel:
             # Generate metaclass and metadata
             cls.klass = cls.generate_dataclass()
             cls.metadata = cls.generate_metadata()
+            cls.raw_fields = dataclasses.fields(cls.klass)
 
             # let's live open the possibility to define different
             # schema definitions like json
@@ -54,11 +57,15 @@ class AvroModel:
 
     @classmethod
     def _generate_avro_schema(cls: typing.Any) -> AvroSchemaDefinition:
-        return AvroSchemaDefinition("record", cls.klass, metadata=cls.metadata)
+        return AvroSchemaDefinition("record", cls.klass, metadata=cls.metadata, raw_fields=cls.raw_fields, parent=cls)
 
     @classmethod
     def avro_schema(cls: typing.Any) -> str:
-        return json.dumps(cls.generate_schema(schema_type=AVRO).render())
+        avro_schema = json.dumps(cls.generate_schema(schema_type=AVRO).render())
+
+        # After generating the avro schema, reset the raw_fields to the init
+        cls.raw_fields = dataclasses.fields(cls.klass)
+        return avro_schema
 
     @classmethod
     def avro_schema_to_python(cls: typing.Any) -> typing.Dict[str, typing.Any]:

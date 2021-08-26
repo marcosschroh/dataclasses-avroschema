@@ -20,6 +20,7 @@ class BaseSchemaDefinition(abc.ABC):
 
     type: str
     klass: typing.Any
+    parent: typing.Any
 
     @abc.abstractmethod
     def get_rendered_fields(self) -> typing.List[OrderedDict]:
@@ -48,6 +49,9 @@ class BaseSchemaDefinition(abc.ABC):
 class AvroSchemaDefinition(BaseSchemaDefinition):
     metadata: utils.SchemaMetadata
     fields: typing.List[FieldType] = dataclasses.field(default_factory=list)
+    raw_fields: typing.Optional[
+        typing.Tuple[dataclasses.Field, utils.DataclassFieldEmulator]
+    ] = None  # raw python fields coming from parent classes
 
     def __post_init__(self) -> None:
         self.fields = self.parse_dataclasses_fields()
@@ -62,10 +66,11 @@ class AvroSchemaDefinition(BaseSchemaDefinition):
             AvroField(
                 dataclass_field.name,
                 dataclass_field.type,
-                dataclass_field.default,
-                dataclass_field.default_factory,  # type: ignore  # TODO: resolve mypy
-                dataclass_field.metadata,
-                self.metadata,
+                default=dataclass_field.default,
+                default_factory=dataclass_field.default_factory,  # type: ignore  # TODO: resolve mypy
+                metadata=dataclass_field.metadata,
+                model_metadata=self.metadata,
+                parent=self.parent,
             )
             for dataclass_field in dataclasses.fields(self.klass)
         ]
@@ -88,7 +93,12 @@ class AvroSchemaDefinition(BaseSchemaDefinition):
 
             schema_fields.append(
                 AvroField(
-                    dataclass_field.name, dataclass_field.type, default, default_factory, model_metadata=self.metadata
+                    dataclass_field.name,
+                    dataclass_field.type,
+                    default=default,
+                    default_factory=default_factory,
+                    model_metadata=self.metadata,
+                    parent=self.parent,
                 )
             )
 

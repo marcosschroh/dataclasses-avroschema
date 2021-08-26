@@ -205,9 +205,15 @@ def test_faust_record_schema_with_unions_type(union_type_schema):
         "A Bus"
         engine_name: str
 
+        class Meta:
+            namespace = "types.bus_type"
+
     class Car(faust.Record, AvroModel):
         "A Car"
         engine_name: str
+
+        class Meta:
+            namespace = "types.car_type"
 
     class UnionSchema(faust.Record, AvroModel):
         "Some Unions"

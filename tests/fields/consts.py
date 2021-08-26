@@ -171,23 +171,11 @@ LOGICAL_TYPES_AND_INVALID_DEFAULTS = (
 )
 
 
-class User(AvroModel):
-    "User"
-    first_name: str
-
-
-avro_user = {
-    "name": "an_array_field_user_record",
-    "type": "record",
-    "doc": "User",
-    "fields": [{"name": "first_name", "type": "string"}],
-}
-
 ARRAY_WITH_UNION_TYPES = (
     (typing.Union[int, str], [fields.LONG, fields.STRING], [10, 20, "test"]),
     (
-        typing.Union[int, str, User],
-        [fields.LONG, fields.STRING, avro_user],
-        [10, 20, "test"],
+        typing.Union[int, str, float],
+        [fields.LONG, fields.STRING, fields.DOUBLE],
+        [10, 20, 100.9],
     ),
 )

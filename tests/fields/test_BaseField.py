@@ -24,7 +24,7 @@ def test_render():
     field = fields.AvroField(
         "breed_name",
         str,
-        "test",
+        default="test",
         metadata={"encoding": "some_exotic_encoding", "doc": "Official Breed Name"},
     )
 

@@ -16,7 +16,7 @@
                 "type": "map",
                 "values": {
                     "type": "record",
-                    "name": "address_record",
+                    "name": "Address",
                     "fields": [
                         {
                             "name": "street",
