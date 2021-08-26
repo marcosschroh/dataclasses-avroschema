@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.23.0] - 2021-08-26
+
+### Added
+
+- Use `namespaces` for repeated types [115](https://github.com/marcosschroh/dataclasses-avroschema/pull/115)
+- Record names now are generated using `class.__name__` instead of `class.__name__.lower()_record`
+
 ## [0.22.1] - 2021-07-05
 
 ### Fixed
