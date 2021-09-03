@@ -291,6 +291,9 @@ class Trip(AvroModel):
     start_location: Location  # first relationship
     finish_time: datetime
     finish_location: Location  # second relationship
+
+
+Trip.avro_schema()
 ```
 
 ```json
@@ -322,6 +325,121 @@ class Trip(AvroModel):
   ],
   "doc": "Trip(start_time: datetime.datetime, start_location: __main__.Location, finish_time: datetime.datetime, finish_location: __main__.Location)"
 }
+```
+
+or with `arrays` or `maps`:
+
+```python
+class Location(AvroModel):
+    latitude: float
+    longitude: float
+
+    class Meta:
+        namespace = "types.location_type"
+        schema_doc = False
+
+
+class Trip(AvroModel):
+    start_location: Location
+    finish_location: typing.List[Location]
+
+    class Meta:
+        schema_doc = False
+
+
+Trip.avro_schema()
+```
+
+```json
+{
+  "type": "record",
+  "name": "Trip",
+  "fields": [
+    {
+      "name": "start_location",
+      "type":
+        {
+          "type": "record",
+          "name": "Location",
+          "fields": [
+            {
+              "name": "latitude",
+              "type": "double"
+            },
+            {
+              "name": "longitude",
+              "type": "double"
+            }
+          ],
+          "namespace": "types.location_type"
+        }
+      },
+    {
+      "name": "finish_location",
+      "type": {
+        "type": "array",
+        "items": "types.location_type.Location",
+        "name": "finish_location"
+      }
+    }
+  ]
+}'
+```
+
+```python
+class Location(AvroModel):
+    latitude: float
+    longitude: float
+
+    class Meta:
+        namespace = "types.location_type"
+        schema_doc = False
+
+
+class Trip(AvroModel):
+    start_location: Location
+    finish_location: typing.Dict[str, Location]
+
+    class Meta:
+        schema_doc = False
+
+
+Trip.avro_schema()
+```
+
+```json
+{
+  "type": "record",
+  "name": "Trip",
+  "fields": [
+    {
+      "name": "start_location",
+      "type": {
+        "type": "record",
+        "name": "Location",
+        "fields": [
+          {
+            "name": "latitude",
+            "type": "double"
+          },
+          {
+            "name": "longitude",
+            "type": "double"
+          }
+        ],
+        "namespace": "types.location_type"
+      }
+    },
+    {
+      "name": "finish_location",
+      "type": {
+        "type": "map",
+        "values": "types.location_type.Location",
+        "name": "finish_location"
+      }
+    }
+  ]
+}'
 ```
 
 If you want, also you can use custom name for nested items (`nested records`, `arrays` or `maps`) using the property `alias_nested_items` in `class Meta`:
