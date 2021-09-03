@@ -141,6 +141,50 @@ def test_one_to_one_repeated_schema():
     assert Trip.fake()
 
 
+def test_one_to_one_repeated_schema_in_array():
+    """
+    Test relationship one-to-one with more than once schema
+    """
+
+    class Location(AvroModel):
+        latitude: float
+        longitude: float
+
+        class Meta:
+            namespace = "types.location_type"
+
+    class Trip(AvroModel):
+        start_time: datetime.datetime
+        start_location: Location
+        finish_time: datetime.datetime
+        finish_location: typing.List[Location]
+
+    assert parse_schema(Trip.avro_schema_to_python())
+    assert Trip.fake()
+
+
+def test_one_to_one_repeated_schema_in_map():
+    """
+    Test relationship one-to-one with more than once schema
+    """
+
+    class Location(AvroModel):
+        latitude: float
+        longitude: float
+
+        class Meta:
+            namespace = "types.location_type"
+
+    class Trip(AvroModel):
+        # start_time: datetime.datetime
+        start_location: Location
+        # finish_time: datetime.datetime
+        finish_location: typing.Dict[str, Location]
+
+    assert parse_schema(Trip.avro_schema_to_python())
+    assert Trip.fake()
+
+
 def test_one_to_many_schema():
     """
     Test relationship one-to-many

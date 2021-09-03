@@ -99,7 +99,7 @@ PythonImnutableTypes = typing.Union[
 
 @dataclasses.dataclass  # type: ignore
 class BaseField:
-    avro_type: typing.ClassVar
+    avro_type: typing.ClassVar[str]
 
     name: str
     type: typing.Any  # store the python primitive type
@@ -199,7 +199,7 @@ class ImmutableField(BaseField):
 
 @dataclasses.dataclass
 class StringField(ImmutableField):
-    avro_type: typing.ClassVar = STRING
+    avro_type: typing.ClassVar[str] = STRING
 
     def fake(self) -> str:
         return fake.pystr()
@@ -207,7 +207,7 @@ class StringField(ImmutableField):
 
 @dataclasses.dataclass
 class LongField(ImmutableField):
-    avro_type: typing.ClassVar = LONG
+    avro_type: typing.ClassVar[str] = LONG
 
     def fake(self) -> int:
         return fake.pyint()
@@ -215,7 +215,7 @@ class LongField(ImmutableField):
 
 @dataclasses.dataclass
 class BooleanField(ImmutableField):
-    avro_type: typing.ClassVar = BOOLEAN
+    avro_type: typing.ClassVar[str] = BOOLEAN
 
     def fake(self) -> bool:
         return fake.pybool()
@@ -223,7 +223,7 @@ class BooleanField(ImmutableField):
 
 @dataclasses.dataclass
 class DoubleField(ImmutableField):
-    avro_type: typing.ClassVar = DOUBLE
+    avro_type: typing.ClassVar[str] = DOUBLE
 
     def fake(self) -> float:
         return fake.pyfloat()
@@ -231,7 +231,7 @@ class DoubleField(ImmutableField):
 
 @dataclasses.dataclass
 class BytesField(ImmutableField):
-    avro_type: typing.ClassVar = BYTES
+    avro_type: typing.ClassVar[str] = BYTES
 
     def get_default_value(self) -> typing.Any:
         if self.default in (dataclasses.MISSING, None):
@@ -250,7 +250,7 @@ class BytesField(ImmutableField):
 
 @dataclasses.dataclass
 class NoneField(ImmutableField):
-    avro_type: typing.ClassVar = NULL
+    avro_type: typing.ClassVar[str] = NULL
 
 
 @dataclasses.dataclass
@@ -269,11 +269,9 @@ class ListField(ContainerField):
     items_type: typing.Any = None
     internal_field: typing.Any = None
 
-    def __post_init__(self) -> None:
-        self.generate_items_type()
-
     @property
     def avro_type(self) -> typing.Dict:
+        self.generate_items_type()
         return {"type": ARRAY, "items": self.items_type}
 
     def get_default_value(self) -> typing.Union[typing.List, dataclasses._MISSING_TYPE]:
@@ -315,6 +313,7 @@ class ListField(ContainerField):
             self.items_type = self.internal_field.get_avro_type()
 
     def fake(self) -> typing.List:
+        self.generate_items_type()
         # return a list of one element with the type specified
         return [self.internal_field.fake()]
 
@@ -324,11 +323,9 @@ class DictField(ContainerField):
     values_type: typing.Any = None
     internal_field: typing.Any = None
 
-    def __post_init__(self) -> None:
-        self.generate_values_type()
-
     @property
     def avro_type(self) -> typing.Dict[str, typing.Any]:
+        self.generate_values_type()
         return {"type": MAP, "values": self.values_type}
 
     def get_default_value(self) -> typing.Union[typing.Dict[str, typing.Any], dataclasses._MISSING_TYPE]:
@@ -364,6 +361,7 @@ class DictField(ContainerField):
 
     def fake(self) -> typing.Dict[str, typing.Any]:
         # return a dict of one element with the items type specified
+        self.generate_values_type()
         return {fake.pystr(): self.internal_field.fake()}
 
 
@@ -538,7 +536,7 @@ class DateField(LogicalTypeField):
     the number of days from the unix epoch, 1 January 1970 (ISO calendar).
     """
 
-    avro_type: typing.ClassVar = LOGICAL_DATE
+    avro_type: typing.ClassVar[str] = LOGICAL_DATE
 
     @staticmethod
     def to_avro(date: datetime.date) -> int:
@@ -573,7 +571,7 @@ class TimeField(LogicalTypeField):
     where the int stores the number of milliseconds after midnight, 00:00:00.000.
     """
 
-    avro_type: typing.ClassVar = LOGICAL_TIME
+    avro_type: typing.ClassVar[str] = LOGICAL_TIME
 
     @staticmethod
     def to_avro(time: datetime.time) -> int:
@@ -611,7 +609,7 @@ class DatetimeField(LogicalTypeField):
     1 January 1970 00:00:00.000 UTC.
     """
 
-    avro_type: typing.ClassVar = LOGICAL_DATETIME
+    avro_type: typing.ClassVar[str] = LOGICAL_DATETIME
 
     @staticmethod
     def to_avro(date_time: datetime.datetime) -> float:
@@ -638,7 +636,7 @@ class DatetimeField(LogicalTypeField):
 
 @dataclasses.dataclass
 class UUIDField(LogicalTypeField):
-    avro_type: typing.ClassVar = LOGICAL_UUID
+    avro_type: typing.ClassVar[str] = LOGICAL_UUID
 
     def validate_default(self) -> bool:
         msg = f"Invalid default type. Default should be {str} or {uuid.UUID}"
@@ -684,7 +682,7 @@ class RecordField(BaseField):
     def exist_type(self):
         # filter by the same field types
         same_types = [
-            field.name for field in self.parent.raw_fields if field.type == self.type and field.name != self.name
+            field.type for field in self.parent.raw_fields if field.type == self.type and field.name != self.name
         ]
 
         # check the index of self. If the index is 0, means that it is the first appearance
