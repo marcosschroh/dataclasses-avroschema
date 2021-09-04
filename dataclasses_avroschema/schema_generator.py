@@ -23,7 +23,7 @@ class AvroModel:
     schema_def: typing.Optional[AvroSchemaDefinition] = None
     klass: typing.Any = None
     metadata: typing.Optional[SchemaMetadata] = None
-    raw_fields: typing.Optional[typing.Tuple[dataclasses.Field, utils.DataclassFieldEmulator]] = None
+    user_defined_types: typing.Optional[typing.Tuple[utils.UserDefinedType]] = None
 
     @classmethod
     def generate_dataclass(cls: typing.Any) -> typing.Any:
@@ -43,7 +43,7 @@ class AvroModel:
             # Generate metaclass and metadata
             cls.klass = cls.generate_dataclass()
             cls.metadata = cls.generate_metadata()
-            cls.raw_fields = dataclasses.fields(cls.klass)
+            cls.user_defined_types = ()
 
             # let's live open the possibility to define different
             # schema definitions like json
@@ -57,14 +57,14 @@ class AvroModel:
 
     @classmethod
     def _generate_avro_schema(cls: typing.Any) -> AvroSchemaDefinition:
-        return AvroSchemaDefinition("record", cls.klass, metadata=cls.metadata, raw_fields=cls.raw_fields, parent=cls)
+        return AvroSchemaDefinition("record", cls.klass, metadata=cls.metadata, parent=cls)
 
     @classmethod
     def avro_schema(cls: typing.Any) -> str:
         avro_schema = json.dumps(cls.generate_schema(schema_type=AVRO).render())
 
-        # After generating the avro schema, reset the raw_fields to the init
-        cls.raw_fields = dataclasses.fields(cls.klass)
+        # After generating the avro schema, reset the user_defined_types to the init
+        cls.user_defined_types = ()
         return avro_schema
 
     @classmethod

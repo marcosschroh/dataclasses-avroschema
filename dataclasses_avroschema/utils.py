@@ -72,7 +72,7 @@ class SchemaMetadata:
         return self.alias_nested_items.get(name)
 
 
-class DataclassFieldEmulator(typing.NamedTuple):
+class UserDefinedType(typing.NamedTuple):
     name: str
     type: typing.Any
 

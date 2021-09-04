@@ -371,9 +371,6 @@ class UnionField(BaseField):
     unions: typing.List = dataclasses.field(default_factory=list)
     internal_fields: typing.List = dataclasses.field(default_factory=list)
 
-    def __post_init__(self) -> None:
-        self.unions = self.generate_unions_type()
-
     def generate_unions_type(self) -> typing.List:
         """
         Generate union.
@@ -405,14 +402,16 @@ class UnionField(BaseField):
         for element in elements:
             # create the field and get the avro type
             field = AvroField(name, element, model_metadata=self.model_metadata, parent=self.parent)
+            avro_type = field.get_avro_type()
 
-            if field.get_avro_type() not in unions:
-                unions.append(field.get_avro_type())
+            if avro_type not in unions:
+                unions.append(avro_type)
                 self.internal_fields.append(field)
 
         return unions
 
     def get_avro_type(self) -> typing.List:
+        self.unions = self.generate_unions_type()
         return self.unions
 
     def get_default_value(self) -> typing.Any:
@@ -431,6 +430,7 @@ class UnionField(BaseField):
         return self.default
 
     def fake(self) -> typing.Any:
+        self.unions = self.generate_unions_type()
         # get a random internal field and return a fake value
         field = random.choice(self.internal_fields)
         return field.fake()
@@ -659,8 +659,8 @@ class RecordField(BaseField):
         name = alias or self.type.__name__
 
         if not self.exist_type():
-            raw_field = utils.DataclassFieldEmulator(name=name, type=self.type)
-            self.parent.raw_fields = self.parent.raw_fields + (raw_field,)
+            user_defined_type = utils.UserDefinedType(name=name, type=self.type)
+            self.parent.user_defined_types = self.parent.user_defined_types + (user_defined_type,)
 
             record_type = self.type.avro_schema_to_python()
             record_type["name"] = name
@@ -682,12 +682,14 @@ class RecordField(BaseField):
     def exist_type(self):
         # filter by the same field types
         same_types = [
-            field.type for field in self.parent.raw_fields if field.type == self.type and field.name != self.name
+            field.type
+            for field in self.parent.user_defined_types
+            if field.type == self.type and field.name != self.name
         ]
 
-        # check the index of self. If the index is 0, means that it is the first appearance
+        # If length > 0, means that it is the first appearance
         # of this type, otherwise exist already.
-        return len(same_types) > 1
+        return len(same_types)
 
 
 @dataclasses.dataclass

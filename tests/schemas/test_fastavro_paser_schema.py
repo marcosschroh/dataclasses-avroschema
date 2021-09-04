@@ -136,6 +136,7 @@ def test_one_to_one_repeated_schema():
         start_location: Location
         finish_time: datetime.datetime
         finish_location: Location
+        middle_location: Location
 
     assert parse_schema(Trip.avro_schema_to_python())
     assert Trip.fake()
@@ -176,13 +177,32 @@ def test_one_to_one_repeated_schema_in_map():
             namespace = "types.location_type"
 
     class Trip(AvroModel):
-        # start_time: datetime.datetime
+        start_time: datetime.datetime
         start_location: Location
-        # finish_time: datetime.datetime
+        finish_time: datetime.datetime
         finish_location: typing.Dict[str, Location]
 
     assert parse_schema(Trip.avro_schema_to_python())
     assert Trip.fake()
+
+
+def test_one_to_many_repeated_schema_in_array_and_map():
+    class User(AvroModel):
+        name: str
+
+        class Meta:
+            schema_doc = False
+            namespace = "types.user"
+
+    class UserAdvance(AvroModel):
+        users: typing.List[User]
+        accounts: typing.Dict[str, User]
+
+        class Meta:
+            schema_doc = False
+
+    assert parse_schema(UserAdvance.avro_schema_to_python())
+    assert UserAdvance.fake()
 
 
 def test_one_to_many_schema():
