@@ -115,15 +115,3 @@ def user_advance_with_defaults_dataclass():
             schema_doc = False
 
     return UserAdvance
-
-
-@pytest.fixture
-def field_parent_factory_mock():
-    def factory(fields: typing.Tuple = None):
-        @dataclasses.dataclass
-        class MockParent:
-            raw_fields: typing.Tuple
-
-        return MockParent(raw_fields=fields or ())
-
-    return factory

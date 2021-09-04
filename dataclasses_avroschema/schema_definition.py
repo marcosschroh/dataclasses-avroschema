@@ -49,9 +49,6 @@ class BaseSchemaDefinition(abc.ABC):
 class AvroSchemaDefinition(BaseSchemaDefinition):
     metadata: utils.SchemaMetadata
     fields: typing.List[FieldType] = dataclasses.field(default_factory=list)
-    raw_fields: typing.Optional[
-        typing.Tuple[dataclasses.Field, utils.DataclassFieldEmulator]
-    ] = None  # raw python fields coming from parent classes
 
     def __post_init__(self) -> None:
         self.fields = self.parse_dataclasses_fields()
