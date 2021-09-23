@@ -152,3 +152,17 @@ def test_decimals():
         test_score_2: decimal.Decimal = types.Decimal(scale=5, precision=11)
 
     assert isinstance(User.fake(), User)
+
+
+def test_int32():
+    """
+    Test Int32 type
+    """
+
+    class User(AvroModel):
+        name: str
+        age: int
+        test_score_1: types.Int32 = 100
+        test_score_2: types.Int32 = types.Int32(12)
+
+    assert isinstance(User.fake(), User)
