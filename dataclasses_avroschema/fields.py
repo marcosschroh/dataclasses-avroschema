@@ -64,7 +64,7 @@ PYTHON_TYPE_TO_AVRO = {
     dict: {"type": MAP},
     types.Fixed: {"type": FIXED},
     types.Enum: {"type": ENUM},
-    types.Int32: {"type": INT},
+    types.Int32: INT,
     datetime.date: {"type": INT, "logicalType": DATE},
     datetime.time: {"type": INT, "logicalType": TIME_MILLIS},
     datetime.datetime: {"type": LONG, "logicalType": TIMESTAMP_MILLIS},
@@ -174,7 +174,10 @@ class BaseField:
 
     def validate_default(self) -> bool:
         msg = f"Invalid default type. Default should be {self.type}"
-        assert isinstance(self.default, self.type), msg
+        if getattr(self.type, "__metadata__", [None])[0] in types.CUSTOM_TYPES:
+            assert isinstance(self.default, self.type.__origin__)
+        else:
+            assert isinstance(self.default, self.type), msg
 
         return True
 
