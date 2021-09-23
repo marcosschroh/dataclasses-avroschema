@@ -1,3 +1,5 @@
+import math
+
 from dataclasses import dataclass
 
 from dataclasses_avroschema import AvroModel, types
@@ -88,6 +90,51 @@ def test_primitive_types_with_nulls():
     assert user.to_json() == data_json
 
     data = {"name": None, "age": 20, "has_pets": False, "money": None, "encoded": None, "height": None}
+
+    user = User()
+    avro_binary = user.serialize()
+    avro_json = user.serialize(serialization_type="avro-json")
+
+    assert user.deserialize(avro_binary, create_instance=False) == data
+    assert user.deserialize(avro_json, serialization_type="avro-json", create_instance=False) == data
+
+    assert user.deserialize(avro_binary) == user
+    assert user.deserialize(avro_json, serialization_type="avro-json") == user
+
+    assert user.to_json() == data
+
+
+def test_float32_primitive_type():
+    @dataclass
+    class User(AvroModel):
+        height: types.Float32 = None
+
+    data = {"height": 178.3}
+
+    user = User(**data)
+    avro_binary = user.serialize()
+    avro_json = user.serialize(serialization_type="avro-json")
+
+    # Floating point error expected
+    res = user.deserialize(avro_binary, create_instance=False)
+    assert res["height"] != data["height"]
+    assert math.isclose(res["height"], data["height"], abs_tol=1e-5)
+
+    res = user.deserialize(avro_json, serialization_type="avro-json", create_instance=False)
+    assert res["height"] == data["height"]
+
+    # Floating point error expected
+    res = user.deserialize(avro_binary)
+    assert res.height != user.height
+    assert math.isclose(res.height, user.height, abs_tol=1e-5)
+
+    res = user.deserialize(avro_json, serialization_type="avro-json")
+    assert res.height == user.height
+
+    res = user.to_json()
+    assert res["height"] == data["height"]
+
+    data = {"height": None}
 
     user = User()
     avro_binary = user.serialize()

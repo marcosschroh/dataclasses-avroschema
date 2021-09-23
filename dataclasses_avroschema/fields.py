@@ -65,6 +65,7 @@ PYTHON_TYPE_TO_AVRO = {
     types.Fixed: {"type": FIXED},
     types.Enum: {"type": ENUM},
     types.Int32: INT,
+    types.Float32: FLOAT,
     datetime.date: {"type": INT, "logicalType": DATE},
     datetime.time: {"type": INT, "logicalType": TIME_MILLIS},
     datetime.datetime: {"type": LONG, "logicalType": TIMESTAMP_MILLIS},
@@ -72,7 +73,7 @@ PYTHON_TYPE_TO_AVRO = {
 }
 
 # excluding tuple because is a container
-PYTHON_INMUTABLE_TYPES = (str, int, types.Int32, bool, float, bytes, type(None))
+PYTHON_INMUTABLE_TYPES = (str, int, types.Int32, types.Float32, bool, float, bytes, type(None))
 
 PYTHON_PRIMITIVE_CONTAINERS = (list, tuple, dict)
 
@@ -88,6 +89,7 @@ PythonImnutableTypes = typing.Union[
     types.Int32,
     bool,
     float,
+    types.Float32,
     list,
     tuple,
     dict,
@@ -240,6 +242,14 @@ class DoubleField(ImmutableField):
 
     def fake(self) -> float:
         return fake.pyfloat()
+
+
+@dataclasses.dataclass
+class FloatField(ImmutableField):
+    avro_type: typing.ClassVar[str] = FLOAT
+
+    def fake(self) -> float:
+        return fake.pyfloat()  # Roughly the range on a float32
 
 
 @dataclasses.dataclass
@@ -775,6 +785,7 @@ INMUTABLE_FIELDS_CLASSES = {
     int: LongField,
     types.Int32: IntField,
     float: DoubleField,
+    types.Float32: FloatField,
     bytes: BytesField,
     str: StringField,
     type(None): NoneField,

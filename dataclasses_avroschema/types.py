@@ -77,6 +77,7 @@ class Decimal(typing.Generic[T]):
 
 
 Int32 = Annotated[int, "Int32"]
+Float32 = Annotated[float, "Float32"]
 
 
-CUSTOM_TYPES = ("Fixed", "Enum", "Decimal", "Int32")
+CUSTOM_TYPES = ("Fixed", "Enum", "Decimal", "Int32", "Float32")
