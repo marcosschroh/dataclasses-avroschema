@@ -118,7 +118,7 @@ User.avro_schema()
         "type": "array",
         "items": {
           "type": "record",
-          "name": "address_record",
+          "name": "Address",
           "fields": [
             {"name": "street", "type": "string"},
             {"name": "street_number", "type": "long"}
@@ -167,7 +167,7 @@ User.avro_schema()
         "type": "map",
         "values": {
           "type": "record",
-          "name": "address_record",
+          "name": "Address",
           "fields": [
             {"name": "street", "type": "string"},
             {"name": "street_number", "type": "long"}
@@ -261,10 +261,11 @@ User.avro_schema()
 }'
 ```
 
-## Avoid name colision in multiple relationships
+## Avoid name collision in multiple relationships
 
 Sometimes we have relationships where a class is related more than once with a particular class,
-and the name for the nested schemas must be diferent, otherwise we will generate an invalid `avro schema`.
+and the name for the nested schemas must be different, otherwise we will generate an invalid `avro schema`.
+For those cases, you *MUST* define the `namespace`.
 
 For example:
 
@@ -281,6 +282,8 @@ class Location(AvroModel):
     latitude: float
     longitude: float
 
+    class Meta:
+        namespace = "types.location_type"
 
 @dataclass
 class Trip(AvroModel):
@@ -288,62 +291,132 @@ class Trip(AvroModel):
     start_location: Location  # first relationship
     finish_time: datetime
     finish_location: Location  # second relationship
+
+
+Trip.avro_schema()
 ```
 
-In order to avoid name colisions, the nested name is generated in the following way:
-
-1. Get the lower name of the related class
-2. Get the field name
-3. Is (1) included in (2)?
-   then: (2)_record as result
-   otherwise: (1)_(2)_record
-
-Example for start_location:
-
-1. Get the lower name of the related class = `location`
-2. Get the field name = `start_location`
-3. Is `location` included in `start_location`? yes, so the result is `start_location_record`
-
-```python
-'{
+```json
+{
   "type": "record",
   "name": "Trip",
   "fields": [
     {
       "name": "start_time",
-      "type": {
-        "type": "long", "logicalType": "timestamp-millis"
-      }
+      "type": {"type": "long", "logicalType": "timestamp-millis"}
     },
+    {
+      "name": "start_location",
+      "type": {"type": "record",
+      "name": "Location",
+        "fields": [
+          {"name": "latitude", "type": "double"},
+          {"name": "longitude", "type": "double"}
+        ],
+      "doc": "Location(latitude: float, longitude: float)",
+      "namespace": "types.location_type"}},
+    {
+      "name": "finish_time",
+      "type": {"type": "long", "logicalType": "timestamp-millis"}
+    },
+    {
+      "name": "finish_location", "type": "types.location_type.Location"  // using the namespace
+    }
+  ],
+  "doc": "Trip(start_time: datetime.datetime, start_location: __main__.Location, finish_time: datetime.datetime, finish_location: __main__.Location)"
+}
+```
+
+or with `arrays` or `maps`:
+
+```python
+class Location(AvroModel):
+    latitude: float
+    longitude: float
+
+    class Meta:
+        namespace = "types.location_type"
+        schema_doc = False
+
+
+class Trip(AvroModel):
+    start_location: Location
+    finish_location: typing.List[Location]
+
+    class Meta:
+        schema_doc = False
+
+
+Trip.avro_schema()
+```
+
+```json
+{
+  "type": "record",
+  "name": "Trip",
+  "fields": [
+    {
+      "name": "start_location",
+      "type":
+        {
+          "type": "record",
+          "name": "Location",
+          "fields": [
+            {
+              "name": "latitude",
+              "type": "double"
+            },
+            {
+              "name": "longitude",
+              "type": "double"
+            }
+          ],
+          "namespace": "types.location_type"
+        }
+      },
+    {
+      "name": "finish_location",
+      "type": {
+        "type": "array",
+        "items": "types.location_type.Location",
+        "name": "finish_location"
+      }
+    }
+  ]
+}'
+```
+
+```python
+class Location(AvroModel):
+    latitude: float
+    longitude: float
+
+    class Meta:
+        namespace = "types.location_type"
+        schema_doc = False
+
+
+class Trip(AvroModel):
+    start_location: Location
+    finish_location: typing.Dict[str, Location]
+
+    class Meta:
+        schema_doc = False
+
+
+Trip.avro_schema()
+```
+
+```json
+{
+  "type": "record",
+  "name": "Trip",
+  "fields": [
     {
       "name": "start_location",
       "type": {
         "type": "record",
-        "name": "start_location_record",
-        "fields": [
-          {
-            "name": "latitude",
-            "type": "double"
-          },
-          {
-           "name": "longitude",
-           "type": "double"
-          }
-        ],
-        "doc": "Location(latitude: float, longitude: float)"
-      }
-    },
-    {
-      "name": "finish_time",
-      "type": {
-        "type": "long", "logicalType": "timestamp-millis"
-      }
-    },
-    {
-      "name": "finish_location",
-      "type": {
-        "type": "record",
-        "name": "finish_location_record",
+        "name": "Location",
         "fields": [
           {
             "name": "latitude",
@@ -354,10 +427,76 @@ Example for start_location:
             "type": "double"
           }
         ],
-        "doc": "Location(latitude: float, longitude: float)"
+        "namespace": "types.location_type"
+      }
+    },
+    {
+      "name": "finish_location",
+      "type": {
+        "type": "map",
+        "values": "types.location_type.Location",
+        "name": "finish_location"
       }
     }
-  ],
-  "doc": "Trip(start_time: datetime.datetime, start_location: __main__.Location, finish_time: datetime.datetime, finish_location: __main__.Location)"
+  ]
 }'
+```
+
+If you want, also you can use custom name for nested items (`nested records`, `arrays` or `maps`) using the property `alias_nested_items` in `class Meta`:
+
+```python
+from dataclasses_avroschema import AvroModel
+
+
+class Address(AvroModel):
+    "An Address"
+    street: str
+    street_number: int
+
+class User(AvroModel):
+    "An User with Address"
+    name: str
+    age: int
+    address: Address  # default name Address
+
+    class Meta:
+        alias_nested_items = {"address": "MySuperAddress"}
+```
+
+`User.avro_schema()` will generate:
+
+```json
+{
+    "type": "record",
+    "name": "User",
+    "fields": [
+        {
+            "name": "name",
+            "type": "string"
+        },
+        {
+            "name": "age",
+            "type": "long"
+        },
+        {
+            "name": "address",
+            "type": {
+                "type": "record",
+                "name": "MySuperAddress",  // renamed it using alias_nested_items
+                "fields": [
+                    {
+                        "name": "street",
+                        "type": "string"
+                    },
+                    {
+                        "name": "street_number",
+                        "type": "long"
+                    }
+                ],
+                "doc": "An Address"
+            }
+        } 
+    ],
+    "doc": "An User with Address"
+}
 ```

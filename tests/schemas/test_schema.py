@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from dataclasses_avroschema import AvroModel
+from dataclasses_avroschema import AvroModel, exceptions
 from dataclasses_avroschema.schema_definition import BaseSchemaDefinition
 
 encoded = "test".encode()
@@ -107,3 +107,19 @@ def test_not_implementd_methods():
     msg = "Can't instantiate abstract class BaseSchemaDefinition with abstract methods get_rendered_fields, render"
 
     assert msg == str(excinfo.value)
+
+
+def test_namespace_required():
+    class Bus(AvroModel):
+        "A Bus"
+        engine_name: str
+
+    class UnionSchema(AvroModel):
+        "Some Unions"
+        bus_one: Bus
+        bus_two: Bus
+
+    with pytest.raises(exceptions.NameSpaceRequiredException) as e:
+        assert UnionSchema.avro_schema()
+
+    assert str(e)

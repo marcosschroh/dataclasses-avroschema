@@ -1,5 +1,5 @@
 import typing
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 
 from pytz import utc
@@ -52,17 +52,29 @@ def is_custom_type(value: typing.Any) -> bool:
 
 @dataclass
 class SchemaMetadata:
+    schema_name: typing.Optional[str] = None
     schema_doc: bool = True
     namespace: typing.Optional[typing.List[str]] = None
     aliases: typing.Optional[typing.List[str]] = None
+    alias_nested_items: typing.Dict[str, str] = field(default_factory=dict)
 
     @classmethod
     def create(cls, klass: typing.Any) -> typing.Any:
         return cls(
+            schema_name=getattr(klass, "schema_name", None),
             schema_doc=getattr(klass, "schema_doc", True),
             namespace=getattr(klass, "namespace", None),
             aliases=getattr(klass, "aliases", None),
+            alias_nested_items=getattr(klass, "alias_nested_items", {}),
         )
+
+    def get_alias(self, name: str) -> typing.Optional[str]:
+        return self.alias_nested_items.get(name)
+
+
+class UserDefinedType(typing.NamedTuple):
+    name: str
+    type: typing.Any
 
 
 epoch: datetime = datetime(1970, 1, 1, tzinfo=utc)

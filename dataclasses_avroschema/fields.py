@@ -6,6 +6,7 @@ import decimal
 import inspect
 import json
 import random
+import sys
 import typing
 import uuid
 from collections import OrderedDict
@@ -15,6 +16,16 @@ from faker import Faker
 from pytz import utc
 
 from dataclasses_avroschema import schema_generator, serialization, types, utils
+
+from .exceptions import NameSpaceRequiredException
+
+PY_VER = sys.version_info
+
+if PY_VER >= (3, 9):
+    GenericAlias = (typing._GenericAlias, typing._SpecialGenericAlias, typing._UnionGenericAlias)
+else:
+    GenericAlias = typing._GenericAlias
+
 
 fake = Faker()
 p = inflect.engine()
@@ -90,12 +101,17 @@ PythonImnutableTypes = typing.Union[
 
 @dataclasses.dataclass  # type: ignore
 class BaseField:
-    avro_type: typing.ClassVar
+    avro_type: typing.ClassVar[str]
 
     name: str
     type: typing.Any  # store the python primitive type
     default: typing.Any
+    parent: typing.Tuple[dataclasses.Field]
     metadata: typing.Mapping = dataclasses.field(default_factory=dict)
+    model_metadata: typing.Optional[utils.SchemaMetadata] = None
+
+    def __post_init__(self) -> None:
+        self.model_metadata = self.model_metadata or utils.SchemaMetadata()
 
     @staticmethod
     def _get_self_reference_type(a_type: typing.Any) -> str:
@@ -176,7 +192,7 @@ class BaseField:
         return None
 
 
-class InmutableField(BaseField):
+class ImmutableField(BaseField):
     def get_avro_type(self) -> PythonImnutableTypes:
         if self.default is None:
             return [NULL, self.avro_type]
@@ -184,48 +200,48 @@ class InmutableField(BaseField):
 
 
 @dataclasses.dataclass
-class StringField(InmutableField):
-    avro_type: typing.ClassVar = STRING
+class StringField(ImmutableField):
+    avro_type: typing.ClassVar[str] = STRING
 
     def fake(self) -> str:
         return fake.pystr()
 
 
 @dataclasses.dataclass
-class IntField(InmutableField):
-    avro_type: typing.ClassVar = INT
+class IntField(ImmutableField):
+    avro_type: typing.ClassVar[str] = INT
 
     def fake(self) -> int:
         return fake.pyint()
 
 
 @dataclasses.dataclass
-class LongField(InmutableField):
-    avro_type: typing.ClassVar = LONG
+class LongField(ImmutableField):
+    avro_type: typing.ClassVar[str] = LONG
 
     def fake(self) -> int:
         return fake.pyint()
 
 
 @dataclasses.dataclass
-class BooleanField(InmutableField):
-    avro_type: typing.ClassVar = BOOLEAN
+class BooleanField(ImmutableField):
+    avro_type: typing.ClassVar[str] = BOOLEAN
 
     def fake(self) -> bool:
         return fake.pybool()
 
 
 @dataclasses.dataclass
-class DoubleField(InmutableField):
-    avro_type: typing.ClassVar = DOUBLE
+class DoubleField(ImmutableField):
+    avro_type: typing.ClassVar[str] = DOUBLE
 
     def fake(self) -> float:
         return fake.pyfloat()
 
 
 @dataclasses.dataclass
-class BytesField(InmutableField):
-    avro_type: typing.ClassVar = BYTES
+class BytesField(ImmutableField):
+    avro_type: typing.ClassVar[str] = BYTES
 
     def get_default_value(self) -> typing.Any:
         if self.default in (dataclasses.MISSING, None):
@@ -243,8 +259,8 @@ class BytesField(InmutableField):
 
 
 @dataclasses.dataclass
-class NoneField(InmutableField):
-    avro_type: typing.ClassVar = NULL
+class NoneField(ImmutableField):
+    avro_type: typing.ClassVar[str] = NULL
 
 
 @dataclasses.dataclass
@@ -263,11 +279,9 @@ class ListField(ContainerField):
     items_type: typing.Any = None
     internal_field: typing.Any = None
 
-    def __post_init__(self) -> None:
-        self.generate_items_type()
-
     @property
     def avro_type(self) -> typing.Dict:
+        self.generate_items_type()
         return {"type": ARRAY, "items": self.items_type}
 
     def get_default_value(self) -> typing.Union[typing.List, dataclasses._MISSING_TYPE]:
@@ -297,13 +311,19 @@ class ListField(ContainerField):
 
         if utils.is_union(items_type):
             self.items_type = UnionField(
-                name, items_type, default=self.default, default_factory=self.default_factory
+                name,
+                items_type,
+                default=self.default,
+                default_factory=self.default_factory,
+                model_metadata=self.model_metadata,
+                parent=self.parent,
             ).get_avro_type()
         else:
-            self.internal_field = AvroField(name, items_type)
+            self.internal_field = AvroField(name, items_type, model_metadata=self.model_metadata, parent=self.parent)
             self.items_type = self.internal_field.get_avro_type()
 
     def fake(self) -> typing.List:
+        self.generate_items_type()
         # return a list of one element with the type specified
         return [self.internal_field.fake()]
 
@@ -313,11 +333,9 @@ class DictField(ContainerField):
     values_type: typing.Any = None
     internal_field: typing.Any = None
 
-    def __post_init__(self) -> None:
-        self.generate_values_type()
-
     @property
     def avro_type(self) -> typing.Dict[str, typing.Any]:
+        self.generate_values_type()
         return {"type": MAP, "values": self.values_type}
 
     def get_default_value(self) -> typing.Union[typing.Dict[str, typing.Any], dataclasses._MISSING_TYPE]:
@@ -348,11 +366,12 @@ class DictField(ContainerField):
         values_type = self.type.__args__[1]
 
         name = self.get_singular_name(self.name)
-        self.internal_field = AvroField(name, values_type)
+        self.internal_field = AvroField(name, values_type, model_metadata=self.model_metadata, parent=self.parent)
         self.values_type = self.internal_field.get_avro_type()
 
     def fake(self) -> typing.Dict[str, typing.Any]:
         # return a dict of one element with the items type specified
+        self.generate_values_type()
         return {fake.pystr(): self.internal_field.fake()}
 
 
@@ -361,9 +380,6 @@ class UnionField(BaseField):
     default_factory: typing.Optional[typing.Callable] = None
     unions: typing.List = dataclasses.field(default_factory=list)
     internal_fields: typing.List = dataclasses.field(default_factory=list)
-
-    def __post_init__(self) -> None:
-        self.unions = self.generate_unions_type()
 
     def generate_unions_type(self) -> typing.List:
         """
@@ -389,21 +405,23 @@ class UnionField(BaseField):
             unions.insert(0, NULL)
         elif type(self.default) is not dataclasses._MISSING_TYPE:
             default_type = type(self.default)
-            default_field = AvroField(name, default_type)
+            default_field = AvroField(name, default_type, model_metadata=self.model_metadata, parent=self.parent)
             unions.append(default_field.get_avro_type())
             self.internal_fields.append(default_field)
 
         for element in elements:
             # create the field and get the avro type
-            field = AvroField(name, element)
+            field = AvroField(name, element, model_metadata=self.model_metadata, parent=self.parent)
+            avro_type = field.get_avro_type()
 
-            if field.get_avro_type() not in unions:
-                unions.append(field.get_avro_type())
+            if avro_type not in unions:
+                unions.append(avro_type)
                 self.internal_fields.append(field)
 
         return unions
 
     def get_avro_type(self) -> typing.List:
+        self.unions = self.generate_unions_type()
         return self.unions
 
     def get_default_value(self) -> typing.Any:
@@ -412,7 +430,7 @@ class UnionField(BaseField):
         if self.default in (dataclasses.MISSING, None) and not is_default_factory_callable:
             return self.default
         elif is_default_factory_callable:
-            # expeting a callable
+            # expecting a callable
             default = self.default_factory()  # type: ignore
             assert isinstance(default, (dict, list)), f"Dict or List is required as default for field {self.name}"
 
@@ -422,6 +440,7 @@ class UnionField(BaseField):
         return self.default
 
     def fake(self) -> typing.Any:
+        self.unions = self.generate_unions_type()
         # get a random internal field and return a fake value
         field = random.choice(self.internal_fields)
         return field.fake()
@@ -503,7 +522,7 @@ class SelfReferenceField(BaseField):
         return dataclasses.MISSING
 
 
-class LogicalTypeField(InmutableField):
+class LogicalTypeField(ImmutableField):
     def get_default_value(self) -> typing.Union[None, str, int, float]:
         if self.default in (dataclasses.MISSING, None):
             return self.default
@@ -527,7 +546,7 @@ class DateField(LogicalTypeField):
     the number of days from the unix epoch, 1 January 1970 (ISO calendar).
     """
 
-    avro_type: typing.ClassVar = LOGICAL_DATE
+    avro_type: typing.ClassVar[str] = LOGICAL_DATE
 
     @staticmethod
     def to_avro(date: datetime.date) -> int:
@@ -562,7 +581,7 @@ class TimeField(LogicalTypeField):
     where the int stores the number of milliseconds after midnight, 00:00:00.000.
     """
 
-    avro_type: typing.ClassVar = LOGICAL_TIME
+    avro_type: typing.ClassVar[str] = LOGICAL_TIME
 
     @staticmethod
     def to_avro(time: datetime.time) -> int:
@@ -600,7 +619,7 @@ class DatetimeField(LogicalTypeField):
     1 January 1970 00:00:00.000 UTC.
     """
 
-    avro_type: typing.ClassVar = LOGICAL_DATETIME
+    avro_type: typing.ClassVar[str] = LOGICAL_DATETIME
 
     @staticmethod
     def to_avro(date_time: datetime.datetime) -> float:
@@ -627,7 +646,7 @@ class DatetimeField(LogicalTypeField):
 
 @dataclasses.dataclass
 class UUIDField(LogicalTypeField):
-    avro_type: typing.ClassVar = LOGICAL_UUID
+    avro_type: typing.ClassVar[str] = LOGICAL_UUID
 
     def validate_default(self) -> bool:
         msg = f"Invalid default type. Default should be {str} or {uuid.UUID}"
@@ -646,17 +665,22 @@ class UUIDField(LogicalTypeField):
 @dataclasses.dataclass
 class RecordField(BaseField):
     def get_avro_type(self) -> typing.Union[typing.List, typing.Dict]:
-        record_type = self.type.avro_schema_to_python()
+        alias = self.model_metadata.get_alias(self.name)  # type: ignore
+        name = alias or self.type.__name__
 
-        # when there is a nested record replace its name
-        # to avoid name colisions
-        record_name = self.type.__name__.lower()
-        if record_name not in self.name:
-            name = f"{self.name}_{record_name}_record"
+        if not self.exist_type():
+            user_defined_type = utils.UserDefinedType(name=name, type=self.type)
+            self.parent.user_defined_types = self.parent.user_defined_types + (user_defined_type,)
+
+            record_type = self.type.avro_schema_to_python()
+            record_type["name"] = name
         else:
-            name = f"{self.name}_record"
+            meta = getattr(self.type, "Meta", None)
+            metadata = utils.SchemaMetadata.create(meta)
 
-        record_type["name"] = name
+            if metadata.namespace is None:
+                raise NameSpaceRequiredException(field_type=self.type, field_name=self.name)
+            record_type = f"{metadata.namespace}.{name}"
 
         if self.default is None:
             return [NULL, record_type]
@@ -664,6 +688,18 @@ class RecordField(BaseField):
 
     def fake(self) -> typing.Any:
         return self.type.fake()
+
+    def exist_type(self):
+        # filter by the same field types
+        same_types = [
+            field.type
+            for field in self.parent.user_defined_types
+            if field.type == self.type and field.name != self.name
+        ]
+
+        # If length > 0, means that it is the first appearance
+        # of this type, otherwise exist already.
+        return len(same_types)
 
 
 @dataclasses.dataclass
@@ -789,27 +825,58 @@ FieldType = typing.Union[
     DatetimeField,
     UUIDField,
     RecordField,
-    InmutableField,
+    ImmutableField,
 ]
 
 
 def field_factory(
     name: str,
     native_type: typing.Any,
+    parent: typing.Any = None,
+    *,
     default: typing.Any = dataclasses.MISSING,
     default_factory: typing.Any = dataclasses.MISSING,
     metadata: typing.Mapping = dataclasses.field(default_factory=dict),
+    model_metadata: typing.Optional[utils.SchemaMetadata] = None,
 ) -> FieldType:
     if native_type in PYTHON_INMUTABLE_TYPES:
         klass = INMUTABLE_FIELDS_CLASSES[native_type]
-        return klass(name=name, type=native_type, default=default, metadata=metadata)
+        return klass(
+            name=name,
+            type=native_type,
+            default=default,
+            metadata=metadata,
+            model_metadata=model_metadata,
+            parent=parent,
+        )
     elif utils.is_self_referenced(native_type):
-        return SelfReferenceField(name=name, type=native_type, default=default, metadata=metadata)
+        return SelfReferenceField(
+            name=name,
+            type=native_type,
+            default=default,
+            metadata=metadata,
+            model_metadata=model_metadata,
+            parent=parent,
+        )
     elif native_type is types.Fixed:
-        return FixedField(name=name, type=native_type, default=default, metadata=metadata)
+        return FixedField(
+            name=name,
+            type=native_type,
+            default=default,
+            metadata=metadata,
+            model_metadata=model_metadata,
+            parent=parent,
+        )
     elif native_type is types.Enum:
-        return EnumField(name=name, type=native_type, default=default, metadata=metadata)
-    elif isinstance(native_type, typing._GenericAlias):  # type: ignore
+        return EnumField(
+            name=name,
+            type=native_type,
+            default=default,
+            metadata=metadata,
+            model_metadata=model_metadata,
+            parent=parent,
+        )
+    elif isinstance(native_type, GenericAlias):  # type: ignore
         origin = native_type.__origin__
 
         if origin not in (
@@ -835,12 +902,28 @@ def field_factory(
             default=default,
             metadata=metadata,
             default_factory=default_factory,
+            model_metadata=model_metadata,
+            parent=parent,
         )
     elif native_type in PYTHON_LOGICAL_TYPES:
         klass = LOGICAL_TYPES_FIELDS_CLASSES[native_type]  # type: ignore
-        return klass(name=name, type=native_type, default=default, metadata=metadata)
+        return klass(
+            name=name,
+            type=native_type,
+            default=default,
+            metadata=metadata,
+            model_metadata=model_metadata,
+            parent=parent,
+        )
     elif inspect.isclass(native_type) and issubclass(native_type, schema_generator.AvroModel):
-        return RecordField(name=name, type=native_type, default=default, metadata=metadata)
+        return RecordField(
+            name=name,
+            type=native_type,
+            default=default,
+            metadata=metadata,
+            model_metadata=model_metadata,
+            parent=parent,
+        )
     else:
         msg = (
             f"Type {native_type} is unknown. Please check the valid types at "

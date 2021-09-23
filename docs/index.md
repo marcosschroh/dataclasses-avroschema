@@ -2,21 +2,10 @@
 
 Generate [Avro](https://avro.apache.org/docs/1.8.2/spec.html) Schemas from a Python class
 
-[![Build Status](https://travis-ci.org/marcosschroh/dataclasses-avroschema.svg?branch=master)](https://travis-ci.org//dataclasses-avroschema)
+[![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fmarcosschroh%2Fdataclasses-avroschema%2Fbadge%3Fref%3Dmaster&style=flat)](https://actions-badge.atrox.dev/marcosschroh/dataclasses-avroschema/goto?ref=master)
 [![GitHub license](https://img.shields.io/github/license/marcosschroh/dataclasses-avroschema.svg)](https://github.com/marcosschroh/dataclasses-avroschema/blob/master/LICENSE)
 [![codecov](https://codecov.io/gh/marcosschroh/dataclasses-avroschema/branch/master/graph/badge.svg)](https://codecov.io/gh/marcosschroh/dataclasses-avroschema)
 ![python version](https://img.shields.io/badge/python-3.7%2B-yellowgreen)
-
-## Notice of breaking change
-
-As of version **0.19.0**, the default Avro type for Python ints has been changed from `int` to `long` and the default Avro
-type for Python floats has been changed from `float` to `double`. Please take care when upgrading.
-
-## Notice of non-breaking schema changes
-
-As of version **0.21.0** the logic used generate schemas for unions has been updated to match the Avro specification. 
-Previously a field like `typing.Union[int, str] = 'STRING TYPE'` would generate the union field `["long", "string"]`, which was incorrect - the Avro specification requires the type of a provided default to match the type of the first element in the union array. 
-This update was tested under Full compatibility, and while it wasn't a breaking change (changes to defaults generally go through cleanly), it did generate a new schema version.
 
 ## Requirements
 

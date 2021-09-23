@@ -1,3 +1,127 @@
+## Migration from previous versions to 0.23.0
+
+1. Now the name for Nested record uses the `class.__name__` instead of ``class.__name__.lower()_record`.
+
+having this schemas:
+
+```python
+class Address(AvroModel):
+    "An Address"
+    street: str
+    street_number: int
+
+
+class User(AvroModel):
+    "User with multiple Address"
+    name: str
+    age: int
+    addresses: typing.Dict[str, Address]
+
+
+# PREVIOUS
+User.avro_schema()
+{
+  "type": "record",
+  "name": "User",
+  "fields": [
+    {"name": "name", "type": "string"},
+    {"name": "age", "type": "long"},
+    {"name": "addresses", "type": {
+        "type": "map",
+        "values": {
+          "type": "record",
+          "name": "address_record",
+          "fields": [
+            {"name": "street", "type": "string"},
+            {"name": "street_number", "type": "long"}
+          ],
+          "doc": "An Address"
+        },
+        "name": "address"
+      }
+    }
+  ],
+  "doc": "User with multiple Address"
+}
+
+
+# VERSIONS 0.23.0
+User.avro_schema()
+{
+  "type": "record",
+  "name": "User",
+  "fields": [
+    {"name": "name", "type": "string"},
+    {"name": "age", "type": "long"},
+    {"name": "addresses", "type": {
+        "type": "map",
+        "values": {
+          "type": "record",
+          "name": "Address",
+          "fields": [
+            {"name": "street", "type": "string"},
+            {"name": "street_number", "type": "long"}
+          ],
+          "doc": "An Address"
+        },
+        "name": "address"
+      }
+    }
+  ],
+  "doc": "User with multiple Address"
+}
+```
+
+2. Now we use `namespaces` when same types are referenced multiple times (DRY), so you *MUST* define the property `namespace`:
+
+```python
+class Location(AvroModel):
+    latitude: float
+    longitude: float
+
+    class Meta:
+        namespace = "types.location_type"  # REQUIRED!!!!
+
+class Trip(AvroModel):
+    start_time: datetime.datetime
+    start_location: Location
+    finish_time: datetime.datetime
+    finish_location: Location
+
+Trip.avro_schema_to_python()
+```
+
+```json
+{
+  "type": "record",
+  "name": "Trip",
+  "fields": [
+    {
+      "name": "start_time",
+      "type": {"type": "long", "logicalType": "timestamp-millis"}
+    },
+    {
+      "name": "start_location",
+      "type": {"type": "record",
+      "name": "Location",
+        "fields": [
+          {"name": "latitude", "type": "double"},
+          {"name": "longitude", "type": "double"}
+        ],
+      "doc": "Location(latitude: float, longitude: float)",
+      "namespace": "types.location_type"}},
+    {
+      "name": "finish_time",
+      "type": {"type": "long", "logicalType": "timestamp-millis"}
+    },
+    {
+      "name": "finish_location", "type": "types.location_type.Location"  // using the namespace
+    }
+  ],
+  "doc": "Trip(start_time: datetime.datetime, start_location: __main__.Location, finish_time: datetime.datetime, finish_location: __main__.Location)"
+}
+```
+
 ## Migration from previous versions to 0.14.0
 
 Now all the dataclasses should inheritance from `AvroModel` and not use anymore the `SchemaGenerator`:

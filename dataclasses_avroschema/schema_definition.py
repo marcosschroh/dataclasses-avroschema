@@ -20,6 +20,7 @@ class BaseSchemaDefinition(abc.ABC):
 
     type: str
     klass: typing.Any
+    parent: typing.Any
 
     @abc.abstractmethod
     def get_rendered_fields(self) -> typing.List[OrderedDict]:
@@ -30,7 +31,7 @@ class BaseSchemaDefinition(abc.ABC):
         ...  # pragma: no cover
 
     def get_schema_name(self) -> str:
-        return self.klass.__name__
+        return self.klass.metadata.schema_name or self.klass.__name__
 
     def generate_documentation(self) -> typing.Optional[str]:
         doc = self.klass.__doc__
@@ -46,10 +47,8 @@ class BaseSchemaDefinition(abc.ABC):
 
 @dataclasses.dataclass
 class AvroSchemaDefinition(BaseSchemaDefinition):
-    aliases: typing.List[str] = dataclasses.field(default_factory=list)
-    namespace: typing.Optional[str] = None
+    metadata: utils.SchemaMetadata
     fields: typing.List[FieldType] = dataclasses.field(default_factory=list)
-    metadata: utils.SchemaMetadata = dataclasses.field(default_factory=utils.SchemaMetadata)
 
     def __post_init__(self) -> None:
         self.fields = self.parse_dataclasses_fields()
@@ -64,9 +63,11 @@ class AvroSchemaDefinition(BaseSchemaDefinition):
             AvroField(
                 dataclass_field.name,
                 dataclass_field.type,
-                dataclass_field.default,
-                dataclass_field.default_factory,  # type: ignore  # TODO: resolve mypy
-                dataclass_field.metadata,
+                default=dataclass_field.default,
+                default_factory=dataclass_field.default_factory,  # type: ignore  # TODO: resolve mypy
+                metadata=dataclass_field.metadata,
+                model_metadata=self.metadata,
+                parent=self.parent,
             )
             for dataclass_field in dataclasses.fields(self.klass)
         ]
@@ -87,7 +88,16 @@ class AvroSchemaDefinition(BaseSchemaDefinition):
                     default_factory = default.default_factory  # type: ignore  # TODO: resolve mypy
                     default = dataclasses.MISSING
 
-            schema_fields.append(AvroField(dataclass_field.name, dataclass_field.type, default, default_factory))
+            schema_fields.append(
+                AvroField(
+                    dataclass_field.name,
+                    dataclass_field.type,
+                    default=default,
+                    default_factory=default_factory,
+                    model_metadata=self.metadata,
+                    parent=self.parent,
+                )
+            )
 
         return schema_fields
 

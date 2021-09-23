@@ -5,6 +5,50 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.23.2] - 2021-09-04
+
+### Fixed
+
+- Use `namespaces` on repeated user types with complex types [117](https://github.com/marcosschroh/dataclasses-avroschema/pull/117)
+
+## [0.23.1] - 2021-09-03
+
+### Fixed
+
+- Use `namespaces` for repeated types in arrays and maps [116](https://github.com/marcosschroh/dataclasses-avroschema/pull/116)
+
+## [0.23.0] - 2021-08-26
+
+### Added
+
+- Use `namespaces` for repeated types [115](https://github.com/marcosschroh/dataclasses-avroschema/pull/115)
+- Record names now are generated using `class.__name__` instead of `class.__name__.lower()_record`
+
+## [0.22.1] - 2021-07-05
+
+### Fixed
+
+- Cleanup [112](https://github.com/marcosschroh/dataclasses-avroschema/pull/112)
+
+## [0.22.0] - 2021-07-01
+
+### Added
+
+- Alias for nested items (`nested records`, `arrays` and `maps`) [110](https://github.com/marcosschroh/dataclasses-avroschema/pull/110)
+- Improve type annotations [109](https://github.com/marcosschroh/dataclasses-avroschema/pull/109)
+
+## [0.21.0] - 2021-06-17
+
+### Added
+
+- Mitration to GithubCI
+- `GenericAlias` test in Python `3.9`
+- Add Python `3.8` and `3.9` in the `CI build`
+- Add `schema_name` attribute to `SchemaMetadata`
+- Add optional writer_schema in `deserialization`
+
+### Added
+
 ## [0.20.4] - 2021-05-05
 
 ### Fixed
