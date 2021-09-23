@@ -73,14 +73,9 @@ class Decimal(typing.Generic[T]):
 @dataclasses.dataclass
 class Int32(int):
     """
-    Represents an Avro int type
+    Represents an Avro int type INT
     """
-
-    default: typing.Any = dataclasses.field(default=MissingSentinel)
-    _dataclasses_custom_type: str = "Int32"
-
-    def __repr__(self) -> str:
-        return f"{self}"
+    pass
 
 
 CUSTOM_TYPES = ("Fixed", "Enum", "Decimal", "Int32")
