@@ -24,6 +24,11 @@ So, the previous types can be matched to:
 | null         |     None    |
 | bytes        |     bytes   |
 
+Since Python does not have native `int32` or `float32` types, use the
+`dataclasses_avroschema.types.Int32` and `dataclasses_avroschema.types.Float32`
+types to annotate your classes. These types are simple wrappers around Python's
+default `int` and `float` types.
+
 ## Complex Types
 
 Avro supports six kinds of complex types: enums, arrays, maps, fixed, unions and records.
