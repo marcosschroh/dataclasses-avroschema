@@ -129,8 +129,8 @@ OPTIONAL_UNION_COMPLEX_TYPES = (
 )
 
 
-SEQUENCE_TYPES = (typing.List, typing.Tuple, typing.Sequence, typing.MutableSequence)
-MAPPING_TYPES = (typing.Dict, typing.Mapping, typing.MutableMapping)
+SEQUENCE_TYPES = (typing.List, typing.Tuple, typing.Sequence, typing.MutableSequence, list, tuple)
+MAPPING_TYPES = (typing.Dict, typing.Mapping, typing.MutableMapping, dict)
 
 SEQUENCES_AND_TYPES = [
     (sequence, python_type, items_type) for sequence in SEQUENCE_TYPES for python_type, items_type in PRIMITIVE_TYPES
