@@ -64,6 +64,8 @@ PYTHON_TYPE_TO_AVRO = {
     dict: {"type": MAP},
     types.Fixed: {"type": FIXED},
     types.Enum: {"type": ENUM},
+    types.Int32: INT,
+    types.Float32: FLOAT,
     datetime.date: {"type": INT, "logicalType": DATE},
     datetime.time: {"type": INT, "logicalType": TIME_MILLIS},
     datetime.datetime: {"type": LONG, "logicalType": TIMESTAMP_MILLIS},
@@ -71,7 +73,7 @@ PYTHON_TYPE_TO_AVRO = {
 }
 
 # excluding tuple because is a container
-PYTHON_INMUTABLE_TYPES = (str, int, bool, float, bytes, type(None))
+PYTHON_INMUTABLE_TYPES = (str, int, types.Int32, types.Float32, bool, float, bytes, type(None))
 
 PYTHON_PRIMITIVE_CONTAINERS = (list, tuple, dict)
 
@@ -84,8 +86,10 @@ PRIMITIVE_AND_LOGICAL_TYPES = PYTHON_INMUTABLE_TYPES + PYTHON_LOGICAL_TYPES
 PythonImnutableTypes = typing.Union[
     str,
     int,
+    types.Int32,
     bool,
     float,
+    types.Float32,
     list,
     tuple,
     dict,
@@ -172,7 +176,10 @@ class BaseField:
 
     def validate_default(self) -> bool:
         msg = f"Invalid default type. Default should be {self.type}"
-        assert isinstance(self.default, self.type), msg
+        if getattr(self.type, "__metadata__", [None])[0] in types.CUSTOM_TYPES:
+            assert isinstance(self.default, self.type.__origin__)
+        else:
+            assert isinstance(self.default, self.type), msg
 
         return True
 
@@ -206,6 +213,14 @@ class StringField(ImmutableField):
 
 
 @dataclasses.dataclass
+class IntField(ImmutableField):
+    avro_type: typing.ClassVar[str] = INT
+
+    def fake(self) -> int:
+        return fake.pyint()
+
+
+@dataclasses.dataclass
 class LongField(ImmutableField):
     avro_type: typing.ClassVar[str] = LONG
 
@@ -227,6 +242,14 @@ class DoubleField(ImmutableField):
 
     def fake(self) -> float:
         return fake.pyfloat()
+
+
+@dataclasses.dataclass
+class FloatField(ImmutableField):
+    avro_type: typing.ClassVar[str] = FLOAT
+
+    def fake(self) -> float:
+        return fake.pyfloat()  # Roughly the range on a float32
 
 
 @dataclasses.dataclass
@@ -760,7 +783,9 @@ class DecimalField(BaseField):
 INMUTABLE_FIELDS_CLASSES = {
     bool: BooleanField,
     int: LongField,
+    types.Int32: IntField,
     float: DoubleField,
+    types.Float32: FloatField,
     bytes: BytesField,
     str: StringField,
     type(None): NoneField,
