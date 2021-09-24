@@ -15,14 +15,16 @@ The set of primitive type names is:
 
 So, the previous types can be matched to:
 
-| Avro Type    | Python Type |
-|--------------|-------------|
-| string       |     str     |
-| int,long     |     int     |
-| boolean      |     bool    |
-| float,double |     float   |
-| null         |     None    |
-| bytes        |     bytes   |
+| Avro Type    | Python Type  |
+|--------------|------------- -|
+| string       |     str      |
+| int,long     |     int      |
+| boolean      |     bool     |
+| float,double |     float    |
+| null         |     None     |
+| bytes        |     bytes    |
+| int          | types.Int32  |
+| float        | types.Float32|
 
 Since Python does not have native `int32` or `float32` types, use the
 `dataclasses_avroschema.types.Int32` and `dataclasses_avroschema.types.Float32`
