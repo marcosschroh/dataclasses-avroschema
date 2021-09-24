@@ -220,7 +220,7 @@ User.fake()
 
 ## Features
 
-* [X] Primitive types: int, long, float, boolean, string and null support
+* [X] Primitive types: int, long, double, float, boolean, string and null support
 * [X] Complex types: enum, array, map, fixed, unions and records support
 * [x] Logical Types: date, time, datetime, uuid support
 * [X] Schema relations (oneToOne, oneToMany)

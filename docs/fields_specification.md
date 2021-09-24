@@ -15,27 +15,34 @@ The set of primitive type names is:
 
 So, the previous types can be matched to:
 
-| Avro Type | Python Type |
-|-----------|-------------|
-| string    |     str     |
-| long      |     int     |
-| boolean   |     bool    |
-| double    |     float   |
-| null      |     None    |
-| bytes     |     bytes   |
+| Avro Type    | Python Type  |
+|--------------|------------- -|
+| string       |     str      |
+| int,long     |     int      |
+| boolean      |     bool     |
+| float,double |     float    |
+| null         |     None     |
+| bytes        |     bytes    |
+| int          | types.Int32  |
+| float        | types.Float32|
+
+Since Python does not have native `int32` or `float32` types, use the
+`dataclasses_avroschema.types.Int32` and `dataclasses_avroschema.types.Float32`
+types to annotate your classes. These types are simple wrappers around Python's
+default `int` and `float` types.
 
 ## Complex Types
 
 Avro supports six kinds of complex types: enums, arrays, maps, fixed, unions and records.
 
-| Avro Type | Python Type |
-|-----------|-------------|
-| enums     |   tuple     |
-| arrays    |   list      |
-| maps      |   dict      |
-| fixed     |   types.Fixed|
-| unions    |typing.Union |
-| records   |Python Class |
+| Avro Type | Python Type  |
+|-----------|--------------|
+| enums     | tuple        |
+| arrays    | list         |
+| maps      | dict         |
+| fixed     | types.Fixed  |
+| unions    | typing.Union |
+| records   | Python Class |
 
 * Enums: Use the type name "enum" and support the following attributes:
   1. name: a JSON string providing the name of the enum (required).
@@ -61,10 +68,10 @@ In future version we will have a custom enum type to avoid this
   3. aliases: a JSON array of strings, providing alternate names for this enum (optional).
   4. size: an integer, specifying the number of bytes per value (required).
 
-* Unions: `Unions` are represented using JSON arrays. For example, `["null", "string"]` declares a schema which may be either a null or string. 
-Under the Avro specifications, if a union field as a default, the type of the default must be the first listed type in the array. 
-Dataclasses-avroschema will automatically generate the appropriate array if a default is provided. Note that an optional field (typing.Optional[T]) generates the union `[T, null]`, where `T` is the first element in the union. 
-`None` will need to be explicitly declared the default to generate the appropriate schema, if the default should be `None/null`. 
+* Unions: `Unions` are represented using JSON arrays. For example, `["null", "string"]` declares a schema which may be either a null or string.
+Under the Avro specifications, if a union field as a default, the type of the default must be the first listed type in the array.
+Dataclasses-avroschema will automatically generate the appropriate array if a default is provided. Note that an optional field (typing.Optional[T]) generates the union `[T, null]`, where `T` is the first element in the union.
+`None` will need to be explicitly declared the default to generate the appropriate schema, if the default should be `None/null`.
 
 * Records: `Records` use the type name `record` and will represent the `Schema`.
 
@@ -100,9 +107,9 @@ Language implementations must ignore unknown logical types when reading, and sho
 Python Type | Avro Type   | Logical Type |
 |-----------|-------------|--------------|
 | str       | string      | do not apply |
-| long      | int         | do not apply |
+| int,long      | int         | do not apply |
 | bool      | boolean     | do not apply |
-| double    | float       | do not apply |
+| float,double    | float       | do not apply |
 | None      | null        | do not apply |
 | bytes     | bytes       | do not apply |
 | typing.List      | array       | do not apply |

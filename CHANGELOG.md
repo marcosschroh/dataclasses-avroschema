@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.24.0] - 2021-09-24
+
+### Added
+
+- `int` and `float` Avro type support [119](https://github.com/marcosschroh/dataclasses-avroschema/pull/119)
+
 ## [0.23.2] - 2021-09-04
 
 ### Fixed
