@@ -1,6 +1,12 @@
 import dataclasses
 import typing
 
+try:
+    # Only available in 3.9+
+    from typing import Annotated
+except ImportError:
+    from typing_extensions import Annotated
+
 T = typing.TypeVar("T")
 
 
@@ -70,4 +76,8 @@ class Decimal(typing.Generic[T]):
         return f"Decimal precision: {self.precision} scale:{self.scale}"
 
 
-CUSTOM_TYPES = ("Fixed", "Enum", "Decimal")
+Int32 = Annotated[int, "Int32"]
+Float32 = Annotated[float, "Float32"]
+
+
+CUSTOM_TYPES = ("Fixed", "Enum", "Decimal", "Int32", "Float32")
