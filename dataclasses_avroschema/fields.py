@@ -22,7 +22,7 @@ from .exceptions import NameSpaceRequiredException
 PY_VER = sys.version_info
 
 if PY_VER >= (3, 9):
-    GenericAlias = (typing._GenericAlias, typing._SpecialGenericAlias, typing._UnionGenericAlias)
+    GenericAlias = (typing.GenericAlias, typing._GenericAlias, typing._SpecialGenericAlias, typing._UnionGenericAlias)
 else:
     GenericAlias = typing._GenericAlias
 
