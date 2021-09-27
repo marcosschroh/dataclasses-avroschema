@@ -35,8 +35,8 @@ class BaseSchemaDefinition(abc.ABC):
 
     def generate_documentation(self) -> typing.Optional[str]:
         doc = self.klass.__doc__
-
-        return doc.replace("\n", "")
+        if doc is not None:
+            return doc.replace("\n", "")
 
     @property
     def is_faust_record(self) -> bool:
