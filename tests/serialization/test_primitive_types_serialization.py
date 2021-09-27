@@ -1,5 +1,4 @@
 import math
-
 from dataclasses import dataclass
 
 from dataclasses_avroschema import AvroModel, types
