@@ -4,7 +4,7 @@ import typing
 
 from dacite import Config, from_dict
 
-from dataclasses_avroschema import utils
+from dataclasses_avroschema import case, utils
 from dataclasses_avroschema.schema_definition import AvroSchemaDefinition
 from dataclasses_avroschema.serialization import deserialize, serialize, to_json
 from dataclasses_avroschema.utils import SchemaMetadata, is_custom_type
@@ -60,12 +60,16 @@ class AvroModel:
         return AvroSchemaDefinition("record", cls.klass, metadata=cls.metadata, parent=cls)
 
     @classmethod
-    def avro_schema(cls: typing.Any) -> str:
-        avro_schema = json.dumps(cls.generate_schema(schema_type=AVRO).render())
+    def avro_schema(cls: typing.Any, case_type: typing.Optional[str] = None) -> str:
+        avro_schema = cls.generate_schema(schema_type=AVRO).render()
 
-        # After generating the avro schema, reset the user_defined_types to the init
+        # After generating the avro schema, reset the raw_fields to the init
         cls.user_defined_types = ()
-        return avro_schema
+
+        if case_type is not None:
+            avro_schema = case.case_record(avro_schema, case_type)
+
+        return json.dumps(avro_schema)
 
     @classmethod
     def avro_schema_to_python(cls: typing.Any) -> typing.Dict[str, typing.Any]:

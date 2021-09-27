@@ -2,7 +2,6 @@ import datetime
 import decimal
 import json
 import uuid
-from dataclasses import field
 
 from dataclasses_avroschema import AvroModel, types
 
