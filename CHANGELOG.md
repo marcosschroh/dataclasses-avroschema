@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.25.0] - 2021-09-27
+
+### Added
+
+- New style type annotations support added (`tuple`, `list` and `dict`) [122](https://github.com/marcosschroh/dataclasses-avroschema/pull/122)
+- Case schemas added [95](https://github.com/marcosschroh/dataclasses-avroschema/pull/95)
+
+Available cases:
+
+|Case| Example|
+|----|--------|
+|camelcase |'foo_bar_baz' # => "fooBarBaz"|
+|capitalcase|'foo_bar_baz' # => "Foo_bar_baz"|
+|constcase|'FooBarBaz' # => "_FOO_BAR_BAZ"|
+|lowercase|'FooBarBaz' # => "foobarbaz"|
+|pascalcase|'FooBarBaz' # => "FooBarBaz"|
+|pathcase|'foo_bar_baz' # => "foo/bar/baz"|
+|snakecase|'FooBarBaz' # => "foo_bar_baz"|
+|spinalcase|'FooBarBaz' # => "-foo-bar-baz"|
+|trimcase|'FooBarBaz' # => "FooBarBaz"|
+|uppercase|'FooBarBaz' # => "FOOBARBAZ|
+|alphanumcase|'Foo_123 Bar!' # =>'Foo123Bar'|
+
 ## [0.24.0] - 2021-09-24
 
 ### Added
