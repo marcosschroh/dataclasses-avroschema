@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 import json
 
 import pytest
@@ -123,3 +124,14 @@ def test_namespace_required():
         assert UnionSchema.avro_schema()
 
     assert str(e)
+
+
+def test_inherit_dataclass_missing_docs():
+    @dataclass
+    class BaseUser:
+        id: int
+
+    class User(AvroModel, BaseUser):
+        age: int
+
+    assert User.avro_schema()
