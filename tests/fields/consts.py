@@ -1,8 +1,13 @@
 import datetime
 import typing
 import uuid
+import sys
+
+import pytest
 
 from dataclasses_avroschema import AvroModel, fields
+
+PY_VER = sys.version_info
 
 now = datetime.datetime.now()
 
@@ -129,25 +134,36 @@ OPTIONAL_UNION_COMPLEX_TYPES = (
 )
 
 
-SEQUENCE_TYPES = (typing.List, typing.Tuple, typing.Sequence, typing.MutableSequence)
-MAPPING_TYPES = (typing.Dict, typing.Mapping, typing.MutableMapping)
+def xfail_annotation(typ):
+    return pytest.mark.xfail(
+        (typ in (list, tuple, dict) and PY_VER < (3, 9)),
+        reason="Standard collection annotations not supported - see PEP585.",
+    )
+
+
+SEQUENCE_TYPES = (typing.List, typing.Tuple, typing.Sequence, typing.MutableSequence, list, tuple)
+MAPPING_TYPES = (typing.Dict, typing.Mapping, typing.MutableMapping, dict)
 
 SEQUENCES_AND_TYPES = [
-    (sequence, python_type, items_type) for sequence in SEQUENCE_TYPES for python_type, items_type in PRIMITIVE_TYPES
+    pytest.param(sequence, python_type, items_type, marks=xfail_annotation(sequence))
+    for sequence in SEQUENCE_TYPES
+    for python_type, items_type in PRIMITIVE_TYPES
 ]
 
 SEQUENCES_LOGICAL_TYPES = [
-    (sequence, python_type, items_type, value)
+    pytest.param(sequence, python_type, items_type, value, marks=xfail_annotation(sequence))
     for sequence in SEQUENCE_TYPES
     for python_type, items_type, value in LOGICAL_TYPES
 ]
 
 MAPPING_AND_TYPES = [
-    (mapping, python_type, items_type) for mapping in MAPPING_TYPES for python_type, items_type in PRIMITIVE_TYPES
+    pytest.param(mapping, python_type, items_type, marks=xfail_annotation(mapping))
+    for mapping in MAPPING_TYPES
+    for python_type, items_type in PRIMITIVE_TYPES
 ]
 
 MAPPING_LOGICAL_TYPES = [
-    (mapping, python_type, items_type, value)
+    pytest.param(mapping, python_type, items_type, value, marks=xfail_annotation(mapping))
     for mapping in MAPPING_TYPES
     for python_type, items_type, value in LOGICAL_TYPES
 ]
