@@ -229,6 +229,7 @@ User.fake()
 * [X] Instance serialization correspondent to `avro schema` generated
 * [X] Data deserialization. Return python dict or class instance
 * [X] Generate json from python class instance
+* [X] Case Schemas
 * [X] Examples of integration with `kafka` drivers: [aiokafka](https://github.com/aio-libs/aiokafka), [kafka-python](https://github.com/dpkp/kafka-python)
 * [X] Example of integration  with `redis` drivers: [walrus](https://github.com/coleifer/walrus) and [redisgears-py](https://github.com/RedisGears/redisgears-py)
 * [X] Factory instances

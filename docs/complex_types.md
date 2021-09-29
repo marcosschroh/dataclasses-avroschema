@@ -1,6 +1,6 @@
 ## Complex Types
 
-The following list represent the avro complext types mapped to python types:
+The following list represent the avro complex types mapped to python types:
 
 | Avro Type          | Python Type                                                        |
 | ------------------ | ------------------------------------------------------------------ |
