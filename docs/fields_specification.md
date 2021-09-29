@@ -121,6 +121,8 @@ Python Type | Avro Type   | Logical Type |
 | typing.MutableMapping      | map         | do not apply |
 | types.Fixed      | fixed         | do not apply |
 | types.Enum      | enum         | do not apply |
+| types.Int32  | int | do not apply |
+| types.Float32 | float| do not apply |
 | typing.Union| union     | do not apply |
 | typing.Optional| union (with `null`)    | do not apply |
 | Python class | record  | do not apply |
