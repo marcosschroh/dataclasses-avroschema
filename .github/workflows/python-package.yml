@@ -21,9 +21,15 @@ jobs:
       run: pip install -r requirements.txt
     - name: Build and test
       run: ./scripts/test && codecov && codecov --token=$CODECOV_TOKEN
-    - name: Docs
+  docs:
+    steps:
+    - uses: actions/checkout@v2
+    - name: Publish Docs
       if: ${{ github.ref == 'refs/heads/master' }}
       run: mkdocs gh-deploy --force
+  publish:
+    steps:
+    - uses: actions/checkout@v2
     - name: Publish to pypi
       if: ${{ startsWith(github.ref, 'refs/tags/v') }}
       run: ./scripts/publish
