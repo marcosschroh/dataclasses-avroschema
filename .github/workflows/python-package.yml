@@ -11,6 +11,7 @@ on:
 
 jobs:
   build:
+    if: ${{ github.event_name == 'pull_request' || github.ref == 'refs/heads/master' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -21,9 +22,17 @@ jobs:
       run: pip install -r requirements.txt
     - name: Build and test
       run: ./scripts/test && codecov && codecov --token=$CODECOV_TOKEN
-    - name: Docs
-      if: ${{ github.ref == 'refs/heads/master' }}
+  docs:
+    if: ${{ github.ref == 'refs/heads/master' }}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Publish Docs
       run: mkdocs gh-deploy --force
+  publish:
+    if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
     - name: Publish to pypi
-      if: ${{ startsWith(github.ref, 'refs/tags/v') }}
       run: ./scripts/publish

@@ -24,8 +24,9 @@ nav:
     - Migration Guide: 'migration_guide.md'
 
 markdown_extensions:
-  - markdown.extensions.codehilite:
+  - codehilite:
       guess_lang: false
   - admonition
   - codehilite
   - extra
+  - pymdownx.inlinehilite
