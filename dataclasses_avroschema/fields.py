@@ -764,7 +764,7 @@ class DecimalField(BaseField):
 
     def get_avro_type(self) -> typing.Dict[str, typing.Any]:
         avro_type = {"type": BYTES, "logicalType": DECIMAL, "precision": self.precision, "scale": self.scale}
-        if self.default.default == None:
+        if not isinstance(self.default, decimal.Decimal) and self.default.default == None:
             return ["null", avro_type]
 
         return avro_type
