@@ -774,6 +774,8 @@ class DecimalField(BaseField):
 
         if default == types.MissingSentinel:
             return dataclasses.MISSING
+        if default == None:
+            return None
         return serialization.decimal_to_str(default, self.precision, self.scale)
 
     def fake(self) -> decimal.Decimal:
@@ -910,6 +912,7 @@ def field_factory(
             )
 
         container_klass = CONTAINER_FIELDS_CLASSES[origin]
+        # check here
         return container_klass(  # type: ignore
             name=name,
             type=native_type,
