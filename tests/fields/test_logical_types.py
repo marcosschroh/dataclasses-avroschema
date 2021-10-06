@@ -179,6 +179,17 @@ def test_decimal_type():
 
     assert expected == field.to_dict()
 
+    default = types.Decimal(scale=5, precision=7, default=None)
+    field = fields.AvroField(name, python_type, default=default)
+
+    expected = {
+        "name": name,
+        "type": ["null", {"type": "bytes", "logicalType": "decimal", "precision": 7, "scale": 5}],
+        "default": None,
+    }
+
+    assert expected == field.to_dict()
+
     # If default is missing, default out scale by Avro spec and pull precision from default decimal context
     # On my machine, this makes the "decimal" field a glorified 28-digit int, which is likely not what is wanted
     # so there is a good argument to error this out and force the dev to provide a default

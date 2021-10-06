@@ -764,6 +764,8 @@ class DecimalField(BaseField):
 
     def get_avro_type(self) -> typing.Dict[str, typing.Any]:
         avro_type = {"type": BYTES, "logicalType": DECIMAL, "precision": self.precision, "scale": self.scale}
+        if not isinstance(self.default, decimal.Decimal) and self.default.default is None:
+            return ["null", avro_type]
 
         return avro_type
 
@@ -774,6 +776,8 @@ class DecimalField(BaseField):
 
         if default == types.MissingSentinel:
             return dataclasses.MISSING
+        if default is None:
+            return None
         return serialization.decimal_to_str(default, self.precision, self.scale)
 
     def fake(self) -> decimal.Decimal:
@@ -910,6 +914,7 @@ def field_factory(
             )
 
         container_klass = CONTAINER_FIELDS_CLASSES[origin]
+        # check here
         return container_klass(  # type: ignore
             name=name,
             type=native_type,

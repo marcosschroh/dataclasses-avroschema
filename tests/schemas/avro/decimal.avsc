@@ -30,6 +30,19 @@
         "scale": 5
       },
       "default": "\\u04cb2f"
+    },
+    {
+      "name": "explicit_with_null_default",
+      "type": [
+        "null",
+        {
+          "type": "bytes",
+          "logicalType": "decimal",
+          "precision": 7,
+          "scale": 5
+        }
+      ],
+      "default": null
     }
   ],
   "doc": "Some Decimal Tests"

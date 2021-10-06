@@ -1,7 +1,7 @@
 import datetime
+import sys
 import typing
 import uuid
-import sys
 
 import pytest
 
