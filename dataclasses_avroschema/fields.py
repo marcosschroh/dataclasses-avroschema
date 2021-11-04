@@ -336,7 +336,6 @@ class ListField(ContainerField):
             self.items_type = self.internal_field.get_avro_type()
 
     def fake(self) -> typing.List:
-        self.generate_items_type()
         # return a list of one element with the type specified
         return [self.internal_field.fake()]
 
@@ -384,7 +383,6 @@ class DictField(ContainerField):
 
     def fake(self) -> typing.Dict[str, typing.Any]:
         # return a dict of one element with the items type specified
-        self.generate_values_type()
         return {fake.pystr(): self.internal_field.fake()}
 
 
