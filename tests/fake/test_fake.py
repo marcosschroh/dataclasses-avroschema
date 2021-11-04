@@ -81,6 +81,7 @@ def test_fake_one_to_many_relationship():
         addresses: typing.List[Address]
 
     assert isinstance(User.fake(), User)
+    assert User.avro_schema()
 
 
 def test_fake_one_to_many_map_relationship():

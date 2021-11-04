@@ -1,4 +1,5 @@
 import json
+import typing
 from dataclasses import dataclass
 
 import pytest
@@ -135,3 +136,15 @@ def test_inherit_dataclass_missing_docs():
         age: int
 
     assert User.avro_schema()
+
+
+def test_get_fields():
+    class Child(AvroModel):
+        name: str
+
+    class Parent(AvroModel):
+        children: typing.List[Child]
+
+    assert Parent.get_fields()[0].internal_field
+    assert Parent.avro_schema()
+    assert Parent.fake()

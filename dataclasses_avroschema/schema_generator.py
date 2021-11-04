@@ -1,6 +1,7 @@
 import dataclasses
 import json
 import typing
+from collections import OrderedDict
 
 from dacite import Config, from_dict
 
@@ -24,6 +25,7 @@ class AvroModel:
     klass: typing.Any = None
     metadata: typing.Optional[SchemaMetadata] = None
     user_defined_types: typing.Optional[typing.Tuple[utils.UserDefinedType]] = None
+    rendered_schema: typing.Optional[OrderedDict] = None
 
     @classmethod
     def generate_dataclass(cls: typing.Any) -> typing.Any:
@@ -50,10 +52,11 @@ class AvroModel:
             if schema_type == "avro":
                 # cache the schema
                 cls.schema_def = cls._generate_avro_schema()
+                cls.rendered_schema = cls.schema_def.render()
             else:
                 raise ValueError("Invalid type. Expected avro schema type.")
 
-        return cls.schema_def
+        return cls.rendered_schema
 
     @classmethod
     def _generate_avro_schema(cls: typing.Any) -> AvroSchemaDefinition:
@@ -61,13 +64,13 @@ class AvroModel:
 
     @classmethod
     def avro_schema(cls: typing.Any, case_type: typing.Optional[str] = None) -> str:
-        avro_schema = cls.generate_schema(schema_type=AVRO).render()
+        avro_schema = cls.generate_schema(schema_type=AVRO)
 
         # After generating the avro schema, reset the raw_fields to the init
         cls.user_defined_types = ()
 
         if case_type is not None:
-            avro_schema = case.case_record(avro_schema, case_type)
+            avro_schema = case.case_record(cls.rendered_schema, case_type)
 
         return json.dumps(avro_schema)
 
@@ -78,7 +81,7 @@ class AvroModel:
     @classmethod
     def get_fields(cls: typing.Any) -> typing.List[FieldType]:
         if cls.schema_def is None:
-            return cls.generate_schema().fields
+            cls.generate_schema()
         return cls.schema_def.fields
 
     @staticmethod
