@@ -8,25 +8,29 @@ repo_name: marcosschroh/dataclasses-avroschema
 repo_url: https://github.com/marcosschroh/dataclasses-avroschema
 
 nav:
-    - Introduction: 'index.md'
-    - Avro Schema and Python Classes: 'avro_schema.md'
-    - Fields Specification: 'fields_specification.md'
-    - Primitive Types: 'primitive_types.md'
-    - Complex Types: 'complex_types.md'
-    - Logical Types: 'logical_types.md'
-    - Schema Relationships: 'schema_relationships.md'
-    - Serialization: 'serialization.md'
-    - Faust Records: 'faust_records.md'
-    - Case Schemas: 'case.md'
-    - Kafka examples: 'kafka_examples.md'
-    - Redis examples: 'redis_examples.md'
-    - Factory and fixtures: 'factories_and_fixtures.md'
-    - Migration Guide: 'migration_guide.md'
+  - Introduction: 'index.md'
+  - Avro Schema and Python Classes: 'avro_schema.md'
+  - Fields Specification: 'fields_specification.md'
+  - Primitive Types: 'primitive_types.md'
+  - Complex Types: 'complex_types.md'
+  - Logical Types: 'logical_types.md'
+  - Schema Relationships: 'schema_relationships.md'
+  - Serialization: 'serialization.md'
+  - Faust Records: 'faust_records.md'
+  - Case Schemas: 'case.md'
+  - Kafka examples: 'kafka_examples.md'
+  - Redis examples: 'redis_examples.md'
+  - Factory and fixtures: 'factories_and_fixtures.md'
+  - Migration Guide: 'migration_guide.md'
 
 markdown_extensions:
-  - codehilite:
-      guess_lang: false
-  - admonition
-  - codehilite
-  - extra
+  - pymdownx.highlight
   - pymdownx.inlinehilite
+  - pymdownx.superfences
+  - pymdownx.snippets
+  - pymdownx.critic
+  - pymdownx.caret
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.tilde
+  - tables
