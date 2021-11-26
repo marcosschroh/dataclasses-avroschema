@@ -353,3 +353,25 @@ def test_namespaces():
         b2: B
 
     parse_schema(A.avro_schema_to_python())
+
+
+def test_use_of_same_type_in_nested_list():
+    class Address(AvroModel):
+        "An Address"
+        street: str
+        street_number: int
+
+        class Meta:
+            namespace = "types.test"
+
+    class PreviousAddresses(AvroModel):
+        addresses: typing.List[Address]
+
+    class User(AvroModel):
+        "An User with Address and previous addresses"
+        name: str
+        age: int
+        address: Address
+        previous_addresses: PreviousAddresses
+
+    assert parse_schema(User.avro_schema_to_python())

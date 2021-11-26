@@ -24,7 +24,7 @@ class AvroModel:
     schema_def: typing.Optional[AvroSchemaDefinition] = None
     klass: typing.Any = None
     metadata: typing.Optional[SchemaMetadata] = None
-    user_defined_types: typing.Optional[typing.Tuple[utils.UserDefinedType]] = None
+    user_defined_types: typing.Tuple[utils.UserDefinedType] = ()
     rendered_schema: typing.Optional[OrderedDict] = None
 
     @classmethod
@@ -45,7 +45,6 @@ class AvroModel:
             # Generate metaclass and metadata
             cls.klass = cls.generate_dataclass()
             cls.metadata = cls.generate_metadata()
-            cls.user_defined_types = ()
 
             # let's live open the possibility to define different
             # schema definitions like json
