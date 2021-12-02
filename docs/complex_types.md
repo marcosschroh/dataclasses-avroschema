@@ -416,3 +416,43 @@ class Meta:
 `namespace (optional[str])`: Schema namespace. Default `None`
 `aliases (optional[List[str]])`: Schema aliases. Default `None`
 `alias_nested_items (optional[Dict[str, str]])`: Nested items names
+
+#### Validation
+
+Python classes that inheritance from `AvroModel` has a `validate` method. This method `validates` whether the instance data matches
+the schema that it represents, for example:
+
+```python
+from dataclasses import dataclass
+
+
+from dataclasses_avroschema import AvroModel
+
+
+@dataclass
+class User(AvroModel):
+    name: str
+    age: int
+    has_pets: bool
+    money: float
+    encoded: bytes
+
+# this creates a proper instance
+user_instance = User(
+    name="a name",
+    age=10,
+    has_pets=True,
+    money=0,
+    encoded=b'hi',
+)
+assert user_instance.validate()
+
+# set 1 to the name attribute and the fastavro validation should fail
+# This is possible because in dataclasses there is not restriction,
+# but at the moment of using pydantic this will change
+user_instance.name = 1
+with pytest.raises(ValidationError) as exc:
+    assert user_instance.validate()
+
+assert json.loads(str(exc.value)) == ["User.name is <1> of type <class 'int'> expected string"]
+```
