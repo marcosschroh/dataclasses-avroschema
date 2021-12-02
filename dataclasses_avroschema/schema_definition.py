@@ -37,6 +37,7 @@ class BaseSchemaDefinition(abc.ABC):
         doc = self.klass.__doc__
         if doc is not None:
             return doc.replace("\n", "")
+        return None
 
     @property
     def is_faust_record(self) -> bool:
