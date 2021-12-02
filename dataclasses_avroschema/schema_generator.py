@@ -2,15 +2,15 @@ import dataclasses
 import json
 import typing
 from collections import OrderedDict
+import inspect
 
 from dacite import Config, from_dict
 
-from dataclasses_avroschema import case, utils
-from dataclasses_avroschema.schema_definition import AvroSchemaDefinition
-from dataclasses_avroschema.serialization import deserialize, serialize, to_json
-from dataclasses_avroschema.utils import SchemaMetadata, is_custom_type
-
+from . import case
 from .fields import FieldType
+from .schema_definition import AvroSchemaDefinition
+from .serialization import deserialize, serialize, to_json
+from .utils import SchemaMetadata, is_custom_type
 
 AVRO = "avro"
 AVRO_JSON = "avro-json"
@@ -24,7 +24,7 @@ class AvroModel:
     schema_def: typing.Optional[AvroSchemaDefinition] = None
     klass: typing.Any = None
     metadata: typing.Optional[SchemaMetadata] = None
-    user_defined_types: typing.Tuple[utils.UserDefinedType] = ()
+    user_defined_types: typing.Tuple = ()
     rendered_schema: typing.Optional[OrderedDict] = None
 
     @classmethod
@@ -40,7 +40,7 @@ class AvroModel:
         return SchemaMetadata.create(meta)
 
     @classmethod
-    def generate_schema(cls: typing.Type[CT], schema_type: str = "avro") -> AvroSchemaDefinition:
+    def generate_schema(cls: typing.Type[CT], schema_type: str = "avro") -> typing.Optional[OrderedDict]:
         if cls.schema_def is None:
             # Generate metaclass and metadata
             cls.klass = cls.generate_dataclass()
@@ -110,10 +110,8 @@ class AvroModel:
         writer_schema: typing.Optional[typing.Union[JsonDict, CT]] = None,
     ) -> typing.Union[JsonDict, CT]:
 
-        try:
+        if inspect.isclass(writer_schema) and issubclass(writer_schema, AvroModel):
             writer_schema = writer_schema.avro_schema_to_python()
-        except AttributeError:
-            pass
 
         schema = cls.avro_schema_to_python()
         payload = deserialize(data, schema, serialization_type=serialization_type, writer_schema=writer_schema)

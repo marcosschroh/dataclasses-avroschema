@@ -108,7 +108,7 @@ class BaseField:
     name: str
     type: typing.Any  # store the python primitive type
     default: typing.Any
-    parent: typing.Tuple[dataclasses.Field]
+    parent: typing.Any
     metadata: typing.Mapping = dataclasses.field(default_factory=dict)
     model_metadata: typing.Optional[utils.SchemaMetadata] = None
 
@@ -706,7 +706,7 @@ class RecordField(BaseField):
     def fake(self) -> typing.Any:
         return self.type.fake()
 
-    def exist_type(self):
+    def exist_type(self) -> int:
         # filter by the same field types
         same_types = [
             field.type
