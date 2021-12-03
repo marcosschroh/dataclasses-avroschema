@@ -1,6 +1,7 @@
 import json
 import typing
 from dataclasses import dataclass
+from fastavro.validation import ValidationError
 
 import pytest
 
@@ -148,3 +149,25 @@ def test_get_fields():
     assert Parent.get_fields()[0].internal_field
     assert Parent.avro_schema()
     assert Parent.fake()
+
+
+def test_validate():
+    @dataclass
+    class User(AvroModel):
+        name: str
+        age: int
+        has_pets: bool
+        money: float
+        encoded: bytes
+
+    user_instance = User.fake()
+    assert user_instance.validate()
+
+    # set 1 to the name attribute and the fastavro validation should fail
+    # This is possible because in dataclasses there is not restriction,
+    # but at the moment of using pydantic this will change
+    user_instance.name = 1
+    with pytest.raises(ValidationError) as exc:
+        assert user_instance.validate()
+
+    assert json.loads(str(exc.value)) == ["User.name is <1> of type <class 'int'> expected string"]

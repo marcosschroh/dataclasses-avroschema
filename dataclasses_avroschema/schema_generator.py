@@ -5,6 +5,7 @@ from collections import OrderedDict
 import inspect
 
 from dacite import Config, from_dict
+from fastavro.validation import validate
 
 from . import case
 from .fields import FieldType
@@ -119,6 +120,11 @@ class AvroModel:
         if create_instance:
             return from_dict(data_class=cls, data=payload, config=Config(**cls.config()))
         return payload
+
+    def validate(self) -> bool:
+        schema = self.avro_schema_to_python()
+
+        return validate(self.asdict(), schema)
 
     def to_json(self) -> JsonDict:
         # Serialize using the current AVRO schema to get proper field representations
