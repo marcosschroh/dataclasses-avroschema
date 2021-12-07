@@ -26,6 +26,7 @@ class AvroModel:
     klass: typing.Any = None
     metadata: typing.Optional[SchemaMetadata] = None
     user_defined_types: typing.Tuple = ()
+    root: typing.Any = None
     rendered_schema: typing.Optional[OrderedDict] = None
 
     @classmethod
@@ -60,7 +61,7 @@ class AvroModel:
 
     @classmethod
     def _generate_avro_schema(cls: typing.Any) -> AvroSchemaDefinition:
-        return AvroSchemaDefinition("record", cls.klass, metadata=cls.metadata, parent=cls)
+        return AvroSchemaDefinition("record", cls.klass, metadata=cls.metadata, parent=cls.root or cls)
 
     @classmethod
     def avro_schema(cls: typing.Any, case_type: typing.Optional[str] = None) -> str:
@@ -75,7 +76,10 @@ class AvroModel:
         return json.dumps(avro_schema)
 
     @classmethod
-    def avro_schema_to_python(cls: typing.Any) -> typing.Dict[str, typing.Any]:
+    def avro_schema_to_python(cls: typing.Any, root: typing.Any = None) -> typing.Dict[str, typing.Any]:
+        if root is not None:
+            cls.root = root
+
         return json.loads(cls.avro_schema())
 
     @classmethod

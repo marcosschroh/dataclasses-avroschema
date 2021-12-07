@@ -683,13 +683,9 @@ class RecordField(BaseField):
             user_defined_type = utils.UserDefinedType(name=name, type=self.type)
 
             # add user_defined_type to the parent
-            self.parent.user_defined_types = self.parent.user_defined_types + (user_defined_type,)
+            self.parent.user_defined_types += (user_defined_type,)
 
-            # add the parent define types to the current self.type (AvroModel) to generate valid avro schemas
-            # when inheritance has more than 2 levels
-            self.type.user_defined_types = self.type.user_defined_types + self.parent.user_defined_types
-
-            record_type = self.type.avro_schema_to_python()
+            record_type = self.type.avro_schema_to_python(root=self.parent)
             record_type["name"] = name
         else:
             meta = getattr(self.type, "Meta", None)

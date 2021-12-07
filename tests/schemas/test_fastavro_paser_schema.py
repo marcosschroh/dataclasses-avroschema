@@ -375,3 +375,37 @@ def test_use_of_same_type_in_nested_list():
         previous_addresses: PreviousAddresses
 
     assert parse_schema(User.avro_schema_to_python())
+
+
+def test_two_different_child_records():
+    class Location(AvroModel):
+        lat: float
+        long: float
+        altitude: typing.Optional[float] = None
+        bearing: typing.Optional[float] = None
+
+        class Meta:
+            namespace = "test.namespace"
+
+    class Photo(AvroModel):
+        filename: str
+        data: bytes
+        width: int
+        height: int
+        geo_tag: typing.Optional[Location] = None
+
+    class Video(AvroModel):
+        filename: str
+        data: bytes
+        duration: int
+        geo_tag: typing.Optional[Location] = None
+
+    class HolidayAlbum(AvroModel):
+        album_name: str
+        photos: typing.List[Photo] = dataclasses.field(default_factory=list)
+        videos: typing.List[Video] = dataclasses.field(default_factory=list)
+
+        class Meta:
+            namespace = "test.namespace"
+
+    assert parse_schema(HolidayAlbum.avro_schema_to_python())
