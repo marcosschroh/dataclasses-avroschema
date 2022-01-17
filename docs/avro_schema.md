@@ -40,7 +40,7 @@ For example, a User may be defined with:
 }
 ```
 
-### From a Python class to the Avo Schema
+### From a Python class to the Avro Schema
 
 Image that you have to define the previous `User` schema but you do not know avro, you know python:
 
