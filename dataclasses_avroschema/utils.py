@@ -45,7 +45,7 @@ def is_self_referenced(a_type: typing.Any) -> bool:
 
 def is_custom_type(value: typing.Any) -> bool:
     """
-    Given a type, return True if is a custom type (Fixed, Enum)
+    Given a type, return True if is a custom type (Fixed, Decimal)
     """
     return isinstance(value, dict) and value.get("_dataclasses_custom_type") in CUSTOM_TYPES
 
@@ -59,7 +59,7 @@ class SchemaMetadata:
     alias_nested_items: typing.Dict[str, str] = field(default_factory=dict)
 
     @classmethod
-    def create(cls, klass: typing.Any) -> typing.Any:
+    def create(cls: typing.Any, klass: type) -> typing.Any:
         return cls(
             schema_name=getattr(klass, "schema_name", None),
             schema_doc=getattr(klass, "schema_doc", True),
@@ -70,6 +70,24 @@ class SchemaMetadata:
 
     def get_alias(self, name: str) -> typing.Optional[str]:
         return self.alias_nested_items.get(name)
+
+
+@dataclass
+class FieldMetadata:
+    aliases: typing.List[str] = field(default_factory=list)
+    doc: typing.Optional[str] = None
+    namespace: typing.Optional[str] = None
+
+    @classmethod
+    def create(cls: typing.Any, klass: type) -> "FieldMetadata":
+        return cls(
+            aliases=getattr(klass, "aliases", []),
+            doc=getattr(klass, "doc", None),
+            namespace=getattr(klass, "namespace", None),
+        )
+
+    def to_dict(self):
+        return {key: value for key, value in vars(self).items() if value}
 
 
 class UserDefinedType(typing.NamedTuple):

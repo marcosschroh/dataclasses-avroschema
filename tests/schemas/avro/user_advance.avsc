@@ -27,17 +27,17 @@
       }
     },
     {
-      "name": "has_car",
-      "type": "boolean",
-      "default": false
-    },
-    {
       "name": "favorite_colors",
       "type": {
         "type": "enum",
         "name": "favorite_color",
         "symbols": ["BLUE", "YELLOW", "GREEN"]
       }
+    },
+    {
+      "name": "has_car",
+      "type": "boolean",
+      "default": false
     },
     {
       "name": "country",

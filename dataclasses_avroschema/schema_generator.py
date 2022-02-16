@@ -1,14 +1,15 @@
 import dataclasses
+import enum
+import inspect
 import json
 import typing
 from collections import OrderedDict
-import inspect
 
 from dacite import Config, from_dict
 from fastavro.validation import validate
 
 from . import case
-from .fields import FieldType
+from .fields import EnumField, FieldType, RecordField, UnionField
 from .schema_definition import AvroSchemaDefinition
 from .serialization import deserialize, serialize, to_json
 from .utils import SchemaMetadata, is_custom_type
@@ -88,10 +89,44 @@ class AvroModel:
             cls.generate_schema()
         return cls.schema_def.fields
 
+    @classmethod
+    def _get_enum_type_map(cls: typing.Any) -> typing.Dict[str, enum.Enum]:
+        enum_types = {}
+        for field_type in cls.get_fields():
+            if isinstance(field_type, EnumField):
+                enum_types[field_type.name] = field_type.type
+            elif isinstance(field_type, UnionField):
+                for sub_type in field_type.type.__args__:
+                    if inspect.isclass(sub_type) and issubclass(sub_type, enum.Enum):
+                        enum_types[field_type.name] = sub_type
+            elif isinstance(field_type, RecordField):
+                enum_types.update(field_type.type._get_enum_type_map())
+        return enum_types
+
+    @classmethod
+    def _deserialize_complex_types(cls, payload: typing.Dict[str, typing.Any]) -> typing.Any:
+        output = {}
+        enum_type_map = cls._get_enum_type_map()
+        for field, value in payload.items():
+            if isinstance(value, dict):
+                output[field] = cls._deserialize_complex_types(value)
+            elif field in enum_type_map and isinstance(value, str):
+                try:
+                    output[field] = enum_type_map[field](value)
+                except ValueError as e:
+                    raise ValueError(f"Value {value} is not a valid instance of {enum_type_map[field]}", e)
+            else:
+                output[field] = value
+        return output
+
     @staticmethod
     def standardize_custom_type(value: typing.Any) -> typing.Any:
         if is_custom_type(value):
             return value["default"]
+        elif isinstance(value, dict):
+            return {k: AvroModel.standardize_custom_type(v) for k, v in value.items()}
+        elif issubclass(type(value), enum.Enum):
+            return value.value
         return value
 
     def asdict(self) -> JsonDict:
@@ -121,9 +156,11 @@ class AvroModel:
         schema = cls.avro_schema_to_python()
         payload = deserialize(data, schema, serialization_type=serialization_type, writer_schema=writer_schema)
 
+        output = cls._deserialize_complex_types(payload)
+
         if create_instance:
-            return from_dict(data_class=cls, data=payload, config=Config(**cls.config()))
-        return payload
+            return from_dict(data_class=cls, data=output, config=Config(**cls.config()))
+        return output
 
     def validate(self) -> bool:
         schema = self.avro_schema_to_python()

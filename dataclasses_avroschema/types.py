@@ -37,29 +37,9 @@ class Fixed(typing.Generic[T]):
 
 
 @dataclasses.dataclass
-class Enum(typing.Generic[T]):
-    """
-    Represents an Avro Enum type
-
-    symbols (typing.List): Specifying the possible values for the enum
-    """
-
-    symbols: typing.List[typing.Any]
-    default: typing.Any = dataclasses.field(default=MissingSentinel)
-    namespace: typing.Optional[str] = None
-    aliases: typing.Optional[typing.List] = None
-    docs: typing.Optional[str] = None
-    _dataclasses_custom_type: str = "Enum"
-
-    def __repr__(self) -> str:
-        return f"{self.symbols}"
-
-
-@dataclasses.dataclass
 class Decimal(typing.Generic[T]):
     """
     Represents an Avro Decimal type
-
     precision (int): Specifying the number precision
     scale(int): Specifying the number scale. Default 0
     """
@@ -80,4 +60,4 @@ Int32 = Annotated[int, "Int32"]
 Float32 = Annotated[float, "Float32"]
 
 
-CUSTOM_TYPES = ("Fixed", "Enum", "Decimal", "Int32", "Float32")
+CUSTOM_TYPES = ("Fixed", "Decimal", "Int32", "Float32")

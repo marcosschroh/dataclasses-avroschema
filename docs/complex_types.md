@@ -4,7 +4,7 @@ The following list represent the avro complex types mapped to python types:
 
 | Avro Type          | Python Type                                                        |
 | ------------------ | ------------------------------------------------------------------ |
-| enums              | types.Enum                                                         |
+| enums              | enum.Enum                                                         |
 | arrays             | typing.List, typing.Tuple, typing.Sequence, typing.MutableSequence |
 | maps               | typing.Dict, typing.Mapping, typing.MutableMapping                 |
 | fixed              | types.Fixed                                                        |
@@ -17,34 +17,56 @@ The following list represent the avro complex types mapped to python types:
 Example:
 
 ```python
-import typing
+import enum
 
-from dataclasses_avroschema import AvroModel, types
+from dataclasses_avroschema import AvroModel
 
+
+class FavoriteColor(enum.Enum):
+    BLUE = "Blue"
+    YELLOW = "Yellow"
+    GREEN = "Green"
+    
+    class Meta:
+        doc = "A favorite color"
+        namespace = "some.name.space"
+        aliases = ["Color", "My favorite color"]
 
 class User(AvroModel):
     "An User"
-    favorite_colors: types.Enum = types.Enum(["BLUE", "YELLOW", "GREEN"], default="BLUE")
+    favorite_color: FavoriteColor = FavoriteColor.BLUE
+
 
 User.avro_schema()
-
 
 '{
   "type": "record",
   "name": "User",
-  "fields": [
+  "fields":
+  [
     {
-      "name": "favorite_colors",
-      "type": {
+      "name": "favorite_color",
+      "type":
+      {
         "type": "enum",
-        "symbols": ["BLUE", "YELLOW", "GREEN"],
-        "name": "favorite_color"
+        "name": "favorite_color",
+        "symbols":
+        [
+          "Blue",
+          "Yellow",
+          "Green"
+        ],
+        "doc": "A favorite color",
+        "namespace": "some.name.space",
+        "aliases":
+        ["Color", "My favorite color"]
       },
-      "default": "BLUE"
+      "default": "Blue"
     }
   ],
   "doc": "An User"
 }'
+
 ```
 
 ### Arrays

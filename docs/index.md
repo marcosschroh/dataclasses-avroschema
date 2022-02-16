@@ -22,10 +22,16 @@ pip install dataclasses-avroschema
 ### Generating the avro schema
 
 ```python
+import enum
 import typing
 
-from dataclasses_avroschema import AvroModel, types
+from dataclasses_avroschema import AvroModel
 
+
+class FavoriteColor(enum.Enum):
+    BLUE = "Blue"
+    YELLOW = "Yellow"
+    GREEN = "Green"
 
 class User(AvroModel):
     "An User"
@@ -33,7 +39,7 @@ class User(AvroModel):
     age: int
     pets: typing.List[str]
     accounts: typing.Dict[str, int]
-    favorite_colors: types.Enum = types.Enum(["BLUE", "YELLOW", "GREEN"])
+    favorite_color: FavoriteColor
     country: str = "Argentina"
     address: str = None
 
@@ -55,7 +61,7 @@ User.avro_schema()
         {"name": "age", "type": "long"},
         {"name": "pets", "type": "array", "items": "string"},
         {"name": "accounts", "type": "map", "values": "long"},
-        {"name": "favorite_colors", "type": "enum", "symbols": ["BLUE", "YELLOW", "GREEN"]},
+        {"name": "favorite_color", "type": "enum", "symbols": ["BLUE", "YELLOW", "GREEN"]},
         {"name": "country", "type": "string", "default": "Argentina"},
         {"name": "address", "type": ["null", "string"], "default": null}
     ]
@@ -74,7 +80,7 @@ User.avro_schema_to_python()
         {"name": "age", "type": "long"},
         {"name": "pets", "type": {"type": "array", "items": "string", "name": "pet"}},
         {"name": "accounts", "type": {"type": "map", "values": "long", "name": "account"}},
-        {"name": "favorite_colors", "type": {"type": "enum", "name": "favorite_color", "symbols": ["BLUE", "YELLOW", "GREEN"]}},
+        {"name": "favorite_color", "type": {"type": "enum", "name": "favorite_color", "symbols": ["BLUE", "YELLOW", "GREEN"]}},
         {"name": "country", "type": "string", "default": "Argentina"},
         {"name": "address", "type": ["null", "string"], "default": None}
     ],
