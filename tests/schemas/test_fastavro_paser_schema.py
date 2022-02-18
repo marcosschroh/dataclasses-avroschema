@@ -55,28 +55,34 @@ def test_schema_with_extra_avro_attrs(user_extra_avro_atributes_dataclass):
             }
     """
     schema = user_extra_avro_atributes_dataclass.avro_schema_to_python()
-
     assert parse_schema(schema)
 
 
-def test_advance_schema(user_advance_dataclass):
+def test_advance_schema(user_advance_dataclass, user_advance_dataclass_with_union_enum):
     """
     Python class contains the primitive, primitive with default values
     array, enum, map types.
+
+    class FavoriteColor(enum.Enum):
+        BLUE = "BLUE"
+        YELLOW = "YELLOW"
+        GREEN = "GREEN"
 
     class UserAdvance:
         name: str
         age: int
         pets: typing.List[str]
         accounts: typing.Dict[str, int]
+        favorite_colors: FavoriteColor
         has_car: bool = False
-        favorite_colors: types.Enum = Enum(["BLUE", "YELLOW", "GREEN"])
         country: str = "Argentina"
         address: str = None
         md5: types.Fixed = types.Fixed(16)
     """
     schema = user_advance_dataclass.avro_schema_to_python()
+    assert parse_schema(schema)
 
+    schema = user_advance_dataclass_with_union_enum.avro_schema_to_python()
     assert parse_schema(schema)
 
 
@@ -85,18 +91,22 @@ def test_advance_schema_with_defaults(user_advance_with_defaults_dataclass):
     Python class contains the primitive, primitive with default values
     array, enum, map types.
 
+    class FavoriteColor(enum.Enum):
+        BLUE = "BLUE"
+        YELLOW = "YELLOW"
+        GREEN = "GREEN"
+
     class UserAdvance:
         name: str
         age: int
         pets: typing.List[str] = dataclasses.field(default_factory=lambda: ['dog', 'cat'])
         accounts: typing.Dict[str, int] = dataclasses.field(default_factory=lambda: {"key": 1})
         has_car: bool = False
-        favorite_colors: types.Enum = types.Enum(["BLUE", "YELLOW", "GREEN"], default="BLUE")
+        favorite_colors: FavoriteColor = FavoriteColor.BLUE
         country: str = "Argentina"
         address: str = None
     """
     schema = user_advance_with_defaults_dataclass.avro_schema_to_python()
-
     assert parse_schema(schema)
 
 

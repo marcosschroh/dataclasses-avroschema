@@ -1,9 +1,9 @@
 import json
 import typing
 from dataclasses import dataclass
-from fastavro.validation import ValidationError
 
 import pytest
+from fastavro.validation import ValidationError
 
 from dataclasses_avroschema import AvroModel, exceptions
 from dataclasses_avroschema.schema_definition import BaseSchemaDefinition
@@ -171,3 +171,54 @@ def test_validate():
         assert user_instance.validate()
 
     assert json.loads(str(exc.value)) == ["User.name is <1> of type <class 'int'> expected string"]
+
+
+def test_get_enum_type_map(user_advance_dataclass_with_enum, color_enum, user_type_enum):
+    assert user_advance_dataclass_with_enum._get_enum_type_map() == {
+        "favorite_colors": color_enum,
+        "user_type": user_type_enum,
+    }
+
+
+def test_get_enum_type_map_with_unions(user_advance_dataclass_with_union_enum, color_enum, user_type_enum):
+    assert user_advance_dataclass_with_union_enum._get_enum_type_map() == {
+        "favorite_colors": color_enum,
+        "user_type": user_type_enum,
+    }
+
+
+def test_get_enum_type_map_with_sub_record(user_advance_dataclass_with_sub_record_and_enum, color_enum, user_type_enum):
+    assert user_advance_dataclass_with_sub_record_and_enum._get_enum_type_map() == {
+        "favorite_colors": color_enum,
+        "user_type": user_type_enum,
+    }
+
+
+def test_deserialize_complex_types(user_advance_dataclass_with_sub_record_and_enum, color_enum, user_type_enum):
+    payload = {
+        "name": "Name",
+        "favorite_colors": "BLUE",
+        "sub_record": {"sub_name": "Sub Name", "user_type": "PREMIUM"},
+        "has_car": True,
+    }
+
+    deserialized_payload = user_advance_dataclass_with_sub_record_and_enum._deserialize_complex_types(payload)
+
+    assert deserialized_payload == {
+        "name": "Name",
+        "favorite_colors": color_enum.BLUE,
+        "sub_record": {"sub_name": "Sub Name", "user_type": user_type_enum.PREMIUM},
+        "has_car": True,
+    }
+
+
+def test_deserialize_complex_types_invalid_enum_instance(user_advance_dataclass_with_sub_record_and_enum):
+    payload = {
+        "name": "Name",
+        "favorite_colors": "RED",
+        "sub_record": {"sub_name": "Sub Name", "user_type": "PREMIUM"},
+        "has_car": True,
+    }
+
+    with pytest.raises(ValueError, match="Value RED is not a valid instance of"):
+        user_advance_dataclass_with_sub_record_and_enum._deserialize_complex_types(payload)

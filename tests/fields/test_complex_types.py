@@ -1,11 +1,13 @@
 import dataclasses
 import datetime
+import enum
 import typing
 
 import pytest
 from faker import Faker
 
 from dataclasses_avroschema import AvroModel, fields, types
+from dataclasses_avroschema.fields import EnumField
 
 from . import consts
 
@@ -429,64 +431,134 @@ def test_fixed_type():
 
 def test_enum_type():
     """
-    When the type is types.Enum, the Avro field type should be Enum
+    When the type is enum.Enum, the Avro field type should be Enum
     with symbols attribute present.
     """
     name = "an_enum_field"
-    namespace = "my_emum"
+    namespace = "my_enum"
     aliases = ["enum", "first enum"]
-    default = types.Enum(
-        ["SPADES", "HEARTS", "DIAMONDS", "CLUBS"], namespace=namespace, aliases=aliases, default="CLUBS"
-    )
 
-    python_type = types.Enum
-    field = fields.AvroField(name, python_type, default=default)
+    class CardType(enum.Enum):
+        SPADES = "SPADES"
+        HEARTS = "HEARTS"
+        DIAMONDS = "DIAMONDS"
+        CLUBS = "CLUBS"
+
+        class Meta:
+            namespace = "my_enum"
+            aliases = ["enum", "first enum"]
+
+    python_type = CardType
+    field = fields.AvroField(name, python_type, default=CardType.CLUBS)
+    symbols = ["SPADES", "HEARTS", "DIAMONDS", "CLUBS"]
 
     expected = {
         "name": name,
         "type": {
             "type": "enum",
             "name": name,
-            "symbols": default.symbols,
+            "symbols": symbols,
             "namespace": namespace,
             "aliases": aliases,
         },
-        "default": default.default,
+        "default": CardType.CLUBS.value,
     }
 
     assert expected == field.to_dict()
 
-    default = types.Enum(["SPADES", "HEARTS", "DIAMONDS", "CLUBS"])
-    field = fields.AvroField(name, python_type, default=default)
+    class CardType(enum.Enum):
+        SPADES = "SPADES"
+        HEARTS = "HEARTS"
+        DIAMONDS = "DIAMONDS"
+        CLUBS = "CLUBS"
+
+        class Meta:
+            namespace = "my_enum"
+
+    python_type = CardType
+    field = fields.AvroField(name, python_type)
+
+    expected = {"name": name, "type": {"type": "enum", "name": name, "symbols": symbols, "namespace": namespace}}
+
+    assert expected == field.to_dict()
+
+    class CardType(enum.Enum):
+        SPADES = "SPADES"
+        HEARTS = "HEARTS"
+        DIAMONDS = "DIAMONDS"
+        CLUBS = "CLUBS"
+
+    python_type = CardType
+    field = fields.AvroField(name, python_type, default=None)
 
     expected = {
         "name": name,
         "type": {
             "type": "enum",
             "name": name,
-            "symbols": default.symbols,
+            "symbols": symbols,
         },
-    }
-
-    assert expected == field.to_dict()
-
-    default = types.Enum(["SPADES", "HEARTS", "DIAMONDS", "CLUBS"], default=None)
-    field = fields.AvroField(name, python_type, default=default)
-
-    expected = {
-        "name": name,
-        "type": {
-            "type": "enum",
-            "name": name,
-            "symbols": default.symbols,
-        },
-        "default": default.default,
+        "default": None,
     }
 
     assert expected == field.to_dict()
 
     with pytest.raises(AssertionError):
-        default = types.Enum(["SPADES", "HEARTS", "DIAMONDS", "CLUBS"], default="BLUE")
-        field = fields.AvroField(name, python_type, default=default)
+
+        class CardType(enum.Enum):
+            SPADES = "SPADES"
+            HEARTS = "HEARTS"
+            DIAMONDS = "DIAMONDS"
+            CLUBS = "CLUBS"
+
+        class RandomType(enum.Enum):
+            SOMETHING = "SOMETHING"
+
+        python_type = CardType
+        field = fields.AvroField(name, python_type, default=RandomType.SOMETHING)
 
         field.to_dict()
+
+
+class Color(enum.Enum):
+    BLUE = "Blue"
+    GREEN = "Green"
+    YELLOW = "Yellow"
+
+    class Meta:
+        aliases = ["one", "two"]
+        doc = "colors"
+        namespace = "some.name.space"
+
+
+def test_enum_field():
+    enum_field = fields.AvroField("field_name", Color, default=Color.BLUE, metadata={"key": "value"})
+
+    assert enum_field.get_symbols() == ["Blue", "Green", "Yellow"]
+    assert enum_field._get_meta_class_attributes() == {
+        "aliases": ["one", "two"],
+        "doc": "colors",
+        "namespace": "some.name.space",
+    }
+    assert enum_field.get_avro_type() == {
+        "type": "enum",
+        "name": "field_name",
+        "symbols": ["Blue", "Green", "Yellow"],
+        "aliases": ["one", "two"],
+        "doc": "colors",
+        "namespace": "some.name.space",
+    }
+
+    assert enum_field.get_default_value() == "Blue"
+
+
+def test_enum_field_default():
+    enum_field1 = fields.AvroField("field_name", Color, default=types.MissingSentinel, metadata={"key": "value"})
+    enum_field2 = fields.AvroField("field_name", Color, default=dataclasses.MISSING, metadata={"key": "value"})
+    enum_field3 = fields.AvroField("field_name", Color, default=None, metadata={"key": "value"})
+    enum_field4 = fields.AvroField("field_name", Color, default=Color.GREEN, metadata={"key": "value"})
+
+    assert enum_field1.get_default_value() == dataclasses.MISSING
+    assert enum_field2.get_default_value() == dataclasses.MISSING
+    assert enum_field3.get_default_value() is None
+    assert enum_field4.get_default_value() == "Green"

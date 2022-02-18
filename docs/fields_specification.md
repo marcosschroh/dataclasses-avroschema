@@ -120,7 +120,7 @@ Python Type | Avro Type   | Logical Type |
 | typing.Mapping      | map         | do not apply |
 | typing.MutableMapping      | map         | do not apply |
 | types.Fixed      | fixed         | do not apply |
-| types.Enum      | enum         | do not apply |
+| enum.Enum      | enum         | do not apply |
 | types.Int32  | int | do not apply |
 | types.Float32 | float| do not apply |
 | typing.Union| union     | do not apply |
@@ -129,8 +129,8 @@ Python Type | Avro Type   | Logical Type |
 | datetime.date | int     |  date        |
 | datetime.time | int     |  time-millis |
 | datetime.datetime| long  |  timestamp-millis |
-| uuid.uuid4  | string    |  uuid        |
 | decimal.Decimal | bytes | decimal      |
+| uuid.uuid4  | string    |  uuid        |
 
 ## Adding Custom Field-level Attributes
 

@@ -2,6 +2,7 @@ Minimal redis [example](https://github.com/marcosschroh/dataclasses-avroschema/t
 
 ```python
 from dataclasses import dataclass
+import enum
 import random
 from time import sleep
 
@@ -10,12 +11,17 @@ from walrus import Database  # A subclass of the redis-py Redis client.
 from dataclasses_avroschema import AvroModel, types
 
 
+class FavoriteColor(enum.Enum):
+    BLUE = "Blue"
+    YELLOW = "Yellow"
+    GREEN = "Green"
+
 @dataclass
 class UserModel(AvroModel):
     "An User"
     name: str
     age: int
-    favorite_colors: types.Enum = types.Enum(["BLUE", "YELLOW", "GREEN"], default="BLUE")
+    favorite_colors: FavoriteColor = FavoriteColor.BLUE
     country: str = "Argentina"
     address: str = None
     testing: bool = False
