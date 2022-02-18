@@ -1,3 +1,40 @@
+
+## Migration from previous versions to 0.27.0
+
+- `types.Enum` was replaced with `enum.Enum`. You must create your custom enum, example:
+
+```python
+import dataclasses
+from dataclasses_avroschema import AvroModel, types
+
+
+class UserAdvance(AvroModel):
+    name: str
+    age: int
+    favorite_colors: types.Enum = types.Enum(["BLUE", "YELLOW", "GREEN"], default="BLUE")  # --> replace with field!!!
+```
+
+should be replaced by:
+
+```python
+import enum
+import dataclasses
+from dataclasses_avroschema import AvroModel
+
+
+# New enum!!
+class FavoriteColor(enum.Enum):
+    BLUE = "BLUE"
+    YELLOW = "YELLOW"
+    GREEN = "GREEN"
+
+
+class UserAdvance:
+    name: str
+    age: int
+    favorite_colors: FavoriteColor = FavoriteColor.BLUE  # --> field updated!!!
+```
+
 ## Migration from previous versions to 0.23.0
 
 1. Now the name for Nested record uses the `class.__name__` instead of ``class.__name__.lower()_record`.
