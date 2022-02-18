@@ -1,7 +1,7 @@
 fastavro==1.4.9
 inflect==5.3.0
 pytz
-faust==1.9.0
+faust==1.10.4
 dacite>=1.6.0
 faker>=8.1.1
 stringcase>=1.2.0
