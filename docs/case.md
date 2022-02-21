@@ -3,8 +3,16 @@ you can generate your schemas according to your programming language convention:
 
 ```python
 import typing
+import enum
 
 from dataclasses_avroschema import AvroModel, case, types
+
+
+# New enum!!
+class FavoriteColor(enum.Enum):
+    BLUE = "BLUE"
+    YELLOW = "YELLOW"
+    GREEN = "GREEN"
 
 
 class UserAdvance(AvroModel):
@@ -12,8 +20,8 @@ class UserAdvance(AvroModel):
     age: int
     pets: typing.List[str]
     accounts: typing.Dict[str, int]
+    favorite_colors: FavoriteColor
     has_car: bool = False
-    favorite_colors: types.Enum = types.Enum(["BLUE", "YELLOW", "GREEN"])
     country: str = "Argentina"
     address: str = None
     md5: types.Fixed = types.Fixed(16)

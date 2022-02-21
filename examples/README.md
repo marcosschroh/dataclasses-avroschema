@@ -35,12 +35,18 @@ As examples you will find how to serialize/deserialize python dataclasses using 
 The model is for the examples is the following:
 
 ```python
+class FavoriteColor(enum.Enum):
+    BLUE = "BLUE"
+    YELLOW = "YELLOW"
+    GREEN = "GREEN"
+
+
 @dataclass
 class UserModel(AvroModel):
     "An User"
     name: str
     age: int
-    favorite_colors: types.Enum = types.Enum(["BLUE", "YELLOW", "GREEN"], default="BLUE")
+    favorite_colors: FavoriteColor = FavoriteColor.BLUE
     country: str = "Argentina"
     address: str = None
 
