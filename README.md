@@ -27,10 +27,17 @@ https://marcosschroh.github.io/dataclasses-avroschema/
 
 ```python
 from dataclasses import dataclass
+import enum
 
 import typing
 
 from dataclasses_avroschema import AvroModel, types
+
+
+class FavoriteColor(enum.Enum):
+    BLUE = "BLUE"
+    YELLOW = "YELLOW"
+    GREEN = "GREEN"
 
 
 @dataclass
@@ -40,7 +47,7 @@ class User(AvroModel):
     age: int
     pets: typing.List[str]
     accounts: typing.Dict[str, int]
-    favorite_colors: types.Enum = types.Enum(["BLUE", "YELLOW", "GREEN"])
+    favorite_colors: FavoriteColor
     country: str = "Argentina"
     address: str = None
 

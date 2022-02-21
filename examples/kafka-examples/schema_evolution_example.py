@@ -1,10 +1,17 @@
 from dataclasses import dataclass
+import enum
 import random
 from time import sleep
 
 from kafka import KafkaConsumer, KafkaProducer
 
-from dataclasses_avroschema import AvroModel, types
+from dataclasses_avroschema import AvroModel
+
+
+class FavoriteColor(enum.Enum):
+    BLUE = "BLUE"
+    YELLOW = "YELLOW"
+    GREEN = "GREEN"
 
 
 @dataclass
@@ -12,7 +19,7 @@ class UserModel(AvroModel):
     "An User"
     name: str
     age: int
-    favorite_colors: types.Enum = types.Enum(["BLUE", "YELLOW", "GREEN"], default="BLUE")
+    favorite_colors: FavoriteColor = FavoriteColor.BLUE
     country: str = "Argentina"
     address: str = None
     testing: bool = False
@@ -27,7 +34,7 @@ class UserModelV2(AvroModel):
     "A User v2"
     name: str
     age: int
-    favorite_colors: types.Enum = types.Enum(["BLUE", "YELLOW", "GREEN"], default="BLUE")
+    favorite_colors: FavoriteColor = FavoriteColor.BLUE
     country: str = "Argentina"
     address: str = None
 

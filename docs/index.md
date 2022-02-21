@@ -33,6 +33,7 @@ class FavoriteColor(enum.Enum):
     YELLOW = "Yellow"
     GREEN = "Green"
 
+
 class User(AvroModel):
     "An User"
     name: str
