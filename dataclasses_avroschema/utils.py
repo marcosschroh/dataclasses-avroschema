@@ -6,6 +6,28 @@ from pytz import utc
 
 from .types import CUSTOM_TYPES
 
+try:
+    import faust
+except ImportError:  # pragma: no cover
+    faust = None  # type: ignore # pragma: no cover
+
+try:
+    import pydantic  # pragma: no cover
+except ImportError:  # type: ignore # pragma: no cover
+    pydantic = None
+
+
+def is_pydantic_model(klass: typing.Any) -> bool:
+    if pydantic is not None:
+        return issubclass(klass, pydantic.BaseModel)
+    return False
+
+
+def is_faust_model(klass: typing.Any) -> bool:
+    if faust is not None:
+        return issubclass(klass, faust.Record)
+    return False
+
 
 def is_union(a_type: typing.Any) -> bool:
     """

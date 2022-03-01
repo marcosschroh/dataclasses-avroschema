@@ -9,7 +9,7 @@ from dataclasses_avroschema import AvroModel, types
 
 @pytest.fixture
 def color_enum():
-    class FavoriteColor(enum.Enum):
+    class FavoriteColor(str, enum.Enum):
         BLUE = "BLUE"
         YELLOW = "YELLOW"
         GREEN = "GREEN"

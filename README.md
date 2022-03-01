@@ -17,6 +17,12 @@ Generate [Avro](https://avro.apache.org/docs/1.8.2/spec.html) Schemas from a Pyt
 pip install dataclasses-avroschema
 ```
 
+or with `pydantic` funcionalities
+
+```bash
+pip install dataclasses-avroschemap[pydantic]
+```
+
 ## Documentation
 
 https://marcosschroh.github.io/dataclasses-avroschema/
@@ -143,9 +149,12 @@ user.serialize(serialization_type="avro-json")
 # >>> b'{"name": "john", "age": 20, "addresses": [{"street": "test", "street_number": 10}]}'
 
 # Get the json from the instance
-
 user.to_json()
-# python dict >>> {'name': 'john', 'age': 20, 'addresses': [{'street': 'test', 'street_number': 10}]}
+# >>> '{"name": "john", "age": 20, "addresses": [{"street": "test", "street_number": 10}]}'
+
+# Get a python dict
+user.to_dict()
+# >>> {"name": "john", "age": 20, "addresses": [{"street": "test", "street_number": 10}]}
 
 ```
 
@@ -188,6 +197,82 @@ User.deserialize(avro_json_binary, serialization_type="avro-json")
 # return a python dict
 User.deserialize(avro_json_binary, serialization_type="avro-json", create_instance=False)
 # >>> {"name": "john", "age": 20, "addresses": [{"street": "test", "street_number": 10}]}
+```
+
+## Pydantic integration
+
+To add `dataclasses-avroschema` functionality to `pydantic` you only need to replace `BaseModel` by `AvroBaseModel`:
+
+```python
+import typing
+import enum
+from dataclasses_avroschema.avrodantic import AvroBaseModel
+
+from pydantic import Field
+
+
+class FavoriteColor(str, enum.Enum):
+    BLUE = "BLUE"
+    YELLOW = "YELLOW"
+    GREEN = "GREEN"
+
+
+class UserAdvance(AvroBaseModel):
+    name: str
+    age: int
+    pets: typing.List[str] = Field(default_factory=lambda: ["dog", "cat"])
+    accounts: typing.Dict[str, int] = Field(default_factory=lambda: {"key": 1})
+    has_car: bool = False
+    favorite_colors: FavoriteColor = FavoriteColor.BLUE
+    country: str = "Argentina"
+    address: str = None
+
+    class Meta:
+        schema_doc = False
+
+
+# Avro schema
+UserAdvance.avro_schema()
+'{
+    "type": "record",
+    "name": "UserAdvance",
+    "fields": [
+        {"name": "name", "type": "string"},
+        {"name": "age", "type": "long"},
+        {"name": "pets", "type": {"type": "array", "items": "string", "name": "pet"}, "default": ["dog", "cat"]},
+        {"name": "accounts", "type": {"type": "map", "values": "long", "name": "account"}, "default": {"key": 1}},
+        {"name": "has_car", "type": "boolean", "default": false},
+        {"name": "favorite_colors", "type": {"type": "enum", "name": "favorite_color", "symbols": ["BLUE", "YELLOW", "GREEN"]}, "default": "BLUE"},
+        {"name": "country", "type": "string", "default": "Argentina"},
+        {"name": "address", "type": ["null", "string"], "default": null}
+    ]
+}'
+
+user = UserAdvance(name="bond", age=50)
+
+# pydantic
+user.dict()
+# >>> {'name': 'bond', 'age': 50, 'pets': ['dog', 'cat'], 'accounts': {'key': 1}, 'has_car': False, 'favorite_colors': <FavoriteColor.BLUE: 'BLUE'>, 'country': 'Argentina', 'address': None}
+
+# pydantic
+user.json()
+# >>> '{"name": "bond", "age": 50, "pets": ["dog", "cat"], "accounts": {"key": 1}, "has_car": false, "favorite_colors": "BLUE", "country": "Argentina", "address": null}'
+
+# pydantic
+user = UserAdvance(name="bond")
+
+# ValidationError: 1 validation error for UserAdvance
+# age
+# field required (type=value_error.missing)
+
+
+# dataclasses-avroschema
+event = user.serialize()
+print(event)
+# >>> b'\x08bondd\x04\x06dog\x06cat\x00\x02\x06key\x02\x00\x00\x00\x12Argentina\x00'
+
+UserAdvance.deserialize(data=event)
+# >>> UserAdvance(name='bond', age=50, pets=['dog', 'cat'], accounts={'key': 1}, has_car=False, favorite_colors=<FavoriteColor.BLUE: 'BLUE'>, country='Argentina', address=None)
 ```
 
 ## Examples with python streaming drivers (kafka and redis)
@@ -240,6 +325,7 @@ User.fake()
 * [X] Examples of integration with `kafka` drivers: [aiokafka](https://github.com/aio-libs/aiokafka), [kafka-python](https://github.com/dpkp/kafka-python)
 * [X] Example of integration  with `redis` drivers: [walrus](https://github.com/coleifer/walrus) and [redisgears-py](https://github.com/RedisGears/redisgears-py)
 * [X] Factory instances
+* [X] [Pydantic](https://pydantic-docs.helpmanual.io/) integration
 
 ## Development
 

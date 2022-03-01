@@ -17,6 +17,12 @@ Generate [Avro](https://avro.apache.org/docs/1.8.2/spec.html) Schemas from a Pyt
 pip install dataclasses-avroschema
 ```
 
+or with `pydantic` funcionalities
+
+```bash
+pip install dataclasses-avroschemap[pydantic]
+```
+
 ## Usage
 
 ### Generating the avro schema

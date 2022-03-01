@@ -6,11 +6,6 @@ from collections import OrderedDict
 from dataclasses_avroschema import utils
 from dataclasses_avroschema.fields import AvroField, FieldType
 
-try:
-    import faust
-except ImportError:  # pragma: no cover
-    faust = None  # type: ignore # pragma: no cover
-
 
 @dataclasses.dataclass  # type: ignore
 class BaseSchemaDefinition(abc.ABC):
@@ -39,12 +34,6 @@ class BaseSchemaDefinition(abc.ABC):
             return doc.replace("\n", "")
         return None
 
-    @property
-    def is_faust_record(self) -> bool:
-        if faust:
-            return issubclass(self.klass, faust.Record)
-        return False
-
 
 @dataclasses.dataclass
 class AvroSchemaDefinition(BaseSchemaDefinition):
@@ -55,8 +44,10 @@ class AvroSchemaDefinition(BaseSchemaDefinition):
         self.fields = self.parse_dataclasses_fields()
 
     def parse_dataclasses_fields(self) -> typing.List[FieldType]:
-        if self.is_faust_record:
-            return self.parse_faust_record_fields()
+        if utils.is_faust_model(self.klass):
+            return self.parse_faust_fields()
+        elif utils.is_pydantic_model(self.klass):
+            return self.parse_pydantic_fields()
         return self.parse_fields()
 
     def parse_fields(self) -> typing.List[FieldType]:
@@ -73,7 +64,7 @@ class AvroSchemaDefinition(BaseSchemaDefinition):
             for dataclass_field in dataclasses.fields(self.klass)
         ]
 
-    def parse_faust_record_fields(self) -> typing.List[FieldType]:
+    def parse_faust_fields(self) -> typing.List[FieldType]:
         schema_fields = []
 
         for dataclass_field in dataclasses.fields(self.klass):
@@ -101,6 +92,22 @@ class AvroSchemaDefinition(BaseSchemaDefinition):
             )
 
         return schema_fields
+
+    def parse_pydantic_fields(self) -> typing.List[FieldType]:
+        return [
+            AvroField(
+                model_field.name,
+                model_field.outer_type_,
+                default=dataclasses.MISSING
+                if model_field.required or model_field.default_factory
+                else model_field.default,
+                default_factory=model_field.default_factory,  # type: ignore  # TODO: resolve mypy
+                metadata=getattr(model_field, "metadata", None),
+                model_metadata=self.metadata,
+                parent=self.parent,
+            )
+            for model_field in self.klass.__fields__.values()
+        ]
 
     def get_rendered_fields(self) -> typing.List[OrderedDict]:
         return [field.render() for field in self.fields]

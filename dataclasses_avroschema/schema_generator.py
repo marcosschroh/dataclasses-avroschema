@@ -12,7 +12,7 @@ from . import case
 from .fields import EnumField, FieldType, RecordField, UnionField
 from .schema_definition import AvroSchemaDefinition
 from .serialization import deserialize, serialize, to_json
-from .utils import SchemaMetadata, is_custom_type
+from .utils import SchemaMetadata, is_custom_type, is_pydantic_model
 
 AVRO = "avro"
 AVRO_JSON = "avro-json"
@@ -32,7 +32,7 @@ class AvroModel:
 
     @classmethod
     def generate_dataclass(cls: typing.Any) -> typing.Any:
-        if dataclasses.is_dataclass(cls):
+        if dataclasses.is_dataclass(cls) or is_pydantic_model(cls):
             return cls
         return dataclasses.dataclass(cls)
 
@@ -155,23 +155,28 @@ class AvroModel:
 
         schema = cls.avro_schema_to_python()
         payload = deserialize(data, schema, serialization_type=serialization_type, writer_schema=writer_schema)
-
         output = cls._deserialize_complex_types(payload)
 
         if create_instance:
-            return from_dict(data_class=cls, data=output, config=Config(**cls.config()))
+            return cls.parse_obj(data=output)
         return output
+
+    @classmethod
+    def parse_obj(cls, data: typing.Dict) -> typing.Union[JsonDict, CT]:
+        return from_dict(data_class=cls, data=data, config=Config(**cls.config()))
 
     def validate(self) -> bool:
         schema = self.avro_schema_to_python()
-
         return validate(self.asdict(), schema)
 
-    def to_json(self) -> JsonDict:
+    def to_dict(self) -> JsonDict:
         # Serialize using the current AVRO schema to get proper field representations
         # and after that convert into python
-        data = self.asdict()
-        return to_json(data)
+        return self.asdict()
+
+    def to_json(self):
+        data = to_json(self.asdict())
+        return json.dumps(data)
 
     @classmethod
     def config(cls) -> JsonDict:

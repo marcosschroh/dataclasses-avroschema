@@ -131,6 +131,7 @@ Python Type | Avro Type   | Logical Type |
 | datetime.datetime| long  |  timestamp-millis |
 | decimal.Decimal | bytes | decimal      |
 | uuid.uuid4  | string    |  uuid        |
+| uuid.UUID    |  string        | uuid |
 
 ## Adding Custom Field-level Attributes
 
@@ -195,3 +196,5 @@ User.avro_schema()
     ]
 }
 ```
+
+*(This script is complete, it should run "as is")*

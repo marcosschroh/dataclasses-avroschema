@@ -68,4 +68,6 @@ User.avro_schema()
 }'
 ```
 
+*(This script is complete, it should run "as is")*
+
 and that is it!! Each python field is related with a avro type. You can find the field relationships [here](https://marcosschroh.github.io/dataclasses-avroschema/fields_specification/):

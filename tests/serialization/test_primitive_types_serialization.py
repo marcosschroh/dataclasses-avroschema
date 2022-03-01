@@ -1,3 +1,4 @@
+import json
 import math
 from dataclasses import dataclass
 
@@ -20,7 +21,7 @@ def test_primitive_types(user_dataclass):
     assert user_dataclass.deserialize(avro_binary) == user
     assert user_dataclass.deserialize(avro_json, serialization_type="avro-json") == user
 
-    assert user.to_json() == data_json
+    assert user.to_json() == json.dumps(data_json)
 
 
 def test_primitive_types_with_defaults():
@@ -42,11 +43,11 @@ def test_primitive_types_with_defaults():
 
     assert user.deserialize(avro_binary, create_instance=False) == data
     assert user.deserialize(avro_json, serialization_type="avro-json", create_instance=False) == data
-
     assert user.deserialize(avro_binary) == user
     assert user.deserialize(avro_json, serialization_type="avro-json") == user
 
-    assert user.to_json() == data_json
+    assert user.to_dict() == data
+    assert user.to_json() == json.dumps(data_json)
 
     # check that works with schema evolution
     user = User(name="Juan", age=30)
@@ -60,7 +61,8 @@ def test_primitive_types_with_defaults():
 
     # assert user.deserialize(avro_binary) == user
     assert user.deserialize(avro_json, serialization_type="avro-json") == user
-    assert user.to_json() == data_json
+    assert user.to_dict() == data
+    assert user.to_json() == json.dumps(data_json)
 
 
 def test_primitive_types_with_nulls():
@@ -86,7 +88,8 @@ def test_primitive_types_with_nulls():
     assert user.deserialize(avro_binary) == user
     assert user.deserialize(avro_json, serialization_type="avro-json") == user
 
-    assert user.to_json() == data_json
+    assert user.to_dict() == data
+    assert user.to_json() == json.dumps(data_json)
 
     data = {"name": None, "age": 20, "has_pets": False, "money": None, "encoded": None, "height": None}
 
@@ -96,11 +99,11 @@ def test_primitive_types_with_nulls():
 
     assert user.deserialize(avro_binary, create_instance=False) == data
     assert user.deserialize(avro_json, serialization_type="avro-json", create_instance=False) == data
-
     assert user.deserialize(avro_binary) == user
     assert user.deserialize(avro_json, serialization_type="avro-json") == user
 
-    assert user.to_json() == data
+    assert user.to_dict() == data
+    assert user.to_json() == json.dumps(data)
 
 
 def test_float32_primitive_type():
@@ -130,7 +133,7 @@ def test_float32_primitive_type():
     res = user.deserialize(avro_json, serialization_type="avro-json")
     assert res.height == user.height
 
-    res = user.to_json()
+    res = user.to_dict()
     assert res["height"] == data["height"]
 
     data = {"height": None}
@@ -141,8 +144,7 @@ def test_float32_primitive_type():
 
     assert user.deserialize(avro_binary, create_instance=False) == data
     assert user.deserialize(avro_json, serialization_type="avro-json", create_instance=False) == data
-
     assert user.deserialize(avro_binary) == user
     assert user.deserialize(avro_json, serialization_type="avro-json") == user
 
-    assert user.to_json() == data
+    assert user.to_dict() == data

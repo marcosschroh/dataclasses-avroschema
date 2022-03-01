@@ -78,3 +78,5 @@ if __name__ == "__main__":
     produce(consumer_group)
     consume(consumer_group)
 ```
+
+*(This script is complete, it should run "as is")*
