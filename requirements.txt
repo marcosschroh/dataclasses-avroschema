@@ -1,5 +1,5 @@
 fastavro==1.4.10
-inflect==5.3.0
+inflect==5.4.0
 pytz
 faust==1.9.0
 dacite>=1.6.0
