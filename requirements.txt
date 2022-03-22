@@ -1,4 +1,4 @@
-fastavro==1.4.9
+fastavro==1.4.10
 inflect==5.3.0
 pytz
 faust==1.9.0
