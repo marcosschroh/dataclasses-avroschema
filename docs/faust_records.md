@@ -82,3 +82,5 @@ UserAdvance.avro_schema()
   ]
 }'
 ```
+
+*(This script is complete, it should run "as is")*

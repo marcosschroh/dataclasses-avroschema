@@ -1,5 +1,6 @@
 import dataclasses
 import enum
+import json
 
 from dataclasses_avroschema import AvroModel
 
@@ -32,11 +33,11 @@ def test_complex_fields(user_advance_dataclass, color_enum):
         "age": 20,
         "pets": ["dog"],
         "accounts": {"ing": 100},
-        "has_car": True,
         "favorite_colors": color_enum.GREEN.value,
-        "md5": "u00ffffffffffffx",
+        "has_car": True,
         "country": "Argentina",
         "address": None,
+        "md5": "u00ffffffffffffx",
     }
 
     user = user_advance_dataclass(**data)
@@ -49,7 +50,7 @@ def test_complex_fields(user_advance_dataclass, color_enum):
         user_advance_dataclass.deserialize(avro_json, serialization_type="avro-json", create_instance=False)
         == expected_data
     )
-    assert user.to_json() == data_json
+    assert user.to_json() == json.dumps(data_json)
 
     assert user_advance_dataclass.deserialize(avro_binary) == user
     assert user_advance_dataclass.deserialize(avro_json, serialization_type="avro-json") == user
@@ -100,7 +101,7 @@ def test_complex_fields_with_defaults(user_advance_with_defaults_dataclass, colo
         )
         == expected_data
     )
-    assert user.to_json() == expected_json
+    assert user.to_json() == json.dumps(expected_json)
 
     assert user_advance_with_defaults_dataclass.deserialize(avro_binary) == expected_user
     assert user_advance_with_defaults_dataclass.deserialize(avro_json, serialization_type="avro-json") == expected_user
@@ -140,12 +141,12 @@ def test_complex_fields_with_enum(user_advance_dataclass_with_enum, color_enum):
         "age": 20,
         "pets": ["dog"],
         "accounts": {"ing": 100},
-        "has_car": True,
         "favorite_colors": "GREEN",
-        "md5": "u00ffffffffffffx",
+        "has_car": True,
         "country": "Argentina",
         "address": None,
         "user_type": None,
+        "md5": "u00ffffffffffffx",
     }
 
     user = user_advance_dataclass_with_enum(**data)
@@ -158,7 +159,7 @@ def test_complex_fields_with_enum(user_advance_dataclass_with_enum, color_enum):
         user_advance_dataclass_with_enum.deserialize(avro_json, serialization_type="avro-json", create_instance=False)
         == expected_data
     )
-    assert user.to_json() == data_json
+    assert user.to_json() == json.dumps(data_json)
 
     assert user_advance_dataclass_with_enum.deserialize(avro_binary) == user
     assert user_advance_dataclass_with_enum.deserialize(avro_json, serialization_type="avro-json") == user
@@ -213,7 +214,7 @@ def test_complex_fields_with_defaults_with_enum(user_advance_with_defaults_datac
         )
         == expected_data
     )
-    assert user.to_json() == data_json
+    assert user.to_json() == json.dumps(data_json)
 
     assert user_advance_with_defaults_dataclass_with_enum.deserialize(avro_binary) == expected_user
     assert (
@@ -276,7 +277,7 @@ def test_enum_fields_with_inner_schema():
 
     assert OuterSchema.deserialize(avro_binary, create_instance=False) == expected_data
     assert OuterSchema.deserialize(avro_json, serialization_type="avro-json", create_instance=False) == expected_data
-    assert example.to_json() == expected_json
+    assert example.to_json() == json.dumps(expected_json)
 
     assert OuterSchema.deserialize(avro_binary) == example
     assert OuterSchema.deserialize(avro_json, serialization_type="avro-json") == example

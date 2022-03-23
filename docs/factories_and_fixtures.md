@@ -24,3 +24,5 @@ Address.fake()
 User.fake()
 # >>>> User(name='VGSBbOGfSGjkMDnefHIZ', age=8974, addresses=[Address(street='vNpPYgesiHUwwzGcmMiS', street_number=4790)])
 ```
+
+*(This script is complete, it should run "as is")*

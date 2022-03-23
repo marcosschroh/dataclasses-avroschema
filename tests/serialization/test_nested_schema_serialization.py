@@ -50,7 +50,7 @@ def test_one_to_one_relationship():
     assert User.deserialize(avro_binary) == user
     assert User.deserialize(avro_json_binary, serialization_type="avro-json") == user
 
-    assert user.to_json() == expected
+    assert user.to_dict() == expected
 
 
 def test_one_to_many_relationship():
@@ -101,7 +101,7 @@ def test_one_to_many_relationship():
     assert User.deserialize(avro_binary) == user
     assert User.deserialize(avro_json_binary, serialization_type="avro-json") == user
 
-    assert user.to_json() == expected
+    assert user.to_dict() == expected
 
 
 def test_one_to_many_map_relationship():
@@ -153,4 +153,4 @@ def test_one_to_many_map_relationship():
     assert User.deserialize(avro_binary) == user
     # assert User.deserialize(avro_json_binary) == user
 
-    assert user.to_json() == expected
+    assert user.to_dict() == expected

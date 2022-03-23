@@ -60,7 +60,9 @@ UserAdvance.avro_schema(case_type=case.CAPITALCASE)
 }'
 ```
 
-Available cases:
+*(This script is complete, it should run "as is")*
+
+### Available cases:
 
 |Case| Example|
 |----|--------|

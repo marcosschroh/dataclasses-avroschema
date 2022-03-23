@@ -7,12 +7,12 @@ import uuid
 
 import faust
 
-from dataclasses_avroschema import AvroModel, schema_definition, types
+from dataclasses_avroschema import AvroModel, types, utils
 
 encoded = "test".encode()
 
 
-def test_faust_record_schema_primitive_types(user_dataclass, user_avro_json):
+def test_faust_record_schema_primitive_types(user_avro_json):
     class User(faust.Record, AvroModel):
         name: str
         age: int
@@ -233,17 +233,10 @@ def test_faust_record_schema_with_unions_type(union_type_schema):
     assert UnionSchema.avro_schema() == json.dumps(union_type_schema)
 
 
-def test_faust_not_installed(monkeypatch, user_avro_json):
-    monkeypatch.setattr(schema_definition, "faust", None)
+def test_not_faust_not_installed(monkeypatch):
+    monkeypatch.setattr(utils, "faust", None)
 
-    class User(AvroModel):
-        name: str
-        age: int
-        has_pets: bool
-        money: float
-        encoded: bytes
+    class Bus:
+        pass
 
-        class Meta:
-            schema_doc = False
-
-    assert User.avro_schema() == json.dumps(user_avro_json)
+    assert not utils.is_faust_model(Bus)

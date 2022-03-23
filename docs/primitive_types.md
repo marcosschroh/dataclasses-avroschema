@@ -66,6 +66,8 @@ User.avro_schema()
 }'
 ```
 
+*(This script is complete, it should run "as is")*
+
 Example with defaults:
 
 ```python
@@ -188,3 +190,5 @@ User.avro_schema()
   "doc": "An User"
 }'
 ```
+
+*(This script is complete, it should run "as is")*

@@ -27,6 +27,9 @@ setup(
         'typing_extensions>=3.7.4;python_version<"3.9"',
         "stringcase>=1.2.0",
     ],
+    extras_require={
+        "pydantic": ["pydantic>=1.9.0"],
+    }
     author_email="schrohm@gmail.com",
     url="https://github.com/marcosschroh/dataclasses-avroschema",
     download_url="",

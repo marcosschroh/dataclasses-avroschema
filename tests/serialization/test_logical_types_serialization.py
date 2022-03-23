@@ -1,5 +1,6 @@
 import datetime
 import decimal
+import json
 import typing
 import uuid
 from dataclasses import dataclass
@@ -42,11 +43,10 @@ def test_logical_types():
 
     assert logical_types.deserialize(avro_binary, create_instance=False) == data
     assert logical_types.deserialize(avro_json, serialization_type="avro-json", create_instance=False) == data
-
     assert logical_types.deserialize(avro_binary) == logical_types
     assert logical_types.deserialize(avro_json, serialization_type="avro-json") == logical_types
 
-    assert logical_types.to_json() == data_json
+    assert logical_types.to_json() == json.dumps(data_json)
 
 
 def test_logical_union():
@@ -70,11 +70,10 @@ def test_logical_union():
 
     assert logical_types.deserialize(avro_binary, create_instance=False) == data
     assert logical_types.deserialize(avro_json, serialization_type="avro-json", create_instance=False) == data
-
     assert logical_types.deserialize(avro_binary) == logical_types
     assert logical_types.deserialize(avro_json, serialization_type="avro-json") == logical_types
 
-    assert logical_types.to_json() == data_json
+    assert logical_types.to_json() == json.dumps(data_json)
 
 
 def test_logical_types_with_defaults():
@@ -122,7 +121,7 @@ def test_logical_types_with_defaults():
     assert logical_types.deserialize(avro_binary) == logical_types
     assert logical_types.deserialize(avro_json, serialization_type="avro-json") == logical_types
 
-    assert logical_types.to_json() == data_json
+    assert logical_types.to_json() == json.dumps(data_json)
 
 
 # A decimal.Decimal default is serialized into bytes by dataclasses-avroschema to be deserialized by fastavro
@@ -155,4 +154,4 @@ def test_decimals_defaults():
     assert logical_types.deserialize(avro_binary, create_instance=False) == data
     assert logical_types.deserialize(avro_json, serialization_type="avro-json", create_instance=False) == data
 
-    assert logical_types.to_json() == data_json
+    assert logical_types.to_json() == json.dumps(data_json)

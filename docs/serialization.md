@@ -53,6 +53,8 @@ user.to_json()
 # python dict >>> {'name': 'john', 'age': 20, 'addresses': [{'street': 'test', 'street_number': 10}]}
 ```
 
+*(This script is complete, it should run "as is")*
+
 ### Deserialization
 
 Deserialization could take place with an instance dataclass or the dataclass itself. Can return the dict representation or a new class instance.
@@ -94,6 +96,8 @@ User.deserialize(avro_json_binary, serialization_type="avro-json", create_instan
 # >>> {"name": "john", "age": 20, "addresses": [{"street": "test", "street_number": 10}]}
 ```
 
+*(This script is complete, it should run "as is")*
+
 #### Deserialization of records encoded via a different schema
 To deserialize data encoded via a different schema, one can pass an optional `writer_schema: AvroModel | dict[str, Any]` attribute. It will be used by the **fastavro**s `schemaless_reader`.
 
@@ -124,8 +128,9 @@ user_data = {
 
 # deserialize user using a new, but compatible schema
 >>> deserialized_user = UserCompatible.deserialize(serialized_user, writer_schema=User)
-
 ```
+
+*(This script is complete, it should run "as is")*
 
 ### Custom Serialization
 
@@ -171,3 +176,54 @@ class Address(MyAvroModel):
     street: str
     street_number: int
 ```
+
+### JSON Encoding for unions (avro-json)
+
+When you have an `union` and you want to serialize a `payload` using `avro-json` you will notice that the `type` is added to each `union` field.
+This is needed because after the serialization process you need to know the `type` in order to `deserialize`:
+
+```python
+import typing
+import dataclasses
+import datetime
+import uuid
+
+from dataclasses_avroschema import AvroModel
+
+
+@dataclasses.dataclass
+class UnionSchema(AvroModel):
+    "Some Unions"
+    first_union: typing.Union[str, int]
+    logical_union: typing.Union[datetime.datetime, datetime.date, uuid.uuid4]
+
+
+my_union = UnionSchema(first_union=10, logical_union=datetime.datetime.now())
+
+
+event = my_union.serialize(serialization_type="avro-json")
+
+print(event)
+# long is added to each field
+>>> b'{"first_union": {"long": 10}, "logical_union": {"long": 1647971584847}}'
+
+my_union.deserialize(event, serialization_type="avro-json")
+# >>> UnionSchema(first_union=10, logical_union=datetime.datetime(2022, 3, 22, 17, 53, 4, 847000, tzinfo=datetime.timezone.utc))
+
+
+# bad data
+event_2 = b'{"first_union": 10, "logical_union": {"long": 1647971584847}}'
+
+my_union.deserialize(event_2, serialization_type="avro-json")
+
+File ~/Projects/dataclasses-avroschema/.venv/lib/python3.8/site-packages/fastavro/io/json_decoder.py:213, in AvroJSONDecoder.read_index(self)
+    211     label = "null"
+    212 else:
+--> 213     label, data = self._current[self._key].popitem()
+    214     self._current[self._key] = data
+    215     # TODO: Do we need to do this?
+
+AttributeError: 'int' object has no attribute 'popitem'
+```
+
+*(This script is complete, it should run "as is")*

@@ -1,5 +1,6 @@
 import datetime
 import enum
+import json
 import typing
 import uuid
 from dataclasses import dataclass
@@ -7,7 +8,7 @@ from dataclasses import dataclass
 import pytest
 from dateutil.tz import UTC
 
-from dataclasses_avroschema import AvroModel, types
+from dataclasses_avroschema import AvroModel
 
 a_datetime = datetime.datetime(2019, 10, 12, 17, 57, 42, tzinfo=UTC)
 
@@ -55,13 +56,13 @@ user_avro_json = b'{"name": "john", "age": 20, "addresses": [{"street": "test", 
 user_json = {"name": "john", "age": 20, "addresses": [{"street": "test", "street_number": 10}]}
 
 
-class FavoriteColor(enum.Enum):
+class FavoriteColor(str, enum.Enum):
     BLUE = "BLUE"
     YELLOW = "YELLOW"
     GREEN = "GREEN"
 
 
-class FavoriteLanguage(enum.Enum):
+class FavoriteLanguage(str, enum.Enum):
     PYTHON = "PYTHON"
     JAVA = "JAVA"
     JS = "JS"
@@ -103,9 +104,9 @@ advance_user_json = {
     "is_developer": True,
     "pets": ["dog", "cat"],
     "accounts": {"ing": 100},
-    "has_car": False,
     "favorite_colors": "GREEN",
     "favorite_language": "JS",
+    "has_car": False,
     "country": "Argentina",
     "years_of_expirience": 5,
     "md5": "u00ff",
@@ -180,10 +181,11 @@ def test_deserialization_with_class(klass, data, avro_binary, avro_json, instanc
 
 
 @pytest.mark.parametrize("klass, data, avro_binary, avro_json, instance_json, python_dict", CLASSES_DATA_BINARY)
-def test_to_json(klass, data, avro_binary, avro_json, instance_json, python_dict):
+def test_to_dict(klass, data, avro_binary, avro_json, instance_json, python_dict):
     instance = klass(**data)
 
-    assert instance.to_json() == instance_json
+    assert instance.to_dict() == python_dict
+    assert instance.to_json() == json.dumps(instance_json)
 
 
 def test_invalid_serialization_deserialization_types():

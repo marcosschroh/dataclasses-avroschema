@@ -61,6 +61,8 @@ DateLogicalType.avro_schema()
 }'
 ```
 
+*(This script is complete, it should run "as is")*
+
 ### Time
 
 ```python
@@ -111,6 +113,8 @@ TimeLogicalTypes.avro_schema()
 }'
 ```
 
+*(This script is complete, it should run "as is")*
+
 ### Datetime
 
 ```python
@@ -160,6 +164,8 @@ DatetimeLogicalType.avro_schema()
 }'
 ```
 
+*(This script is complete, it should run "as is")*
+
 ### UUID
 
 ```python
@@ -206,6 +212,8 @@ UUIDLogicalTypes.avro_schema()
   "doc": "UUID logical types"
 }'
 ```
+
+*(This script is complete, it should run "as is")*
 
 ### Decimal
 
@@ -279,3 +287,5 @@ DecimalLogicalTypes.avro_schema()
   "doc": "Decimal logical types"
 }'
 ```
+
+*(This script is complete, it should run "as is")*

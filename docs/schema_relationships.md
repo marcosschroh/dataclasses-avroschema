@@ -43,6 +43,8 @@ User.avro_schema()
 }'
 ```
 
+*(This script is complete, it should run "as is")*
+
 ## OneToOne Recursive Schema Relationship
 
 An User with only one friend :-( :
@@ -82,6 +84,8 @@ User.avro_schema()
   "doc": "User with self reference as friend"
 }'
 ```
+
+*(This script is complete, it should run "as is")*
 
 ## OneToMany Schema Relationship
 
@@ -133,6 +137,8 @@ User.avro_schema()
 }'
 ```
 
+*(This script is complete, it should run "as is")*
+
 or OneToMany using a Map:
 
 ```python
@@ -181,6 +187,8 @@ User.avro_schema()
   "doc": "User with multiple Address"
 }'
 ```
+
+*(This script is complete, it should run "as is")*
 
 ## OneToMany Recursive Schema Relationship
 
@@ -261,6 +269,8 @@ User.avro_schema()
 }'
 ```
 
+*(This script is complete, it should run "as is")*
+
 ## Avoid name collision in multiple relationships
 
 Sometimes we have relationships where a class is related more than once with a particular class,
@@ -326,6 +336,8 @@ Trip.avro_schema()
   "doc": "Trip(start_time: datetime.datetime, start_location: __main__.Location, finish_time: datetime.datetime, finish_location: __main__.Location)"
 }
 ```
+
+*(This script is complete, it should run "as is")*
 
 or with `arrays` or `maps`:
 
@@ -442,6 +454,8 @@ Trip.avro_schema()
 }'
 ```
 
+*(This script is complete, it should run "as is")*
+
 If you want, also you can use custom name for nested items (`nested records`, `arrays` or `maps`) using the property `alias_nested_items` in `class Meta`:
 
 ```python
@@ -500,3 +514,5 @@ class User(AvroModel):
     "doc": "An User with Address"
 }
 ```
+
+*(This script is complete, it should run "as is")*
