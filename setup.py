@@ -5,7 +5,7 @@
 
 from setuptools import find_packages, setup
 
-__version__ = "0.27.2"
+__version__ = "0.28.0"
 
 
 with open("README.md") as readme_file:
@@ -29,7 +29,7 @@ setup(
     ],
     extras_require={
         "pydantic": ["pydantic>=1.9.0"],
-    }
+    },
     author_email="schrohm@gmail.com",
     url="https://github.com/marcosschroh/dataclasses-avroschema",
     download_url="",
