@@ -35,9 +35,9 @@ jobs:
       with:
         path: .venv/
         # The cache key depends on requirements.txt
-        key: ${{ runner.os }}-cache-${{ hashFiles('requirements.txt') }}
+        key: ${{ runner.os }}-cache2-${{ hashFiles('requirements.txt') }}
         restore-keys: |
-          ${{ runner.os }}-cache-
+          ${{ runner.os }}-cache2-
           ${{ runner.os }}-
 
     - name: Install Dependencies
@@ -62,7 +62,7 @@ jobs:
       id: cache
       with:
         path: .venv/
-        key: ${{ runner.os }}-cache-
+        key: ${{ runner.os }}-cache2-
     - run: |
         . .venv/bin/activate
         mkdocs gh-deploy --force
@@ -80,7 +80,7 @@ jobs:
       id: cache
       with:
         path: .venv/
-        key: ${{ runner.os }}-cache-
+        key: ${{ runner.os }}-cache2-
     - run: |
         . .venv/bin/activate
         ./scripts/publish
