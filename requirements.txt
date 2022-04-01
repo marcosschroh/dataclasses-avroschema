@@ -1,7 +1,7 @@
-fastavro==1.4.10
-inflect==5.4.0
+fastavro>=1.4.10
+inflect>=5.4.0
 pytz
-faust==1.9.0
+faust-streaming
 dacite>=1.6.0
 faker>=8.1.1
 stringcase>=1.2.0
@@ -9,7 +9,7 @@ pydantic>=1.9.0
 
 # Code quality
 # ------------------------------------------------------------------------------
-black==21.12b0
+black>=22.3.0
 flake8
 mypy
 isort
