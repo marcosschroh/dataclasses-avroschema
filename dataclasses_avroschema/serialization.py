@@ -96,7 +96,7 @@ def prepare_bytes_decimal(data: decimal.Decimal, precision: int, scale: int = 0)
     for digit in digits:
         unscaled_datum = (unscaled_datum * 10) + digit
 
-    unscaled_datum = 10 ** delta * unscaled_datum
+    unscaled_datum = 10**delta * unscaled_datum
 
     bytes_req = (unscaled_datum.bit_length() + 8) // 8
 
