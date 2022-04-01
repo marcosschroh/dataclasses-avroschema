@@ -1,7 +1,7 @@
 Sometimes we use `avro schemas` with different sources (some written in Scala, some in Python, etc). With the `case`
 you can generate your schemas according to your programming language convention:
 
-```python
+```python  title="Example with CAPITALCASE"
 import typing
 import enum
 

@@ -2,7 +2,7 @@ This library also has support to generate `Avro Schemas` from a `faust.Record`
 
 Example:
 
-```python
+```python title="Basic usage"
 import faust
 import dataclasses
 import typing

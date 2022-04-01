@@ -1,6 +1,6 @@
 [Dataclasses Avro Schema](https://github.com/marcosschroh/dataclasses-avroschema) also includes a `factory` feature, so you can generate `fast` python instances and use them, for example, to test your data streaming pipelines. Instances can be genrated using the `fake` method.
 
-```python
+```python title="Basic usage"
 import typing
 
 from dataclasses_avroschema import AvroModel

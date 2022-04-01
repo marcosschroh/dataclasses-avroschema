@@ -44,7 +44,7 @@ For example, a User may be defined with:
 
 Image that you have to define the previous `User` schema but you do not know avro, you know python:
 
-```python
+```python title="Generate the avro schema from a class"
 from dataclasses_avroschema import AvroModel
 
 class User(AvroModel):

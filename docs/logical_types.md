@@ -13,7 +13,7 @@ The following list represent the avro logical types mapped to python types:
 
 ### Date
 
-```python
+```python title="Date example"
 import datetime
 
 from dataclasses_avroschema import AvroModel
@@ -65,7 +65,7 @@ DateLogicalType.avro_schema()
 
 ### Time
 
-```python
+```python title="Time example"
 import datetime
 
 from dataclasses_avroschema import AvroModel
@@ -117,7 +117,7 @@ TimeLogicalTypes.avro_schema()
 
 ### Datetime
 
-```python
+```python title="DateTime example"
 import datetime
 
 from dataclasses_avroschema import AvroModel
@@ -168,7 +168,7 @@ DatetimeLogicalType.avro_schema()
 
 ### UUID
 
-```python
+```python title="UUID example"
 import uuid
 
 from dataclasses_avroschema import AvroModel
@@ -236,7 +236,7 @@ The below code shows an example on how to use decimals. There's a few important 
     # scale = 51, precision = 52
 ```
 
-```python
+```python title="Decimal example"
 import decimal
 
 from dataclasses_avroschema import AvroModel, types

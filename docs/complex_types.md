@@ -14,9 +14,7 @@ The following list represent the avro complex types mapped to python types:
 
 ### Enums
 
-Example:
-
-```python
+```python title="Enum example"
 import enum
 
 from dataclasses_avroschema import AvroModel
@@ -70,9 +68,7 @@ User.avro_schema()
 
 ### Arrays
 
-Example:
-
-```python
+```python title="Array example"
 import dataclasses
 
 import typing
@@ -126,9 +122,7 @@ UserAdvance.avro_schema()
 
 ### Maps
 
-Example:
-
-```python
+```python title="Map example"
 import dataclasses
 
 import typing
@@ -181,7 +175,7 @@ UserAdvance.avro_schema()
 
 ### Fixed
 
-```python
+```python title="Fixed example"
 import typing
 
 from dataclasses_avroschema import AvroModel, types
@@ -205,7 +199,7 @@ UnionSchema.avro_schema()
 
 ### Unions
 
-```python
+```python title="Union example"
 import typing
 import dataclasses
 import datetime
@@ -356,7 +350,7 @@ UnionSchema.avro_schema()
 `typing.Optional[Any]` is translated as an optional Union: `typing.Union[Any, NoneType]` where `NoneType`
 is always at the end
 
-```python
+```python title="Optional unions example"
 import typing
 import dataclasses
 

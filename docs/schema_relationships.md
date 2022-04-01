@@ -2,9 +2,7 @@
 
 ### OneToOne
 
-An User has one Address example:
-
-```python
+```python title="An User has one Address example"
 from dataclasses_avroschema import AvroModel
 
 
@@ -47,9 +45,7 @@ User.avro_schema()
 
 ## OneToOne Recursive Schema Relationship
 
-An User with only one friend :-( :
-
-```python
+```python title="An User with only one friend :-("
 import typing
 
 from dataclasses_avroschema import AvroModel
@@ -89,9 +85,7 @@ User.avro_schema()
 
 ## OneToMany Schema Relationship
 
-An User has multiple Address example:
-
-```python
+```python title="An User has multiple Address example"
 import typing
 
 from dataclasses_avroschema import AvroModel
@@ -139,9 +133,7 @@ User.avro_schema()
 
 *(This script is complete, it should run "as is")*
 
-or OneToMany using a Map:
-
-```python
+```python title="OneToMany with Map example"
 import typing
 
 from dataclasses_avroschema import AvroModel
@@ -192,9 +184,7 @@ User.avro_schema()
 
 ## OneToMany Recursive Schema Relationship
 
-An User with multiple friends :-) :
-
-```python
+```python title="OneToMany recursive example"
 import typing
 
 from dataclasses_avroschema import AvroModel
@@ -277,9 +267,7 @@ Sometimes we have relationships where a class is related more than once with a p
 and the name for the nested schemas must be different, otherwise we will generate an invalid `avro schema`.
 For those cases, you *MUST* define the `namespace`.
 
-For example:
-
-```python
+```python title="Avoiding name collision example"
 from dataclasses import dataclass
 from datetime import datetime
 import json

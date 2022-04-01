@@ -4,7 +4,7 @@ You must use use all the `pydantic` features and all `dataclasses-avroschema` fu
 
 ## Avro and Json schemas
 
-```python
+```python title="Basic usage"
 import typing
 import enum
 from dataclasses_avroschema.avrodantic import AvroBaseModel
@@ -67,6 +67,8 @@ UserAdvance.json_schema()
         "required": ["name", "age"], "definitions": {"FavoriteColor": {"title": "FavoriteColor", "description": "An enumeration.", "enum": ["BLUE", "YELLOW", "GREEN"], "type": "string"}}}'
 ```
 *(This script is complete, it should run "as is")*
+
+!!! note annotate "You must use pydantic.Field instead of dataclasses.field"
 
 ## To dict and json
 

@@ -10,9 +10,9 @@ The following list represent the avro primitive types mapped to python types:
 | bytes        |     bytes   |
 
 
-Example:
+### Examples
 
-```python
+```python title="Primitive types"
 from dataclasses_avroschema import AvroModel, types
 
 
@@ -68,9 +68,7 @@ User.avro_schema()
 
 *(This script is complete, it should run "as is")*
 
-Example with defaults:
-
-```python
+```python title="Primitive types with defaul values"
 from dataclasses_avroschema import AvroModel
 
 

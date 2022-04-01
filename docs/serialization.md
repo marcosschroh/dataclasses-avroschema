@@ -5,7 +5,7 @@ In both cases we can do it with `avro` or `avro-json`.
 
 For serialization is neccesary to use python class/dataclasses instance:
 
-```python
+```python title="Avro and avro-json serialization"
 from dataclasses import dataclass
 
 import typing
@@ -59,7 +59,7 @@ user.to_json()
 
 Deserialization could take place with an instance dataclass or the dataclass itself. Can return the dict representation or a new class instance.
 
-```python
+```python title="Avro and avro-json deserialization"
 import typing
 
 from dataclasses_avroschema import AvroModel
@@ -101,7 +101,7 @@ User.deserialize(avro_json_binary, serialization_type="avro-json", create_instan
 #### Deserialization of records encoded via a different schema
 To deserialize data encoded via a different schema, one can pass an optional `writer_schema: AvroModel | dict[str, Any]` attribute. It will be used by the **fastavro**s `schemaless_reader`.
 
-```python
+```python title="Deserialization with different schemas"
 @dataclass
 class User(AvroModel):
     name: str
@@ -136,7 +136,7 @@ user_data = {
 
 The `serialization/deserialization` process is built over [fastavro](https://github.com/fastavro/fastavro). If you want to use another library or a different process, you can override the base `AvroModel`:
 
-```python
+```python title="Custom serialization"
 from dataclasses_avroschema import AvroModel
 
 
@@ -177,12 +177,14 @@ class Address(MyAvroModel):
     street_number: int
 ```
 
-### JSON Encoding for unions (avro-json)
+### Encoding for unions with avro-json
 
 When you have an `union` and you want to serialize a `payload` using `avro-json` you will notice that the `type` is added to each `union` field.
 This is needed because after the serialization process you need to know the `type` in order to `deserialize`:
 
-```python
+!!! warning annotate "Do not confuse json with avro-json!!"
+
+```python title="Union encoding with avro-json example"
 import typing
 import dataclasses
 import datetime
