@@ -6,7 +6,7 @@ There are some special avro attributes like `aliases`, `namespace` and `doc` (bo
 
 The `doc` attribute can be set via the docstring class. The `aliases` and `namespaces` must be set using `Class Meta`.
 
-```python
+```python title="Basic usage"
 from dataclasses_avroschema import AvroModel
 
 
@@ -44,7 +44,7 @@ User.avro_schema()
 
 The `class Meta` is used to specify schema attributes that are not represented by the class fields like `namespace`, `aliases` and whether to include the `schema documentation`. One can also provide a custom schema name (the default is the class' name) via `schema_name` attribute and `alias_nested_items` when you have nested items and you want to use custom naming for them.
 
-```python
+```python title="Class Meta description"
 class Meta:
     schema_name = "Name other than the class name"
     schema_doc = False
@@ -62,7 +62,7 @@ class Meta:
 
 You can get the `json` and `dict` representation of your instance using `to_json` and `to_dict` methods:
 
-```python
+```python title="Json and Dict example"
 import dataclasses
 
 from dataclasses_avroschema import AvroModel
@@ -93,7 +93,7 @@ user.to_dict()
 Python classes that inheritance from `AvroModel` has a `validate` method. This method `validates` whether the instance data matches
 the schema that it represents, for example:
 
-```python
+```python title="Validation example"
 from dataclasses import dataclass
 
 

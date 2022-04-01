@@ -147,9 +147,7 @@ In order to add custom fields, you can use the `field` descriptor of the built-i
 
 ### Examples
 
-Adding a `doc` attribute to fields.
-
-```python
+```python title="Adding a doc attribute to fields"
 from dataclasses import dataclass, field
 from dataclasses_avroschema import AvroModel, types
 
@@ -172,9 +170,7 @@ User.avro_schema()
 }
 ```
 
-Adding an additional `sensitivity` attribute to fields.
-
-```python
+```python title="Adding an additional sensitivity attribute to fields."
 from dataclasses import dataclass, field
 from dataclasses_avroschema import AvroModel, types
 

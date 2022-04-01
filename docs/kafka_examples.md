@@ -3,7 +3,7 @@ The other two examples are `sync` using the [kafka-python](https://github.com/dp
 
 ### Minimal example
 
-```python
+```python  title="Example with aiokafka driver"
 import asyncio
 import enum
 from dataclasses import dataclass

@@ -20,14 +20,14 @@ pip install dataclasses-avroschema
 or with `pydantic` funcionalities
 
 ```bash
-pip install dataclasses-avroschemap[pydantic]
+pip install dataclasses-avroschema[pydantic]
 ```
 
 ## Usage
 
 ### Generating the avro schema
 
-```python
+```python title="Trival Usage"
 import enum
 import typing
 
