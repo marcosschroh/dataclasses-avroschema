@@ -65,6 +65,16 @@ def user_one_address_alias_item():
 
 
 @pytest.fixture
+def user_array_address_alias():
+    return load_json("user_array_address_alias.avsc")
+
+
+@pytest.fixture
+def user_map_address_alias():
+    return load_json("user_map_address_alias.avsc")
+
+
+@pytest.fixture
 def user_one_address_schema_with_none_default():
     return load_json("user_one_address_with_none_default.avsc")
 

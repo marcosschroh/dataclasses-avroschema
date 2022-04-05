@@ -108,7 +108,7 @@ class FieldMetadata:
             namespace=getattr(klass, "namespace", None),
         )
 
-    def to_dict(self):
+    def to_dict(self) -> typing.Dict[str, typing.Union[typing.List[str], str]]:
         return {key: value for key, value in vars(self).items() if value}
 
 

@@ -23,9 +23,9 @@ from .exceptions import NameSpaceRequiredException
 PY_VER = sys.version_info
 
 if PY_VER >= (3, 9):
-    GenericAlias = (typing.GenericAlias, typing._GenericAlias, typing._SpecialGenericAlias, typing._UnionGenericAlias)
+    GenericAlias = (typing.GenericAlias, typing._GenericAlias, typing._SpecialGenericAlias, typing._UnionGenericAlias)  # type: ignore # noqa: E501
 else:
-    GenericAlias = typing._GenericAlias
+    GenericAlias = typing._GenericAlias  # type: ignore
 
 
 fake = Faker()
@@ -321,11 +321,10 @@ class ListField(ContainerField):
     def generate_items_type(self) -> typing.Any:
         # because avro can have only one type, we take the first one
         items_type = self.type.__args__[0]
-        name = self.get_singular_name(self.name)
 
         if utils.is_union(items_type):
             self.items_type = UnionField(
-                name,
+                self.name,
                 items_type,
                 default=self.default,
                 default_factory=self.default_factory,
@@ -333,7 +332,9 @@ class ListField(ContainerField):
                 parent=self.parent,
             ).get_avro_type()
         else:
-            self.internal_field = AvroField(name, items_type, model_metadata=self.model_metadata, parent=self.parent)
+            self.internal_field = AvroField(
+                self.name, items_type, model_metadata=self.model_metadata, parent=self.parent
+            )
             self.items_type = self.internal_field.get_avro_type()
 
     def fake(self) -> typing.List:
@@ -377,9 +378,7 @@ class DictField(ContainerField):
         so we take the second argument to determine the value type
         """
         values_type = self.type.__args__[1]
-
-        name = self.get_singular_name(self.name)
-        self.internal_field = AvroField(name, values_type, model_metadata=self.model_metadata, parent=self.parent)
+        self.internal_field = AvroField(self.name, values_type, model_metadata=self.model_metadata, parent=self.parent)
         self.values_type = self.internal_field.get_avro_type()
 
     def fake(self) -> typing.Dict[str, typing.Any]:
@@ -686,7 +685,7 @@ class UUIDField(LogicalTypeField):
 @dataclasses.dataclass
 class RecordField(BaseField):
     def get_avro_type(self) -> typing.Union[typing.List, typing.Dict]:
-        alias = self.model_metadata.get_alias(self.name)  # type: ignore
+        alias = self.parent.metadata.get_alias(self.name) or self.model_metadata.get_alias(self.name)  # type: ignore
         name = alias or self.type.__name__
 
         if not self.exist_type():
