@@ -12,8 +12,8 @@ if [ -d 'htmlcov' ] ; then
     rm -rf htmlcov
 fi
 
-if [ -d 'python_schema_registry_client.egg-info' ] ; then
-    rm -rf python_schema_registry_client.egg-info
+if [ -d 'dataclasses_avroschema.egg-info' ] ; then
+    rm -rf dataclasses_avroschema.egg-info
 fi
 
 # delete python cache

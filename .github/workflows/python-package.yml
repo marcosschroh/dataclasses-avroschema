@@ -1,6 +1,8 @@
 # This workflow will install Python dependencies, run tests and lint with a variety of Python versions
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
+# We should restore the cache and remove extra requirements installations after this is resolved https://github.com/actions/setup-python/issues/182
+
 name: Python package
 
 on:
@@ -29,19 +31,19 @@ jobs:
         python-version: ${{ matrix.python-version }}
         architecture: x64
 
-    - name: Set Cache
-      uses: actions/cache@v3
-      id: cache  # name for referring later
-      with:
-        path: .venv/
-        # The cache key depends on requirements.txt
-        key: ${{ runner.os }}-cache-${{ hashFiles('requirements.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-cache-
-          ${{ runner.os }}-
+    # - name: Set Cache
+    #   uses: actions/cache@v3
+    #   id: cache  # name for referring later
+    #   with:
+    #     path: .venv/
+    #     # The cache key depends on requirements.txt
+    #     key: ${{ runner.os }}-cache-${{ hashFiles('requirements.txt') }}
+    #     restore-keys: |
+    #       ${{ runner.os }}-cache-
+    #       ${{ runner.os }}-
 
     - name: Install Dependencies
-      if: steps.cache.outputs.cache-hit != 'true'
+      # if: steps.cache.outputs.cache-hit != 'true'
       run: |
         python -m venv .venv
         . .venv/bin/activate
@@ -58,13 +60,15 @@ jobs:
     needs: [build]
     steps:
     - uses: actions/checkout@v3
-    - uses: actions/cache@v3
-      id: cache
-      with:
-        path: .venv/
-        key: ${{ runner.os }}-cache-
+    # - uses: actions/cache@v3
+    #   id: cache
+    #   with:
+    #     path: .venv/
+    #     key: ${{ runner.os }}-cache-
     - run: |
+        python -m venv .venv
         . .venv/bin/activate
+        pip install -r requirements.txt
         mkdocs gh-deploy --force
 
   publish:
@@ -76,11 +80,13 @@ jobs:
     if: ${{ startsWith(github.ref, 'refs/tags/v') }}
     steps:
     - uses: actions/checkout@v3
-    - uses: actions/cache@v3
-      id: cache
-      with:
-        path: .venv/
-        key: ${{ runner.os }}-cache-
+    # - uses: actions/cache@v3
+    #   id: cache
+    #   with:
+    #     path: .venv/
+    #     key: ${{ runner.os }}-cache-
     - run: |
+        python -m venv .venv
         . .venv/bin/activate
+        pip install -r requirements.txt
         ./scripts/publish

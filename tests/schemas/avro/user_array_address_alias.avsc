@@ -1,0 +1,37 @@
+{
+    "type": "record",
+    "name": "User",
+    "fields": [
+        {
+            "name": "name",
+            "type": "string"
+        },
+        {
+            "name": "age",
+            "type": "long"
+        },
+        {
+            "name": "address",
+            "type": {
+                "type": "array",
+                "items": {
+                    "type": "record",
+                    "name": "MySuperAddress",
+                    "fields": [
+                        {
+                            "name": "street",
+                            "type": "string"
+                        },
+                        {
+                            "name": "street_number",
+                            "type": "long"
+                        }
+                    ],
+                    "doc": "An Address"
+                },
+                "name": "addres"
+            }
+        }
+    ],
+    "doc": "An User with Address"
+}
