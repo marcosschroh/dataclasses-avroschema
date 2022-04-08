@@ -70,9 +70,9 @@ UserAdvance.json_schema()
 
 !!! note annotate "You must use pydantic.Field instead of dataclasses.field"
 
-## To dict and json
+## Pydantic and dataclasses_avroschema batteries
 
-```python
+```python title="To dict and json"
 user = UserAdvance(name="bond", age=50)
 
 # to_json from dataclasses-avroschema is the same that json from pydantic
@@ -82,9 +82,7 @@ assert user.to_json() == user.json()
 assert user.to_dict() == user.dict()
 ```
 
-## Serialization
-
-```python
+```python title="serialization"
 event = user.serialize()
 print(event)
 # >>> b'\x08bondd\x04\x06dog\x06cat\x00\x02\x06key\x02\x00\x00\x00\x12Argentina\x00'
@@ -92,3 +90,36 @@ print(event)
 UserAdvance.deserialize(data=event)
 # >>> UserAdvance(name='bond', age=50, pets=['dog', 'cat'], accounts={'key': 1}, has_car=False, favorite_colors=<FavoriteColor.BLUE: 'BLUE'>, country='Argentina', address=None)
 ```
+
+```python title="parse_obj"
+import typing
+
+from dataclasses_avroschema.avrodantic import AvroBaseModel
+
+
+class Address(AvroBaseModel):
+    "An Address"
+    street: str
+    street_number: int
+
+
+class User(AvroBaseModel):
+    "User with multiple Address"
+    name: str
+    age: int
+    addresses: typing.List[Address]
+
+data_user = {
+    "name": "john",
+    "age": 20,
+    "addresses": [{
+        "street": "test",
+        "street_number": 10,
+        }],
+    }
+
+user = User.parse_obj(data=data_user)
+assert type(user.addresses[0]) is Address
+```
+
+*(This script is complete, it should run "as is")*

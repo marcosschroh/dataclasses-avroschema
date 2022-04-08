@@ -183,6 +183,11 @@ class AvroModel:
         """
         Get the default config for dacite and always include the self reference
         """
+        # We need to make sure that the `avro schemas` has been generated, otherwise cls.klass is empty
+        # It won't affect the performance because the rendered schema will be store in cls.rendered_schema
+        if cls.klass is None:
+            cls.avro_schema()
+
         return {
             "check_types": False,
             "forward_references": {

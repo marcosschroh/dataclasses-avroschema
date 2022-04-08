@@ -334,3 +334,34 @@ def test_not_pydantic_not_installed(monkeypatch):
         pass
 
     assert not utils.is_pydantic_model(Bus)
+
+
+def test_parse_obj():
+    """
+    Created nested schema resolution directly from dictionaries
+    """
+
+    class Address(AvroBaseModel):
+        "An Address"
+        street: str
+        street_number: int
+
+    class User(AvroBaseModel):
+        "User with multiple Address"
+        name: str
+        age: int
+        addresses: typing.List[Address]
+
+    data_user = {
+        "name": "john",
+        "age": 20,
+        "addresses": [
+            {
+                "street": "test",
+                "street_number": 10,
+            }
+        ],
+    }
+    user = User.parse_obj(data=data_user)
+    assert type(user.addresses[0]) is Address
+    assert User.avro_schema()
