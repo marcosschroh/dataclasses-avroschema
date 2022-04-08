@@ -222,3 +222,36 @@ def test_deserialize_complex_types_invalid_enum_instance(user_advance_dataclass_
 
     with pytest.raises(ValueError, match="Value RED is not a valid instance of"):
         user_advance_dataclass_with_sub_record_and_enum._deserialize_complex_types(payload)
+
+
+def test_parse_obj():
+    """
+    Created nested schema resolution directly from dictionaries
+    """
+
+    @dataclass
+    class Address(AvroModel):
+        "An Address"
+        street: str
+        street_number: int
+
+    @dataclass
+    class User(AvroModel):
+        "User with multiple Address"
+        name: str
+        age: int
+        addresses: typing.List[Address]
+
+    data_user = {
+        "name": "john",
+        "age": 20,
+        "addresses": [
+            {
+                "street": "test",
+                "street_number": 10,
+            }
+        ],
+    }
+    user = User.parse_obj(data=data_user)
+    assert type(user.addresses[0]) is Address
+    assert User.avro_schema()

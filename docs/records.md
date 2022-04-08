@@ -129,3 +129,45 @@ assert json.loads(str(exc.value)) == ["User.name is <1> of type <class 'int'> ex
 ```
 
 *(This script is complete, it should run "as is")*
+
+
+### Nested schema resolution directly from dictionaries
+
+Sometimes you have a `dictionary` and you want to create an instance without creating the nested objects. This library follows
+the same approach as `pydantic` with `parse_obj` method. This is also valid for `avrodantic.AvroBaseModel`.
+
+```python
+from dataclasses import dataclass
+
+import typing
+
+from dataclasses_avroschema import AvroModel
+
+
+@dataclass
+class Address(AvroModel):
+    "An Address"
+    street: str
+    street_number: int
+
+@dataclass
+class User(AvroModel):
+    "User with multiple Address"
+    name: str
+    age: int
+    addresses: typing.List[Address]
+
+data_user = {
+    "name": "john",
+    "age": 20,
+    "addresses": [{
+        "street": "test",
+        "street_number": 10,
+        }],
+    }
+
+user = User.parse_obj(data=data_user)
+assert type(user.addresses[0]) is Address
+```
+
+*(This script is complete, it should run "as is")*
