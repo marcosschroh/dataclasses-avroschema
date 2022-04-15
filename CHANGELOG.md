@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+### Fixed
+
+## [0.29.1] - 2022-04-15
+
+- Generate correct schema name [172](https://github.com/marcosschroh/dataclasses-avroschema/pull/172):
+  1. Check if the schema_name is present in the Meta class of own model
+  2. Check if exists an alias_nested_items in parent class or Meta class of own model
+  3. Use the default class Name (self.type.__name__)
+
 ## [0.29.0] - 2022-04-08
 
 ### Added
