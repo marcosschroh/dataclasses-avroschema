@@ -151,6 +151,24 @@ def test_get_fields():
     assert Parent.fake()
 
 
+def test_schema_name_from_relationship():
+    @dataclass
+    class MyClass(AvroModel):
+        field_1: str
+
+        class Meta:
+            schema_name = "custom_class"
+
+    class MySecondClass(AvroModel):
+        field_2: MyClass
+
+        class Meta:
+            schema_name = "custom_name"
+
+    schema = MySecondClass.avro_schema_to_python()
+    assert schema["fields"][0]["type"]["name"] == "custom_class"
+
+
 def test_validate():
     @dataclass
     class User(AvroModel):

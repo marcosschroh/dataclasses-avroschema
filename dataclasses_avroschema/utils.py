@@ -90,7 +90,7 @@ class SchemaMetadata:
             alias_nested_items=getattr(klass, "alias_nested_items", {}),
         )
 
-    def get_alias(self, name: str) -> typing.Optional[str]:
+    def get_alias_nested_items(self, name: str) -> typing.Optional[str]:
         return self.alias_nested_items.get(name)
 
 
