@@ -685,8 +685,16 @@ class UUIDField(LogicalTypeField):
 @dataclasses.dataclass
 class RecordField(BaseField):
     def get_avro_type(self) -> typing.Union[typing.List, typing.Dict]:
-        alias = self.parent.metadata.get_alias(self.name) or self.model_metadata.get_alias(self.name)  # type: ignore
-        name = alias or self.type.__name__
+        meta = getattr(self.type, "Meta", None)
+        metadata = utils.SchemaMetadata.create(meta)
+
+        alias = self.parent.metadata.get_alias_nested_items(self.name) or metadata.get_alias_nested_items(self.name)  # type: ignore  # noqa E501
+
+        # The priority for the schema name
+        # 1. Check if the schema_name is present in the Meta class of own model
+        # 2. Check if exists an alias_nested_items in parent class or Meta class of own model
+        # 3. Use the default class Name (self.type.__name__)
+        name = metadata.schema_name or alias or self.type.__name__
 
         if not self.exist_type():
             user_defined_type = utils.UserDefinedType(name=name, type=self.type)
@@ -697,9 +705,6 @@ class RecordField(BaseField):
             record_type = self.type.avro_schema_to_python(root=self.parent)
             record_type["name"] = name
         else:
-            meta = getattr(self.type, "Meta", None)
-            metadata = utils.SchemaMetadata.create(meta)
-
             if metadata.namespace is None:
                 raise NameSpaceRequiredException(field_type=self.type, field_name=self.name)
             record_type = f"{metadata.namespace}.{name}"
