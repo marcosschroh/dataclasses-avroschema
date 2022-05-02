@@ -112,22 +112,6 @@ def test_not_implementd_methods():
     assert msg == str(excinfo.value)
 
 
-def test_namespace_required():
-    class Bus(AvroModel):
-        "A Bus"
-        engine_name: str
-
-    class UnionSchema(AvroModel):
-        "Some Unions"
-        bus_one: Bus
-        bus_two: Bus
-
-    with pytest.raises(exceptions.NameSpaceRequiredException) as e:
-        assert UnionSchema.avro_schema()
-
-    assert str(e)
-
-
 def test_inherit_dataclass_missing_docs():
     @dataclass
     class BaseUser:
@@ -167,6 +151,27 @@ def test_schema_name_from_relationship():
 
     schema = MySecondClass.avro_schema_to_python()
     assert schema["fields"][0]["type"]["name"] == "custom_class"
+
+
+def test_alias_from_relationship():
+    @dataclass
+    class MyClass(AvroModel):
+        name: str
+    
+    @dataclass
+    class MySecondClass(AvroModel):
+        inner_ref: MyClass 
+        inner_ref_2: MyClass
+
+        class Meta:
+            alias_nested_items = {
+                "inner_ref_2": "inner_ref_2"
+            }
+
+    schema = MySecondClass.avro_schema_to_python()
+    for i, typename in enumerate(["inner_ref", "inner_ref_2"]):
+        assert schema["fields"][i]["name"] == typename
+        assert schema["fields"][i]["type"]["fields"] == [{"name": "name", "type": "string"}]
 
 
 def test_validate():
