@@ -123,6 +123,8 @@ class AvroModel:
     def standardize_custom_type(value: typing.Any) -> typing.Any:
         if is_custom_type(value):
             return value["default"]
+        elif isinstance(value,list) or isinstance(value,tuple):
+            return [AvroModel.standardize_custom_type(v) for v in value]
         elif isinstance(value, dict):
             return {k: AvroModel.standardize_custom_type(v) for k, v in value.items()}
         elif issubclass(type(value), enum.Enum):
