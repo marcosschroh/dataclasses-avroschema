@@ -180,9 +180,7 @@ def test_alias_from_relationship():
         inner_ref_2: MyClass
 
         class Meta:
-            alias_nested_items = {
-                "inner_ref_2": "inner_ref_2"
-            }
+            alias_nested_items = {"inner_ref_2": "inner_ref_2"}
 
     schema = MySecondClass.avro_schema_to_python()
     for i, typename in enumerate(["inner_ref", "inner_ref_2"]):
