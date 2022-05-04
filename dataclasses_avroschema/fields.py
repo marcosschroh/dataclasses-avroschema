@@ -696,7 +696,7 @@ class RecordField(BaseField):
         # 3. Use the default class Name (self.type.__name__)
         name = alias or metadata.schema_name or self.type.__name__
 
-        if not self.exist_type() or alias != None:
+        if not self.exist_type() or alias is not None:
             user_defined_type = utils.UserDefinedType(name=name, type=self.type)
             self.parent.user_defined_types += (user_defined_type,)
 
