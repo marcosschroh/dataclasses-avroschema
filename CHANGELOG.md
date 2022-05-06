@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [0.29.2] - 2022-05-06
+
+- Priority ordering for record field naming fixed [176](https://github.com/marcosschroh/dataclasses-avroschema/pull/176). `alias_nested_items` must have priority order
+  1. Check if exists an alias_nested_items in parent class or Meta class of own model
+  2. Check if the schema_name is present in the Meta class of own model
+  3. Use the default class Name (self.type.__name__)
+
+### Fixed
+
 ## [0.29.1] - 2022-04-15
 
 - Generate correct schema name [172](https://github.com/marcosschroh/dataclasses-avroschema/pull/172):
