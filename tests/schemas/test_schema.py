@@ -169,6 +169,25 @@ def test_schema_name_from_relationship():
     assert schema["fields"][0]["type"]["name"] == "custom_class"
 
 
+def test_alias_from_relationship():
+    @dataclass
+    class MyClass(AvroModel):
+        name: str
+
+    @dataclass
+    class MySecondClass(AvroModel):
+        inner_ref: MyClass
+        inner_ref_2: MyClass
+
+        class Meta:
+            alias_nested_items = {"inner_ref_2": "inner_ref_2"}
+
+    schema = MySecondClass.avro_schema_to_python()
+    for i, typename in enumerate(["inner_ref", "inner_ref_2"]):
+        assert schema["fields"][i]["name"] == typename
+        assert schema["fields"][i]["type"]["fields"] == [{"name": "name", "type": "string"}]
+
+
 def test_validate():
     @dataclass
     class User(AvroModel):

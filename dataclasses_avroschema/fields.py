@@ -691,15 +691,13 @@ class RecordField(BaseField):
         alias = self.parent.metadata.get_alias_nested_items(self.name) or metadata.get_alias_nested_items(self.name)  # type: ignore  # noqa E501
 
         # The priority for the schema name
-        # 1. Check if the schema_name is present in the Meta class of own model
-        # 2. Check if exists an alias_nested_items in parent class or Meta class of own model
+        # 1. Check if exists an alias_nested_items in parent class or Meta class of own model
+        # 2. Check if the schema_name is present in the Meta class of own model
         # 3. Use the default class Name (self.type.__name__)
-        name = metadata.schema_name or alias or self.type.__name__
+        name = alias or metadata.schema_name or self.type.__name__
 
-        if not self.exist_type():
+        if not self.exist_type() or alias is not None:
             user_defined_type = utils.UserDefinedType(name=name, type=self.type)
-
-            # add user_defined_type to the parent
             self.parent.user_defined_types += (user_defined_type,)
 
             record_type = self.type.avro_schema_to_python(root=self.parent)
