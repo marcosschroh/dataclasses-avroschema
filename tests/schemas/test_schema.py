@@ -50,8 +50,18 @@ def test_schema_render_from_instance_with_doc(user_dataclass_with_doc, user_avro
     assert user.avro_schema() == json.dumps(user_avro_json)
 
 
-def test_schema_documentation(user_v2_dataclass, user_v2_avro_json):
-    assert user_v2_dataclass.avro_schema() == json.dumps(user_v2_avro_json)
+def test_schema_doc_from_meta():
+    documentation = "MyClass documentation from Meta"
+
+    @dataclass
+    class MyClass(AvroModel):
+        field_1: str
+
+        class Meta:
+            schema_doc = documentation
+
+    schema = MyClass.avro_schema_to_python()
+    assert schema["doc"] == documentation
 
 
 def test_schema_cached(user_v2_dataclass, user_v2_avro_json):

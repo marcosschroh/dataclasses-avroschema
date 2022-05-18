@@ -53,9 +53,12 @@ class Meta:
     alias_nested_items = {"address": "Address"}
 ```
 
-`schema_doc (boolean)`: Whether include the `schema documentation` generated from `docstrings`. Default `True`
+`schema_doc (Union[boolean, str])`: Whether include the `schema documentation` generated from `docstrings`. Default `True`. If the value is a `string` if will be used to generate the schema documentation.
+
 `namespace (optional[str])`: Schema namespace. Default `None`
+
 `aliases (optional[List[str]])`: Schema aliases. Default `None`
+
 `alias_nested_items (optional[Dict[str, str]])`: Nested items names
 
 ### Record to json and dict 

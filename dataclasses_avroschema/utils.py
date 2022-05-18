@@ -75,7 +75,7 @@ def is_custom_type(value: typing.Any) -> bool:
 @dataclass
 class SchemaMetadata:
     schema_name: typing.Optional[str] = None
-    schema_doc: bool = True
+    schema_doc: typing.Union[bool, str] = True
     namespace: typing.Optional[typing.List[str]] = None
     aliases: typing.Optional[typing.List[str]] = None
     alias_nested_items: typing.Dict[str, str] = field(default_factory=dict)
