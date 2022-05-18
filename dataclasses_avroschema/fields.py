@@ -18,7 +18,7 @@ from pytz import utc
 
 from dataclasses_avroschema import schema_generator, serialization, types, utils
 
-from .exceptions import NameSpaceRequiredException
+from .exceptions import InvalidMap, NameSpaceRequiredException
 
 PY_VER = sys.version_info
 
@@ -346,6 +346,12 @@ class ListField(ContainerField):
 class DictField(ContainerField):
     values_type: typing.Any = None
     internal_field: typing.Any = None
+
+    def __post_init__(self) -> None:
+        key_type = self.type.__args__[0]
+
+        if key_type is not str:
+            raise InvalidMap(self.name, key_type)
 
     @property
     def avro_type(self) -> typing.Dict[str, typing.Any]:

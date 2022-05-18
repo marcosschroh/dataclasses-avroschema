@@ -4,8 +4,8 @@ import typing
 try:
     # Only available in 3.9+
     from typing import Annotated
-except ImportError:
-    from typing_extensions import Annotated
+except ImportError:  # pragma: no cover
+    from typing_extensions import Annotated  # pragma: no cover
 
 T = typing.TypeVar("T")
 
