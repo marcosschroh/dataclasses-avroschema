@@ -29,7 +29,11 @@ class BaseSchemaDefinition(abc.ABC):
         return self.klass.metadata.schema_name or self.klass.__name__
 
     def generate_documentation(self) -> typing.Optional[str]:
-        doc = self.klass.__doc__
+        if isinstance(self.metadata.schema_doc, str):
+            doc = self.metadata.schema_doc
+        else:
+            doc = self.klass.__doc__
+
         if doc is not None:
             return doc.replace("\n", "")
         return None
