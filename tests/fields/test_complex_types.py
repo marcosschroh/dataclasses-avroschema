@@ -6,8 +6,7 @@ import typing
 import pytest
 from faker import Faker
 
-from dataclasses_avroschema import AvroModel, fields, types
-from dataclasses_avroschema.fields import EnumField
+from dataclasses_avroschema import AvroModel, exceptions, fields, types
 
 from . import consts
 
@@ -179,6 +178,17 @@ def test_mapping_type(mapping, python_primitive_type, python_type_str):
     }
 
     assert expected == field.to_dict()
+
+
+def test_invalid_map():
+    name = "a_map_field"
+    python_type = typing.Dict[int, str]
+
+    with pytest.raises(exceptions.InvalidMap) as excinfo:
+        fields.AvroField(name, python_type, default=dataclasses.MISSING)
+
+    msg = "Invalid map on field a_map_field. Keys must be string not <class 'int'>"
+    assert msg == str(excinfo.value)
 
 
 @pytest.mark.parametrize("mapping,python_primitive_type,python_type_str,value", consts.MAPPING_LOGICAL_TYPES)
