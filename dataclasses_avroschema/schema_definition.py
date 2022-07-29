@@ -16,6 +16,7 @@ class BaseSchemaDefinition(abc.ABC):
     type: str
     klass: typing.Any
     parent: typing.Any
+    metadata: utils.SchemaMetadata
 
     @abc.abstractmethod
     def get_rendered_fields(self) -> typing.List[OrderedDict]:
@@ -41,7 +42,6 @@ class BaseSchemaDefinition(abc.ABC):
 
 @dataclasses.dataclass
 class AvroSchemaDefinition(BaseSchemaDefinition):
-    metadata: utils.SchemaMetadata
     fields: typing.List[FieldType] = dataclasses.field(default_factory=list)
 
     def __post_init__(self) -> None:
@@ -75,25 +75,26 @@ class AvroSchemaDefinition(BaseSchemaDefinition):
             faust_field = dataclass_field.default
             default_factory = dataclasses.MISSING
 
-            if faust_field.required:
-                default = dataclasses.MISSING
-            else:
-                default = faust_field.default
-
-                if isinstance(default, dataclasses.Field):
-                    default_factory = default.default_factory  # type: ignore  # TODO: resolve mypy
+            if faust_field is not dataclasses.MISSING:
+                if faust_field.required:
                     default = dataclasses.MISSING
+                else:
+                    default = faust_field.default
 
-            schema_fields.append(
-                AvroField(
-                    dataclass_field.name,
-                    dataclass_field.type,
-                    default=default,
-                    default_factory=default_factory,
-                    model_metadata=self.metadata,
-                    parent=self.parent,
+                    if isinstance(default, dataclasses.Field):
+                        default_factory = default.default_factory  # type: ignore  # TODO: resolve mypy
+                        default = dataclasses.MISSING
+
+                schema_fields.append(
+                    AvroField(
+                        dataclass_field.name,
+                        dataclass_field.type,
+                        default=default,
+                        default_factory=default_factory,
+                        model_metadata=self.metadata,
+                        parent=self.parent,
+                    )
                 )
-            )
 
         return schema_fields
 
@@ -105,8 +106,8 @@ class AvroSchemaDefinition(BaseSchemaDefinition):
                 default=dataclasses.MISSING
                 if model_field.required or model_field.default_factory
                 else model_field.default,
-                default_factory=model_field.default_factory,  # type: ignore  # TODO: resolve mypy
-                metadata=getattr(model_field, "metadata", None),
+                default_factory=model_field.default_factory,
+                metadata=getattr(model_field, "metadata", {}),
                 model_metadata=self.metadata,
                 parent=self.parent,
             )

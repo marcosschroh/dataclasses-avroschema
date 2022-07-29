@@ -14,22 +14,22 @@ except ImportError:  # pragma: no cover
 try:
     import pydantic  # pragma: no cover
 except ImportError:  # type: ignore # pragma: no cover
-    pydantic = None
+    pydantic = None  # type: ignore # pragma: no cover
 
 
-def is_pydantic_model(klass: typing.Any) -> bool:
+def is_pydantic_model(klass: type) -> bool:
     if pydantic is not None:
         return issubclass(klass, pydantic.BaseModel)
     return False
 
 
-def is_faust_model(klass: typing.Any) -> bool:
+def is_faust_model(klass: type) -> bool:
     if faust is not None:
         return issubclass(klass, faust.Record)
     return False
 
 
-def is_union(a_type: typing.Any) -> bool:
+def is_union(a_type: type) -> bool:
     """
     Given a python type, return True if is typing.Union, otherwise False
 
@@ -42,7 +42,7 @@ def is_union(a_type: typing.Any) -> bool:
     return isinstance(a_type, typing._GenericAlias) and a_type.__origin__ is typing.Union  # type: ignore
 
 
-def is_self_referenced(a_type: typing.Any) -> bool:
+def is_self_referenced(a_type: type) -> bool:
     """
     Given a python type, return True if is self referenced, meaning
     that is instance of typing.ForwardRef, otherwise False
@@ -81,7 +81,7 @@ class SchemaMetadata:
     alias_nested_items: typing.Dict[str, str] = field(default_factory=dict)
 
     @classmethod
-    def create(cls: typing.Any, klass: type) -> typing.Any:
+    def create(cls: typing.Type["SchemaMetadata"], klass: type) -> typing.Any:
         return cls(
             schema_name=getattr(klass, "schema_name", None),
             schema_doc=getattr(klass, "schema_doc", True),
@@ -101,7 +101,7 @@ class FieldMetadata:
     namespace: typing.Optional[str] = None
 
     @classmethod
-    def create(cls: typing.Any, klass: type) -> "FieldMetadata":
+    def create(cls: typing.Type["FieldMetadata"], klass: typing.Optional[type]) -> "FieldMetadata":
         return cls(
             aliases=getattr(klass, "aliases", []),
             doc=getattr(klass, "doc", None),

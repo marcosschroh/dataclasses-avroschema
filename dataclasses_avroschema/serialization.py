@@ -6,6 +6,8 @@ import uuid
 
 import fastavro
 
+from .types import JsonDict
+
 DATETIME_STR_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
 DATE_STR_FORMAT = "%Y-%m-%d"
 TIME_STR_FORMAT = "%H:%M:%S"
@@ -34,7 +36,7 @@ def deserialize(
     data: bytes,
     schema: typing.Dict,
     serialization_type: str = "avro",
-    writer_schema: typing.Optional[typing.Dict] = None,
+    writer_schema: typing.Optional[JsonDict] = None,
 ) -> typing.Dict:
     if serialization_type == "avro":
         input_stream: typing.Union[io.BytesIO, io.StringIO] = io.BytesIO(data)
