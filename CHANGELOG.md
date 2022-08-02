@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+### Fixed
+
+## [0.30.1] - 2022-08-02
+
+- Dependency `fastavro` updated to close [184](https://github.com/marcosschroh/dataclasses-avroschema/issues/184)
+
 ### Added
 
 ## [0.30.0] - 2022-05-18
