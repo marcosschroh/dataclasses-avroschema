@@ -20,7 +20,7 @@ setup(
     author="Marcos Schroh",
     install_requires=[
         "inflect>=5.3.0",
-        "fastavro>=1.4.0",
+        "fastavro>=1.5.4",
         "pytz",
         "dacite>=1.6.0",
         "faker>=8.1.1",

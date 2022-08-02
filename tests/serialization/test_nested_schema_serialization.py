@@ -148,7 +148,7 @@ def test_one_to_many_map_relationship():
 
     # seems that there is a bug in fastavro and raises KeyError
     assert User.deserialize(avro_binary, create_instance=False) == expected
-    # assert User.deserialize(avro_json_binary, serialization_type="avro-json", create_instance=False) == expected
+    assert User.deserialize(avro_json_binary, serialization_type="avro-json", create_instance=False) == expected
 
     assert User.deserialize(avro_binary) == user
     # assert User.deserialize(avro_json_binary) == user
