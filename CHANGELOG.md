@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [0.30.2] - 2022-08-04
+
+- Do not use name and type from metadata in avro schema [189](https://github.com/marcosschroh/dataclasses-avroschema/issues/189)
+
+### Fixed
+
 ## [0.30.1] - 2022-08-02
 
 - Dependency `fastavro` updated to close [184](https://github.com/marcosschroh/dataclasses-avroschema/issues/184)
