@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [0.30.3] - 2022-08-05
+
+- `typing` issues fixed [186](https://github.com/marcosschroh/dataclasses-avroschema/issues/186)
+
+### Fixed
+
 ## [0.30.2] - 2022-08-04
 
 - Do not use name and type from metadata in avro schema [189](https://github.com/marcosschroh/dataclasses-avroschema/issues/189)
