@@ -1,13 +1,14 @@
+import sys
 import dataclasses
 import typing
 
-try:
-    # Only available in 3.9+
+if sys.version_info >= (3, 9):
     from typing import Annotated
-except ImportError:  # pragma: no cover
-    from typing_extensions import Annotated  # pragma: no cover
+else:
+    from typing_extensions import Annotated  # type: ignore # pragma: no cover
 
 T = typing.TypeVar("T")
+JsonDict = typing.Dict[str, typing.Any]
 
 
 class MissingSentinel(typing.Generic[T]):

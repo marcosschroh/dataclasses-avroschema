@@ -19,13 +19,14 @@ from pytz import utc
 from dataclasses_avroschema import schema_generator, serialization, types, utils
 
 from .exceptions import InvalidMap, NameSpaceRequiredException
+from .types import JsonDict
 
 PY_VER = sys.version_info
 
-if PY_VER >= (3, 9):
+if PY_VER >= (3, 9):  # pragma: no cover
     GenericAlias = (typing.GenericAlias, typing._GenericAlias, typing._SpecialGenericAlias, typing._UnionGenericAlias)  # type: ignore # noqa: E501
 else:
-    GenericAlias = typing._GenericAlias  # type: ignore
+    GenericAlias = typing._GenericAlias  # type: ignore  # pragma: no cover
 
 
 fake = Faker()
@@ -104,8 +105,6 @@ PythonImmutableTypes = typing.Union[
 
 @dataclasses.dataclass  # type: ignore
 class BaseField:
-    avro_type: typing.ClassVar[str]
-
     name: str
     type: typing.Any  # store the python primitive type
     default: typing.Any
@@ -115,6 +114,10 @@ class BaseField:
 
     def __post_init__(self) -> None:
         self.model_metadata = self.model_metadata or utils.SchemaMetadata()
+
+    @property
+    def avro_type(self) -> typing.Union[str, typing.Dict]:
+        ...  # pragma: no cover
 
     @staticmethod
     def _get_self_reference_type(a_type: typing.Any) -> str:
@@ -126,7 +129,9 @@ class BaseField:
     def get_singular_name(name: str) -> str:
         singular = p.singular_noun(name)
 
-        if singular:
+        # do the check because of mypy.
+        # p.singular_noun returns Union[str, bool]
+        if isinstance(singular, str):
             return singular
         return name
 
@@ -274,12 +279,18 @@ class BytesField(ImmutableField):
 
 @dataclasses.dataclass
 class NoneField(ImmutableField):
-    avro_type: typing.ClassVar[str] = NULL
+    @property
+    def avro_type(self) -> typing.Union[str, typing.Dict]:
+        return NULL
 
 
 @dataclasses.dataclass
 class ContainerField(BaseField):
     default_factory: typing.Optional[typing.Callable] = None
+
+    @property
+    def avro_type(self) -> typing.Dict:
+        ...
 
     def get_avro_type(self) -> PythonImmutableTypes:
         avro_type = self.avro_type
@@ -354,11 +365,11 @@ class DictField(ContainerField):
             raise InvalidMap(self.name, key_type)
 
     @property
-    def avro_type(self) -> typing.Dict[str, typing.Any]:
+    def avro_type(self) -> JsonDict:
         self.generate_values_type()
         return {"type": MAP, "values": self.values_type}
 
-    def get_default_value(self) -> typing.Union[typing.Dict[str, typing.Any], dataclasses._MISSING_TYPE]:
+    def get_default_value(self) -> typing.Union[JsonDict, dataclasses._MISSING_TYPE]:
         if self.default is None:
             return {}
         elif callable(self.default_factory):
@@ -467,7 +478,7 @@ class UnionField(BaseField):
 
 @dataclasses.dataclass
 class FixedField(BaseField):
-    def get_avro_type(self) -> typing.Dict[str, typing.Any]:
+    def get_avro_type(self) -> JsonDict:
         avro_type = {
             "type": FIXED,
             "name": self.get_singular_name(self.name),
@@ -504,7 +515,7 @@ class EnumField(BaseField):
     def get_symbols(self) -> typing.List[str]:
         return [member.value for member in self.type if member.name != "Meta"]
 
-    def get_avro_type(self) -> typing.Dict[str, typing.Any]:
+    def get_avro_type(self) -> JsonDict:
         avro_type = {
             "type": ENUM,
             "name": self.get_singular_name(self.name),
@@ -572,7 +583,9 @@ class DateField(LogicalTypeField):
     the number of days from the unix epoch, 1 January 1970 (ISO calendar).
     """
 
-    avro_type: typing.ClassVar[str] = LOGICAL_DATE
+    @property
+    def avro_type(self) -> typing.Dict:
+        return LOGICAL_DATE
 
     @staticmethod
     def to_avro(date: datetime.date) -> int:
@@ -607,7 +620,9 @@ class TimeField(LogicalTypeField):
     where the int stores the number of milliseconds after midnight, 00:00:00.000.
     """
 
-    avro_type: typing.ClassVar[str] = LOGICAL_TIME
+    @property
+    def avro_type(self) -> typing.Dict:
+        return LOGICAL_TIME
 
     @staticmethod
     def to_avro(time: datetime.time) -> int:
@@ -645,7 +660,9 @@ class DatetimeField(LogicalTypeField):
     1 January 1970 00:00:00.000 UTC.
     """
 
-    avro_type: typing.ClassVar[str] = LOGICAL_DATETIME
+    @property
+    def avro_type(self) -> typing.Dict:
+        return LOGICAL_DATETIME
 
     @staticmethod
     def to_avro(date_time: datetime.datetime) -> float:
@@ -672,7 +689,9 @@ class DatetimeField(LogicalTypeField):
 
 @dataclasses.dataclass
 class UUIDField(LogicalTypeField):
-    avro_type: typing.ClassVar[str] = LOGICAL_UUID
+    @property
+    def avro_type(self) -> typing.Dict:
+        return LOGICAL_UUID
 
     def validate_default(self) -> bool:
         msg = f"Invalid default type. Default should be {str} or {uuid.UUID}"
@@ -691,7 +710,7 @@ class UUIDField(LogicalTypeField):
 @dataclasses.dataclass
 class RecordField(BaseField):
     def get_avro_type(self) -> typing.Union[typing.List, typing.Dict]:
-        meta = getattr(self.type, "Meta", None)
+        meta = getattr(self.type, "Meta", type)
         metadata = utils.SchemaMetadata.create(meta)
 
         alias = self.parent.metadata.get_alias_nested_items(self.name) or metadata.get_alias_nested_items(self.name)  # type: ignore  # noqa E501
@@ -780,7 +799,7 @@ class DecimalField(BaseField):
             #
             # self.precision = decimal.Context().prec
 
-    def get_avro_type(self) -> typing.Dict[str, typing.Any]:
+    def get_avro_type(self) -> typing.Union[JsonDict, typing.List[typing.Union[str, JsonDict]]]:
         avro_type = {"type": BYTES, "logicalType": DECIMAL, "precision": self.precision, "scale": self.scale}
         if not isinstance(self.default, decimal.Decimal) and self.default.default is None:
             return ["null", avro_type]
@@ -835,7 +854,7 @@ LOGICAL_TYPES_FIELDS_CLASSES = {
 }
 
 PRIMITIVE_LOGICAL_TYPES_FIELDS_CLASSES = {
-    **INMUTABLE_FIELDS_CLASSES,
+    **INMUTABLE_FIELDS_CLASSES,  # type: ignore
     **LOGICAL_TYPES_FIELDS_CLASSES,  # type: ignore
     types.Fixed: FixedField,
 }

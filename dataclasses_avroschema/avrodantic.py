@@ -1,18 +1,20 @@
-import typing
+from typing import Any, Dict, Type, TypeVar
 
 from fastavro.validation import validate
 
-from .schema_generator import CT, AvroModel, JsonDict
+from .schema_generator import AvroModel, JsonDict
 
 try:
     from pydantic import BaseModel  # pragma: no cover
 except ImportError as ex:  # pragma: no cover
     raise Exception("pydantic must be installed in order to use AvroBaseModel") from ex  # pragma: no cover
 
+CT = TypeVar("CT", bound="AvroBaseModel")
 
-class AvroBaseModel(BaseModel, AvroModel):
+
+class AvroBaseModel(BaseModel, AvroModel):  # type: ignore
     @classmethod
-    def json_schema(cls, *args, **kwargs) -> str:
+    def json_schema(cls: Type[CT], *args: Any, **kwargs: Any) -> str:
         return cls.schema_json(*args, **kwargs)
 
     def asdict(self) -> JsonDict:
@@ -33,5 +35,5 @@ class AvroBaseModel(BaseModel, AvroModel):
         return validate(self.asdict(), schema)
 
     @classmethod
-    def parse_obj(cls, data: typing.Dict) -> typing.Union[JsonDict, CT]:
+    def parse_obj(cls: Type["AvroBaseModel"], data: Dict) -> "AvroBaseModel":
         return super().parse_obj(data)

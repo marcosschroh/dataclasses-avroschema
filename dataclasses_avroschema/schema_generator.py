@@ -2,8 +2,8 @@ import dataclasses
 import enum
 import inspect
 import json
-import typing
 from collections import OrderedDict
+from typing import Any, Dict, List, Optional, Tuple, Type, TypeVar, Union
 
 from dacite import Config, from_dict
 from fastavro.validation import validate
@@ -12,42 +12,41 @@ from . import case
 from .fields import EnumField, FieldType, RecordField, UnionField
 from .schema_definition import AvroSchemaDefinition
 from .serialization import deserialize, serialize, to_json
+from .types import JsonDict
 from .utils import SchemaMetadata, is_custom_type, is_pydantic_model
 
 AVRO = "avro"
 AVRO_JSON = "avro-json"
 
-JsonDict = typing.Dict[str, typing.Any]
-CT = typing.TypeVar("CT", bound="AvroModel")
+
+CT = TypeVar("CT", bound="AvroModel")
 
 
 class AvroModel:
-
-    schema_def: typing.Optional[AvroSchemaDefinition] = None
-    klass: typing.Any = None
-    metadata: typing.Optional[SchemaMetadata] = None
-    user_defined_types: typing.Tuple = ()
-    root: typing.Any = None
-    rendered_schema: typing.Optional[OrderedDict] = None
+    schema_def: Optional[AvroSchemaDefinition] = None
+    klass: Optional[Type] = None
+    metadata: Optional[SchemaMetadata] = None
+    user_defined_types: Tuple = ()
+    root: Any = None
+    rendered_schema: OrderedDict = dataclasses.field(default_factory=OrderedDict)
 
     @classmethod
-    def generate_dataclass(cls: typing.Any) -> typing.Any:
+    def generate_dataclass(cls: Type[CT]) -> Type[CT]:
         if dataclasses.is_dataclass(cls) or is_pydantic_model(cls):
             return cls
         return dataclasses.dataclass(cls)
 
     @classmethod
-    def generate_metadata(cls: typing.Any) -> SchemaMetadata:
-        meta = getattr(cls.klass, "Meta", None)
+    def generate_metadata(cls: Any) -> SchemaMetadata:
+        meta = getattr(cls.klass, "Meta", type)
 
         return SchemaMetadata.create(meta)
 
     @classmethod
-    def generate_schema(cls: typing.Type[CT], schema_type: str = "avro") -> typing.Optional[OrderedDict]:
+    def generate_schema(cls: Type[CT], schema_type: str = "avro") -> Optional[OrderedDict]:
         if cls.schema_def is None:
-            # Generate metaclass and metadata
+            # Generate dataclass and metadata
             cls.klass = cls.generate_dataclass()
-            cls.metadata = cls.generate_metadata()
 
             # let's live open the possibility to define different
             # schema definitions like json
@@ -61,36 +60,38 @@ class AvroModel:
         return cls.rendered_schema
 
     @classmethod
-    def _generate_avro_schema(cls: typing.Any) -> AvroSchemaDefinition:
-        return AvroSchemaDefinition("record", cls.klass, metadata=cls.metadata, parent=cls.root or cls)
+    def _generate_avro_schema(cls: Type[CT]) -> AvroSchemaDefinition:
+        metadata = cls.generate_metadata()
+        cls.metadata = metadata
+        return AvroSchemaDefinition("record", cls.klass, metadata=metadata, parent=cls.root or cls)
 
     @classmethod
-    def avro_schema(cls: typing.Any, case_type: typing.Optional[str] = None) -> str:
+    def avro_schema(cls: Type[CT], case_type: Optional[str] = None) -> str:
         avro_schema = cls.generate_schema(schema_type=AVRO)
 
         # After generating the avro schema, reset the raw_fields to the init
         cls.user_defined_types = ()
 
         if case_type is not None:
-            avro_schema = case.case_record(cls.rendered_schema, case_type)
+            avro_schema = case.case_record(cls.rendered_schema, case_type)  # type: ignore
 
         return json.dumps(avro_schema)
 
     @classmethod
-    def avro_schema_to_python(cls: typing.Any, root: typing.Any = None) -> typing.Dict[str, typing.Any]:
+    def avro_schema_to_python(cls: Any, root: Any = None) -> Dict[str, Any]:
         if root is not None:
             cls.root = root
 
         return json.loads(cls.avro_schema())
 
     @classmethod
-    def get_fields(cls: typing.Any) -> typing.List[FieldType]:
+    def get_fields(cls: Type[CT]) -> List[FieldType]:
         if cls.schema_def is None:
             cls.generate_schema()
-        return cls.schema_def.fields
+        return cls.schema_def.fields  # type: ignore
 
     @classmethod
-    def _get_enum_type_map(cls: typing.Any) -> typing.Dict[str, enum.Enum]:
+    def _get_enum_type_map(cls: Type[CT]) -> Dict[str, enum.EnumMeta]:
         enum_types = {}
         for field_type in cls.get_fields():
             if isinstance(field_type, EnumField):
@@ -104,7 +105,7 @@ class AvroModel:
         return enum_types
 
     @classmethod
-    def _deserialize_complex_types(cls, payload: typing.Dict[str, typing.Any]) -> typing.Any:
+    def _deserialize_complex_types(cls: Type[CT], payload: Dict[str, Any]) -> Dict:
         output = {}
         enum_type_map = cls._get_enum_type_map()
         for field, value in payload.items():
@@ -112,7 +113,8 @@ class AvroModel:
                 output[field] = cls._deserialize_complex_types(value)
             elif field in enum_type_map and isinstance(value, str):
                 try:
-                    output[field] = enum_type_map[field](value)
+                    enum_field = enum_type_map[field]
+                    output[field] = enum_field(value)
                 except ValueError as e:
                     raise ValueError(f"Value {value} is not a valid instance of {enum_type_map[field]}", e)
             else:
@@ -120,7 +122,7 @@ class AvroModel:
         return output
 
     @staticmethod
-    def standardize_custom_type(value: typing.Any) -> typing.Any:
+    def standardize_custom_type(value: Any) -> Any:
         if is_custom_type(value):
             return value["default"]
         elif isinstance(value, dict):
@@ -143,18 +145,21 @@ class AvroModel:
 
     @classmethod
     def deserialize(
-        cls: typing.Type[CT],
+        cls: Type[CT],
         data: bytes,
         serialization_type: str = AVRO,
         create_instance: bool = True,
-        writer_schema: typing.Optional[typing.Union[JsonDict, CT]] = None,
-    ) -> typing.Union[JsonDict, CT]:
+        writer_schema: Optional[Union[JsonDict, Type[CT]]] = None,
+    ) -> Union[JsonDict, CT]:
 
         if inspect.isclass(writer_schema) and issubclass(writer_schema, AvroModel):
-            writer_schema = writer_schema.avro_schema_to_python()
+            # mypy does not undersdtand redefinitions
+            writer_schema: JsonDict = writer_schema.avro_schema_to_python()  # type: ignore
 
         schema = cls.avro_schema_to_python()
-        payload = deserialize(data, schema, serialization_type=serialization_type, writer_schema=writer_schema)
+        payload = deserialize(
+            data, schema, serialization_type=serialization_type, writer_schema=writer_schema  # type: ignore
+        )
         output = cls._deserialize_complex_types(payload)
 
         if create_instance:
@@ -162,7 +167,7 @@ class AvroModel:
         return output
 
     @classmethod
-    def parse_obj(cls, data: typing.Dict) -> typing.Union[JsonDict, CT]:
+    def parse_obj(cls: Type[CT], data: Dict) -> Union[JsonDict, CT]:
         return from_dict(data_class=cls, data=data, config=Config(**cls.config()))
 
     def validate(self) -> bool:
@@ -174,19 +179,20 @@ class AvroModel:
         # and after that convert into python
         return self.asdict()
 
-    def to_json(self):
+    def to_json(self) -> str:
         data = to_json(self.asdict())
         return json.dumps(data)
 
     @classmethod
-    def config(cls) -> JsonDict:
+    def config(cls: Type[CT]) -> JsonDict:
         """
         Get the default config for dacite and always include the self reference
         """
         # We need to make sure that the `avro schemas` has been generated, otherwise cls.klass is empty
         # It won't affect the performance because the rendered schema will be store in cls.rendered_schema
         if cls.klass is None:
-            cls.avro_schema()
+            # Generate dataclass and metadata
+            cls.klass = cls.generate_dataclass()
 
         return {
             "check_types": False,
@@ -196,7 +202,7 @@ class AvroModel:
         }
 
     @classmethod
-    def fake(cls: typing.Type[CT]) -> CT:
+    def fake(cls: Type[CT]) -> CT:
         payload = {field.name: field.fake() for field in cls.get_fields()}
 
         return from_dict(data_class=cls, data=payload, config=Config(**cls.config()))
