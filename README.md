@@ -20,7 +20,7 @@ pip install dataclasses-avroschema
 or with `pydantic` funcionalities
 
 ```bash
-pip install dataclasses-avroschema[pydantic]
+pip install 'dataclasses-avroschema[pydantic]'
 ```
 
 ## Documentation

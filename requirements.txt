@@ -1,4 +1,4 @@
-fastavro>=1.4.10
+fastavro>=1.5.4
 inflect>=5.4.0
 pytz
 faust-streaming
