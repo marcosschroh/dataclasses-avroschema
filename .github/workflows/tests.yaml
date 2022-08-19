@@ -1,0 +1,49 @@
+name: Tests
+
+on:
+  push:
+    branches: ["master"]
+  pull_request:
+    branches: ["*"]
+  workflow_dispatch:
+    inputs:
+      release:
+        description: 'Release package'
+        required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.7', '3.8', '3.9', '3.10']
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+        architecture: x64
+
+    # - name: Set Cache
+    #   uses: actions/cache@v3
+    #   id: cache  # name for referring later
+    #   with:
+    #     path: .venv/
+    #     # The cache key depends on requirements.txt
+    #     key: ${{ runner.os }}-cache-${{ hashFiles('requirements.txt') }}
+    #     restore-keys: |
+    #       ${{ runner.os }}-cache-
+    #       ${{ runner.os }}-
+
+    - name: Install Dependencies
+      # if: steps.cache.outputs.cache-hit != 'true'
+      run: |
+        python -m venv .venv
+        . .venv/bin/activate
+        pip install -r requirements.txt
+
+    - name: Test
+      run: |
+        . .venv/bin/activate
+        ./scripts/test && codecov && codecov --token=$CODECOV_TOKEN
