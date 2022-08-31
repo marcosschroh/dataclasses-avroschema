@@ -41,6 +41,7 @@ nav:
   - Kafka examples: 'kafka_examples.md'
   - Redis examples: 'redis_examples.md'
   - Factory and fixtures: 'factories_and_fixtures.md'
+  - Model Generator: 'model_generator.md'
   - Good Practices: good_practices.md
   - Migration Guide: 'migration_guide.md'
 

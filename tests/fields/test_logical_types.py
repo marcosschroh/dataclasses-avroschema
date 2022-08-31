@@ -45,7 +45,7 @@ def test_logical_type_date_with_default():
 
     expected = {
         "name": name,
-        "type": {"type": fields.INT, "logicalType": fields.DATE},
+        "type": {"type": field_utils.INT, "logicalType": field_utils.DATE},
         "default": ts / (3600 * 24),
     }
 
@@ -67,7 +67,7 @@ def test_logical_type_time_millis_with_default() -> None:
     miliseconds = int((((hour * 60 + minutes) * 60 + seconds) * 1000) + (microseconds / 1000))
     expected = {
         "name": name,
-        "type": {"type": fields.INT, "logicalType": field_utils.TIME_MILLIS},
+        "type": {"type": field_utils.INT, "logicalType": field_utils.TIME_MILLIS},
         "default": miliseconds,
     }
 
@@ -90,7 +90,7 @@ def test_logical_type_time_micros_with_default() -> None:
 
     expected = {
         "name": name,
-        "type": {"type": fields.LONG, "logicalType": field_utils.TIME_MICROS},
+        "type": {"type": field_utils.LONG, "logicalType": field_utils.TIME_MICROS},
         "default": microseconds,
     }
 
@@ -107,7 +107,7 @@ def test_logical_type_datetime_micros_with_default() -> None:
 
     expected = {
         "name": name,
-        "type": {"type": fields.LONG, "logicalType": field_utils.TIMESTAMP_MICROS},
+        "type": {"type": field_utils.LONG, "logicalType": field_utils.TIMESTAMP_MICROS},
         "default": ts * 1000000,
     }
 
@@ -123,7 +123,7 @@ def test_logical_type_datetime_with_default() -> None:
 
     expected = {
         "name": name,
-        "type": {"type": fields.LONG, "logicalType": field_utils.TIMESTAMP_MILLIS},
+        "type": {"type": field_utils.LONG, "logicalType": field_utils.TIMESTAMP_MILLIS},
         "default": int(ts * 1000),
     }
 
@@ -144,7 +144,7 @@ def test_logical_type_uuid_with_default(python_type) -> None:
 
     expected = {
         "name": name,
-        "type": {"type": fields.STRING, "logicalType": fields.UUID},
+        "type": {"type": field_utils.STRING, "logicalType": field_utils.UUID},
         "default": str(default),
     }
 

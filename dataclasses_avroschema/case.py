@@ -2,7 +2,7 @@ import typing
 
 import stringcase
 
-from .fields import ENUM
+from .field_utils import ENUM
 
 # Summary from https://github.com/okunishinishi/python-stringcase
 # stringcase.camelcase('foo_bar_baz') # => "fooBarBaz"

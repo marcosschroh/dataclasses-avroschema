@@ -12,6 +12,8 @@ DATETIME_STR_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
 DATE_STR_FORMAT = "%Y-%m-%d"
 TIME_STR_FORMAT = "%H:%M:%S"
 
+decimal_context = decimal.Context()
+
 
 def serialize(payload: typing.Dict, schema: typing.Dict, serialization_type: str = "avro") -> bytes:
     if serialization_type == "avro":
@@ -76,6 +78,22 @@ def time_to_str(value: datetime.time) -> str:
 def decimal_to_str(value: decimal.Decimal, precision: int, scale: int = 0) -> str:
     value_bytes = prepare_bytes_decimal(value, precision, scale)
     return r"\u" + value_bytes.hex()
+
+
+def string_to_decimal(*, value: str, schema: JsonDict) -> decimal.Decimal:
+    # first remove the Unicode character
+    value = value.replace(r"\u", "")
+
+    # then concert to bytes
+    decimal_bytes = bytes.fromhex(value)
+
+    # finally get the decimal.Decimal
+    scale = schema.get("scale", 0)
+    precision = schema["precision"]
+    unscaled_datum = int.from_bytes(decimal_bytes, byteorder="big", signed=True)
+    decimal_context.prec = precision
+
+    return decimal_context.create_decimal(unscaled_datum).scaleb(-scale, decimal_context)
 
 
 # This is an almost complete copy of fastavro's _logical_writers_py.prepare_bytes_decimal
