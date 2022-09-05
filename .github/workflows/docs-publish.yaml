@@ -27,7 +27,7 @@ jobs:
 
     - name: Push doc to Github Page
       uses: peaceiris/actions-gh-pages@v3
-      env:
+      with:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         PUBLISH_BRANCH: gh-pages
         PUBLISH_DIR: ./site
