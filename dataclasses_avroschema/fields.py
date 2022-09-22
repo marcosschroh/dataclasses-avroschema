@@ -6,6 +6,7 @@ import decimal
 import enum
 import inspect
 import json
+import logging
 import random
 import sys
 import typing
@@ -18,6 +19,7 @@ from pytz import utc
 
 from dataclasses_avroschema import schema_generator, serialization, types, utils
 
+from . import field_utils
 from .exceptions import InvalidMap, NameSpaceRequiredException
 from .types import JsonDict
 
@@ -28,6 +30,7 @@ if PY_VER >= (3, 9):  # pragma: no cover
 else:
     GenericAlias = typing._GenericAlias  # type: ignore  # pragma: no cover
 
+logger = logging.getLogger(__name__)
 
 fake = Faker()
 p = inflect.engine()
@@ -45,13 +48,13 @@ ENUM = "enum"
 MAP = "map"
 FIXED = "fixed"
 DATE = "date"
-TIME_MILLIS = "time-millis"
-TIMESTAMP_MILLIS = "timestamp-millis"
 UUID = "uuid"
 DECIMAL = "decimal"
 LOGICAL_DATE = {"type": INT, "logicalType": DATE}
-LOGICAL_TIME = {"type": INT, "logicalType": TIME_MILLIS}
-LOGICAL_DATETIME = {"type": LONG, "logicalType": TIMESTAMP_MILLIS}
+LOGICAL_TIME_MILIS = {"type": INT, "logicalType": field_utils.TIME_MILLIS}
+LOGICAL_TIME_MICROS = {"type": LONG, "logicalType": field_utils.TIME_MICROS}
+LOGICAL_DATETIME_MILIS = {"type": LONG, "logicalType": field_utils.TIMESTAMP_MILLIS}
+LOGICAL_DATETIME_MICROS = {"type": LONG, "logicalType": field_utils.TIMESTAMP_MICROS}
 LOGICAL_UUID = {"type": STRING, "logicalType": UUID}
 
 PYTHON_TYPE_TO_AVRO = {
@@ -69,8 +72,8 @@ PYTHON_TYPE_TO_AVRO = {
     types.Int32: INT,
     types.Float32: FLOAT,
     datetime.date: {"type": INT, "logicalType": DATE},
-    datetime.time: {"type": INT, "logicalType": TIME_MILLIS},
-    datetime.datetime: {"type": LONG, "logicalType": TIMESTAMP_MILLIS},
+    datetime.time: {"type": INT, "logicalType": field_utils.TIME_MILLIS},
+    datetime.datetime: {"type": LONG, "logicalType": field_utils.TIMESTAMP_MILLIS},
     uuid.uuid4: {"type": STRING, "logicalType": UUID},
 }
 
@@ -79,7 +82,16 @@ PYTHON_INMUTABLE_TYPES = (str, int, types.Int32, types.Float32, bool, float, byt
 
 PYTHON_PRIMITIVE_CONTAINERS = (list, tuple, dict)
 
-PYTHON_LOGICAL_TYPES = (datetime.date, datetime.time, datetime.datetime, uuid.uuid4, uuid.UUID, decimal.Decimal)
+PYTHON_LOGICAL_TYPES = (
+    datetime.date,
+    datetime.time,
+    types.TimeMicro,
+    datetime.datetime,
+    types.DateTimeMicro,
+    uuid.uuid4,
+    uuid.UUID,
+    decimal.Decimal,
+)
 
 PYTHON_PRIMITIVE_TYPES = PYTHON_INMUTABLE_TYPES + PYTHON_PRIMITIVE_CONTAINERS
 
@@ -109,7 +121,7 @@ class BaseField:
     type: typing.Any  # store the python primitive type
     default: typing.Any
     parent: typing.Any
-    metadata: typing.Mapping = dataclasses.field(default_factory=dict)
+    metadata: typing.Optional[typing.Mapping] = None
     model_metadata: typing.Optional[utils.SchemaMetadata] = None
 
     def __post_init__(self) -> None:
@@ -137,12 +149,13 @@ class BaseField:
 
     def get_metadata(self) -> typing.List[typing.Tuple[str, str]]:
         meta_data_for_template = []
-        try:
-            metadata = dict(self.metadata)
-            for name, value in metadata.items():
-                meta_data_for_template.append((name, value))
-        except (ValueError, TypeError):
-            return meta_data_for_template
+
+        if self.metadata is not None:
+            try:
+                for name, value in self.metadata.items():
+                    meta_data_for_template.append((name, value))
+            except (ValueError, TypeError):  # pragma: no cover
+                logger.warn("Error during getting metadata")  # pragma: no cover
         return meta_data_for_template
 
     def render(self) -> OrderedDict:
@@ -290,7 +303,7 @@ class ContainerField(BaseField):
 
     @property
     def avro_type(self) -> typing.Dict:
-        ...
+        ...  # pragma: no cover
 
     def get_avro_type(self) -> PythonImmutableTypes:
         avro_type = self.avro_type
@@ -610,7 +623,7 @@ class DateField(LogicalTypeField):
 
 
 @dataclasses.dataclass
-class TimeField(LogicalTypeField):
+class TimeMilliField(LogicalTypeField):
     """
     The time-millis logical type represents a time of day,
     with no reference to a particular calendar,
@@ -622,7 +635,7 @@ class TimeField(LogicalTypeField):
 
     @property
     def avro_type(self) -> typing.Dict:
-        return LOGICAL_TIME
+        return LOGICAL_TIME_MILIS
 
     @staticmethod
     def to_avro(time: datetime.time) -> int:
@@ -650,6 +663,48 @@ class TimeField(LogicalTypeField):
 
 
 @dataclasses.dataclass
+class TimeMicroField(LogicalTypeField):
+    """
+    The time-micros logical type represents a time of day,
+    with no reference to a particular calendar,
+    time zone or date, with a precision of one millisecond.
+
+    A time-micros logical type annotates an Avro long,
+    where the int stores the number of milliseconds after midnight, 00:00:00.000000.
+    """
+
+    @property
+    def avro_type(self) -> typing.Dict:
+        return LOGICAL_TIME_MICROS
+
+    @staticmethod
+    def to_avro(time: datetime.time) -> float:
+        """
+        Returns the number of microseconds after midnight, 00:00:00.000000
+        for a given time object
+
+        Arguments:
+            time (datetime.time)
+
+        Returns:
+            float
+        """
+        hour, minutes, seconds, microseconds = (
+            time.hour,
+            time.minute,
+            time.second,
+            time.microsecond,
+        )
+
+        return float((((hour * 60 + minutes) * 60 + seconds) * 1000000) + microseconds)
+
+    def fake(self) -> datetime.time:
+        datetime_object: datetime.datetime = fake.date_time(tzinfo=utc)
+        datetime_object = datetime_object + datetime.timedelta(microseconds=random.randint(0, 999))
+        return datetime_object.time()
+
+
+@dataclasses.dataclass
 class DatetimeField(LogicalTypeField):
     """
     The timestamp-millis logical type represents an instant on the global timeline,
@@ -662,7 +717,7 @@ class DatetimeField(LogicalTypeField):
 
     @property
     def avro_type(self) -> typing.Dict:
-        return LOGICAL_DATETIME
+        return LOGICAL_DATETIME_MILIS
 
     @staticmethod
     def to_avro(date_time: datetime.datetime) -> float:
@@ -685,6 +740,45 @@ class DatetimeField(LogicalTypeField):
 
     def fake(self) -> datetime.datetime:
         return fake.date_time(tzinfo=utc)
+
+
+@dataclasses.dataclass
+class DatetimeMicroField(LogicalTypeField):
+    """
+    The timestamp-millis logical type represents an instant on the global timeline,
+    independent of a particular time zone or calendar, with a precision of one millisecond.
+
+    A timestamp-millis logical type annotates an Avro long,
+    where the long stores the number of milliseconds from the unix epoch,
+    1 January 1970 00:00:00.000000 UTC.
+    """
+
+    @property
+    def avro_type(self) -> typing.Dict:
+        return LOGICAL_DATETIME_MICROS
+
+    @staticmethod
+    def to_avro(date_time: datetime.datetime) -> float:
+        """
+        Returns the number of milliseconds from the unix epoch,
+        1 January 1970 00:00:00.000000 UTC for a given datetime
+
+        Arguments:
+            date_time (datetime.datetime)
+
+        Returns:
+            float
+        """
+        if date_time.tzinfo:
+            ts = (date_time - utils.epoch).total_seconds()
+        else:
+            ts = (date_time - utils.epoch_naive).total_seconds()
+
+        return ts * 1000000
+
+    def fake(self) -> datetime.datetime:
+        datetime_object: datetime.datetime = fake.date_time(tzinfo=utc)
+        return datetime_object + datetime.timedelta(microseconds=random.randint(0, 999))
 
 
 @dataclasses.dataclass
@@ -845,8 +939,10 @@ CONTAINER_FIELDS_CLASSES = {
 
 LOGICAL_TYPES_FIELDS_CLASSES = {
     datetime.date: DateField,
-    datetime.time: TimeField,
+    datetime.time: TimeMilliField,
+    types.TimeMicro: TimeMicroField,
     datetime.datetime: DatetimeField,
+    types.DateTimeMicro: DatetimeMicroField,
     uuid.uuid4: UUIDField,
     uuid.UUID: UUIDField,
     bytes: BytesField,
@@ -875,7 +971,7 @@ FieldType = typing.Union[
     EnumField,
     SelfReferenceField,
     DateField,
-    TimeField,
+    TimeMilliField,
     DatetimeField,
     UUIDField,
     RecordField,
@@ -890,9 +986,12 @@ def field_factory(
     *,
     default: typing.Any = dataclasses.MISSING,
     default_factory: typing.Any = dataclasses.MISSING,
-    metadata: typing.Mapping = dataclasses.field(default_factory=dict),
-    model_metadata: typing.Optional[utils.SchemaMetadata] = None,
+    metadata: typing.Optional[typing.Mapping] = None,
+    model_metadata: utils.SchemaMetadata = None,
 ) -> FieldType:
+    if metadata is None:
+        metadata = {}
+
     if native_type in PYTHON_INMUTABLE_TYPES:
         klass = INMUTABLE_FIELDS_CLASSES[native_type]
         return klass(
@@ -914,6 +1013,17 @@ def field_factory(
         )
     elif native_type is types.Fixed:
         return FixedField(
+            name=name,
+            type=native_type,
+            default=default,
+            metadata=metadata,
+            model_metadata=model_metadata,
+            parent=parent,
+        )
+    elif native_type in PYTHON_LOGICAL_TYPES:
+        klass = LOGICAL_TYPES_FIELDS_CLASSES[native_type]  # type: ignore
+
+        return klass(
             name=name,
             type=native_type,
             default=default,
@@ -948,16 +1058,6 @@ def field_factory(
             default=default,
             metadata=metadata,
             default_factory=default_factory,
-            model_metadata=model_metadata,
-            parent=parent,
-        )
-    elif native_type in PYTHON_LOGICAL_TYPES:
-        klass = LOGICAL_TYPES_FIELDS_CLASSES[native_type]  # type: ignore
-        return klass(
-            name=name,
-            type=native_type,
-            default=default,
-            metadata=metadata,
             model_metadata=model_metadata,
             parent=parent,
         )

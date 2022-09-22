@@ -1,0 +1,61 @@
+{
+    "type": "record",
+    "name": "LogicalTypesMicro",
+      "fields": [
+        {
+            "name": "time_micros",
+            "type": {
+              "type": "long",
+              "logicalType": "time-micros"
+            }
+        },
+        {
+          "name": "datetime_micros",
+          "type": {
+            "type": "long",
+            "logicalType": "timestamp-micros"
+          }
+        },
+        {
+          "name": "meeting_time",
+          "type": {
+            "type": "int",
+            "logicalType": "time-millis"
+          },
+          "default": 64662000
+        },
+        {
+          "name": "meeting_datetime",
+          "type": {
+            "type": "long",
+            "logicalType": "timestamp-millis"
+          },
+          "default": 1570903062000.0
+        },
+        {
+            "name": "meeting_time_micros",
+            "type": {
+              "type": "long",
+              "logicalType": "time-micros"
+            },
+            "default": 64662000000.0
+        },
+        {
+          "name": "meeting_datetime_micros",
+          "type": {
+            "type": "long",
+            "logicalType": "timestamp-micros"
+          },
+          "default": 1570903062000000.0
+        },
+        {
+          "name": "release_datetime",
+          "type": {
+            "type": "long",
+            "logicalType": "timestamp-millis"
+          },
+          "default": 1570903062000.0
+        }
+      ],
+      "doc": "Some logical types"
+    }

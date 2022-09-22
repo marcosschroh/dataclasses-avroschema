@@ -4,6 +4,7 @@ from datetime import datetime
 
 from pytz import utc
 
+from . import field_utils
 from .types import CUSTOM_TYPES
 
 try:
@@ -79,6 +80,8 @@ class SchemaMetadata:
     namespace: typing.Optional[typing.List[str]] = None
     aliases: typing.Optional[typing.List[str]] = None
     alias_nested_items: typing.Dict[str, str] = field(default_factory=dict)
+    time_precision: str = field_utils.TIME_MILLIS
+    datetime_precision: str = field_utils.TIMESTAMP_MILLIS
 
     @classmethod
     def create(cls: typing.Type["SchemaMetadata"], klass: type) -> typing.Any:
@@ -88,6 +91,8 @@ class SchemaMetadata:
             namespace=getattr(klass, "namespace", None),
             aliases=getattr(klass, "aliases", None),
             alias_nested_items=getattr(klass, "alias_nested_items", {}),
+            time_precision=getattr(klass, "time_precision", field_utils.TIME_MILLIS),
+            datetime_precision=getattr(klass, "datetime_precision", field_utils.TIMESTAMP_MILLIS),
         )
 
     def get_alias_nested_items(self, name: str) -> typing.Optional[str]:

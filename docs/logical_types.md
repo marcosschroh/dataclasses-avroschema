@@ -1,4 +1,4 @@
-## Schema with Logical Types
+# Logical Types
 
 The following list represent the avro logical types mapped to python types:
 
@@ -6,12 +6,14 @@ The following list represent the avro logical types mapped to python types:
 |-----------|--------------|-------------|
 | int       |  date        | datetime.date
 | int       |  time-millis | datetime.time     |
+| long      |  time-micros | types.TimeMicro |
 | long      |  timestamp-millis | datetime.datetime |
+| long      |  timestamp-micros | types.DateTimeMicro |
 | string    |  uuid        | uuid.uuid4 |
 | string    |  uuid        | uuid.UUID |
 | bytes     | decimal      | decimal.Decimal
 
-### Date
+## Date
 
 ```python title="Date example"
 import datetime
@@ -63,12 +65,12 @@ DateLogicalType.avro_schema()
 
 *(This script is complete, it should run "as is")*
 
-### Time
+## Time
 
 ```python title="Time example"
 import datetime
 
-from dataclasses_avroschema import AvroModel
+from dataclasses_avroschema import AvroModel, TimeMicro
 
 a_datetime = datetime.datetime(2019, 10, 12, 17, 57, 42)
 
@@ -78,6 +80,7 @@ class TimeLogicalTypes(AvroModel):
     birthday_time: datetime.time
     meeting_time: datetime.time = None
     release_time: datetime.time = a_datetime.time()
+    release_time_micro: TimeMicro = a_datetime.time()
 
 TimeLogicalTypes.avro_schema()
 
@@ -107,7 +110,14 @@ TimeLogicalTypes.avro_schema()
         "logicalType": "time-millis"
       },
       "default": 64662000
-    }
+    },
+    {
+      "name": "release_time_micro",
+      "type": {
+        "type": "long",
+        "logicalType": "time-micros"
+      },
+      "default": 64662000000.0}
   ],
   "doc": "Time logical types"
 }'
@@ -115,12 +125,14 @@ TimeLogicalTypes.avro_schema()
 
 *(This script is complete, it should run "as is")*
 
-### Datetime
+!!! nore annotate "To use `time-micros` in avro schemas you need to use `types.TimeMicro`"
+
+## Datetime
 
 ```python title="DateTime example"
 import datetime
 
-from dataclasses_avroschema import AvroModel
+from dataclasses_avroschema import AvroModel, DateTimeMicro
 
 a_datetime = datetime.datetime(2019, 10, 12, 17, 57, 42)
 
@@ -129,6 +141,7 @@ class DatetimeLogicalType(AvroModel):
     birthday: datetime.datetime
     meeting_time: datetime.datetime = None
     release_datetime: datetime.datetime = a_datetime
+    release_datetime_micro: DateTimeMicro = a_datetime
 
 DatetimeLogicalType.avro_schema()
 
@@ -158,6 +171,14 @@ DatetimeLogicalType.avro_schema()
         "logicalType": "timestamp-millis"
       },
       "default": 1570903062000.0
+    },
+    {
+      "name": "release_datetime_micro",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-micros"
+      },
+      "default": 1570903062000000.0
     }
   ],
   "doc": "Datetime logical types"
@@ -166,7 +187,9 @@ DatetimeLogicalType.avro_schema()
 
 *(This script is complete, it should run "as is")*
 
-### UUID
+!!! nore annotate "To use `timestamp-micros` in avro schemas you need to use `types.DateTimeMicro`"
+
+## UUID
 
 ```python title="UUID example"
 import uuid
@@ -215,7 +238,7 @@ UUIDLogicalTypes.avro_schema()
 
 *(This script is complete, it should run "as is")*
 
-### Decimal
+## Decimal
 
 The below code shows an example on how to use decimals. There's a few important things to note:
 * A default IS REQUIRED in order to set scale and precision on the Avro schema

@@ -22,6 +22,25 @@ def test_logical_types_schema(logical_types_schema):
     assert LogicalTypes.avro_schema() == json.dumps(logical_types_schema)
 
 
+def test_logical_micro_types_schema(logical_types_micro_schemas):
+    """
+    Test a schema with Logical Types
+    """
+    a_datetime = datetime.datetime(2019, 10, 12, 17, 57, 42)
+
+    class LogicalTypesMicro(AvroModel):
+        "Some logical types"
+        time_micros: types.TimeMicro
+        datetime_micros: types.DateTimeMicro
+        meeting_time: datetime.time = a_datetime.time()
+        meeting_datetime: datetime.datetime = a_datetime
+        meeting_time_micros: types.TimeMicro = a_datetime.time()
+        meeting_datetime_micros: types.DateTimeMicro = a_datetime
+        release_datetime: datetime.datetime = a_datetime
+
+    assert LogicalTypesMicro.avro_schema() == json.dumps(logical_types_micro_schemas)
+
+
 def test_decimal_types_schema(decimal_types_schema):
     """
     Test a schema with decimal types

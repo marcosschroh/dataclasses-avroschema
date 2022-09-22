@@ -5,7 +5,7 @@ import uuid
 
 from fastavro import parse_schema
 
-from dataclasses_avroschema import AvroModel
+from dataclasses_avroschema import AvroModel, DateTimeMicro, TimeMicro, field_utils
 
 
 def test_minimal_schema(user_dataclass):
@@ -309,6 +309,25 @@ def test_logical_types_schema():
         event_uuid: uuid.uuid4 = "09f00184-7721-4266-a955-21048a5cc235"
 
     assert parse_schema(LogicalTypes.avro_schema_to_python())
+
+
+def test_logical_micro_types_schema():
+    """
+    Test a schema with Logical Types with Micros
+    """
+    a_datetime = datetime.datetime(2019, 10, 12, 17, 57, 42)
+
+    class LogicalTypesMicro(AvroModel):
+        "Some logical types"
+        time_micros: TimeMicro
+        datetime_micros: DateTimeMicro
+        meeting_time: datetime.time = a_datetime.time()
+        meeting_datetime: datetime.datetime = a_datetime
+        meeting_time_micros: TimeMicro = a_datetime.time()
+        meeting_datetime_micros: DateTimeMicro = a_datetime
+        release_datetime: datetime.datetime = a_datetime
+
+    assert parse_schema(LogicalTypesMicro.avro_schema_to_python())
 
 
 def test_schema_with_union_types():

@@ -1,5 +1,6 @@
-import sys
 import dataclasses
+import datetime
+import sys
 import typing
 
 if sys.version_info >= (3, 9):
@@ -9,6 +10,17 @@ else:
 
 T = typing.TypeVar("T")
 JsonDict = typing.Dict[str, typing.Any]
+
+CUSTOM_TYPES = (
+    "Fixed",
+    "Decimal",
+    "Int32",
+    "Float32",
+    "TimeMicro",
+    "DateTimeMicro",
+)
+
+__all__ = CUSTOM_TYPES
 
 
 class MissingSentinel(typing.Generic[T]):
@@ -59,6 +71,5 @@ class Decimal(typing.Generic[T]):
 
 Int32 = Annotated[int, "Int32"]
 Float32 = Annotated[float, "Float32"]
-
-
-CUSTOM_TYPES = ("Fixed", "Decimal", "Int32", "Float32")
+TimeMicro = Annotated[datetime.time, "TimeMicro"]
+DateTimeMicro = Annotated[datetime.datetime, "DateTimeMicro"]

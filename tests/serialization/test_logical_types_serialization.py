@@ -19,20 +19,26 @@ def test_logical_types():
         "Some logical types"
         birthday: datetime.date
         meeting_time: datetime.time
+        meeting_time_micro: types.TimeMicro
         release_datetime: datetime.datetime
+        release_datetime_micro: types.DateTimeMicro
         event_uuid: uuid.uuid4
 
     data = {
         "birthday": a_datetime.date(),
         "meeting_time": a_datetime.time(),
+        "meeting_time_micro": a_datetime.time(),
         "release_datetime": a_datetime,
+        "release_datetime_micro": a_datetime,
         "event_uuid": uuid.UUID("09f00184-7721-4266-a955-21048a5cc235"),
     }
 
     data_json = {
         "birthday": serialization.date_to_str(a_datetime.date()),
         "meeting_time": serialization.time_to_str(a_datetime.time()),
+        "meeting_time_micro": serialization.time_to_str(a_datetime.time()),
         "release_datetime": serialization.datetime_to_str(a_datetime),
+        "release_datetime_micro": serialization.datetime_to_str(a_datetime),
         "event_uuid": "09f00184-7721-4266-a955-21048a5cc235",
     }
 
@@ -83,6 +89,8 @@ def test_logical_types_with_defaults():
         birthday: datetime.date = a_datetime.date()
         meeting_time: datetime.time = a_datetime.time()
         release_datetime: datetime.datetime = a_datetime
+        meeting_time_micro: types.TimeMicro = a_datetime.time()
+        release_datetime_micro: types.DateTimeMicro = a_datetime
         event_uuid: uuid.uuid4 = "09f00184-7721-4266-a955-21048a5cc235"
         implicit_decimal: decimal.Decimal = decimal.Decimal("3.14")
         explicit_decimal: decimal.Decimal = types.Decimal(scale=5, precision=7)
@@ -93,7 +101,9 @@ def test_logical_types_with_defaults():
     data = {
         "birthday": a_datetime.date(),
         "meeting_time": a_datetime.time(),
+        "meeting_time_micro": a_datetime.time(),
         "release_datetime": a_datetime,
+        "release_datetime_micro": a_datetime,
         "event_uuid": uuid.UUID("09f00184-7721-4266-a955-21048a5cc235"),
         "implicit_decimal": decimal.Decimal("2.72"),
         "explicit_decimal": decimal.Decimal("1.00"),
@@ -104,6 +114,8 @@ def test_logical_types_with_defaults():
         "birthday": serialization.date_to_str(a_datetime.date()),
         "meeting_time": serialization.time_to_str(a_datetime.time()),
         "release_datetime": serialization.datetime_to_str(a_datetime),
+        "meeting_time_micro": serialization.time_to_str(a_datetime.time()),
+        "release_datetime_micro": serialization.datetime_to_str(a_datetime),
         "event_uuid": "09f00184-7721-4266-a955-21048a5cc235",
         "implicit_decimal": "2.72",
         "explicit_decimal": "1.00",

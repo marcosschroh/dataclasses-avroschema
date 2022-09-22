@@ -5,7 +5,7 @@ import uuid
 
 import pytest
 
-from dataclasses_avroschema import AvroModel, fields
+from dataclasses_avroschema import field_utils, fields
 
 PY_VER = sys.version_info
 
@@ -45,8 +45,8 @@ LIST_TYPE_AND_ITEMS_TYPE = (
 
 LOGICAL_TYPES = (
     (datetime.date, fields.LOGICAL_DATE, now.date()),
-    (datetime.time, fields.LOGICAL_TIME, now.time()),
-    (datetime.datetime, fields.LOGICAL_DATETIME, now),
+    (datetime.time, fields.LOGICAL_TIME_MILIS, now.time()),
+    (datetime.datetime, fields.LOGICAL_DATETIME_MILIS, now),
     (uuid.uuid4, fields.LOGICAL_UUID, uuid.uuid4()),
 )
 
@@ -93,7 +93,7 @@ UNION_WITH_ARRAY = (
     ),
     (
         (typing.List[datetime.datetime], datetime.datetime),
-        (fields.LOGICAL_DATETIME, fields.LOGICAL_DATETIME),
+        (fields.LOGICAL_DATETIME_MILIS, fields.LOGICAL_DATETIME_MILIS),
     ),
     (
         (typing.List[uuid.uuid4], bytes),
@@ -112,7 +112,7 @@ UNION_WITH_MAP = (
     ),
     (
         (typing.Dict[str, datetime.datetime], datetime.datetime),
-        (fields.LOGICAL_DATETIME, fields.LOGICAL_DATETIME),
+        (fields.LOGICAL_DATETIME_MILIS, fields.LOGICAL_DATETIME_MILIS),
     ),
     (
         (typing.Dict[str, uuid.uuid4], bytes),
@@ -124,12 +124,12 @@ OPTIONAL_UNION_COMPLEX_TYPES = (
     (typing.List[str], {"type": fields.ARRAY, "items": fields.STRING, "name": "optional_field"}),
     (
         typing.List[datetime.datetime],
-        {"type": fields.ARRAY, "items": fields.LOGICAL_DATETIME, "name": "optional_field"},
+        {"type": fields.ARRAY, "items": fields.LOGICAL_DATETIME_MILIS, "name": "optional_field"},
     ),
     (typing.Dict[str, int], {"type": fields.MAP, "values": fields.LONG, "name": "optional_field"}),
     (
         typing.Dict[str, datetime.datetime],
-        {"type": fields.MAP, "values": fields.LOGICAL_DATETIME, "name": "optional_field"},
+        {"type": fields.MAP, "values": fields.LOGICAL_DATETIME_MILIS, "name": "optional_field"},
     ),
 )
 
@@ -172,8 +172,8 @@ MAPPING_LOGICAL_TYPES = [
 # (python_type, avro_internal_type, logical_type)
 LOGICAL_TYPES_AND_DEFAULTS = (
     (datetime.date, fields.INT, fields.DATE),
-    (datetime.time, fields.INT, fields.TIME_MILLIS),
-    (datetime.datetime, fields.LONG, fields.TIMESTAMP_MILLIS),
+    (datetime.time, fields.INT, field_utils.TIME_MILLIS),
+    (datetime.datetime, fields.LONG, field_utils.TIMESTAMP_MILLIS),
     (uuid.uuid4, fields.STRING, fields.UUID),
     (uuid.UUID, fields.STRING, fields.UUID),
 )
