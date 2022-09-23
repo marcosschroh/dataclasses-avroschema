@@ -11,7 +11,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.3.1, mkdocs-material-8.4.2">
+      <meta name="generator" content="mkdocs-1.3.1, mkdocs-material-8.5.3">
     
     
       
@@ -19,13 +19,14 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.69437709.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.7a952b86.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.cbb835fc.min.css">
         
       
       
+
     
     
     
@@ -42,6 +43,7 @@
     
       
 
+    
     
     
   </head>
@@ -66,7 +68,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#schema-with-logical-types" class="md-skip">
+        <a href="#logical-types" class="md-skip">
           Skip to content
         </a>
       
@@ -144,7 +146,7 @@
       </label>
       <nav class="md-search__options" aria-label="Search">
         
-        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
         </button>
       </nav>
@@ -170,7 +172,7 @@
         <a href="https://github.com/marcosschroh/dataclasses-avroschema" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.1.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
   </div>
   <div class="md-source__repository">
     marcosschroh/dataclasses-avroschema
@@ -215,7 +217,7 @@
       <a href="https://github.com/marcosschroh/dataclasses-avroschema" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.1.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
   </div>
   <div class="md-source__repository">
     marcosschroh/dataclasses-avroschema
@@ -314,6 +316,8 @@
       <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
       
       
+        
+      
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
           Logical Types
@@ -330,6 +334,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -338,50 +344,37 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#schema-with-logical-types" class="md-nav__link">
-    Schema with Logical Types
-  </a>
-  
-    <nav class="md-nav" aria-label="Schema with Logical Types">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
   <a href="#date" class="md-nav__link">
     Date
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#time" class="md-nav__link">
     Time
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#datetime" class="md-nav__link">
     Datetime
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#uuid" class="md-nav__link">
     UUID
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#decimal" class="md-nav__link">
     Decimal
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -575,6 +568,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -583,50 +578,37 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#schema-with-logical-types" class="md-nav__link">
-    Schema with Logical Types
-  </a>
-  
-    <nav class="md-nav" aria-label="Schema with Logical Types">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
   <a href="#date" class="md-nav__link">
     Date
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#time" class="md-nav__link">
     Time
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#datetime" class="md-nav__link">
     Datetime
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#uuid" class="md-nav__link">
     UUID
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#decimal" class="md-nav__link">
     Decimal
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -638,19 +620,19 @@
               </div>
             
           
-          <div class="md-content" data-md-component="content">
-            <article class="md-content__inner md-typeset">
-              
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
                 
+                  
+
   <a href="https://github.com/marcosschroh/dataclasses-avroschema/edit/master/docs/logical_types.md" title="Edit this page" class="md-content__button md-icon">
+    
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
   </a>
 
 
-
-  <h1>Logical Types</h1>
-
-<h2 id="schema-with-logical-types">Schema with Logical Types</h2>
+<h1 id="logical-types">Logical Types</h1>
 <p>The following list represent the avro logical types mapped to python types:</p>
 <table>
 <thead>
@@ -673,8 +655,18 @@
 </tr>
 <tr>
 <td>long</td>
+<td>time-micros</td>
+<td>types.TimeMicro</td>
+</tr>
+<tr>
+<td>long</td>
 <td>timestamp-millis</td>
 <td>datetime.datetime</td>
+</tr>
+<tr>
+<td>long</td>
+<td>timestamp-micros</td>
+<td>types.DateTimeMicro</td>
 </tr>
 <tr>
 <td>string</td>
@@ -693,7 +685,7 @@
 </tr>
 </tbody>
 </table>
-<h3 id="date">Date</h3>
+<h2 id="date">Date</h2>
 <div class="highlight"><span class="filename">Date example</span><pre><span></span><code><span class="kn">import</span> <span class="nn">datetime</span>
 
 <span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
@@ -741,10 +733,10 @@
 <span class="p">}</span><span class="s1">&#39;</span>
 </code></pre></div>
 <p><em>(This script is complete, it should run "as is")</em></p>
-<h3 id="time">Time</h3>
+<h2 id="time">Time</h2>
 <div class="highlight"><span class="filename">Time example</span><pre><span></span><code><span class="kn">import</span> <span class="nn">datetime</span>
 
-<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span><span class="p">,</span> <span class="n">TimeMicro</span>
 
 <span class="n">a_datetime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2019</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">57</span><span class="p">,</span> <span class="mi">42</span><span class="p">)</span>
 
@@ -754,6 +746,7 @@
     <span class="n">birthday_time</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">time</span>
     <span class="n">meeting_time</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">release_time</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">a_datetime</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">release_time_micro</span><span class="p">:</span> <span class="n">TimeMicro</span> <span class="o">=</span> <span class="n">a_datetime</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 
 <span class="n">TimeLogicalTypes</span><span class="o">.</span><span class="n">avro_schema</span><span class="p">()</span>
 
@@ -783,16 +776,26 @@
         <span class="s2">&quot;logicalType&quot;</span><span class="p">:</span> <span class="s2">&quot;time-millis&quot;</span>
       <span class="p">},</span>
       <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="mi">64662000</span>
-    <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;release_time_micro&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;long&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;logicalType&quot;</span><span class="p">:</span> <span class="s2">&quot;time-micros&quot;</span>
+      <span class="p">},</span>
+      <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="mf">64662000000.0</span><span class="p">}</span>
   <span class="p">],</span>
   <span class="s2">&quot;doc&quot;</span><span class="p">:</span> <span class="s2">&quot;Time logical types&quot;</span>
 <span class="p">}</span><span class="s1">&#39;</span>
 </code></pre></div>
 <p><em>(This script is complete, it should run "as is")</em></p>
-<h3 id="datetime">Datetime</h3>
+<div class="admonition nore annotate">
+<p class="admonition-title">To use <code>time-micros</code> in avro schemas you need to use <code>types.TimeMicro</code></p>
+</div>
+<h2 id="datetime">Datetime</h2>
 <div class="highlight"><span class="filename">DateTime example</span><pre><span></span><code><span class="kn">import</span> <span class="nn">datetime</span>
 
-<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span><span class="p">,</span> <span class="n">DateTimeMicro</span>
 
 <span class="n">a_datetime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2019</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">57</span><span class="p">,</span> <span class="mi">42</span><span class="p">)</span>
 
@@ -801,6 +804,7 @@
     <span class="n">birthday</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span>
     <span class="n">meeting_time</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">release_datetime</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span> <span class="o">=</span> <span class="n">a_datetime</span>
+    <span class="n">release_datetime_micro</span><span class="p">:</span> <span class="n">DateTimeMicro</span> <span class="o">=</span> <span class="n">a_datetime</span>
 
 <span class="n">DatetimeLogicalType</span><span class="o">.</span><span class="n">avro_schema</span><span class="p">()</span>
 
@@ -830,13 +834,24 @@
         <span class="s2">&quot;logicalType&quot;</span><span class="p">:</span> <span class="s2">&quot;timestamp-millis&quot;</span>
       <span class="p">},</span>
       <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="mf">1570903062000.0</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;release_datetime_micro&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;long&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;logicalType&quot;</span><span class="p">:</span> <span class="s2">&quot;timestamp-micros&quot;</span>
+      <span class="p">},</span>
+      <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="mf">1570903062000000.0</span>
     <span class="p">}</span>
   <span class="p">],</span>
   <span class="s2">&quot;doc&quot;</span><span class="p">:</span> <span class="s2">&quot;Datetime logical types&quot;</span>
 <span class="p">}</span><span class="s1">&#39;</span>
 </code></pre></div>
 <p><em>(This script is complete, it should run "as is")</em></p>
-<h3 id="uuid">UUID</h3>
+<div class="admonition nore annotate">
+<p class="admonition-title">To use <code>timestamp-micros</code> in avro schemas you need to use <code>types.DateTimeMicro</code></p>
+</div>
+<h2 id="uuid">UUID</h2>
 <div class="highlight"><span class="filename">UUID example</span><pre><span></span><code><span class="kn">import</span> <span class="nn">uuid</span>
 
 <span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
@@ -881,7 +896,7 @@
 <span class="p">}</span><span class="s1">&#39;</span>
 </code></pre></div>
 <p><em>(This script is complete, it should run "as is")</em></p>
-<h3 id="decimal">Decimal</h3>
+<h2 id="decimal">Decimal</h2>
 <p>The below code shows an example on how to use decimals. There's a few important things to note:
 * A default IS REQUIRED in order to set scale and precision on the Avro schema
 * It is strongly recommended to set these explicitly using <code>types.Decimal(scale=, precision=)</code>
@@ -953,12 +968,14 @@
 
 
 
-              
-            </article>
-            
+
+                
+              </article>
+            </div>
+          
+          
   <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var tab,labels=set.querySelector(".tabbed-labels");for(tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
 
-          </div>
         </div>
         
       </main>
@@ -1022,10 +1039,10 @@
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "..", "features": ["search.suggest", "search.highlight", "content.tabs.link", "content.code.annotate"], "search": "../assets/javascripts/workers/search.ecf98df9.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["search.suggest", "search.highlight", "content.tabs.link", "content.code.annotate"], "search": "../assets/javascripts/workers/search.5bf1dace.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.9c69f0bc.min.js"></script>
+      <script src="../assets/javascripts/bundle.37e9125f.min.js"></script>
       
     
   </body>
