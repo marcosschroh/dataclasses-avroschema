@@ -20,7 +20,9 @@ def test_fake_with_logical_types():
     class LogicalTypes(AvroModel):
         birthday: datetime.date
         meeting_time: datetime.time
+        meeting_time_micro: types.TimeMicro
         release_datetime: datetime.datetime
+        release_datetime_micro: types.DateTimeMicro
         event_uuid: uuid.uuid4
 
     assert isinstance(LogicalTypes.fake(), LogicalTypes)

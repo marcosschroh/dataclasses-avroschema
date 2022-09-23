@@ -70,4 +70,27 @@ User.avro_schema()
 
 *(This script is complete, it should run "as is")*
 
+or create a python dictionary
+
+```python title="Avro schema to python"
+User.avro_schema_to_python()
+
+{
+    "type": "record",
+    "name": "User",
+    "doc": "An User",
+    "namespace": "User.v1",
+    "aliases": ["user-v1", "super user"],
+    "fields": [
+        {"name": "name", "type": "string"},
+        {"name": "age", "type": "long"},
+        {"name": "pets", "type": {"type": "array", "items": "string", "name": "pet"}},
+        {"name": "accounts", "type": {"type": "map", "values": "long", "name": "account"}},
+        {"name": "favorite_color", "type": {"type": "enum", "name": "favorite_color", "symbols": ["BLUE", "YELLOW", "GREEN"]}},
+        {"name": "country", "type": "string", "default": "Argentina"},
+        {"name": "address", "type": ["null", "string"], "default": None}
+    ],
+}
+```
+
 and that is it!! Each python field is related with a avro type. You can find the field relationships [here](https://marcosschroh.github.io/dataclasses-avroschema/fields_specification/):

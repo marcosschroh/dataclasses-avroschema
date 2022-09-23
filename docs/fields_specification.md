@@ -18,9 +18,9 @@ So, the previous types can be matched to:
 | Avro Type    | Python Type  |
 |--------------|------------- -|
 | string       |     str      |
-| int,long     |     int      |
+| long     |     int      |
 | boolean      |     bool     |
-| float,double |     float    |
+| double |     float    |
 | null         |     None     |
 | bytes        |     bytes    |
 | int          | types.Int32  |
@@ -96,8 +96,10 @@ Language implementations must ignore unknown logical types when reading, and sho
 | Avro Type | Logical Type |Python Type |
 |-----------|--------------|-------------|
 | int       |  date        | datetime.date
-| int       |  time-millis | datetime.time     |
+| int       |  time-millis | datetime.time |
+| long      |  time-micros | types.TimeMicro |
 | long      |  timestamp-millis | datetime.datetime |
+| long      |  timestamp-micros | types.DateTimeMicro |
 | string    |  uuid        | uuid.uuid4 |
 | string    |  uuid        | uuid.UUID |
 | bytes     | decimal      | decimal.Decimal |
@@ -107,9 +109,9 @@ Language implementations must ignore unknown logical types when reading, and sho
 Python Type | Avro Type   | Logical Type |
 |-----------|-------------|--------------|
 | str       | string      | do not apply |
-| int,long      | int         | do not apply |
+| long      | int         | do not apply |
 | bool      | boolean     | do not apply |
-| float,double    | float       | do not apply |
+| double    | float       | do not apply |
 | None      | null        | do not apply |
 | bytes     | bytes       | do not apply |
 | typing.List      | array       | do not apply |
@@ -128,7 +130,9 @@ Python Type | Avro Type   | Logical Type |
 | Python class | record  | do not apply |
 | datetime.date | int     |  date        |
 | datetime.time | int     |  time-millis |
+| types.TimeMicro | long     |  time-micros |
 | datetime.datetime| long  |  timestamp-millis |
+| types.DateTimeMicro| long  |  timestamp-micros |
 | decimal.Decimal | bytes | decimal      |
 | uuid.uuid4  | string    |  uuid        |
 | uuid.UUID    |  string        | uuid |

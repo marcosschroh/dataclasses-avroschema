@@ -1,11 +1,10 @@
 import datetime
 import decimal
 import uuid
-from dataclasses import field
 
 import pytest
 
-from dataclasses_avroschema import fields, types
+from dataclasses_avroschema import field_utils, fields, types
 
 from . import consts
 
@@ -53,7 +52,7 @@ def test_logical_type_date_with_default():
     assert expected == field.to_dict()
 
 
-def test_logical_type_time_with_default():
+def test_logical_type_time_millis_with_default() -> None:
     name = "a time"
     python_type = datetime.time
     time = consts.now.time()
@@ -66,17 +65,56 @@ def test_logical_type_time_with_default():
         time.microsecond,
     )
     miliseconds = int((((hour * 60 + minutes) * 60 + seconds) * 1000) + (microseconds / 1000))
-
     expected = {
         "name": name,
-        "type": {"type": fields.INT, "logicalType": fields.TIME_MILLIS},
+        "type": {"type": fields.INT, "logicalType": field_utils.TIME_MILLIS},
         "default": miliseconds,
     }
 
     assert expected == field.to_dict()
 
 
-def test_logical_type_datetime_with_default():
+def test_logical_type_time_micros_with_default() -> None:
+    name = "a time"
+    python_type = types.TimeMicro
+    time = consts.now.time()
+    field = fields.AvroField(name, python_type, default=time)
+
+    hour, minutes, seconds, microseconds = (
+        time.hour,
+        time.minute,
+        time.second,
+        time.microsecond,
+    )
+    microseconds = float(((hour * 60 + minutes) * 60 + seconds) * 1000000) + microseconds
+
+    expected = {
+        "name": name,
+        "type": {"type": fields.LONG, "logicalType": field_utils.TIME_MICROS},
+        "default": microseconds,
+    }
+
+    print(field, "marcos;")
+    assert expected == field.to_dict()
+
+
+def test_logical_type_datetime_micros_with_default() -> None:
+    name = "a datetime"
+    python_type = types.DateTimeMicro
+    field = fields.AvroField(name, python_type, default=consts.now)
+
+    ts = (consts.now - datetime.datetime(1970, 1, 1)).total_seconds()
+
+    expected = {
+        "name": name,
+        "type": {"type": fields.LONG, "logicalType": field_utils.TIMESTAMP_MICROS},
+        "default": ts * 1000000,
+    }
+
+    assert expected == field.to_dict()
+
+
+def test_logical_type_datetime_with_default() -> None:
     name = "a datetime"
     python_type = datetime.datetime
     field = fields.AvroField(name, python_type, default=consts.now)
@@ -85,7 +123,7 @@ def test_logical_type_datetime_with_default():
 
     expected = {
         "name": name,
-        "type": {"type": fields.LONG, "logicalType": fields.TIMESTAMP_MILLIS},
+        "type": {"type": fields.LONG, "logicalType": field_utils.TIMESTAMP_MILLIS},
         "default": ts * 1000,
     }
 
@@ -99,7 +137,7 @@ def test_logical_type_datetime_with_default():
         uuid.UUID,
     ),
 )
-def test_logical_type_uuid_with_default(python_type):
+def test_logical_type_uuid_with_default(python_type) -> None:
     name = "a uuid"
     default = uuid.UUID("d793fc4f-2eef-440a-af8b-a8e884d7b1a8")
     field = fields.AvroField(name, python_type, default=default)

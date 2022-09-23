@@ -314,7 +314,7 @@ User.fake()
 
 * [X] Primitive types: int, long, double, float, boolean, string and null support
 * [X] Complex types: enum, array, map, fixed, unions and records support
-* [x] Logical Types: date, time, datetime, uuid support
+* [x] Logical Types: date, time (millis and micro), datetime (millis and micro), uuid support
 * [X] Schema relations (oneToOne, oneToMany)
 * [X] Recursive Schemas
 * [X] Generate Avro Schemas from `faust.Record`
