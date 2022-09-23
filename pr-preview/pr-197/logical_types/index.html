@@ -726,7 +726,7 @@
 <h2 id="time">Time</h2>
 <div class="highlight"><span class="filename">Time example</span><pre><span></span><code><span class="kn">import</span> <span class="nn">datetime</span>
 
-<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span><span class="p">,</span> <span class="n">types</span>
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span><span class="p">,</span> <span class="n">TimeMicro</span>
 
 <span class="n">a_datetime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2019</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">57</span><span class="p">,</span> <span class="mi">42</span><span class="p">)</span>
 
@@ -736,7 +736,7 @@
     <span class="n">birthday_time</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">time</span>
     <span class="n">meeting_time</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">release_time</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">a_datetime</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-    <span class="n">release_time_micro</span><span class="p">:</span> <span class="n">types</span><span class="o">.</span><span class="n">TimeMicro</span> <span class="o">=</span> <span class="n">a_datetime</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">release_time_micro</span><span class="p">:</span> <span class="n">TimeMicro</span> <span class="o">=</span> <span class="n">a_datetime</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 
 <span class="n">TimeLogicalTypes</span><span class="o">.</span><span class="n">avro_schema</span><span class="p">()</span>
 
@@ -785,7 +785,7 @@
 <h2 id="datetime">Datetime</h2>
 <div class="highlight"><span class="filename">DateTime example</span><pre><span></span><code><span class="kn">import</span> <span class="nn">datetime</span>
 
-<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span><span class="p">,</span> <span class="n">types</span>
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span><span class="p">,</span> <span class="n">DateTimeMicro</span>
 
 <span class="n">a_datetime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2019</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">57</span><span class="p">,</span> <span class="mi">42</span><span class="p">)</span>
 
@@ -794,7 +794,7 @@
     <span class="n">birthday</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span>
     <span class="n">meeting_time</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">release_datetime</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span> <span class="o">=</span> <span class="n">a_datetime</span>
-    <span class="n">release_datetime_micro</span><span class="p">:</span> <span class="n">types</span><span class="o">.</span><span class="n">DateTimeMicro</span> <span class="o">=</span> <span class="n">a_datetime</span>
+    <span class="n">release_datetime_micro</span><span class="p">:</span> <span class="n">DateTimeMicro</span> <span class="o">=</span> <span class="n">a_datetime</span>
 
 <span class="n">DatetimeLogicalType</span><span class="o">.</span><span class="n">avro_schema</span><span class="p">()</span>
 
