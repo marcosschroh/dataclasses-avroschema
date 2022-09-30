@@ -438,3 +438,27 @@ def test_two_different_child_records():
             namespace = "test.namespace"
 
     assert parse_schema(HolidayAlbum.avro_schema_to_python())
+
+
+def test_nested_schemas_splitted() -> None:
+    """
+    This test will cover the cases when nested schemas are
+    used in a separate way.
+    """
+
+    class A(AvroModel):
+        class Meta:
+            namespace = "namespace"
+
+    class B(AvroModel):
+        a: A
+
+    class C(AvroModel):
+        b: B
+        a: A
+
+    # first the B schema is generated
+    assert parse_schema(B.avro_schema_to_python())
+
+    # then check that the C schema is valid
+    assert parse_schema(C.avro_schema_to_python())

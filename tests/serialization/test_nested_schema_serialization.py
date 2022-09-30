@@ -154,3 +154,67 @@ def test_one_to_many_map_relationship():
     # assert User.deserialize(avro_json_binary) == user
 
     assert user.to_dict() == expected
+
+
+def test_nested_schemas_splitted() -> None:
+    """
+    This test will cover the cases when nested schemas are
+    used in a separate way.
+    """
+
+    @dataclasses.dataclass
+    class A(AvroModel):
+        class Meta:
+            namespace = "namespace"
+
+    @dataclasses.dataclass
+    class B(AvroModel):
+        a: A
+
+    @dataclasses.dataclass
+    class C(AvroModel):
+        b: B
+        a: A
+
+    b = B(a=A())
+    c = C(b=B(a=A()), a=A())
+
+    assert b.serialize() == b""
+    assert c.serialize() == b""
+
+
+def test_nested_schemas_splitted_with_unions() -> None:
+    """
+    This test will cover the cases when nested schemas with Unions that are
+    used in a separate way.
+    """
+
+    @dataclasses.dataclass
+    class S1(AvroModel):
+        pass
+
+    @dataclasses.dataclass
+    class S2(AvroModel):
+        pass
+
+    @dataclasses.dataclass
+    class A(AvroModel):
+        s: typing.Union[S1, S2]
+
+        class Meta:
+            namespace = "namespace"
+
+    @dataclasses.dataclass
+    class B(AvroModel):
+        a: A
+
+    @dataclasses.dataclass
+    class C(AvroModel):
+        b: B
+        a: A
+
+    b = B(a=A(s=S1()))
+    c = C(b=B(a=A(s=S1())), a=A(s=S1()))
+
+    assert b.serialize() == b"\x00"
+    assert c.serialize() == b"\x00\x00"
