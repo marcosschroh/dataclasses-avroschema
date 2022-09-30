@@ -817,9 +817,9 @@ class RecordField(BaseField):
 
         if not self.exist_type() or alias is not None:
             user_defined_type = utils.UserDefinedType(name=name, type=self.type)
-            self.parent.user_defined_types += (user_defined_type,)
+            self.parent.user_defined_types.add(user_defined_type)
 
-            record_type = self.type.avro_schema_to_python(root=self.parent)
+            record_type = self.type.avro_schema_to_python(parent=self.parent)
             record_type["name"] = name
         else:
             if metadata.namespace is None:

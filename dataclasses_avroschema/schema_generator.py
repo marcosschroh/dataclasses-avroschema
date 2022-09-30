@@ -3,7 +3,7 @@ import enum
 import inspect
 import json
 from collections import OrderedDict
-from typing import Any, Dict, List, Optional, Tuple, Type, TypeVar, Union
+from typing import Any, Dict, List, Optional, Set, Type, TypeVar, Union
 
 from dacite import Config, from_dict
 from fastavro.validation import validate
@@ -26,8 +26,8 @@ class AvroModel:
     schema_def: Optional[AvroSchemaDefinition] = None
     klass: Optional[Type] = None
     metadata: Optional[SchemaMetadata] = None
-    user_defined_types: Tuple = ()
-    root: Any = None
+    user_defined_types: Set = set()
+    parent: Any = None
     rendered_schema: OrderedDict = dataclasses.field(default_factory=OrderedDict)
 
     @classmethod
@@ -37,7 +37,7 @@ class AvroModel:
         return dataclasses.dataclass(cls)
 
     @classmethod
-    def generate_metadata(cls: Any) -> SchemaMetadata:
+    def generate_metadata(cls: Type[CT]) -> SchemaMetadata:
         meta = getattr(cls.klass, "Meta", type)
 
         return SchemaMetadata.create(meta)
@@ -63,14 +63,11 @@ class AvroModel:
     def _generate_avro_schema(cls: Type[CT]) -> AvroSchemaDefinition:
         metadata = cls.generate_metadata()
         cls.metadata = metadata
-        return AvroSchemaDefinition("record", cls.klass, metadata=metadata, parent=cls.root or cls)
+        return AvroSchemaDefinition("record", cls.klass, metadata=metadata, parent=cls.parent or cls)
 
     @classmethod
     def avro_schema(cls: Type[CT], case_type: Optional[str] = None) -> str:
         avro_schema = cls.generate_schema(schema_type=AVRO)
-
-        # After generating the avro schema, reset the raw_fields to the init
-        cls.user_defined_types = ()
 
         if case_type is not None:
             avro_schema = case.case_record(cls.rendered_schema, case_type)  # type: ignore
@@ -78,9 +75,15 @@ class AvroModel:
         return json.dumps(avro_schema)
 
     @classmethod
-    def avro_schema_to_python(cls: Any, root: Any = None) -> Dict[str, Any]:
-        if root is not None:
-            cls.root = root
+    def avro_schema_to_python(cls: Type[CT], parent: Optional["AvroModel"] = None) -> Dict[str, Any]:
+        if parent is not None:
+            # in this case the current class is a child with a parent
+            # we recalculate the schema definition to prevent re usages
+            cls.parent = parent
+            cls.schema_def = None
+        else:
+            # in this case the current class is a parent so we reset the user_defined_types
+            cls.user_defined_types = set()
 
         return json.loads(cls.avro_schema())
 
