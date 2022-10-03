@@ -82,8 +82,15 @@ class AvroModel:
             cls.parent = parent
             cls.schema_def = None
         else:
-            # in this case the current class is a parent so we reset the user_defined_types
-            cls.user_defined_types = set()
+            # This happens when an AvroModel is the root of the tree (first class in the hierarchy)
+            # Because intermediate schemas can be reused as a root later, we need to reset them
+            # Example with A as a root:
+            #     A -> B -> C -> D
+            #
+            # After generating the A.avro_schema the parent of B is A,
+            # if we want to do B.avro_schema (now B is the root)
+            # B should clean the data that was only valid when it was the child
+            cls._reset_schema_definition()
 
         return json.loads(cls.avro_schema())
 
@@ -123,6 +130,15 @@ class AvroModel:
             else:
                 output[field] = value
         return output
+
+    @classmethod
+    def _reset_schema_definition(cls: Type[CT]) -> None:
+        """
+        Reset all the values to original state.
+        """
+        cls.user_defined_types = set()
+        cls.schema_def = None
+        cls.parent = None
 
     @staticmethod
     def standardize_custom_type(value: Any) -> Any:

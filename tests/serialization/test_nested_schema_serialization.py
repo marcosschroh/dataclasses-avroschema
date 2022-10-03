@@ -218,3 +218,31 @@ def test_nested_schemas_splitted_with_unions() -> None:
 
     assert b.serialize() == b"\x00"
     assert c.serialize() == b"\x00\x00"
+
+
+def test_nested_scheamas_splitted_with_intermediates() -> None:
+    @dataclasses.dataclass
+    class A(AvroModel):
+        class Meta:
+            namespace = "namespace"
+
+    @dataclasses.dataclass
+    class B(AvroModel):
+        a: A
+
+    @dataclasses.dataclass
+    class C(AvroModel):
+        a: A
+
+    @dataclasses.dataclass
+    class D(AvroModel):
+        b: B
+        c: C
+
+    a = A()
+    b = B(a=a)
+    c = C(a=a)
+    d = D(b=b, c=c)
+
+    assert d.serialize() == b""
+    assert c.serialize() == b""
