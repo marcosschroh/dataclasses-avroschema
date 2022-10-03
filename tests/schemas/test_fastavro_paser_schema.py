@@ -462,3 +462,25 @@ def test_nested_schemas_splitted() -> None:
 
     # then check that the C schema is valid
     assert parse_schema(C.avro_schema_to_python())
+
+
+def test_nested_scheamas_splitted_with_intermediates() -> None:
+    class A(AvroModel):
+        class Meta:
+            namespace = "namespace"
+
+    class B(AvroModel):
+        a: A
+
+    class C(AvroModel):
+        a: A
+
+    class D(AvroModel):
+        b: B
+        c: C
+
+    # first the B schema is generated
+    assert parse_schema(D.avro_schema_to_python())
+
+    # then check that the C schema is valid
+    assert parse_schema(C.avro_schema_to_python())
