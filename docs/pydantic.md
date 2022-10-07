@@ -1,3 +1,5 @@
+# Pydantic Integration
+
 It is possible to use [pydantic](https://pydantic-docs.helpmanual.io/) with `dataclasses-avroschema` making use of `AvroBaseModel`:
 
 You must use use all the `pydantic` features and all `dataclasses-avroschema` functionality will be injected. 
@@ -66,13 +68,16 @@ UserAdvance.json_schema()
         "address": {"title": "Address", "type": "string"}},
         "required": ["name", "age"], "definitions": {"FavoriteColor": {"title": "FavoriteColor", "description": "An enumeration.", "enum": ["BLUE", "YELLOW", "GREEN"], "type": "string"}}}'
 ```
+
 *(This script is complete, it should run "as is")*
 
 !!! note annotate "You must use pydantic.Field instead of dataclasses.field"
 
 ## Pydantic and dataclasses_avroschema batteries
 
-```python title="To dict and json"
+### To dict, to json and serialization
+
+```python title="getting dict and json"
 user = UserAdvance(name="bond", age=50)
 
 # to_json from dataclasses-avroschema is the same that json from pydantic
@@ -91,7 +96,9 @@ UserAdvance.deserialize(data=event)
 # >>> UserAdvance(name='bond', age=50, pets=['dog', 'cat'], accounts={'key': 1}, has_car=False, favorite_colors=<FavoriteColor.BLUE: 'BLUE'>, country='Argentina', address=None)
 ```
 
-```python title="parse_obj"
+### Parsing Objects
+
+```python title="parse_obj usage"
 import typing
 
 from dataclasses_avroschema.avrodantic import AvroBaseModel
@@ -120,6 +127,29 @@ data_user = {
 
 user = User.parse_obj(data=data_user)
 assert type(user.addresses[0]) is Address
+```
+
+*(This script is complete, it should run "as is")*
+
+```python title="parse_obj_as usage"
+from typing import List
+
+from pydantic import parse_obj_as
+
+from dataclasses_avroschema.avrodantic import AvroBaseModel
+
+
+class User(AvroBaseModel):
+    "User with multiple Address"
+    name: str
+    age: int
+
+
+data = [{"name": "bond", "age": 50}, {"name": "bond2", "age": 60}]
+users = parse_obj_as(List[User], data)
+
+users[0].avro_schema()
+# '{"type": "record", "name": "User", "fields": [{"name": "name", "type": "string"}, {"name": "age", "type": "long"}], "doc": "User with multiple Address"}'
 ```
 
 *(This script is complete, it should run "as is")*
