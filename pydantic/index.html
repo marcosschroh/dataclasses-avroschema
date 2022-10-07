@@ -68,7 +68,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#avro-and-json-schemas" class="md-skip">
+        <a href="#pydantic-integration" class="md-skip">
           Skip to content
         </a>
       
@@ -376,6 +376,8 @@
       <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
       
       
+        
+      
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
           Pydantic
@@ -391,6 +393,8 @@
 <nav class="md-nav md-nav--secondary" aria-label="Table of contents">
   
   
+  
+    
   
   
     <label class="md-nav__title" for="__toc">
@@ -410,6 +414,26 @@
   <a href="#pydantic-and-dataclasses_avroschema-batteries" class="md-nav__link">
     Pydantic and dataclasses_avroschema batteries
   </a>
+  
+    <nav class="md-nav" aria-label="Pydantic and dataclasses_avroschema batteries">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#to-dict-to-json-and-serialization" class="md-nav__link">
+    To dict, to json and serialization
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parsing-objects" class="md-nav__link">
+    Parsing Objects
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -543,6 +567,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -561,6 +587,26 @@
   <a href="#pydantic-and-dataclasses_avroschema-batteries" class="md-nav__link">
     Pydantic and dataclasses_avroschema batteries
   </a>
+  
+    <nav class="md-nav" aria-label="Pydantic and dataclasses_avroschema batteries">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#to-dict-to-json-and-serialization" class="md-nav__link">
+    To dict, to json and serialization
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parsing-objects" class="md-nav__link">
+    Parsing Objects
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -584,12 +630,11 @@
   </a>
 
 
-  <h1>Pydantic</h1>
-
+<h1 id="pydantic-integration">Pydantic Integration</h1>
 <p>It is possible to use <a href="https://pydantic-docs.helpmanual.io/">pydantic</a> with <code>dataclasses-avroschema</code> making use of <code>AvroBaseModel</code>:</p>
 <p>You must use use all the <code>pydantic</code> features and all <code>dataclasses-avroschema</code> functionality will be injected. </p>
 <h2 id="avro-and-json-schemas">Avro and Json schemas</h2>
-<p><div class="highlight"><span class="filename">Basic usage</span><pre><span></span><code><span class="kn">import</span> <span class="nn">typing</span>
+<div class="highlight"><span class="filename">Basic usage</span><pre><span></span><code><span class="kn">import</span> <span class="nn">typing</span>
 <span class="kn">import</span> <span class="nn">enum</span>
 <span class="kn">from</span> <span class="nn">dataclasses_avroschema.avrodantic</span> <span class="kn">import</span> <span class="n">AvroBaseModel</span>
 
@@ -650,12 +695,13 @@
         <span class="s2">&quot;address&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Address&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">}},</span>
         <span class="s2">&quot;required&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">],</span> <span class="s2">&quot;definitions&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;FavoriteColor&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;FavoriteColor&quot;</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;An enumeration.&quot;</span><span class="p">,</span> <span class="s2">&quot;enum&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;BLUE&quot;</span><span class="p">,</span> <span class="s2">&quot;YELLOW&quot;</span><span class="p">,</span> <span class="s2">&quot;GREEN&quot;</span><span class="p">],</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">}}}</span><span class="s1">&#39;</span>
 </code></pre></div>
-<em>(This script is complete, it should run "as is")</em></p>
+<p><em>(This script is complete, it should run "as is")</em></p>
 <div class="admonition note annotate">
 <p class="admonition-title">You must use pydantic.Field instead of dataclasses.field</p>
 </div>
 <h2 id="pydantic-and-dataclasses_avroschema-batteries">Pydantic and dataclasses_avroschema batteries</h2>
-<div class="highlight"><span class="filename">To dict and json</span><pre><span></span><code><span class="n">user</span> <span class="o">=</span> <span class="n">UserAdvance</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;bond&quot;</span><span class="p">,</span> <span class="n">age</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<h3 id="to-dict-to-json-and-serialization">To dict, to json and serialization</h3>
+<div class="highlight"><span class="filename">getting dict and json</span><pre><span></span><code><span class="n">user</span> <span class="o">=</span> <span class="n">UserAdvance</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;bond&quot;</span><span class="p">,</span> <span class="n">age</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
 
 <span class="c1"># to_json from dataclasses-avroschema is the same that json from pydantic</span>
 <span class="k">assert</span> <span class="n">user</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span> <span class="o">==</span> <span class="n">user</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
@@ -670,7 +716,8 @@
 <span class="n">UserAdvance</span><span class="o">.</span><span class="n">deserialize</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">event</span><span class="p">)</span>
 <span class="c1"># &gt;&gt;&gt; UserAdvance(name=&#39;bond&#39;, age=50, pets=[&#39;dog&#39;, &#39;cat&#39;], accounts={&#39;key&#39;: 1}, has_car=False, favorite_colors=&lt;FavoriteColor.BLUE: &#39;BLUE&#39;&gt;, country=&#39;Argentina&#39;, address=None)</span>
 </code></pre></div>
-<div class="highlight"><span class="filename">parse_obj</span><pre><span></span><code><span class="kn">import</span> <span class="nn">typing</span>
+<h3 id="parsing-objects">Parsing Objects</h3>
+<div class="highlight"><span class="filename">parse_obj usage</span><pre><span></span><code><span class="kn">import</span> <span class="nn">typing</span>
 
 <span class="kn">from</span> <span class="nn">dataclasses_avroschema.avrodantic</span> <span class="kn">import</span> <span class="n">AvroBaseModel</span>
 
@@ -698,6 +745,26 @@
 
 <span class="n">user</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">parse_obj</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data_user</span><span class="p">)</span>
 <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">addresses</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">is</span> <span class="n">Address</span>
+</code></pre></div>
+<p><em>(This script is complete, it should run "as is")</em></p>
+<div class="highlight"><span class="filename">parse_obj_as usage</span><pre><span></span><code><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">parse_obj_as</span>
+
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema.avrodantic</span> <span class="kn">import</span> <span class="n">AvroBaseModel</span>
+
+
+<span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">AvroBaseModel</span><span class="p">):</span>
+    <span class="s2">&quot;User with multiple Address&quot;</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
+
+
+<span class="n">data</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;bond&quot;</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">:</span> <span class="mi">50</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;bond2&quot;</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">:</span> <span class="mi">60</span><span class="p">}]</span>
+<span class="n">users</span> <span class="o">=</span> <span class="n">parse_obj_as</span><span class="p">(</span><span class="n">List</span><span class="p">[</span><span class="n">User</span><span class="p">],</span> <span class="n">data</span><span class="p">)</span>
+
+<span class="n">users</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">avro_schema</span><span class="p">()</span>
+<span class="c1"># &#39;{&quot;type&quot;: &quot;record&quot;, &quot;name&quot;: &quot;User&quot;, &quot;fields&quot;: [{&quot;name&quot;: &quot;name&quot;, &quot;type&quot;: &quot;string&quot;}, {&quot;name&quot;: &quot;age&quot;, &quot;type&quot;: &quot;long&quot;}], &quot;doc&quot;: &quot;User with multiple Address&quot;}&#39;</span>
 </code></pre></div>
 <p><em>(This script is complete, it should run "as is")</em></p>
 
