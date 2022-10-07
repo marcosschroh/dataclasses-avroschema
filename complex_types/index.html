@@ -710,6 +710,7 @@
 </table>
 <h3 id="enums">Enums</h3>
 <div class="highlight"><span class="filename">Enum example</span><pre><span></span><code><span class="kn">import</span> <span class="nn">enum</span>
+<span class="kn">import</span> <span class="nn">dataclasses</span>
 
 <span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
 
@@ -724,6 +725,8 @@
         <span class="n">namespace</span> <span class="o">=</span> <span class="s2">&quot;some.name.space&quot;</span>
         <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Color&quot;</span><span class="p">,</span> <span class="s2">&quot;My favorite color&quot;</span><span class="p">]</span>
 
+
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
     <span class="s2">&quot;An User&quot;</span>
     <span class="n">favorite_color</span><span class="p">:</span> <span class="n">FavoriteColor</span> <span class="o">=</span> <span class="n">FavoriteColor</span><span class="o">.</span><span class="n">BLUE</span>
@@ -761,12 +764,12 @@
 </code></pre></div>
 <h3 id="arrays">Arrays</h3>
 <div class="highlight"><span class="filename">Array example</span><pre><span></span><code><span class="kn">import</span> <span class="nn">dataclasses</span>
-
 <span class="kn">import</span> <span class="nn">typing</span>
 
 <span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
 
 
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span> <span class="nc">UserAdvance</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
     <span class="s2">&quot;User advanced&quot;</span>
     <span class="n">pets</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
@@ -812,12 +815,12 @@
 </code></pre></div>
 <h3 id="maps">Maps</h3>
 <div class="highlight"><span class="filename">Map example</span><pre><span></span><code><span class="kn">import</span> <span class="nn">dataclasses</span>
-
 <span class="kn">import</span> <span class="nn">typing</span>
 
 <span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
 
 
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span> <span class="nc">UserAdvance</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
     <span class="s2">&quot;User advanced&quot;</span>
     <span class="n">accounts_money</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span>
@@ -862,10 +865,12 @@
 </code></pre></div>
 <h3 id="fixed">Fixed</h3>
 <div class="highlight"><span class="filename">Fixed example</span><pre><span></span><code><span class="kn">import</span> <span class="nn">typing</span>
+<span class="kn">import</span> <span class="nn">dataclasses</span>
 
 <span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span><span class="p">,</span> <span class="n">types</span>
 
 
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span> <span class="nc">UserAdvance</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">md5</span><span class="p">:</span> <span class="n">types</span><span class="o">.</span><span class="n">Fixed</span> <span class="o">=</span> <span class="n">types</span><span class="o">.</span><span class="n">Fixed</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s1">&#39;md5&#39;</span><span class="p">,</span> <span class="n">aliases</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;md5&quot;</span><span class="p">,</span> <span class="s2">&quot;hash&quot;</span><span class="p">])</span>
@@ -889,6 +894,8 @@
 
 <span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
 
+
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span> <span class="nc">UnionSchema</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
     <span class="s2">&quot;Some Unions&quot;</span>
     <span class="n">first_union</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
@@ -914,23 +921,31 @@
 <span class="p">}</span>
 
 <span class="c1"># Union with Records</span>
-
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span> <span class="nc">Bus</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
     <span class="s2">&quot;A Bus&quot;</span>
     <span class="n">engine_name</span><span class="p">:</span> <span class="nb">str</span>
 
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">namespace</span> <span class="o">=</span> <span class="s2">&quot;types&quot;</span>
 
+
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span> <span class="nc">Car</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
     <span class="s2">&quot;A Car&quot;</span>
     <span class="n">engine_name</span><span class="p">:</span> <span class="nb">str</span>
 
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">namespace</span> <span class="o">=</span> <span class="s2">&quot;types&quot;</span>
 
- <span class="k">class</span> <span class="nc">UnionSchema</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
-    <span class="s2">&quot;Some Unions&quot;</span>
-    <span class="n">lake_trip</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">Bus</span><span class="p">,</span> <span class="n">Car</span><span class="p">]</span>
-    <span class="n">river_trip</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">Bus</span><span class="p">,</span> <span class="n">Car</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">mountain_trip</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">Bus</span><span class="p">,</span> <span class="n">Car</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">field</span><span class="p">(</span>
-        <span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;engine_name&quot;</span><span class="p">:</span> <span class="s2">&quot;honda&quot;</span><span class="p">})</span>
+
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span> <span class="nc">UnionSchema</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
+  <span class="s2">&quot;Some Unions&quot;</span>
+  <span class="n">lake_trip</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">Bus</span><span class="p">,</span> <span class="n">Car</span><span class="p">]</span>
+  <span class="n">river_trip</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">Bus</span><span class="p">,</span> <span class="n">Car</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+  <span class="n">mountain_trip</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">Bus</span><span class="p">,</span> <span class="n">Car</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">field</span><span class="p">(</span>
+      <span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;engine_name&quot;</span><span class="p">:</span> <span class="s2">&quot;honda&quot;</span><span class="p">})</span>
 
 <span class="n">UnionSchema</span><span class="o">.</span><span class="n">avro_schema</span><span class="p">()</span>
 
@@ -969,56 +984,16 @@
       <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;river_trip&quot;</span><span class="p">,</span>
       <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">[</span>
         <span class="s2">&quot;null&quot;</span><span class="p">,</span>
-        <span class="p">{</span>
-          <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;record&quot;</span><span class="p">,</span>
-          <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Bus&quot;</span><span class="p">,</span>
-          <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">[</span>
-            <span class="p">{</span>
-              <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;engine_name&quot;</span><span class="p">,</span>
-              <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
-            <span class="p">}</span>
-          <span class="p">],</span>
-          <span class="s2">&quot;doc&quot;</span><span class="p">:</span> <span class="s2">&quot;A Bus&quot;</span>
-        <span class="p">},</span>
-        <span class="p">{</span>
-          <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;record&quot;</span><span class="p">,</span>
-          <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Car&quot;</span><span class="p">,</span>
-          <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">[</span>
-            <span class="p">{</span>
-              <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;engine_name&quot;</span><span class="p">,</span>
-              <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
-            <span class="p">}</span>
-          <span class="p">],</span>
-          <span class="s2">&quot;doc&quot;</span><span class="p">:</span> <span class="s2">&quot;A Car&quot;</span>
-        <span class="p">}</span>
-      <span class="p">],</span>
+        <span class="s2">&quot;types.Bus&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;types.Car&quot;</span>
+      <span class="p">]</span>
       <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="n">null</span>
     <span class="p">},</span>
     <span class="p">{</span>
       <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;mountain_trip&quot;</span><span class="p">,</span>
       <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">[</span>
-        <span class="p">{</span>
-          <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;record&quot;</span><span class="p">,</span>
-          <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Bus&quot;</span><span class="p">,</span>
-          <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">[</span>
-            <span class="p">{</span>
-              <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;engine_name&quot;</span><span class="p">,</span>
-              <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
-            <span class="p">}</span>
-          <span class="p">],</span>
-          <span class="s2">&quot;doc&quot;</span><span class="p">:</span> <span class="s2">&quot;A Bus&quot;</span>
-        <span class="p">},</span>
-        <span class="p">{</span>
-          <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;record&quot;</span><span class="p">,</span>
-          <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Car&quot;</span><span class="p">,</span>
-          <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">[</span>
-            <span class="p">{</span>
-              <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;engine_name&quot;</span><span class="p">,</span>
-              <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
-            <span class="p">}</span>
-          <span class="p">],</span>
-          <span class="s2">&quot;doc&quot;</span><span class="p">:</span> <span class="s2">&quot;A Car&quot;</span>
-        <span class="p">}</span>
+        <span class="s2">&quot;types.Bus&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;types.Car&quot;</span>
       <span class="p">],</span>
       <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;engine_name&quot;</span><span class="p">:</span> <span class="s2">&quot;honda&quot;</span><span class="p">}</span>
     <span class="p">}</span>

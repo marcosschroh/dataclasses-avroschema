@@ -361,6 +361,8 @@
       <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
       
       
+        
+      
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
           Serialization
@@ -377,6 +379,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -385,8 +389,8 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#serialization" class="md-nav__link">
-    Serialization
+  <a href="#instances-serialization" class="md-nav__link">
+    Instances serialization
   </a>
   
 </li>
@@ -400,8 +404,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#deserialization-of-records-encoded-via-a-different-schema" class="md-nav__link">
-    Deserialization of records encoded via a different schema
+  <a href="#deserialization-using-a-different-schema" class="md-nav__link">
+    Deserialization using a different schema
   </a>
   
 </li>
@@ -570,6 +574,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -578,8 +584,8 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#serialization" class="md-nav__link">
-    Serialization
+  <a href="#instances-serialization" class="md-nav__link">
+    Instances serialization
   </a>
   
 </li>
@@ -593,8 +599,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#deserialization-of-records-encoded-via-a-different-schema" class="md-nav__link">
-    Deserialization of records encoded via a different schema
+  <a href="#deserialization-using-a-different-schema" class="md-nav__link">
+    Deserialization using a different schema
   </a>
   
 </li>
@@ -638,14 +644,11 @@
   </a>
 
 
-  <h1>Serialization</h1>
-
+<h1 id="serialization">Serialization</h1>
 <p>Is possible to <code>serialize/deserialize</code> with the correspondent avro schema generated and the dataclass.
 In both cases we can do it with <code>avro</code> or <code>avro-json</code>.</p>
-<h3 id="serialization">Serialization</h3>
-<p>For serialization is neccesary to use python class/dataclasses instance:</p>
+<h2 id="instances-serialization">Instances serialization</h2>
 <div class="highlight"><span class="filename">Avro and avro-json serialization</span><pre><span></span><code><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
-
 <span class="kn">import</span> <span class="nn">typing</span>
 
 <span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
@@ -656,6 +659,7 @@ In both cases we can do it with <code>avro</code> or <code>avro-json</code>.</p>
     <span class="s2">&quot;An Address&quot;</span>
     <span class="n">street</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">street_number</span><span class="p">:</span> <span class="nb">int</span>
+
 
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
@@ -691,18 +695,26 @@ In both cases we can do it with <code>avro</code> or <code>avro-json</code>.</p>
 <span class="c1"># python dict &gt;&gt;&gt; {&#39;name&#39;: &#39;john&#39;, &#39;age&#39;: 20, &#39;addresses&#39;: [{&#39;street&#39;: &#39;test&#39;, &#39;street_number&#39;: 10}]}</span>
 </code></pre></div>
 <p><em>(This script is complete, it should run "as is")</em></p>
-<h3 id="deserialization">Deserialization</h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For serialization is neccesary to use python <code>dataclasses</code></p>
+</div>
+<h2 id="deserialization">Deserialization</h2>
 <p>Deserialization could take place with an instance dataclass or the dataclass itself. Can return the dict representation or a new class instance.</p>
 <div class="highlight"><span class="filename">Avro and avro-json deserialization</span><pre><span></span><code><span class="kn">import</span> <span class="nn">typing</span>
+<span class="kn">import</span> <span class="nn">dataclasses</span>
 
 <span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
 
 
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span> <span class="nc">Address</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
     <span class="s2">&quot;An Address&quot;</span>
     <span class="n">street</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">street_number</span><span class="p">:</span> <span class="nb">int</span>
 
+
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
     <span class="s2">&quot;User with multiple Address&quot;</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
@@ -729,7 +741,7 @@ In both cases we can do it with <code>avro</code> or <code>avro-json</code>.</p>
 <span class="c1"># &gt;&gt;&gt; {&quot;name&quot;: &quot;john&quot;, &quot;age&quot;: 20, &quot;addresses&quot;: [{&quot;street&quot;: &quot;test&quot;, &quot;street_number&quot;: 10}]}</span>
 </code></pre></div>
 <p><em>(This script is complete, it should run "as is")</em></p>
-<h4 id="deserialization-of-records-encoded-via-a-different-schema">Deserialization of records encoded via a different schema</h4>
+<h3 id="deserialization-using-a-different-schema">Deserialization using a different schema</h3>
 <p>To deserialize data encoded via a different schema, one can pass an optional <code>writer_schema: AvroModel | dict[str, Any]</code> attribute. It will be used by the <strong>fastavro</strong>s <code>schemaless_reader</code>.</p>
 <div class="highlight"><span class="filename">Deserialization with different schemas</span><pre><span></span><code><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
@@ -759,11 +771,14 @@ In both cases we can do it with <code>avro</code> or <code>avro-json</code>.</p>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">deserialized_user</span> <span class="o">=</span> <span class="n">UserCompatible</span><span class="o">.</span><span class="n">deserialize</span><span class="p">(</span><span class="n">serialized_user</span><span class="p">,</span> <span class="n">writer_schema</span><span class="o">=</span><span class="n">User</span><span class="p">)</span>
 </code></pre></div>
 <p><em>(This script is complete, it should run "as is")</em></p>
-<h3 id="custom-serialization">Custom Serialization</h3>
+<h2 id="custom-serialization">Custom Serialization</h2>
 <p>The <code>serialization/deserialization</code> process is built over <a href="https://github.com/fastavro/fastavro">fastavro</a>. If you want to use another library or a different process, you can override the base <code>AvroModel</code>:</p>
-<div class="highlight"><span class="filename">Custom serialization</span><pre><span></span><code><span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
+<div class="highlight"><span class="filename">Custom serialization</span><pre><span></span><code><span class="kn">import</span> <span class="nn">dataclasses</span>
+
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
 
 
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span> <span class="nc">MyAvroModel</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
 
     <span class="o">...</span>
@@ -795,12 +810,13 @@ In both cases we can do it with <code>avro</code> or <code>avro-json</code>.</p>
 
 <span class="c1"># and then inherits from your custom AvroModel</span>
 
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span> <span class="nc">Address</span><span class="p">(</span><span class="n">MyAvroModel</span><span class="p">):</span>
     <span class="s2">&quot;An Address&quot;</span>
     <span class="n">street</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">street_number</span><span class="p">:</span> <span class="nb">int</span>
 </code></pre></div>
-<h3 id="encoding-for-unions-with-avro-json">Encoding for unions with avro-json</h3>
+<h2 id="encoding-for-unions-with-avro-json">Encoding for unions with avro-json</h2>
 <p>When you have an <code>union</code> and you want to serialize a <code>payload</code> using <code>avro-json</code> you will notice that the <code>type</code> is added to each <code>union</code> field.
 This is needed because after the serialization process you need to know the <code>type</code> in order to <code>deserialize</code>:</p>
 <div class="admonition warning annotate">

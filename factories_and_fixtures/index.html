@@ -525,15 +525,18 @@
 
 <p><a href="https://github.com/marcosschroh/dataclasses-avroschema">Dataclasses Avro Schema</a> also includes a <code>factory</code> feature, so you can generate <code>fast</code> python instances and use them, for example, to test your data streaming pipelines. Instances can be genrated using the <code>fake</code> method.</p>
 <div class="highlight"><span class="filename">Basic usage</span><pre><span></span><code><span class="kn">import</span> <span class="nn">typing</span>
+<span class="kn">import</span> <span class="nn">dataclasses</span>
 
 <span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
 
 
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span> <span class="nc">Address</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
     <span class="s2">&quot;An Address&quot;</span>
     <span class="n">street</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">street_number</span><span class="p">:</span> <span class="nb">int</span>
 
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
     <span class="s2">&quot;User with multiple Address&quot;</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>

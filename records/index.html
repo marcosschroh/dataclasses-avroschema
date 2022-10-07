@@ -331,6 +331,8 @@
       <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
       
       
+        
+      
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
           Records
@@ -347,6 +349,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -355,43 +359,44 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#records" class="md-nav__link">
-    Records
+  <a href="#basic-usage" class="md-nav__link">
+    Basic usage
   </a>
   
-    <nav class="md-nav" aria-label="Records">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
+</li>
+      
+        <li class="md-nav__item">
   <a href="#class-meta" class="md-nav__link">
     Class Meta
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#record-to-json-and-dict" class="md-nav__link">
     Record to json and dict
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#validation" class="md-nav__link">
     Validation
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#nested-schema-resolution-directly-from-dictionaries" class="md-nav__link">
     Nested schema resolution directly from dictionaries
   </a>
   
 </li>
-        
-      </ul>
-    </nav>
+      
+        <li class="md-nav__item">
+  <a href="#class-inheritance" class="md-nav__link">
+    Class inheritance
+  </a>
   
 </li>
       
@@ -570,6 +575,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -578,43 +585,44 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#records" class="md-nav__link">
-    Records
+  <a href="#basic-usage" class="md-nav__link">
+    Basic usage
   </a>
   
-    <nav class="md-nav" aria-label="Records">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
+</li>
+      
+        <li class="md-nav__item">
   <a href="#class-meta" class="md-nav__link">
     Class Meta
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#record-to-json-and-dict" class="md-nav__link">
     Record to json and dict
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#validation" class="md-nav__link">
     Validation
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#nested-schema-resolution-directly-from-dictionaries" class="md-nav__link">
     Nested schema resolution directly from dictionaries
   </a>
   
 </li>
-        
-      </ul>
-    </nav>
+      
+        <li class="md-nav__item">
+  <a href="#class-inheritance" class="md-nav__link">
+    Class inheritance
+  </a>
   
 </li>
       
@@ -638,15 +646,16 @@
   </a>
 
 
-  <h1>Records</h1>
-
-<h2 id="records">Records</h2>
-<p>Mapped as a Python class</p>
-<p>There are some special avro attributes like <code>aliases</code>, <code>namespace</code> and <code>doc</code> (both not required) that can be specified in a record type.</p>
+<h1 id="records">Records</h1>
+<p>Mapped as a Python class. There are some special avro attributes like <code>aliases</code>, <code>namespace</code> and <code>doc</code> (both not required) that can be specified in a record type.</p>
 <p>The <code>doc</code> attribute can be set via the docstring class. The <code>aliases</code> and <code>namespaces</code> must be set using <code>Class Meta</code>.</p>
-<div class="highlight"><span class="filename">Basic usage</span><pre><span></span><code><span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
+<h2 id="basic-usage">Basic usage</h2>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">dataclasses</span>
+
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
 
 
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
     <span class="s2">&quot;My User Class&quot;</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
@@ -675,7 +684,7 @@
 <span class="p">}</span><span class="s1">&#39;</span>
 </code></pre></div>
 <p><em>(This script is complete, it should run "as is")</em></p>
-<h3 id="class-meta">Class Meta</h3>
+<h2 id="class-meta">Class Meta</h2>
 <p>The <code>class Meta</code> is used to specify schema attributes that are not represented by the class fields like <code>namespace</code>, <code>aliases</code> and whether to include the <code>schema documentation</code>. One can also provide a custom schema name (the default is the class' name) via <code>schema_name</code> attribute and <code>alias_nested_items</code> when you have nested items and you want to use custom naming for them.</p>
 <div class="highlight"><span class="filename">Class Meta description</span><pre><span></span><code><span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
     <span class="n">schema_name</span> <span class="o">=</span> <span class="s2">&quot;Name other than the class name&quot;</span>
@@ -688,7 +697,7 @@
 <p><code>namespace (optional[str])</code>: Schema namespace. Default <code>None</code></p>
 <p><code>aliases (optional[List[str]])</code>: Schema aliases. Default <code>None</code></p>
 <p><code>alias_nested_items (optional[Dict[str, str]])</code>: Nested items names</p>
-<h3 id="record-to-json-and-dict">Record to json and dict</h3>
+<h2 id="record-to-json-and-dict">Record to json and dict</h2>
 <p>You can get the <code>json</code> and <code>dict</code> representation of your instance using <code>to_json</code> and <code>to_dict</code> methods:</p>
 <div class="highlight"><span class="filename">Json and Dict example</span><pre><span></span><code><span class="kn">import</span> <span class="nn">dataclasses</span>
 
@@ -713,7 +722,7 @@
 <span class="c1"># &gt;&gt;&gt; {&#39;name&#39;: &#39;Bond&#39;, &#39;age&#39;: 50, &#39;has_pets&#39;: False, &#39;money&#39;: 100.3}</span>
 </code></pre></div>
 <p><em>(This script is complete, it should run "as is")</em></p>
-<h3 id="validation">Validation</h3>
+<h2 id="validation">Validation</h2>
 <p>Python classes that inheritance from <code>AvroModel</code> has a <code>validate</code> method. This method <code>validates</code> whether the instance data matches
 the schema that it represents, for example:</p>
 <div class="highlight"><span class="filename">Validation example</span><pre><span></span><code><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
@@ -750,11 +759,10 @@ the schema that it represents, for example:</p>
 <span class="k">assert</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">exc</span><span class="o">.</span><span class="n">value</span><span class="p">))</span> <span class="o">==</span> <span class="p">[</span><span class="s2">&quot;User.name is &lt;1&gt; of type &lt;class &#39;int&#39;&gt; expected string&quot;</span><span class="p">]</span>
 </code></pre></div>
 <p><em>(This script is complete, it should run "as is")</em></p>
-<h3 id="nested-schema-resolution-directly-from-dictionaries">Nested schema resolution directly from dictionaries</h3>
+<h2 id="nested-schema-resolution-directly-from-dictionaries">Nested schema resolution directly from dictionaries</h2>
 <p>Sometimes you have a <code>dictionary</code> and you want to create an instance without creating the nested objects. This library follows
 the same approach as <code>pydantic</code> with <code>parse_obj</code> method. This is also valid for <code>avrodantic.AvroBaseModel</code>.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
-
 <span class="kn">import</span> <span class="nn">typing</span>
 
 <span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
@@ -784,6 +792,60 @@ the same approach as <code>pydantic</code> with <code>parse_obj</code> method. T
 
 <span class="n">user</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">parse_obj</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data_user</span><span class="p">)</span>
 <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">addresses</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">is</span> <span class="n">Address</span>
+</code></pre></div>
+<p><em>(This script is complete, it should run "as is")</em></p>
+<h2 id="class-inheritance">Class inheritance</h2>
+<p>It is possible to have inheritance so you do not have to repeat the same code. You need to be aware that parent classes might have
+attributes with default values and that can cause <code>TypeError: non-default argument</code> errors.</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>With Python 3.10, it is now possible to do it natively with dataclasses.
+Dataclasses 3.10 added the <code>kw_only</code> attribute (similar to attrs). It allows you to specify which fields are keyword_only,
+thus will be set at the end of the init, not causing an inheritance problem.</p>
+</div>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Parent</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Child</span><span class="p">(</span><span class="n">Parent</span><span class="p">):</span>
+    <span class="n">has_pets</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="n">money</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">encoded</span><span class="p">:</span> <span class="nb">bytes</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Child2</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">AvroModel</span><span class="p">):</span>
+    <span class="n">has_pets</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="n">money</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">encoded</span><span class="p">:</span> <span class="nb">bytes</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">schema_doc</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="n">Child2</span><span class="o">.</span><span class="n">avro_schema</span><span class="p">()</span>
+
+<span class="s1">&#39;{</span>
+  <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;record&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Child2&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;age&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;long&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;has_pets&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;boolean&quot;</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;money&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;double&quot;</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="mf">100.3</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;encoded&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;bytes&quot;</span><span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span><span class="s1">&#39;</span>
+
+
+<span class="k">assert</span> <span class="n">child_schema</span><span class="p">[</span><span class="s2">&quot;fields&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">child_2_schema</span><span class="p">[</span><span class="s2">&quot;fields&quot;</span><span class="p">]</span>
 </code></pre></div>
 <p><em>(This script is complete, it should run "as is")</em></p>
 

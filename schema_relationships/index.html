@@ -346,6 +346,8 @@
       <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
       
       
+        
+      
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
           Schema Relationships
@@ -362,6 +364,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -370,22 +374,9 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#schema-relationships" class="md-nav__link">
-    Schema Relationships
-  </a>
-  
-    <nav class="md-nav" aria-label="Schema Relationships">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
   <a href="#onetoone" class="md-nav__link">
     OneToOne
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -577,6 +568,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -585,22 +578,9 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#schema-relationships" class="md-nav__link">
-    Schema Relationships
-  </a>
-  
-    <nav class="md-nav" aria-label="Schema Relationships">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
   <a href="#onetoone" class="md-nav__link">
     OneToOne
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -652,13 +632,14 @@
   </a>
 
 
-  <h1>Schema Relationships</h1>
+<h1 id="schema-relationships">Schema Relationships</h1>
+<h2 id="onetoone">OneToOne</h2>
+<div class="highlight"><span class="filename">An User has one Address example</span><pre><span></span><code><span class="kn">import</span> <span class="nn">dataclasses</span>
 
-<h2 id="schema-relationships">Schema Relationships</h2>
-<h3 id="onetoone">OneToOne</h3>
-<div class="highlight"><span class="filename">An User has one Address example</span><pre><span></span><code><span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
 
 
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span> <span class="nc">Address</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
     <span class="s2">&quot;An Address&quot;</span>
     <span class="n">street</span><span class="p">:</span> <span class="nb">str</span>
@@ -696,10 +677,12 @@
 <p><em>(This script is complete, it should run "as is")</em></p>
 <h2 id="onetoone-recursive-schema-relationship">OneToOne Recursive Schema Relationship</h2>
 <div class="highlight"><span class="filename">An User with only one friend :-(</span><pre><span></span><code><span class="kn">import</span> <span class="nn">typing</span>
+<span class="kn">import</span> <span class="nn">dataclasses</span>
 
 <span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
 
 
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
     <span class="s2">&quot;User with self reference as friend&quot;</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
@@ -732,16 +715,19 @@
 <p><em>(This script is complete, it should run "as is")</em></p>
 <h2 id="onetomany-schema-relationship">OneToMany Schema Relationship</h2>
 <div class="highlight"><span class="filename">An User has multiple Address example</span><pre><span></span><code><span class="kn">import</span> <span class="nn">typing</span>
+<span class="kn">import</span> <span class="nn">dataclasses</span>
 
 <span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
 
 
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span> <span class="nc">Address</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
     <span class="s2">&quot;An Address&quot;</span>
     <span class="n">street</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">street_number</span><span class="p">:</span> <span class="nb">int</span>
 
 
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
     <span class="s2">&quot;User with multiple Address&quot;</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
@@ -777,16 +763,19 @@
 </code></pre></div>
 <p><em>(This script is complete, it should run "as is")</em></p>
 <div class="highlight"><span class="filename">OneToMany with Map example</span><pre><span></span><code><span class="kn">import</span> <span class="nn">typing</span>
+<span class="kn">import</span> <span class="nn">dataclasses</span>
 
 <span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
 
 
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span> <span class="nc">Address</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
     <span class="s2">&quot;An Address&quot;</span>
     <span class="n">street</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">street_number</span><span class="p">:</span> <span class="nb">int</span>
 
 
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
     <span class="s2">&quot;User with multiple Address&quot;</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
@@ -824,10 +813,13 @@
 <p><em>(This script is complete, it should run "as is")</em></p>
 <h2 id="onetomany-recursive-schema-relationship">OneToMany Recursive Schema Relationship</h2>
 <div class="highlight"><span class="filename">OneToMany recursive example</span><pre><span></span><code><span class="kn">import</span> <span class="nn">typing</span>
+<span class="kn">import</span> <span class="nn">dataclasses</span>
 
 <span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
 
+
 <span class="c1"># Using a List (Avro Array)</span>
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
     <span class="s2">&quot;User with self reference as friends&quot;</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
@@ -863,6 +855,7 @@
 <span class="p">}</span><span class="s1">&#39;</span>
 
 <span class="c1"># Using a Dict (Avro Map)</span>
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
   <span class="s2">&quot;User with self reference as friends&quot;</span>
   <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
@@ -957,7 +950,8 @@ For those cases, you <em>MUST</em> define the <code>namespace</code>.</p>
 </code></pre></div>
 <p><em>(This script is complete, it should run "as is")</em></p>
 <p>or with <code>arrays</code> or <code>maps</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Location</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
+<div class="highlight"><pre><span></span><code><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span> <span class="nc">Location</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
     <span class="n">latitude</span><span class="p">:</span> <span class="nb">float</span>
     <span class="n">longitude</span><span class="p">:</span> <span class="nb">float</span>
 
@@ -966,6 +960,7 @@ For those cases, you <em>MUST</em> define the <code>namespace</code>.</p>
         <span class="n">schema_doc</span> <span class="o">=</span> <span class="kc">False</span>
 
 
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span> <span class="nc">Trip</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
     <span class="n">start_location</span><span class="p">:</span> <span class="n">Location</span>
     <span class="n">finish_location</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="n">Location</span><span class="p">]</span>
@@ -1010,7 +1005,8 @@ For those cases, you <em>MUST</em> define the <code>namespace</code>.</p>
 <span class="w">  </span><span class="p">]</span><span class="w"></span>
 <span class="p">}</span><span class="err">&#39;</span><span class="w"></span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Location</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
+<div class="highlight"><pre><span></span><code><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span> <span class="nc">Location</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
     <span class="n">latitude</span><span class="p">:</span> <span class="nb">float</span>
     <span class="n">longitude</span><span class="p">:</span> <span class="nb">float</span>
 
@@ -1019,6 +1015,7 @@ For those cases, you <em>MUST</em> define the <code>namespace</code>.</p>
         <span class="n">schema_doc</span> <span class="o">=</span> <span class="kc">False</span>
 
 
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span> <span class="nc">Trip</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
     <span class="n">start_location</span><span class="p">:</span> <span class="n">Location</span>
     <span class="n">finish_location</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Location</span><span class="p">]</span>
@@ -1064,14 +1061,19 @@ For those cases, you <em>MUST</em> define the <code>namespace</code>.</p>
 </code></pre></div>
 <p><em>(This script is complete, it should run "as is")</em></p>
 <p>If you want, also you can use custom name for nested items (<code>nested records</code>, <code>arrays</code> or <code>maps</code>) using the property <code>alias_nested_items</code> in <code>class Meta</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">dataclasses</span>
+
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
 
 
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span> <span class="nc">Address</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
     <span class="s2">&quot;An Address&quot;</span>
     <span class="n">street</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">street_number</span><span class="p">:</span> <span class="nb">int</span>
 
+
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
     <span class="s2">&quot;An User with Address&quot;</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>

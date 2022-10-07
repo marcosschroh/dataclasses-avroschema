@@ -68,7 +68,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#available-cases" class="md-skip">
+        <a href="#case-schemas" class="md-skip">
           Skip to content
         </a>
       
@@ -406,6 +406,8 @@
       <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
       
       
+        
+      
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
           Case Schemas
@@ -422,6 +424,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -431,7 +435,7 @@
       
         <li class="md-nav__item">
   <a href="#available-cases" class="md-nav__link">
-    Available cases:
+    Available cases
   </a>
   
 </li>
@@ -536,6 +540,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -545,7 +551,7 @@
       
         <li class="md-nav__item">
   <a href="#available-cases" class="md-nav__link">
-    Available cases:
+    Available cases
   </a>
   
 </li>
@@ -570,11 +576,11 @@
   </a>
 
 
-  <h1>Case Schemas</h1>
-
+<h1 id="case-schemas">Case schemas</h1>
 <p>Sometimes we use <code>avro schemas</code> with different sources (some written in Scala, some in Python, etc). With the <code>case</code>
 you can generate your schemas according to your programming language convention:</p>
 <div class="highlight"><span class="filename">Example with CAPITALCASE</span><pre><span></span><code><span class="kn">import</span> <span class="nn">typing</span>
+<span class="kn">import</span> <span class="nn">dataclasses</span>
 <span class="kn">import</span> <span class="nn">enum</span>
 
 <span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">types</span>
@@ -587,6 +593,7 @@ you can generate your schemas according to your programming language convention:
     <span class="n">GREEN</span> <span class="o">=</span> <span class="s2">&quot;GREEN&quot;</span>
 
 
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span> <span class="nc">UserAdvance</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
@@ -630,7 +637,7 @@ you can generate your schemas according to your programming language convention:
 <span class="p">}</span><span class="err">&#39;</span><span class="w"></span>
 </code></pre></div>
 <p><em>(This script is complete, it should run "as is")</em></p>
-<h3 id="available-cases">Available cases:</h3>
+<h2 id="available-cases">Available cases</h2>
 <table>
 <thead>
 <tr>

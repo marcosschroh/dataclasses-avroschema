@@ -687,11 +687,14 @@
 </table>
 <h2 id="date">Date</h2>
 <div class="highlight"><span class="filename">Date example</span><pre><span></span><code><span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">dataclasses</span>
 
 <span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
 
 <span class="n">a_datetime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2019</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">57</span><span class="p">,</span> <span class="mi">42</span><span class="p">)</span>
 
+
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span> <span class="nc">DateLogicalType</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
     <span class="s2">&quot;Date type&quot;</span>
     <span class="n">birthday</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span>
@@ -735,12 +738,14 @@
 <p><em>(This script is complete, it should run "as is")</em></p>
 <h2 id="time">Time</h2>
 <div class="highlight"><span class="filename">Time example</span><pre><span></span><code><span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">dataclasses</span>
 
 <span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span><span class="p">,</span> <span class="n">TimeMicro</span>
 
 <span class="n">a_datetime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2019</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">57</span><span class="p">,</span> <span class="mi">42</span><span class="p">)</span>
 
 
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span> <span class="nc">TimeLogicalTypes</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
     <span class="s2">&quot;Time logical types&quot;</span>
     <span class="n">birthday_time</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">time</span>
@@ -794,11 +799,14 @@
 </div>
 <h2 id="datetime">Datetime</h2>
 <div class="highlight"><span class="filename">DateTime example</span><pre><span></span><code><span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">dataclasses</span>
 
 <span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span><span class="p">,</span> <span class="n">DateTimeMicro</span>
 
 <span class="n">a_datetime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2019</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">57</span><span class="p">,</span> <span class="mi">42</span><span class="p">)</span>
 
+
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span> <span class="nc">DatetimeLogicalType</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
     <span class="s2">&quot;Datetime logical types&quot;</span>
     <span class="n">birthday</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span>
@@ -853,10 +861,12 @@
 </div>
 <h2 id="uuid">UUID</h2>
 <div class="highlight"><span class="filename">UUID example</span><pre><span></span><code><span class="kn">import</span> <span class="nn">uuid</span>
+<span class="kn">import</span> <span class="nn">dataclasses</span>
 
 <span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
 
 
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span> <span class="nc">UUIDLogicalTypes</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
     <span class="s2">&quot;UUID logical types&quot;</span>
     <span class="n">uuid_1</span><span class="p">:</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span>
@@ -914,10 +924,12 @@
     <span class="c1"># scale = 51, precision = 52</span>
 </code></pre></div></p>
 <div class="highlight"><span class="filename">Decimal example</span><pre><span></span><code><span class="kn">import</span> <span class="nn">decimal</span>
+<span class="kn">import</span> <span class="nn">dataclasses</span>
 
 <span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span><span class="p">,</span> <span class="n">types</span>
 
 
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span> <span class="nc">DecimalLogicalTypes</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
     <span class="s2">&quot;Decimal logical types&quot;</span>
     <span class="n">explicit</span><span class="p">:</span> <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span> <span class="o">=</span> <span class="n">types</span><span class="o">.</span><span class="n">Decimal</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>

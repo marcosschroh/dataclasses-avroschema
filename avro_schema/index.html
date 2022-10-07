@@ -677,8 +677,11 @@ We can think a <code>avro Record</code> as an analogous to a <code>python class<
 </code></pre></div>
 <h3 id="from-a-python-class-to-the-avro-schema">From a Python class to the Avro Schema</h3>
 <p>Image that you have to define the previous <code>User</code> schema but you do not know avro, you know python:</p>
-<div class="highlight"><span class="filename">Generate the avro schema from a class</span><pre><span></span><code><span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
+<div class="highlight"><span class="filename">Generate the avro schema from a class</span><pre><span></span><code><span class="kn">import</span> <span class="nn">dataclasses</span>
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
 
+
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
