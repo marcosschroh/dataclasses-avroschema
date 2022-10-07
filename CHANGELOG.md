@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [0.31.3] - 2022-10-07
+
+- utils refactor. @dataclass decorator included in all code examples. Inheritance example added.
+
+### Fixed
+
 ## [0.31.2] - 2022-10-03
 
 - UnknownType on serialization with intermediates schemas [201](https://github.com/marcosschroh/dataclasses-avroschema/pull/201)
