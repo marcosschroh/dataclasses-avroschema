@@ -118,6 +118,7 @@ class Address(AvroModel):
     street: str
     street_number: int
 
+
 @dataclass
 class User(AvroModel):
     "User with multiple Address"
@@ -164,15 +165,18 @@ Deserialization could take place with an instance dataclass or the dataclass its
 
 ```python
 import typing
+import dataclasses
 
 from dataclasses_avroschema import AvroModel
 
 
+@dataclasses.dataclass
 class Address(AvroModel):
     "An Address"
     street: str
     street_number: int
 
+@dataclasses.dataclass
 class User(AvroModel):
     "User with multiple Address"
     name: str
@@ -206,6 +210,8 @@ To add `dataclasses-avroschema` functionality to `pydantic` you only need to rep
 ```python
 import typing
 import enum
+import dataclasses
+
 from dataclasses_avroschema.avrodantic import AvroBaseModel
 
 from pydantic import Field
@@ -217,6 +223,7 @@ class FavoriteColor(str, enum.Enum):
     GREEN = "GREEN"
 
 
+@dataclasses.dataclass
 class UserAdvance(AvroBaseModel):
     name: str
     age: int
@@ -287,15 +294,19 @@ Also, there are two `redis` examples using `redis streams` with [walrus](https:/
 
 ```python
 import typing
+import dataclasses
 
 from dataclasses_avroschema import AvroModel
 
 
+@dataclasses.dataclass
 class Address(AvroModel):
     "An Address"
     street: str
     street_number: int
 
+
+@dataclasses.dataclass
 class User(AvroModel):
     "User with multiple Address"
     name: str

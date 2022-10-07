@@ -2,7 +2,10 @@
 
 It is possible to use [pydantic](https://pydantic-docs.helpmanual.io/) with `dataclasses-avroschema` making use of `AvroBaseModel`:
 
-You must use use all the `pydantic` features and all `dataclasses-avroschema` functionality will be injected. 
+You must use use all the `pydantic` features and all `dataclasses-avroschema` functionality will be injected.
+
+!!! note
+    With `pydantic` you do not have to use `python dataclasses`
 
 ## Avro and Json schemas
 

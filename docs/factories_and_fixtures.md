@@ -2,15 +2,18 @@
 
 ```python title="Basic usage"
 import typing
+import dataclasses
 
 from dataclasses_avroschema import AvroModel
 
 
+@dataclasses.dataclass
 class Address(AvroModel):
     "An Address"
     street: str
     street_number: int
 
+@dataclasses.dataclass
 class User(AvroModel):
     "User with multiple Address"
     name: str

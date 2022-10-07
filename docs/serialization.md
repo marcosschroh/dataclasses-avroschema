@@ -1,13 +1,12 @@
+# Serialization
+
 Is possible to `serialize/deserialize` with the correspondent avro schema generated and the dataclass.
 In both cases we can do it with `avro` or `avro-json`.
 
-### Serialization
-
-For serialization is neccesary to use python class/dataclasses instance:
+## Instances serialization
 
 ```python title="Avro and avro-json serialization"
 from dataclasses import dataclass
-
 import typing
 
 from dataclasses_avroschema import AvroModel
@@ -18,6 +17,7 @@ class Address(AvroModel):
     "An Address"
     street: str
     street_number: int
+
 
 @dataclass
 class User(AvroModel):
@@ -55,21 +55,28 @@ user.to_json()
 
 *(This script is complete, it should run "as is")*
 
-### Deserialization
+!!! note
+    For serialization is neccesary to use python `dataclasses`
+
+## Deserialization
 
 Deserialization could take place with an instance dataclass or the dataclass itself. Can return the dict representation or a new class instance.
 
 ```python title="Avro and avro-json deserialization"
 import typing
+import dataclasses
 
 from dataclasses_avroschema import AvroModel
 
 
+@dataclasses.dataclass
 class Address(AvroModel):
     "An Address"
     street: str
     street_number: int
 
+
+@dataclasses.dataclass
 class User(AvroModel):
     "User with multiple Address"
     name: str
@@ -98,7 +105,8 @@ User.deserialize(avro_json_binary, serialization_type="avro-json", create_instan
 
 *(This script is complete, it should run "as is")*
 
-#### Deserialization of records encoded via a different schema
+### Deserialization using a different schema
+
 To deserialize data encoded via a different schema, one can pass an optional `writer_schema: AvroModel | dict[str, Any]` attribute. It will be used by the **fastavro**s `schemaless_reader`.
 
 ```python title="Deserialization with different schemas"
@@ -132,14 +140,17 @@ user_data = {
 
 *(This script is complete, it should run "as is")*
 
-### Custom Serialization
+## Custom Serialization
 
 The `serialization/deserialization` process is built over [fastavro](https://github.com/fastavro/fastavro). If you want to use another library or a different process, you can override the base `AvroModel`:
 
 ```python title="Custom serialization"
+import dataclasses
+
 from dataclasses_avroschema import AvroModel
 
 
+@dataclasses.dataclass
 class MyAvroModel(AvroModel):
 
     ...
@@ -171,13 +182,14 @@ class MyAvroModel(AvroModel):
 
 # and then inherits from your custom AvroModel
 
+@dataclasses.dataclass
 class Address(MyAvroModel):
     "An Address"
     street: str
     street_number: int
 ```
 
-### Encoding for unions with avro-json
+## Encoding for unions with avro-json
 
 When you have an `union` and you want to serialize a `payload` using `avro-json` you will notice that the `type` is added to each `union` field.
 This is needed because after the serialization process you need to know the `type` in order to `deserialize`:

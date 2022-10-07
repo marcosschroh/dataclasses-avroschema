@@ -1,15 +1,18 @@
-## Records
+# Records
 
-Mapped as a Python class
-
-There are some special avro attributes like `aliases`, `namespace` and `doc` (both not required) that can be specified in a record type.
+Mapped as a Python class. There are some special avro attributes like `aliases`, `namespace` and `doc` (both not required) that can be specified in a record type.
 
 The `doc` attribute can be set via the docstring class. The `aliases` and `namespaces` must be set using `Class Meta`.
 
-```python title="Basic usage"
+## Basic usage
+
+```python
+import dataclasses
+
 from dataclasses_avroschema import AvroModel
 
 
+@dataclasses.dataclass
 class User(AvroModel):
     "My User Class"
     name: str
@@ -40,7 +43,7 @@ User.avro_schema()
 
 *(This script is complete, it should run "as is")*
 
-### Class Meta
+## Class Meta
 
 The `class Meta` is used to specify schema attributes that are not represented by the class fields like `namespace`, `aliases` and whether to include the `schema documentation`. One can also provide a custom schema name (the default is the class' name) via `schema_name` attribute and `alias_nested_items` when you have nested items and you want to use custom naming for them.
 
@@ -61,7 +64,7 @@ class Meta:
 
 `alias_nested_items (optional[Dict[str, str]])`: Nested items names
 
-### Record to json and dict 
+## Record to json and dict
 
 You can get the `json` and `dict` representation of your instance using `to_json` and `to_dict` methods:
 
@@ -91,7 +94,7 @@ user.to_dict()
 
 *(This script is complete, it should run "as is")*
 
-### Validation
+## Validation
 
 Python classes that inheritance from `AvroModel` has a `validate` method. This method `validates` whether the instance data matches
 the schema that it represents, for example:
@@ -133,15 +136,13 @@ assert json.loads(str(exc.value)) == ["User.name is <1> of type <class 'int'> ex
 
 *(This script is complete, it should run "as is")*
 
-
-### Nested schema resolution directly from dictionaries
+## Nested schema resolution directly from dictionaries
 
 Sometimes you have a `dictionary` and you want to create an instance without creating the nested objects. This library follows
 the same approach as `pydantic` with `parse_obj` method. This is also valid for `avrodantic.AvroBaseModel`.
 
 ```python
 from dataclasses import dataclass
-
 import typing
 
 from dataclasses_avroschema import AvroModel
@@ -171,6 +172,64 @@ data_user = {
 
 user = User.parse_obj(data=data_user)
 assert type(user.addresses[0]) is Address
+```
+
+*(This script is complete, it should run "as is")*
+
+## Class inheritance
+
+It is possible to have inheritance so you do not have to repeat the same code. You need to be aware that parent classes might have
+attributes with default values and that can cause `TypeError: non-default argument` errors.
+
+!!! hint
+    With Python 3.10, it is now possible to do it natively with dataclasses.
+    Dataclasses 3.10 added the `kw_only` attribute (similar to attrs). It allows you to specify which fields are keyword_only,
+    thus will be set at the end of the init, not causing an inheritance problem.
+
+```python
+from dataclasses import dataclass
+
+from dataclasses_avroschema import AvroModel
+
+
+@dataclass
+class Parent(AvroModel):
+    name: str
+    age: int
+
+
+@dataclass
+class Child(Parent):
+    has_pets: bool
+    money: float
+    encoded: bytes
+
+
+@dataclass
+class Child2(Parent, AvroModel):
+    has_pets: bool
+    money: float
+    encoded: bytes
+
+    class Meta:
+        schema_doc = False
+
+Child2.avro_schema()
+
+'{
+  "type": "record",
+  "name": "Child2",
+  "fields": [
+    {"name": "name", "type": "string"},
+    {"name": "age", "type": "long"},
+    {"name": "has_pets", "type": "boolean", "default": false},
+    {"name": "money", "type": "double", "default": 100.3},
+    {"name": "encoded", "type": "bytes"}
+  ]
+}'
+
+
+assert child_schema["fields"] == child_2_schema["fields"]
 ```
 
 *(This script is complete, it should run "as is")*

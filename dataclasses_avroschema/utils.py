@@ -1,5 +1,5 @@
+import dataclasses
 import typing
-from dataclasses import dataclass, field
 from datetime import datetime
 
 from pytz import utc
@@ -22,6 +22,10 @@ def is_pydantic_model(klass: type) -> bool:
     if pydantic is not None:
         return issubclass(klass, pydantic.BaseModel)
     return False
+
+
+def is_dataclass_or_pydantic_model(type: type) -> bool:
+    return dataclasses.is_dataclass(type) or is_pydantic_model(type)
 
 
 def is_faust_model(klass: type) -> bool:
@@ -73,13 +77,13 @@ def is_custom_type(value: typing.Any) -> bool:
     return isinstance(value, dict) and value.get("_dataclasses_custom_type") in CUSTOM_TYPES
 
 
-@dataclass
+@dataclasses.dataclass
 class SchemaMetadata:
     schema_name: typing.Optional[str] = None
     schema_doc: typing.Union[bool, str] = True
     namespace: typing.Optional[typing.List[str]] = None
     aliases: typing.Optional[typing.List[str]] = None
-    alias_nested_items: typing.Dict[str, str] = field(default_factory=dict)
+    alias_nested_items: typing.Dict[str, str] = dataclasses.field(default_factory=dict)
     time_precision: str = field_utils.TIME_MILLIS
     datetime_precision: str = field_utils.TIMESTAMP_MILLIS
 
@@ -99,9 +103,9 @@ class SchemaMetadata:
         return self.alias_nested_items.get(name)
 
 
-@dataclass
+@dataclasses.dataclass
 class FieldMetadata:
-    aliases: typing.List[str] = field(default_factory=list)
+    aliases: typing.List[str] = dataclasses.field(default_factory=list)
     doc: typing.Optional[str] = None
     namespace: typing.Optional[str] = None
 

@@ -7,6 +7,7 @@ from fastavro.validation import ValidationError
 
 from dataclasses_avroschema import AvroModel, exceptions
 from dataclasses_avroschema.schema_definition import BaseSchemaDefinition
+from dataclasses_avroschema.types import JsonDict
 
 encoded = "test".encode()
 
@@ -302,3 +303,27 @@ def test_parse_obj():
     user = User.parse_obj(data=data_user)
     assert type(user.addresses[0]) is Address
     assert User.avro_schema()
+
+
+def test_inheritance(user_avro_json: JsonDict) -> None:
+    @dataclass
+    class Parent(AvroModel):
+        name: str
+        age: int
+
+    @dataclass
+    class Child(Parent):
+        has_pets: bool
+        money: float
+        encoded: bytes
+
+    @dataclass
+    class Child2(Parent, AvroModel):
+        has_pets: bool
+        money: float
+        encoded: bytes
+
+    child_schema = Child.avro_schema_to_python()
+    child_2_schema = Child2.avro_schema_to_python()
+
+    assert child_schema["fields"] == child_2_schema["fields"] == user_avro_json["fields"]

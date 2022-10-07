@@ -1,11 +1,14 @@
-## Schema Relationships
+# Schema Relationships
 
-### OneToOne
+## OneToOne
 
 ```python title="An User has one Address example"
+import dataclasses
+
 from dataclasses_avroschema import AvroModel
 
 
+@dataclasses.dataclass
 class Address(AvroModel):
     "An Address"
     street: str
@@ -47,10 +50,12 @@ User.avro_schema()
 
 ```python title="An User with only one friend :-("
 import typing
+import dataclasses
 
 from dataclasses_avroschema import AvroModel
 
 
+@dataclasses.dataclass
 class User(AvroModel):
     "User with self reference as friend"
     name: str
@@ -87,16 +92,19 @@ User.avro_schema()
 
 ```python title="An User has multiple Address example"
 import typing
+import dataclasses
 
 from dataclasses_avroschema import AvroModel
 
 
+@dataclasses.dataclass
 class Address(AvroModel):
     "An Address"
     street: str
     street_number: int
 
 
+@dataclasses.dataclass
 class User(AvroModel):
     "User with multiple Address"
     name: str
@@ -135,16 +143,19 @@ User.avro_schema()
 
 ```python title="OneToMany with Map example"
 import typing
+import dataclasses
 
 from dataclasses_avroschema import AvroModel
 
 
+@dataclasses.dataclass
 class Address(AvroModel):
     "An Address"
     street: str
     street_number: int
 
 
+@dataclasses.dataclass
 class User(AvroModel):
     "User with multiple Address"
     name: str
@@ -186,10 +197,13 @@ User.avro_schema()
 
 ```python title="OneToMany recursive example"
 import typing
+import dataclasses
 
 from dataclasses_avroschema import AvroModel
 
+
 # Using a List (Avro Array)
+@dataclasses.dataclass
 class User(AvroModel):
     "User with self reference as friends"
     name: str
@@ -225,6 +239,7 @@ User.avro_schema()
 }'
 
 # Using a Dict (Avro Map)
+@dataclasses.dataclass
 class User(AvroModel):
   "User with self reference as friends"
   name: str
@@ -330,6 +345,7 @@ Trip.avro_schema()
 or with `arrays` or `maps`:
 
 ```python
+@dataclasses.dataclass
 class Location(AvroModel):
     latitude: float
     longitude: float
@@ -339,6 +355,7 @@ class Location(AvroModel):
         schema_doc = False
 
 
+@dataclasses.dataclass
 class Trip(AvroModel):
     start_location: Location
     finish_location: typing.List[Location]
@@ -387,6 +404,7 @@ Trip.avro_schema()
 ```
 
 ```python
+@dataclasses.dataclass
 class Location(AvroModel):
     latitude: float
     longitude: float
@@ -396,6 +414,7 @@ class Location(AvroModel):
         schema_doc = False
 
 
+@dataclasses.dataclass
 class Trip(AvroModel):
     start_location: Location
     finish_location: typing.Dict[str, Location]
@@ -447,14 +466,19 @@ Trip.avro_schema()
 If you want, also you can use custom name for nested items (`nested records`, `arrays` or `maps`) using the property `alias_nested_items` in `class Meta`:
 
 ```python
+import dataclasses
+
 from dataclasses_avroschema import AvroModel
 
 
+@dataclasses.dataclass
 class Address(AvroModel):
     "An Address"
     street: str
     street_number: int
 
+
+@dataclasses.dataclass
 class User(AvroModel):
     "An User with Address"
     name: str

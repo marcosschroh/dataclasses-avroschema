@@ -1,3 +1,5 @@
+# Primitive Types
+
 The following list represent the avro primitive types mapped to python types:
 
 | Avro Type    | Python Type |
@@ -9,13 +11,15 @@ The following list represent the avro primitive types mapped to python types:
 | null         |     None    |
 | bytes        |     bytes   |
 
-
-### Examples
+## Examples
 
 ```python title="Primitive types"
+import dataclasses
+
 from dataclasses_avroschema import AvroModel, types
 
 
+@dataclasses.dataclass
 class User(AvroModel):
     "An User"
     name: str
@@ -68,10 +72,15 @@ User.avro_schema()
 
 *(This script is complete, it should run "as is")*
 
-```python title="Primitive types with defaul values"
-from dataclasses_avroschema import AvroModel
+## Examples with default values
+
+```python
+import dataclasses
+
+from dataclasses_avroschema import AvroModel, types
 
 
+@dataclasses.dataclass
 class User(AvroModel):
     "An User"
     name: str = None
@@ -129,9 +138,19 @@ User.avro_schema()
   ],
   "doc": "An User"
 }'
+```
 
-# Or with null as a second type argument:
+*(This script is complete, it should run "as is")*
 
+## Examples with `null`
+
+```python
+import dataclasses
+
+from dataclasses_avroschema import AvroModel, types
+
+
+@dataclasses.dataclass
 class User(AvroModel):
     "An User"
     name: str = 'Juan'
