@@ -17,11 +17,14 @@ The following list represent the avro logical types mapped to python types:
 
 ```python title="Date example"
 import datetime
+import dataclasses
 
 from dataclasses_avroschema import AvroModel
 
 a_datetime = datetime.datetime(2019, 10, 12, 17, 57, 42)
 
+
+@dataclasses.dataclass
 class DateLogicalType(AvroModel):
     "Date type"
     birthday: datetime.date
@@ -69,12 +72,14 @@ DateLogicalType.avro_schema()
 
 ```python title="Time example"
 import datetime
+import dataclasses
 
 from dataclasses_avroschema import AvroModel, TimeMicro
 
 a_datetime = datetime.datetime(2019, 10, 12, 17, 57, 42)
 
 
+@dataclasses.dataclass
 class TimeLogicalTypes(AvroModel):
     "Time logical types"
     birthday_time: datetime.time
@@ -131,11 +136,14 @@ TimeLogicalTypes.avro_schema()
 
 ```python title="DateTime example"
 import datetime
+import dataclasses
 
 from dataclasses_avroschema import AvroModel, DateTimeMicro
 
 a_datetime = datetime.datetime(2019, 10, 12, 17, 57, 42)
 
+
+@dataclasses.dataclass
 class DatetimeLogicalType(AvroModel):
     "Datetime logical types"
     birthday: datetime.datetime
@@ -193,10 +201,12 @@ DatetimeLogicalType.avro_schema()
 
 ```python title="UUID example"
 import uuid
+import dataclasses
 
 from dataclasses_avroschema import AvroModel
 
 
+@dataclasses.dataclass
 class UUIDLogicalTypes(AvroModel):
     "UUID logical types"
     uuid_1: uuid.uuid4
@@ -261,10 +271,12 @@ The below code shows an example on how to use decimals. There's a few important 
 
 ```python title="Decimal example"
 import decimal
+import dataclasses
 
 from dataclasses_avroschema import AvroModel, types
 
 
+@dataclasses.dataclass
 class DecimalLogicalTypes(AvroModel):
     "Decimal logical types"
     explicit: decimal.Decimal = types.Decimal(scale=2, precision=3)

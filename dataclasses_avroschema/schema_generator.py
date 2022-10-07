@@ -13,7 +13,7 @@ from .fields import EnumField, FieldType, RecordField, UnionField
 from .schema_definition import AvroSchemaDefinition
 from .serialization import deserialize, serialize, to_json
 from .types import JsonDict
-from .utils import SchemaMetadata, is_custom_type, is_pydantic_model
+from .utils import SchemaMetadata, is_custom_type, is_dataclass_or_pydantic_model
 
 AVRO = "avro"
 AVRO_JSON = "avro-json"
@@ -32,7 +32,7 @@ class AvroModel:
 
     @classmethod
     def generate_dataclass(cls: Type[CT]) -> Type[CT]:
-        if dataclasses.is_dataclass(cls) or is_pydantic_model(cls):
+        if is_dataclass_or_pydantic_model(cls):
             return cls
         return dataclasses.dataclass(cls)
 

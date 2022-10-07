@@ -10,6 +10,7 @@ import typing
 from dataclasses_avroschema import AvroModel
 
 
+@dataclasses.dataclass
 class UserAdvance(faust.Record, AvroModel):
     name: str
     age: int

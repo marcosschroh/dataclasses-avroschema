@@ -16,6 +16,7 @@ The following list represent the avro complex types mapped to python types:
 
 ```python title="Enum example"
 import enum
+import dataclasses
 
 from dataclasses_avroschema import AvroModel
 
@@ -30,6 +31,8 @@ class FavoriteColor(enum.Enum):
         namespace = "some.name.space"
         aliases = ["Color", "My favorite color"]
 
+
+@dataclasses.dataclass
 class User(AvroModel):
     "An User"
     favorite_color: FavoriteColor = FavoriteColor.BLUE
@@ -70,12 +73,12 @@ User.avro_schema()
 
 ```python title="Array example"
 import dataclasses
-
 import typing
 
 from dataclasses_avroschema import AvroModel
 
 
+@dataclasses.dataclass
 class UserAdvance(AvroModel):
     "User advanced"
     pets: typing.List[str]
@@ -124,12 +127,12 @@ UserAdvance.avro_schema()
 
 ```python title="Map example"
 import dataclasses
-
 import typing
 
 from dataclasses_avroschema import AvroModel
 
 
+@dataclasses.dataclass
 class UserAdvance(AvroModel):
     "User advanced"
     accounts_money: typing.Dict[str, float]
@@ -177,10 +180,12 @@ UserAdvance.avro_schema()
 
 ```python title="Fixed example"
 import typing
+import dataclasses
 
 from dataclasses_avroschema import AvroModel, types
 
 
+@dataclasses.dataclass
 class UserAdvance(AvroModel):
     name: str
     md5: types.Fixed = types.Fixed(16, namespace='md5', aliases=["md5", "hash"])
@@ -207,6 +212,8 @@ import uuid
 
 from dataclasses_avroschema import AvroModel
 
+
+@dataclasses.dataclass
 class UnionSchema(AvroModel):
     "Some Unions"
     first_union: typing.Union[str, int]
@@ -232,23 +239,31 @@ UnionSchema.avro_schema()
 }
 
 # Union with Records
-
+@dataclasses.dataclass
 class Bus(AvroModel):
     "A Bus"
     engine_name: str
 
+    class Meta:
+        namespace = "types"
 
+
+@dataclasses.dataclass
 class Car(AvroModel):
     "A Car"
     engine_name: str
 
+    class Meta:
+        namespace = "types"
 
- class UnionSchema(AvroModel):
-    "Some Unions"
-    lake_trip: typing.Union[Bus, Car]
-    river_trip: typing.Union[Bus, Car] = None
-    mountain_trip: typing.Union[Bus, Car] = dataclasses.field(
-        default_factory=lambda: {"engine_name": "honda"})
+
+@dataclasses.dataclass
+class UnionSchema(AvroModel):
+  "Some Unions"
+  lake_trip: typing.Union[Bus, Car]
+  river_trip: typing.Union[Bus, Car] = None
+  mountain_trip: typing.Union[Bus, Car] = dataclasses.field(
+      default_factory=lambda: {"engine_name": "honda"})
 
 UnionSchema.avro_schema()
 
@@ -287,56 +302,16 @@ UnionSchema.avro_schema()
       "name": "river_trip",
       "type": [
         "null",
-        {
-          "type": "record",
-          "name": "Bus",
-          "fields": [
-            {
-              "name": "engine_name",
-              "type": "string"
-            }
-          ],
-          "doc": "A Bus"
-        },
-        {
-          "type": "record",
-          "name": "Car",
-          "fields": [
-            {
-              "name": "engine_name",
-              "type": "string"
-            }
-          ],
-          "doc": "A Car"
-        }
-      ],
+        "types.Bus",
+        "types.Car"
+      ]
       "default": null
     },
     {
       "name": "mountain_trip",
       "type": [
-        {
-          "type": "record",
-          "name": "Bus",
-          "fields": [
-            {
-              "name": "engine_name",
-              "type": "string"
-            }
-          ],
-          "doc": "A Bus"
-        },
-        {
-          "type": "record",
-          "name": "Car",
-          "fields": [
-            {
-              "name": "engine_name",
-              "type": "string"
-            }
-          ],
-          "doc": "A Car"
-        }
+        "types.Bus",
+        "types.Car"
       ],
       "default": {"engine_name": "honda"}
     }

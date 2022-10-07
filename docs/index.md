@@ -30,6 +30,7 @@ pip install dataclasses-avroschema[pydantic]
 ```python title="Trival Usage"
 import enum
 import typing
+import dataclasses
 
 from dataclasses_avroschema import AvroModel
 
@@ -40,6 +41,7 @@ class FavoriteColor(enum.Enum):
     GREEN = "Green"
 
 
+@dataclasses.dataclass
 class User(AvroModel):
     "An User"
     name: str

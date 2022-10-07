@@ -1,8 +1,11 @@
+# Case schemas
+
 Sometimes we use `avro schemas` with different sources (some written in Scala, some in Python, etc). With the `case`
 you can generate your schemas according to your programming language convention:
 
 ```python  title="Example with CAPITALCASE"
 import typing
+import dataclasses
 import enum
 
 from dataclasses_avroschema import AvroModel, case, types
@@ -15,6 +18,7 @@ class FavoriteColor(enum.Enum):
     GREEN = "GREEN"
 
 
+@dataclasses.dataclass
 class UserAdvance(AvroModel):
     name: str
     age: int
@@ -62,7 +66,7 @@ UserAdvance.avro_schema(case_type=case.CAPITALCASE)
 
 *(This script is complete, it should run "as is")*
 
-### Available cases:
+## Available cases
 
 |Case| Example|
 |----|--------|
