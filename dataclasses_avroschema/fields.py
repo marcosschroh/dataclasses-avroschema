@@ -117,6 +117,14 @@ PythonImmutableTypes = typing.Union[
 
 @dataclasses.dataclass  # type: ignore
 class BaseField:
+
+    __slots__ = (
+        "name",
+        "type",
+        "default",
+        "parent",
+    )
+
     name: str
     type: typing.Any  # store the python primitive type
     default: typing.Any
@@ -125,7 +133,7 @@ class BaseField:
     model_metadata: typing.Optional[utils.SchemaMetadata] = None
 
     def __post_init__(self) -> None:
-        self.model_metadata = self.model_metadata or utils.SchemaMetadata()
+        self.model_metadata = self.model_metadata or utils.SchemaMetadata()  # type: ignore
 
     @property
     def avro_type(self) -> typing.Union[str, typing.Dict]:
