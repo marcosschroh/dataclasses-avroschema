@@ -221,7 +221,15 @@ class AvroModel:
         }
 
     @classmethod
-    def fake(cls: Type[CT]) -> CT:
-        payload = {field.name: field.fake() for field in cls.get_fields()}
+    def fake(cls: Type[CT], **data: Dict[str, Any]) -> CT:
+        """
+        Creates a fake instance of the model.
+
+        Attributes:
+            data: Dict[str, Any] represent the user values to use in the instance
+        """
+        # only generate fakes for fields that were not provided in data
+        payload = {field.name: field.fake() for field in cls.get_fields() if field.name not in data.keys()}
+        payload.update(data)
 
         return from_dict(data_class=cls, data=payload, config=Config(**cls.config()))
