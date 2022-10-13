@@ -13,6 +13,13 @@ class BaseSchemaDefinition(abc.ABC):
     Minimal Schema definition
     """
 
+    __slots__ = (
+        "type",
+        "klass",
+        "parent",
+        "matadata",
+    )
+
     type: str
     klass: typing.Any
     parent: typing.Any
@@ -42,6 +49,7 @@ class BaseSchemaDefinition(abc.ABC):
 
 @dataclasses.dataclass
 class AvroSchemaDefinition(BaseSchemaDefinition):
+
     fields: typing.List[FieldType] = dataclasses.field(default_factory=list)
 
     def __post_init__(self) -> None:
