@@ -109,7 +109,7 @@ def user_advance_dataclass(color_enum):
         favorite_colors: color_enum
         has_car: bool = False
         country: str = "Argentina"
-        address: str = None
+        address: typing.Optional[str] = None
         md5: types.Fixed = types.Fixed(16)
 
         class Meta:
@@ -129,7 +129,7 @@ def user_advance_dataclass_with_enum(color_enum: type, user_type_enum: type):
         favorite_colors: color_enum
         has_car: bool = False
         country: str = "Argentina"
-        address: str = None
+        address: typing.Optional[str] = None
         user_type: typing.Optional[user_type_enum] = None
         md5: types.Fixed = types.Fixed(16)
 
