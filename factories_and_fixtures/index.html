@@ -67,6 +67,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#factories-and-fixtures" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -446,10 +451,43 @@
       <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
       
       
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Factory and fixtures
+          <span class="md-nav__icon md-icon"></span>
+        </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
         Factory and fixtures
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#providing-data-to-the-factory" class="md-nav__link">
+    Providing data to the factory
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -502,6 +540,23 @@
   
   
   
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#providing-data-to-the-factory" class="md-nav__link">
+    Providing data to the factory
+  </a>
+  
+</li>
+      
+    </ul>
   
 </nav>
                   </div>
@@ -521,8 +576,7 @@
   </a>
 
 
-  <h1>Factory and fixtures</h1>
-
+<h1 id="factories-and-fixtures">Factories and Fixtures</h1>
 <p><a href="https://github.com/marcosschroh/dataclasses-avroschema">Dataclasses Avro Schema</a> also includes a <code>factory</code> feature, so you can generate <code>fast</code> python instances and use them, for example, to test your data streaming pipelines. Instances can be genrated using the <code>fake</code> method.</p>
 <div class="highlight"><span class="filename">Basic usage</span><pre><span></span><code><span class="kn">import</span> <span class="nn">typing</span>
 <span class="kn">import</span> <span class="nn">dataclasses</span>
@@ -549,6 +603,34 @@
 
 <span class="n">User</span><span class="o">.</span><span class="n">fake</span><span class="p">()</span>
 <span class="c1"># &gt;&gt;&gt;&gt; User(name=&#39;VGSBbOGfSGjkMDnefHIZ&#39;, age=8974, addresses=[Address(street=&#39;vNpPYgesiHUwwzGcmMiS&#39;, street_number=4790)])</span>
+</code></pre></div>
+<p><em>(This script is complete, it should run "as is")</em></p>
+<h2 id="providing-data-to-the-factory">Providing data to the factory</h2>
+<p>It is also possible to provide data as <code>keyword arguments</code> to the factory using the <code>fake</code> method.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">typing</span>
+<span class="kn">import</span> <span class="nn">dataclasses</span>
+
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
+
+
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span> <span class="nc">UserAdvance</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">pets</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="n">accounts</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
+    <span class="n">has_car</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">country</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Argentina&quot;</span>
+    <span class="n">address</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<span class="n">user</span> <span class="o">=</span> <span class="n">UserAdvance</span><span class="o">.</span><span class="n">fake</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;bond&quot;</span><span class="p">,</span> <span class="n">age</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">pets</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;dog&quot;</span><span class="p">,</span> <span class="s2">&quot;cat&quot;</span><span class="p">])</span>
+<span class="k">assert</span> <span class="n">user</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;bond&quot;</span>
+<span class="k">assert</span> <span class="n">user</span><span class="o">.</span><span class="n">age</span> <span class="o">==</span> <span class="mi">50</span>
+<span class="k">assert</span> <span class="n">user</span><span class="o">.</span><span class="n">pets</span> <span class="o">==</span> <span class="p">[</span><span class="s2">&quot;dog&quot;</span><span class="p">,</span> <span class="s2">&quot;cat&quot;</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+<span class="c1"># &gt;&gt;&gt;&gt; UserAdvance(name=&#39;bond&#39;, age=50, pets=[&#39;dog&#39;, &#39;cat&#39;], accounts={&#39;uVITaqdTStKhsdHFqIdM&#39;: 4201}, has_car=True, country=&#39;cirJWyuMaXoBqEmxbdML&#39;, address=&#39;qGhXKxAFfIxzAMZdkhrk&#39;)</span>
 </code></pre></div>
 <p><em>(This script is complete, it should run "as is")</em></p>
 
