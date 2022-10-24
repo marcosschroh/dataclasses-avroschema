@@ -7,8 +7,10 @@ from dataclasses import dataclass
 
 import pytest
 from dateutil.tz import UTC
+from pydantic import NoneBytes
 
 from dataclasses_avroschema import AvroModel
+from dataclasses_avroschema.schema_generator import AVRO, AVRO_JSON
 
 a_datetime = datetime.datetime(2019, 10, 12, 17, 57, 42, tzinfo=UTC)
 
@@ -156,6 +158,26 @@ def test_serialization(klass, data, avro_binary, avro_json, instance_json, pytho
 
     assert instance.serialize() == avro_binary
     assert instance.serialize(serialization_type="avro-json") == avro_json
+
+
+@pytest.mark.parametrize(
+    "serialization_type, data", [(AVRO, b"\x02\x00\x00"), (AVRO_JSON, b'{"users": [{"color": "BLUE"}]}')]
+)
+def test_serialization_with_enum_in_sequences(serialization_type: str, data: bytes) -> None:
+    @dataclass
+    class UserModel(AvroModel):
+        color: FavoriteColor = FavoriteColor.BLUE
+
+    @dataclass
+    class GroupModel(AvroModel):
+        users: typing.List[UserModel]
+
+    instance = GroupModel([UserModel()])
+    assert instance.serialize(serialization_type=serialization_type) == data
+    assert GroupModel.deserialize(data, serialization_type=serialization_type) == instance
+    assert GroupModel.deserialize(data, serialization_type=serialization_type, create_instance=False) == {
+        "users": [{"color": "BLUE"}]
+    }
 
 
 @pytest.mark.parametrize("klass, data, avro_binary, avro_json, instance_json, python_dict", CLASSES_DATA_BINARY)
