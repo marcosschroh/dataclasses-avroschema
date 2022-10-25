@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [0.32.2] - 2022-10-25
+
+- Nested enums serialization [211](https://github.com/marcosschroh/dataclasses-avroschema/pull/211)
+
+### Fixed
+
 ## [0.32.1] - 2022-10-13
 
 - Use python __slots__
