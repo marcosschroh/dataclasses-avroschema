@@ -146,6 +146,8 @@ class AvroModel:
             return value["default"]
         elif isinstance(value, dict):
             return {k: AvroModel.standardize_custom_type(v) for k, v in value.items()}
+        elif isinstance(value, (list, tuple)):
+            return [AvroModel.standardize_custom_type(v) for v in value]
         elif issubclass(type(value), enum.Enum):
             return value.value
         return value
