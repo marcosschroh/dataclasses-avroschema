@@ -251,7 +251,7 @@ def test_union_type_with_default(primitive_types, avro_types, default):
     field = fields.AvroField(name, python_type, default=default)
 
     if isinstance(default, datetime.datetime):
-        default = (default - datetime.datetime(1970, 1, 1)).total_seconds() * 1000
+        default = int((default - datetime.datetime(1970, 1, 1)).total_seconds() * 1000)
     elif isinstance(default, bytes):
         default = default.decode()
 

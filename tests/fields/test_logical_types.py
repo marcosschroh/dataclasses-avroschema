@@ -124,7 +124,7 @@ def test_logical_type_datetime_with_default() -> None:
     expected = {
         "name": name,
         "type": {"type": fields.LONG, "logicalType": field_utils.TIMESTAMP_MILLIS},
-        "default": ts * 1000,
+        "default": int(ts * 1000),
     }
 
     assert expected == field.to_dict()

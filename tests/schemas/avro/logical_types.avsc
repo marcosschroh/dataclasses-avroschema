@@ -24,7 +24,7 @@
           "type": "long",
           "logicalType": "timestamp-millis"
         },
-        "default": 1570903062000.0
+        "default": 1570903062000
       },
       {
         "name": "event_uuid",

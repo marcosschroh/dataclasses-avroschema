@@ -30,7 +30,7 @@
             "type": "long",
             "logicalType": "timestamp-millis"
           },
-          "default": 1570903062000.0
+          "default": 1570903062000
         },
         {
             "name": "meeting_time_micros",
@@ -38,7 +38,7 @@
               "type": "long",
               "logicalType": "time-micros"
             },
-            "default": 64662000000.0
+            "default": 64662000000
         },
         {
           "name": "meeting_datetime_micros",
@@ -46,7 +46,7 @@
             "type": "long",
             "logicalType": "timestamp-micros"
           },
-          "default": 1570903062000000.0
+          "default": 1570903062000000
         },
         {
           "name": "release_datetime",
@@ -54,7 +54,7 @@
             "type": "long",
             "logicalType": "timestamp-millis"
           },
-          "default": 1570903062000.0
+          "default": 1570903062000
         }
       ],
       "doc": "Some logical types"

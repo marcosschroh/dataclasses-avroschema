@@ -695,7 +695,7 @@ class TimeMicroField(LogicalTypeField):
             time (datetime.time)
 
         Returns:
-            float
+            int
         """
         hour, minutes, seconds, microseconds = (
             time.hour,
@@ -704,7 +704,7 @@ class TimeMicroField(LogicalTypeField):
             time.microsecond,
         )
 
-        return float((((hour * 60 + minutes) * 60 + seconds) * 1000000) + microseconds)
+        return int((((hour * 60 + minutes) * 60 + seconds) * 1000000) + microseconds)
 
     def fake(self) -> datetime.time:
         datetime_object: datetime.datetime = fake.date_time(tzinfo=utc)
@@ -744,7 +744,7 @@ class DatetimeField(LogicalTypeField):
         else:
             ts = (date_time - utils.epoch_naive).total_seconds()
 
-        return ts * 1000
+        return int(ts * 1000)
 
     def fake(self) -> datetime.datetime:
         return fake.date_time(tzinfo=utc)
@@ -782,7 +782,7 @@ class DatetimeMicroField(LogicalTypeField):
         else:
             ts = (date_time - utils.epoch_naive).total_seconds()
 
-        return ts * 1000000
+        return int(ts * 1000000)
 
     def fake(self) -> datetime.datetime:
         datetime_object: datetime.datetime = fake.date_time(tzinfo=utc)
