@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [0.32.3] - 2022-10-31
+
+- Logial types fixed. Update to `fastavro` 1.7.0 [214](https://github.com/marcosschroh/dataclasses-avroschema/pull/214)
+
+### Fixed
+
 ## [0.32.2] - 2022-10-25
 
 - Nested enums serialization [211](https://github.com/marcosschroh/dataclasses-avroschema/pull/211)
