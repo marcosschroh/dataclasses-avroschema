@@ -122,7 +122,8 @@ TimeLogicalTypes.avro_schema()
         "type": "long",
         "logicalType": "time-micros"
       },
-      "default": 64662000000.0}
+      "default": 64662000000
+    }
   ],
   "doc": "Time logical types"
 }'
@@ -178,7 +179,7 @@ DatetimeLogicalType.avro_schema()
         "type": "long",
         "logicalType": "timestamp-millis"
       },
-      "default": 1570903062000.0
+      "default": 1570903062000
     },
     {
       "name": "release_datetime_micro",
@@ -186,7 +187,7 @@ DatetimeLogicalType.avro_schema()
         "type": "long",
         "logicalType": "timestamp-micros"
       },
-      "default": 1570903062000000.0
+      "default": 1570903062000000
     }
   ],
   "doc": "Datetime logical types"
@@ -195,7 +196,8 @@ DatetimeLogicalType.avro_schema()
 
 *(This script is complete, it should run "as is")*
 
-!!! nore annotate "To use `timestamp-micros` in avro schemas you need to use `types.DateTimeMicro`"
+!!! note
+    To use `timestamp-micros` in avro schemas you need to use `types.DateTimeMicro`
 
 ## UUID
 

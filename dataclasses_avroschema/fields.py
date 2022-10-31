@@ -1078,6 +1078,20 @@ def field_factory(
             model_metadata=model_metadata,
             parent=parent,
         )
+    elif types.UnionType is not None and isinstance(native_type, types.UnionType):
+        # we need to check whether types.UnionType because it works only in
+        # python 3.9 or importing __future__ in previous python versions
+        # cases when a container is used, for example `typing.List[int] | str` in python is
+        # translated to typing.Union[typing.List[int], str] so it won't reach this point
+        return UnionField(
+            name=name,
+            type=native_type,
+            default=default,
+            metadata=metadata,
+            default_factory=default_factory,
+            model_metadata=model_metadata,
+            parent=parent,
+        )
     elif inspect.isclass(native_type) and issubclass(native_type, schema_generator.AvroModel):
         return RecordField(
             name=name,

@@ -74,7 +74,8 @@ UserAdvance.json_schema()
 
 *(This script is complete, it should run "as is")*
 
-!!! note annotate "You must use pydantic.Field instead of dataclasses.field"
+!!! note
+    You must use pydantic.Field instead of dataclasses.field
 
 ## Pydantic and dataclasses_avroschema batteries
 

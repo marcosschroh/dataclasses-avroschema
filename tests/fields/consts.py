@@ -51,71 +51,82 @@ LOGICAL_TYPES = (
 )
 
 UNION_PRIMITIVE_ELEMENTS = (
-    ((str, int), (fields.STRING, fields.LONG), "test"),
-    ((str, bytes), (fields.STRING, fields.BYTES), b"test"),
-    ((str, None), (fields.STRING, fields.NULL), None),
     (
-        (datetime.date, datetime.datetime),
+        typing.Union[str, int],
+        (fields.STRING, fields.LONG),
+    ),
+    (
+        typing.Union[str, bytes],
+        (fields.STRING, fields.BYTES),
+    ),
+    (
+        typing.Union[str, None],
+        (fields.STRING, fields.NULL),
+    ),
+    (
+        typing.Union[datetime.date, datetime.datetime],
         (
             fields.PYTHON_TYPE_TO_AVRO[datetime.date],
             fields.PYTHON_TYPE_TO_AVRO[datetime.datetime],
         ),
-        now,
     ),
-    ((float, str, int), (fields.DOUBLE, fields.STRING, fields.LONG), 100.0),
-    ((str, float, int, bool), (fields.STRING, fields.DOUBLE, fields.LONG, fields.BOOLEAN), False),
+    (typing.Union[float, str, int], (fields.DOUBLE, fields.STRING, fields.LONG)),
+    (
+        typing.Union[str, float, int, bool],
+        (fields.STRING, fields.DOUBLE, fields.LONG, fields.BOOLEAN),
+    ),
 )
 
 UNION_PRIMITIVE_ELEMENTS_DEFAULTS = (
-    ((str, int), (fields.STRING, fields.LONG), "test"),
-    ((str, bytes), (fields.BYTES, fields.STRING), b"test"),
-    ((str, None), (fields.NULL, fields.STRING), None),
+    (typing.Union[str, int], (fields.STRING, fields.LONG), "test"),
+    (typing.Union[str, bytes], (fields.BYTES, fields.STRING), b"test"),
+    (typing.Union[str, None], (fields.NULL, fields.STRING), None),
     (
-        (datetime.date, datetime.datetime),
+        typing.Union[datetime.date, datetime.datetime],
         (
             fields.PYTHON_TYPE_TO_AVRO[datetime.datetime],
             fields.PYTHON_TYPE_TO_AVRO[datetime.date],
         ),
         now,
     ),
-    ((float, str, int), (fields.DOUBLE, fields.STRING, fields.LONG), 100.0),
-    ((str, float, int, bool), (fields.BOOLEAN, fields.STRING, fields.DOUBLE, fields.LONG), False),
+    (typing.Union[float, str, int], (fields.DOUBLE, fields.STRING, fields.LONG), 100.0),
+    (typing.Union[str, float, int, bool], (fields.BOOLEAN, fields.STRING, fields.DOUBLE, fields.LONG), False),
 )
 
 UNION_WITH_ARRAY = (
     (
-        (typing.List[int], str),
+        typing.Union[typing.List[int], str],
         (fields.LONG, fields.STRING),
     ),
     (
-        (typing.List[str], float),
+        typing.Union[typing.List[str], float],
         (fields.STRING, fields.DOUBLE),
     ),
     (
-        (typing.List[datetime.datetime], datetime.datetime),
+        typing.Union[typing.List[datetime.datetime], datetime.datetime],
         (fields.LOGICAL_DATETIME_MILIS, fields.LOGICAL_DATETIME_MILIS),
     ),
     (
-        (typing.List[uuid.uuid4], bytes),
+        typing.Union[typing.List[uuid.uuid4], bytes],
         (fields.LOGICAL_UUID, fields.BYTES),
     ),
 )
 
 UNION_WITH_MAP = (
     (
-        (typing.Dict[str, int], str),
+        typing.Union[typing.Dict[str, int], str],
         (fields.LONG, fields.STRING),
     ),
     (
-        (typing.Dict[str, str], float),
+        typing.Union[typing.Dict[str, str], float],
         (fields.STRING, fields.DOUBLE),
     ),
     (
-        (typing.Dict[str, datetime.datetime], datetime.datetime),
+        typing.Union[typing.Dict[str, datetime.datetime], datetime.datetime],
         (fields.LOGICAL_DATETIME_MILIS, fields.LOGICAL_DATETIME_MILIS),
     ),
     (
-        (typing.Dict[str, uuid.uuid4], bytes),
+        typing.Union[typing.Dict[str, uuid.uuid4], bytes],
         (fields.LOGICAL_UUID, fields.BYTES),
     ),
 )
@@ -132,6 +143,89 @@ OPTIONAL_UNION_COMPLEX_TYPES = (
         {"type": fields.MAP, "values": fields.LOGICAL_DATETIME_MILIS, "name": "optional_field"},
     ),
 )
+
+# Add the new syntax | for unions
+if PY_VER >= (3, 10):
+    UNION_PRIMITIVE_ELEMENTS += (  # type: ignore
+        (
+            str | int,
+            (fields.STRING, fields.LONG),
+        ),
+        (
+            str | bytes,
+            (fields.STRING, fields.BYTES),
+        ),
+        (
+            str | None,
+            (fields.STRING, fields.NULL),
+        ),
+        (
+            datetime.date | datetime.datetime,
+            (
+                fields.PYTHON_TYPE_TO_AVRO[datetime.date],
+                fields.PYTHON_TYPE_TO_AVRO[datetime.datetime],
+            ),
+        ),
+        (float | str | int, (fields.DOUBLE, fields.STRING, fields.LONG)),
+        (
+            typing.Union[str, float, int, bool],
+            (fields.STRING, fields.DOUBLE, fields.LONG, fields.BOOLEAN),
+        ),
+    )
+
+    UNION_PRIMITIVE_ELEMENTS_DEFAULTS += (  # type: ignore
+        (str | int, (fields.STRING, fields.LONG), "test"),
+        (str | bytes, (fields.BYTES, fields.STRING), b"test"),
+        (str | None, (fields.NULL, fields.STRING), None),
+        (
+            datetime.date | datetime.datetime,
+            (
+                fields.PYTHON_TYPE_TO_AVRO[datetime.datetime],
+                fields.PYTHON_TYPE_TO_AVRO[datetime.date],
+            ),
+            now,
+        ),
+        (float | str | int, (fields.DOUBLE, fields.STRING, fields.LONG), 100.0),
+        (str | float | int | bool, (fields.BOOLEAN, fields.STRING, fields.DOUBLE, fields.LONG), False),
+    )
+
+    UNION_WITH_ARRAY += (  # type: ignore
+        (
+            typing.List[int] | str,  # in python is translated to typing.Union[typing.List[int], str]
+            (fields.LONG, fields.STRING),
+        ),
+        (
+            typing.List[str] | float,
+            (fields.STRING, fields.DOUBLE),
+        ),
+        (
+            typing.List[datetime.datetime] | datetime.datetime,
+            (fields.LOGICAL_DATETIME_MILIS, fields.LOGICAL_DATETIME_MILIS),
+        ),
+        (
+            typing.List[uuid.UUID] | bytes,
+            (fields.LOGICAL_UUID, fields.BYTES),
+        ),
+    )
+
+    UNION_WITH_MAP += (  # type: ignore
+        (
+            typing.Dict[str, int] | str,  # in python is translated to typing.Union[typing.Dict[str, int], str]
+            (fields.LONG, fields.STRING),
+        ),
+        (
+            typing.Dict[str, str] | float,
+            (fields.STRING, fields.DOUBLE),
+        ),
+        (
+            typing.Dict[str, datetime.datetime] | datetime.datetime,
+            (fields.LOGICAL_DATETIME_MILIS, fields.LOGICAL_DATETIME_MILIS),
+        ),
+        (
+            typing.Dict[str, uuid.UUID] | bytes,
+            (fields.LOGICAL_UUID, fields.BYTES),
+        ),
+    )
 
 
 def xfail_annotation(typ):
