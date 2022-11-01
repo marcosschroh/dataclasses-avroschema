@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+## [0.34.0] - 2022-11-01
+
+- `typing.UnionType` support added [212](https://github.com/marcosschroh/dataclasses-avroschema/issues/212)
+
+### Added
+
 ## [0.33.0] - 2022-11-01
 
 - python 3.11 support added [215](https://github.com/marcosschroh/dataclasses-avroschema/pull/215)
