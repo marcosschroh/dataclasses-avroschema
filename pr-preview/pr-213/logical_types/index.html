@@ -788,7 +788,8 @@
         <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;long&quot;</span><span class="p">,</span>
         <span class="s2">&quot;logicalType&quot;</span><span class="p">:</span> <span class="s2">&quot;time-micros&quot;</span>
       <span class="p">},</span>
-      <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="mf">64662000000.0</span><span class="p">}</span>
+      <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="mi">64662000000</span>
+    <span class="p">}</span>
   <span class="p">],</span>
   <span class="s2">&quot;doc&quot;</span><span class="p">:</span> <span class="s2">&quot;Time logical types&quot;</span>
 <span class="p">}</span><span class="s1">&#39;</span>
@@ -841,7 +842,7 @@
         <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;long&quot;</span><span class="p">,</span>
         <span class="s2">&quot;logicalType&quot;</span><span class="p">:</span> <span class="s2">&quot;timestamp-millis&quot;</span>
       <span class="p">},</span>
-      <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="mf">1570903062000.0</span>
+      <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="mi">1570903062000</span>
     <span class="p">},</span>
     <span class="p">{</span>
       <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;release_datetime_micro&quot;</span><span class="p">,</span>
@@ -849,15 +850,16 @@
         <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;long&quot;</span><span class="p">,</span>
         <span class="s2">&quot;logicalType&quot;</span><span class="p">:</span> <span class="s2">&quot;timestamp-micros&quot;</span>
       <span class="p">},</span>
-      <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="mf">1570903062000000.0</span>
+      <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="mi">1570903062000000</span>
     <span class="p">}</span>
   <span class="p">],</span>
   <span class="s2">&quot;doc&quot;</span><span class="p">:</span> <span class="s2">&quot;Datetime logical types&quot;</span>
 <span class="p">}</span><span class="s1">&#39;</span>
 </code></pre></div>
 <p><em>(This script is complete, it should run "as is")</em></p>
-<div class="admonition nore annotate">
-<p class="admonition-title">To use <code>timestamp-micros</code> in avro schemas you need to use <code>types.DateTimeMicro</code></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To use <code>timestamp-micros</code> in avro schemas you need to use <code>types.DateTimeMicro</code></p>
 </div>
 <h2 id="uuid">UUID</h2>
 <div class="highlight"><span class="filename">UUID example</span><pre><span></span><code><span class="kn">import</span> <span class="nn">uuid</span>
