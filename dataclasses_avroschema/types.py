@@ -8,6 +8,11 @@ if sys.version_info >= (3, 9):
 else:
     from typing_extensions import Annotated  # type: ignore # pragma: no cover
 
+if sys.version_info >= (3, 10):
+    from types import UnionType  # pragma: no cover
+else:
+    UnionType = None  # pragma: no cover
+
 T = typing.TypeVar("T")
 JsonDict = typing.Dict[str, typing.Any]
 

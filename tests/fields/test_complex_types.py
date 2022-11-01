@@ -232,23 +232,20 @@ def test_mapping_logical_type(mapping, python_primitive_type, python_type_str, v
     assert expected == field.to_dict()
 
 
-@pytest.mark.parametrize("primitive_types, avro_types, default", consts.UNION_PRIMITIVE_ELEMENTS)
-def test_union_type(primitive_types, avro_types, default):
+@pytest.mark.parametrize("union, avro_types", consts.UNION_PRIMITIVE_ELEMENTS)
+def test_union_type(union, avro_types) -> None:
     name = "an_union_field"
-    python_type = typing.Union[primitive_types]
-    field = fields.AvroField(name, python_type)
-
+    field = fields.AvroField(name, union)
     expected = {"name": name, "type": [*avro_types]}
 
     assert expected == field.to_dict()
 
 
 # Tests to make sure defaults work, and that defaults are sorted to the beginning of the union
-@pytest.mark.parametrize("primitive_types, avro_types, default", consts.UNION_PRIMITIVE_ELEMENTS_DEFAULTS)
-def test_union_type_with_default(primitive_types, avro_types, default):
+@pytest.mark.parametrize("union, avro_types, default", consts.UNION_PRIMITIVE_ELEMENTS_DEFAULTS)
+def test_union_type_with_default(union, avro_types, default) -> None:
     name = "an_union_field"
-    python_type = typing.Union[primitive_types]
-    field = fields.AvroField(name, python_type, default=default)
+    field = fields.AvroField(name, union, default=default)
 
     if isinstance(default, datetime.datetime):
         default = int((default - datetime.datetime(1970, 1, 1)).total_seconds() * 1000)
@@ -260,22 +257,20 @@ def test_union_type_with_default(primitive_types, avro_types, default):
     assert expected == field.to_dict()
 
 
-@pytest.mark.parametrize("complex_type, avro_types", consts.UNION_WITH_ARRAY)
-def test_union_with_arrays(complex_type, avro_types):
+@pytest.mark.parametrize("union, avro_types", consts.UNION_WITH_ARRAY)
+def test_union_with_arrays(union, avro_types) -> None:
     name = "an_union_field"
-    python_type = typing.Union[complex_type]
-    field = fields.AvroField(name, python_type)
+    field = fields.AvroField(name, union)
 
     expected = {"name": name, "type": [{"type": "array", "name": name, "items": avro_types[0]}, avro_types[1]]}
 
     assert expected == field.to_dict()
 
 
-@pytest.mark.parametrize("complex_type, avro_types", consts.UNION_WITH_MAP)
-def test_union_with_maps(complex_type, avro_types):
+@pytest.mark.parametrize("union, avro_types", consts.UNION_WITH_MAP)
+def test_union_with_maps(union, avro_types) -> None:
     name = "an_union_field"
-    python_type = typing.Union[complex_type]
-    field = fields.AvroField(name, python_type)
+    field = fields.AvroField(name, union)
 
     expected = {"name": name, "type": [{"type": "map", "name": name, "values": avro_types[0]}, avro_types[1]]}
 
@@ -283,7 +278,7 @@ def test_union_with_maps(complex_type, avro_types):
 
 
 @pytest.mark.parametrize("complex_type, avro_type", consts.OPTIONAL_UNION_COMPLEX_TYPES)
-def test_union_as_optional_with_complex_types(complex_type, avro_type):
+def test_union_as_optional_with_complex_types(complex_type, avro_type) -> None:
     """
     Test cases when typing.Optional is used.
     The result of typing.Optional[Any] is typing.Union[Any, NoneType]
@@ -300,7 +295,7 @@ def test_union_as_optional_with_complex_types(complex_type, avro_type):
 
 
 @pytest.mark.parametrize("primitive_type, avro_type", consts.PRIMITIVE_TYPES)
-def test_union_as_optional_with_primitives(primitive_type, avro_type):
+def test_union_as_optional_with_primitives(primitive_type, avro_type) -> None:
     """
     Test cases when typing.Optional is used.
     The result of typing.Optional[Any] is typing.Union[Any, NoneType]

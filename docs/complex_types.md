@@ -204,26 +204,51 @@ UnionSchema.avro_schema()
 
 ### Unions
 
-```python title="Union example"
-import typing
-import dataclasses
-import datetime
-import uuid
+=== "python <= 3.9"
 
-from dataclasses_avroschema import AvroModel
+    ```python
+    import typing
+    import dataclasses
+    import datetime
+    import uuid
+
+    from dataclasses_avroschema import AvroModel
 
 
-@dataclasses.dataclass
-class UnionSchema(AvroModel):
-    "Some Unions"
-    first_union: typing.Union[str, int]
-    logical_union: typing.Union[datetime.datetime, datetime.date, uuid.uuid4]
-    second_union: typing.Union[str, int] = dataclasses.field(
-    default_factory=lambda: ["test"])
-    third_union: typing.Union[int, str] = 'STRING TYPE'
+    @dataclasses.dataclass
+    class UnionSchema(AvroModel):
+        "Some Unions"
+        first_union: typing.Union[str, int]
+        logical_union: typing.Union[datetime.datetime, datetime.date, uuid.uuid4]
+        second_union: typing.Union[str, int] = "test"
+        third_union: typing.Union[int, str] = 'STRING TYPE'
 
-UnionSchema.avro_schema()
+    UnionSchema.avro_schema()
+    ```
 
+=== "python3.10"
+
+    ``` python
+    import typing
+    import dataclasses
+    import datetime
+    import uuid
+
+    from dataclasses_avroschema import AvroModel
+
+
+    @dataclasses.dataclass
+    class UnionSchema(AvroModel):
+        "Some Unions"
+        first_union: str | int
+        logical_union: datetime.datetime | datetime.date | uuid.uuid
+        second_union: str | int = "test"
+        third_union: int | str = 'STRING TYPE'
+
+    UnionSchema.avro_schema()
+    ```
+
+```json title="result"
 {
   "type": "record",
   "name": "UnionSchema",
@@ -233,41 +258,88 @@ UnionSchema.avro_schema()
     {"type": "long", "logicalType": "timestamp-millis"},
     {"type": "long", "logicalType": "date"},
     {"type": "string", "logicalType": "uuid"}]},
-  {"name": "second_union", "type": ["string", "long"], "default": ["test"]},
+  {"name": "second_union", "type": ["string", "long"], "default": "test"},
   {"name": "third_union", "type": ["string", "long"], "default": "STRING TYPE"}],
   "doc": "Some Unions"
 }
+```  
 
-# Union with Records
-@dataclasses.dataclass
-class Bus(AvroModel):
-    "A Bus"
-    engine_name: str
+### Union with Records
 
-    class Meta:
-        namespace = "types"
+=== "python <= 3.9"
 
-
-@dataclasses.dataclass
-class Car(AvroModel):
-    "A Car"
-    engine_name: str
-
-    class Meta:
-        namespace = "types"
+    ```python
+    import dataclasses
+    from dataclasses_avroschema import AvroModel
 
 
-@dataclasses.dataclass
-class UnionSchema(AvroModel):
-  "Some Unions"
-  lake_trip: typing.Union[Bus, Car]
-  river_trip: typing.Union[Bus, Car] = None
-  mountain_trip: typing.Union[Bus, Car] = dataclasses.field(
-      default_factory=lambda: {"engine_name": "honda"})
+    @dataclasses.dataclass
+    class Bus(AvroModel):
+        "A Bus"
+        engine_name: str
 
-UnionSchema.avro_schema()
+        class Meta:
+            namespace = "types"
 
-'{
+
+    @dataclasses.dataclass
+    class Car(AvroModel):
+        "A Car"
+        engine_name: str
+
+        class Meta:
+            namespace = "types"
+
+
+    @dataclasses.dataclass
+    class UnionSchema(AvroModel):
+      "Some Unions"
+      lake_trip: typing.Union[Bus, Car]
+      river_trip: typing.Union[Bus, Car] = None
+      mountain_trip: typing.Union[Bus, Car] = dataclasses.field(
+          default_factory=lambda: {"engine_name": "honda"})
+
+    UnionSchema.avro_schema()
+    ```
+  
+=== "python3.10"
+
+    ```python
+    import dataclasses
+    from dataclasses_avroschema import AvroModel
+
+
+    @dataclasses.dataclass
+    class Bus(AvroModel):
+        "A Bus"
+        engine_name: str
+
+        class Meta:
+            namespace = "types"
+
+
+    @dataclasses.dataclass
+    class Car(AvroModel):
+        "A Car"
+        engine_name: str
+
+        class Meta:
+            namespace = "types"
+
+
+    @dataclasses.dataclass
+    class UnionSchema(AvroModel):
+      "Some Unions"
+      lake_trip: Bus | Car
+      river_trip: Bus | Car | None = None
+      mountain_trip: Bus | Car = dataclasses.field(
+          default_factory=lambda: {"engine_name": "honda"})
+
+    UnionSchema.avro_schema()
+    ```
+
+```json title="result"
+{
   "type": "record",
   "name": "UnionSchema",
   "fields": [
@@ -317,34 +389,60 @@ UnionSchema.avro_schema()
     }
   ],
   "doc": "Some Unions"
-}'
+}
 ```
+
+!!! note
+    From python 3.10 you can use [union type expressions](https://docs.python.org/3.10/library/stdtypes.html#types-union) using the `|` operator
 
 ### Unions with typing.Optional
 
 `typing.Optional[Any]` is translated as an optional Union: `typing.Union[Any, NoneType]` where `NoneType`
 is always at the end
 
-```python title="Optional unions example"
-import typing
-import dataclasses
+=== "python <= 3.9"
 
-from dataclasses_avroschema import AvroModel
-from dataclasses import dataclass, field
+    ```python
+    import typing
+    import dataclasses
 
-@dataclasses.dataclass
-class X(AvroModel):
-    y: typing.Optional[typing.List[int]]
+    from dataclasses_avroschema import AvroModel
+    from dataclasses import dataclass, field
 
 
-X.avro_schema()
+    @dataclasses.dataclass
+    class X(AvroModel):
+        y: typing.Optional[typing.List[int]]
 
-'{
+
+    X.avro_schema()
+    ```
+
+=== "python3.10"
+
+    ```python
+    import typing
+    import dataclasses
+
+    from dataclasses_avroschema import AvroModel
+    from dataclasses import dataclass, field
+
+
+    @dataclasses.dataclass
+    class X(AvroModel):
+        y: typing.List[int] | None
+
+
+    X.avro_schema()
+    ```
+
+```json title="result"
+{
     "type": "record",
     "name": "X",
     "fields": [
         {"name": "y", "type": [{"type": "array", "items": "long", "name": "y"}, "null"]}
     ],
     "doc": "X(y: Union[List[int], NoneType])"
-}'
+}
 ```
