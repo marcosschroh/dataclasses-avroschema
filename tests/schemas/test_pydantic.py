@@ -385,4 +385,4 @@ def test_fake(color_enum) -> None:
 
     # just calling fake is enougt to know that a proper instance was created,
     # otherwise a pydantic validation should have been raised
-    user = User.fake()
+    User.fake()
