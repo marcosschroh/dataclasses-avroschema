@@ -1,10 +1,10 @@
-from gearsclient import GearsRemoteBuilder as GearsBuilder
-from dataclasses import dataclass
 import enum
 import json
 import random
+from dataclasses import dataclass
 from time import sleep
 
+from gearsclient import GearsRemoteBuilder as GearsBuilder
 from walrus import Database  # A subclass of the redis-py Redis client.
 
 from dataclasses_avroschema import AvroModel
@@ -14,7 +14,6 @@ class FavoriteColor(enum.Enum):
     BLUE = "BLUE"
     YELLOW = "YELLOW"
     GREEN = "GREEN"
-
 
 
 @dataclass
@@ -36,17 +35,27 @@ def consume(conn, stream_name):
     """
     Consume messages from Stream and filter the events by age >= 25
     """
-    return GearsBuilder("StreamReader", r=conn).\
-        map(lambda x: (json.loads(x["value"]["message"]))).\
-        filter(lambda x: x["age"] >= 25).\
-        run(stream_name)
+    return (
+        GearsBuilder("StreamReader", r=conn)
+        .map(lambda x: (json.loads(x["value"]["message"])))
+        .filter(lambda x: x["age"] >= 25)
+        .run(stream_name)
+    )
 
 
 def produce(stream):
     for i in range(10):
         user = UserModel(
-            name=random.choice(["Juan", "Peter", "Michael", "Moby", "Kim",]),
-            age=random.randint(1, 50)
+            name=random.choice(
+                [
+                    "Juan",
+                    "Peter",
+                    "Michael",
+                    "Moby",
+                    "Kim",
+                ]
+            ),
+            age=random.randint(1, 50),
         )
 
         msgid = stream.add({"message": user.serialize(serialization_type="avro-json")})

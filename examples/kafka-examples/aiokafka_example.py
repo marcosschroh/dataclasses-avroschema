@@ -1,7 +1,7 @@
 import asyncio
 import enum
-from dataclasses import dataclass
 import random
+from dataclasses import dataclass
 
 from aiokafka import AIOKafkaConsumer, AIOKafkaProducer
 
@@ -30,9 +30,8 @@ class UserModel(AvroModel):
 
 async def consume(loop, total_events=10):
     consumer = AIOKafkaConsumer(
-        'my_topic', 'my_other_topic',
-        loop=loop, bootstrap_servers='localhost:9092',
-        group_id="my-group")
+        "my_topic", "my_other_topic", loop=loop, bootstrap_servers="localhost:9092", group_id="my-group"
+    )
     # Get cluster layout and join group `my-group`
     await consumer.start()
     run_consumer = True
@@ -53,8 +52,7 @@ async def consume(loop, total_events=10):
 
 
 async def send(loop, total_events=10):
-    producer = AIOKafkaProducer(
-        loop=loop, bootstrap_servers='localhost:9092')
+    producer = AIOKafkaProducer(loop=loop, bootstrap_servers="localhost:9092")
     # Get cluster layout and initial topic/partition leadership information
     await producer.start()
 
@@ -63,8 +61,16 @@ async def send(loop, total_events=10):
         print(f"Sending event number {event_number}")
 
         user = UserModel(
-            name=random.choice(["Juan", "Peter", "Michael", "Moby", "Kim",]),
-            age=random.randint(1, 50)
+            name=random.choice(
+                [
+                    "Juan",
+                    "Peter",
+                    "Michael",
+                    "Moby",
+                    "Kim",
+                ]
+            ),
+            age=random.randint(1, 50),
         )
 
         # create the message

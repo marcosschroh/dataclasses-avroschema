@@ -5,7 +5,7 @@ import uuid
 
 from fastavro import parse_schema
 
-from dataclasses_avroschema import AvroModel, DateTimeMicro, TimeMicro, field_utils
+from dataclasses_avroschema import AvroModel, DateTimeMicro, TimeMicro
 
 
 def test_minimal_schema(user_dataclass):
