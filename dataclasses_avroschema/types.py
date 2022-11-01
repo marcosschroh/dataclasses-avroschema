@@ -31,7 +31,7 @@ class MissingSentinel(typing.Generic[T]):
     ...
 
 
-@dataclasses.dataclass
+@dataclasses.dataclass(frozen=True)
 class Fixed(typing.Generic[T]):
     """
     Represents an Avro Fixed type
@@ -49,7 +49,7 @@ class Fixed(typing.Generic[T]):
         return f"{self.size}"
 
 
-@dataclasses.dataclass
+@dataclasses.dataclass(frozen=True)
 class Decimal(typing.Generic[T]):
     """
     Represents an Avro Decimal type

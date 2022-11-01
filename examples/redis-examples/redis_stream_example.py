@@ -1,6 +1,6 @@
-from dataclasses import dataclass
 import enum
 import random
+from dataclasses import dataclass
 from time import sleep
 
 from walrus import Database  # A subclass of the redis-py Redis client.
@@ -41,7 +41,7 @@ def consume(consumer_group):
             message_id, message_content = result[0]
 
             if message_id:
-                value = message_content[b'message']
+                value = message_content[b"message"]
                 print(f"Processing message {message_id} with value {value}")
                 user = UserModel.deserialize(value)
                 print(user)
@@ -51,8 +51,16 @@ def produce(consumer_group):
     for i in range(10):
         # create an instance of User v1
         user = UserModel(
-            name=random.choice(["Juan", "Peter", "Michael", "Moby", "Kim",]),
-            age=random.randint(1, 50)
+            name=random.choice(
+                [
+                    "Juan",
+                    "Peter",
+                    "Michael",
+                    "Moby",
+                    "Kim",
+                ]
+            ),
+            age=random.randint(1, 50),
         )
 
         msgid = consumer_group.my_stream.add({"message": user.serialize()})
@@ -65,13 +73,13 @@ def produce(consumer_group):
 
 if __name__ == "__main__":
     db = Database()
-    stream_name = 'my-stream'
+    stream_name = "my-stream"
     db.Stream(stream_name)  # Create a new stream instance
 
     # create the consumer group
-    consumer_group = db.consumer_group('my-consumer-group-1', [stream_name])
+    consumer_group = db.consumer_group("my-consumer-group-1", [stream_name])
     consumer_group.create()  # Create the consumer group.
-    consumer_group.set_id('$')
+    consumer_group.set_id("$")
 
     produce(consumer_group)
     consume(consumer_group)
