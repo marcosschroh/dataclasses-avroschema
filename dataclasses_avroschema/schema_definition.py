@@ -81,6 +81,7 @@ class AvroSchemaDefinition(BaseSchemaDefinition):
 
         for dataclass_field in dataclasses.fields(self.klass):
             faust_field = dataclass_field.default
+            metadata = dataclass_field.metadata
             default_factory = dataclasses.MISSING
 
             if faust_field is not dataclasses.MISSING:
@@ -90,6 +91,7 @@ class AvroSchemaDefinition(BaseSchemaDefinition):
                     default = faust_field.default
 
                     if isinstance(default, dataclasses.Field):
+                        metadata = default.metadata
                         default_factory = default.default_factory  # type: ignore  # TODO: resolve mypy
                         default = dataclasses.MISSING
 
@@ -99,6 +101,7 @@ class AvroSchemaDefinition(BaseSchemaDefinition):
                         dataclass_field.type,
                         default=default,
                         default_factory=default_factory,
+                        metadata=metadata,
                         model_metadata=self.metadata,
                         parent=self.parent,
                     )

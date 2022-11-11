@@ -235,6 +235,18 @@ def test_faust_record_schema_with_unions_type(union_type_schema):
     assert UnionSchema.avro_schema() == json.dumps(union_type_schema)
 
 
+def test_field_metadata() -> None:
+    field_matadata = {"aliases": ["username"]}
+
+    @dataclasses.dataclass
+    class UserRecord(faust.Record, AvroModel):
+        name: str = dataclasses.field(metadata=field_matadata)
+
+    schema = UserRecord.avro_schema_to_python()
+
+    assert schema["fields"][0]["aliases"] == field_matadata["aliases"]
+
+
 def test_not_faust_not_installed(monkeypatch):
     monkeypatch.setattr(utils, "faust", None)
 

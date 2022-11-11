@@ -11,3 +11,10 @@ multi_line_output = 3
 order_by_type = true
 line_length = 120
 force_grid_wrap = 0
+
+[tool.mypy]
+allow_empty_bodies = true
+
+[[tool.mypy.overrides]]
+module = "stringcase.*"
+ignore_missing_imports = true
