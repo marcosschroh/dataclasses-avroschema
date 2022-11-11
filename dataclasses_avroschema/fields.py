@@ -995,7 +995,7 @@ def field_factory(
     default: typing.Any = dataclasses.MISSING,
     default_factory: typing.Any = dataclasses.MISSING,
     metadata: typing.Optional[typing.Mapping] = None,
-    model_metadata: utils.SchemaMetadata = None,
+    model_metadata: typing.Optional[utils.SchemaMetadata] = None,
 ) -> FieldType:
     if metadata is None:
         metadata = {}
