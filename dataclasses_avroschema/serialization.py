@@ -108,21 +108,29 @@ def prepare_bytes_decimal(data: decimal.Decimal, precision: int, scale: int = 0)
     return unscaled_datum.to_bytes(bytes_req, byteorder="big", signed=True)
 
 
-def to_json(data: typing.Dict[str, typing.Any]) -> typing.Dict:
+def serialize_value(*, value: typing.Any) -> typing.Any:
+    if isinstance(value, bytes):
+        value = value.decode()
+    elif isinstance(value, datetime.datetime):
+        value = datetime_to_str(value)
+    elif isinstance(value, datetime.date):
+        value = date_to_str(value)
+    elif isinstance(value, datetime.time):
+        value = time_to_str(value)
+    elif isinstance(value, (uuid.UUID, decimal.Decimal)):
+        value = str(value)
+    elif isinstance(value, dict):
+        value = to_json(value)
+    elif isinstance(value, list):
+        value = [serialize_value(value=item) for item in value]
+
+    return value
+
+
+def to_json(data: JsonDict) -> JsonDict:
     json_data = {}
 
     for field, value in data.items():
-        if isinstance(value, bytes):
-            value = value.decode()
-        elif isinstance(value, datetime.datetime):
-            value = datetime_to_str(value)
-        elif isinstance(value, datetime.date):
-            value = date_to_str(value)
-        elif isinstance(value, datetime.time):
-            value = time_to_str(value)
-        elif isinstance(value, (uuid.UUID, decimal.Decimal)):
-            value = str(value)
-
-        json_data[field] = value
+        json_data[field] = serialize_value(value=value)
 
     return json_data

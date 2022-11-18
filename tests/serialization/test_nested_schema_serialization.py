@@ -1,4 +1,5 @@
 import dataclasses
+import datetime
 import typing
 
 from dataclasses_avroschema import AvroModel
@@ -63,6 +64,7 @@ def test_one_to_many_relationship():
         "An Address"
         street: str
         street_number: int
+        created_at: datetime.datetime
 
     @dataclasses.dataclass
     class User(AvroModel):
@@ -71,10 +73,8 @@ def test_one_to_many_relationship():
         age: int
         addresses: typing.List[Address]
 
-    address_data = {
-        "street": "test",
-        "street_number": 10,
-    }
+    created_at = datetime.datetime(2019, 10, 12, 17, 57, 42, tzinfo=datetime.timezone.utc)
+    address_data = {"street": "test", "street_number": 10, "created_at": created_at}
 
     address = Address(**address_data)
 
@@ -86,9 +86,13 @@ def test_one_to_many_relationship():
 
     user = User(**data_user)
 
-    avro_binary = b"\x08john(\x02\x08test\x14\x00"
-    avro_json_binary = b'{"name": "john", "age": 20, "addresses": [{"street": "test", "street_number": 10}]}'
-    expected = {"name": "john", "age": 20, "addresses": [{"street": "test", "street_number": 10}]}
+    avro_binary = b"\x08john(\x02\x08test\x14\xe0\xd7\xf3\x91\xb8[\x00"
+    avro_json_binary = b'{"name": "john", "age": 20, "addresses": [{"street": "test", "street_number": 10, "created_at": 1570903062000}]}'
+    expected = {
+        "name": "john",
+        "age": 20,
+        "addresses": [{"street": "test", "street_number": 10, "created_at": created_at}],
+    }
 
     assert user.serialize() == avro_binary
 
@@ -102,6 +106,7 @@ def test_one_to_many_relationship():
     assert User.deserialize(avro_json_binary, serialization_type="avro-json") == user
 
     assert user.to_dict() == expected
+    assert user.to_json()
 
 
 def test_one_to_many_map_relationship():

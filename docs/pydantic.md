@@ -157,3 +157,28 @@ users[0].avro_schema()
 ```
 
 *(This script is complete, it should run "as is")*
+
+### Fake
+
+It is also possible to create `fake` instances with `pydantic` models:
+
+```python
+import typing
+import datetime
+from pydantic import Field
+from dataclasses_avroschema.avrodantic import AvroBaseModel
+
+
+class User(AvroBaseModel):
+    name: str
+    age: int
+    birthday: datetime.date
+    pets: typing.List[str] = Field(default_factory=lambda: ["dog", "cat"])
+    accounts: typing.Dict[str, int] = Field(default_factory=lambda: {"key": 1})
+    has_car: bool = False
+
+print(User.fake())
+# >>> User(name='qWTLkqcIVmSBxpWMpFyR', age=2608, birthday=datetime.date(1982, 3, 30), pets=['wqoEXcJRYjcnJmnIvtiI'], accounts={'JueNdHdzIhHIDsjlHJLc': 779}, has_car=True)
+```
+
+*(This script is complete, it should run "as is")*

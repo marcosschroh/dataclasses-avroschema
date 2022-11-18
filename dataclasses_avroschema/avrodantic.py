@@ -37,3 +37,17 @@ class AvroBaseModel(BaseModel, AvroModel):  # type: ignore
     @classmethod
     def parse_obj(cls: Type["AvroBaseModel"], data: Dict) -> "AvroBaseModel":
         return super().parse_obj(data)
+
+    @classmethod
+    def fake(cls: Type[CT], **data: Dict[str, Any]) -> "AvroBaseModel":
+        """
+        Creates a fake instance of the model.
+
+        Attributes:
+            data: Dict[str, Any] represent the user values to use in the instance
+        """
+        # only generate fakes for fields that were not provided in data
+        payload = {field.name: field.fake() for field in cls.get_fields() if field.name not in data.keys()}
+        payload.update(data)
+
+        return cls.parse_obj(payload)
