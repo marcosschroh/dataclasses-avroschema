@@ -11,7 +11,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.9">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.10">
     
     
       
@@ -19,7 +19,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.20d9efc8.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.472b142f.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.08040f6c.min.css">
@@ -434,6 +434,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#fake" class="md-nav__link">
+    Fake
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -607,6 +614,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#fake" class="md-nav__link">
+    Fake
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -772,6 +786,26 @@
 
 <span class="n">users</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">avro_schema</span><span class="p">()</span>
 <span class="c1"># &#39;{&quot;type&quot;: &quot;record&quot;, &quot;name&quot;: &quot;User&quot;, &quot;fields&quot;: [{&quot;name&quot;: &quot;name&quot;, &quot;type&quot;: &quot;string&quot;}, {&quot;name&quot;: &quot;age&quot;, &quot;type&quot;: &quot;long&quot;}], &quot;doc&quot;: &quot;User with multiple Address&quot;}&#39;</span>
+</code></pre></div>
+<p><em>(This script is complete, it should run "as is")</em></p>
+<h3 id="fake">Fake</h3>
+<p>It is also possible to create <code>fake</code> instances with <code>pydantic</code> models:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">typing</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">Field</span>
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema.avrodantic</span> <span class="kn">import</span> <span class="n">AvroBaseModel</span>
+
+
+<span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">AvroBaseModel</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">birthday</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span>
+    <span class="n">pets</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;dog&quot;</span><span class="p">,</span> <span class="s2">&quot;cat&quot;</span><span class="p">])</span>
+    <span class="n">accounts</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+    <span class="n">has_car</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">fake</span><span class="p">())</span>
+<span class="c1"># &gt;&gt;&gt; User(name=&#39;qWTLkqcIVmSBxpWMpFyR&#39;, age=2608, birthday=datetime.date(1982, 3, 30), pets=[&#39;wqoEXcJRYjcnJmnIvtiI&#39;], accounts={&#39;JueNdHdzIhHIDsjlHJLc&#39;: 779}, has_car=True)</span>
 </code></pre></div>
 <p><em>(This script is complete, it should run "as is")</em></p>
 
