@@ -365,3 +365,24 @@ def test_parse_obj():
     user = User.parse_obj(data=data_user)
     assert type(user.addresses[0]) is Address
     assert User.avro_schema()
+
+
+def test_fake(color_enum) -> None:
+    class Address(AvroBaseModel):
+        street: str
+        street_number: int
+
+    class User(AvroBaseModel):
+        name: str
+        age: int
+        birthday: datetime.date
+        pets: typing.List[str] = Field(default_factory=lambda: ["dog", "cat"])
+        accounts: typing.Dict[str, int] = Field(default_factory=lambda: {"key": 1})
+        has_car: bool = False
+        favorite_colors: color_enum = color_enum.BLUE
+        country: str = "Argentina"
+        address: typing.Optional[Address] = None
+
+    # just calling fake is enougt to know that a proper instance was created,
+    # otherwise a pydantic validation should have been raised
+    user = User.fake()
