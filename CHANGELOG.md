@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [0.34.2] - 2022-11-18
+
+- pydantic `fake` and nested json serialization [219](https://github.com/marcosschroh/dataclasses-avroschema/issues/219)
+
+### Fixed
+
 ## [0.34.1] - 2022-11-11
 
 - include field `metadata` when using `faust` records [218](https://github.com/marcosschroh/dataclasses-avroschema/issues/218)
