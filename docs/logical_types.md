@@ -18,6 +18,7 @@ The following list represent the avro logical types mapped to python types:
 ```python title="Date example"
 import datetime
 import dataclasses
+import typing
 
 from dataclasses_avroschema import AvroModel
 
@@ -28,7 +29,7 @@ a_datetime = datetime.datetime(2019, 10, 12, 17, 57, 42)
 class DateLogicalType(AvroModel):
     "Date type"
     birthday: datetime.date
-    meeting_date: datetime.date = None
+    meeting_date: typing.Optional[datetime.date] = None
     release_datetime: datetime.date = a_datetime.date()
 
 
@@ -40,25 +41,15 @@ DateLogicalType.avro_schema()
   "fields": [
     {
       "name": "birthday",
-      "type": {
-        "type": "int",
-        "logicalType": "date"
-      }
-    },
+      "type": {"type": "int", "logicalType": "date"}},
     {
       "name": "meeting_date",
-      "type": {
-        "type": "int",
-        "logicalType": "date"
-      },
+      "type": ["null", {"type": "int", "logicalType": "date"}],
       "default": null
     },
     {
       "name": "release_datetime",
-      "type": {
-        "type": "int",
-        "logicalType": "date"
-      },
+      "type": {"type": "int", "logicalType": "date"},
       "default": 18181
     }
   ],
@@ -73,6 +64,7 @@ DateLogicalType.avro_schema()
 ```python title="Time example"
 import datetime
 import dataclasses
+import typing
 
 from dataclasses_avroschema import AvroModel, TimeMicro
 
@@ -83,7 +75,7 @@ a_datetime = datetime.datetime(2019, 10, 12, 17, 57, 42)
 class TimeLogicalTypes(AvroModel):
     "Time logical types"
     birthday_time: datetime.time
-    meeting_time: datetime.time = None
+    meeting_time: typing.Optional[datetime.time] = None
     release_time: datetime.time = a_datetime.time()
     release_time_micro: TimeMicro = a_datetime.time()
 
@@ -95,33 +87,21 @@ TimeLogicalTypes.avro_schema()
   "fields": [
     {
       "name": "birthday_time",
-      "type": {
-        "type": "int",
-        "logicalType": "time-millis"
-      }
+      "type": {"type": "int", "logicalType": "time-millis"}
     },
     {
       "name": "meeting_time",
-      "type": {
-        "type": "int",
-        "logicalType": "time-millis"
-      },
+      "type": ["null", {"type": "int", "logicalType": "time-millis"}],
       "default": null
     },
     {
       "name": "release_time",
-      "type": {
-        "type": "int",
-        "logicalType": "time-millis"
-      },
+      "type": {"type": "int", "logicalType": "time-millis"},
       "default": 64662000
     },
     {
       "name": "release_time_micro",
-      "type": {
-        "type": "long",
-        "logicalType": "time-micros"
-      },
+      "type": {"type": "long", "logicalType": "time-micros"},
       "default": 64662000000
     }
   ],
@@ -138,6 +118,7 @@ TimeLogicalTypes.avro_schema()
 ```python title="DateTime example"
 import datetime
 import dataclasses
+import typing
 
 from dataclasses_avroschema import AvroModel, DateTimeMicro
 
@@ -148,7 +129,7 @@ a_datetime = datetime.datetime(2019, 10, 12, 17, 57, 42)
 class DatetimeLogicalType(AvroModel):
     "Datetime logical types"
     birthday: datetime.datetime
-    meeting_time: datetime.datetime = None
+    meeting_time: typing.Optional[datetime.datetime] = None
     release_datetime: datetime.datetime = a_datetime
     release_datetime_micro: DateTimeMicro = a_datetime
 
@@ -160,33 +141,21 @@ DatetimeLogicalType.avro_schema()
   "fields": [
     {
       "name": "birthday",
-      "type": {
-        "type": "long",
-        "logicalType": "timestamp-millis"
-      }
+      "type": {"type": "long", "logicalType": "timestamp-millis"}
     },
     {
       "name": "meeting_time",
-      "type": {
-        "type": "long",
-        "logicalType": "timestamp-millis"
-      },
+      "type": ["nul", {"type": "long", "logicalType": "timestamp-millis"}],
       "default": null
     },
     {
       "name": "release_datetime",
-      "type": {
-        "type": "long",
-        "logicalType": "timestamp-millis"
-      },
+      "type": {"type": "long", "logicalType": "timestamp-millis"},
       "default": 1570903062000
     },
     {
       "name": "release_datetime_micro",
-      "type": {
-        "type": "long",
-        "logicalType": "timestamp-micros"
-      },
+      "type": {"type": "long", "logicalType": "timestamp-micros"},
       "default": 1570903062000000
     }
   ],
@@ -204,6 +173,7 @@ DatetimeLogicalType.avro_schema()
 ```python title="UUID example"
 import uuid
 import dataclasses
+import typing
 
 from dataclasses_avroschema import AvroModel
 
@@ -212,7 +182,7 @@ from dataclasses_avroschema import AvroModel
 class UUIDLogicalTypes(AvroModel):
     "UUID logical types"
     uuid_1: uuid.uuid4
-    uuid_2: uuid.uuid4 = None
+    uuid_2: typing.Optional[uuid.uuid4] = None
     event_uuid: uuid.uuid4 = uuid.uuid4()
 
 UUIDLogicalTypes.avro_schema()
@@ -223,24 +193,16 @@ UUIDLogicalTypes.avro_schema()
   "fields": [
     {
       "name": "uuid_1",
-      "type": {
-        "type": "string",
-        "logicalType": "uuid"
-      }
+      "type": {"type": "string", "logicalType": "uuid"}
     },
     {
       "name": "uuid_2",
-      "type": {
-        "type": "string",
-        "logicalType": "uuid"
-      },"default": null
+      "type": ["null", {"type": "string", "logicalType": "uuid"}],
+      "default": null
     },
     {
       "name": "event_uuid",
-      "type": {
-        "type": "string",
-        "logicalType": "uuid"
-      },
+      "type": {"type": "string", "logicalType": "uuid"},
       "default": "ad0677ab-bd1c-4383-9d45-e46c56bcc5c9"
     }
   ],
