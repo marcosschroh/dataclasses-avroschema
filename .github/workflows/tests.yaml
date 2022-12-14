@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
     inputs:
       release:
-        description: 'Release package'
+        description: "Release package"
         required: true
 
 jobs:
@@ -17,29 +17,20 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11']
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
     steps:
-    - uses: actions/checkout@v3
-    - name: Setup python
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
-        architecture: x64
+      - uses: actions/checkout@v3
+      - name: Setup python
+        uses: actions/setup-python@v4
+        with:
+          cache: "pip"
+          python-version: ${{ matrix.python-version }}
+          architecture: x64
 
-    - name: Set Cache
-      uses: actions/cache@v3
-      id: cache  # name for referring later
-      with:
-        path: /opt/hostedtoolcache/Python/
-        key: ${{ matrix.python-version }}-cache-${{ hashFiles('requirements.txt') }}
-        restore-keys: |
-          ${{ matrix.python-version }}-cache-
-          ${{ matrix.python-version }}-
+      - name: Install Dependencies
+        run: pip install -r requirements.txt
 
-    - name: Install Dependencies
-      run: |
-        pip install -r requirements.txt
+      - name: Test
+        run: ./scripts/test
 
-    - name: Test
-      run: |
-        ./scripts/test && codecov && codecov --token=$CODECOV_TOKEN
+      - uses: codecov/codecov-action@v3

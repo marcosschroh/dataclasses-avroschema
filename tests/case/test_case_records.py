@@ -37,47 +37,47 @@ CASE_TO_DATA = [
 CASE_TO_DATA_NESTED = [
     (
         case.CAMELCASE,
-        '{"type": "record", "name": "Event", "fields": [{"name": "eventId", "type": "string"}, {"name": "user", "type": {"type": "record", "name": "User", "fields": [{"name": "name", "type": "string"}]}}]}',
+        '{"type": "record", "name": "Event", "fields": [{"name": "eventId", "type": "string"}, {"name": "user", "type": {"type": "record", "name": "User", "fields": [{"name": "name", "type": "string"}]}}]}',  # noqa
     ),
     (
         case.CAPITALCASE,
-        '{"type": "record", "name": "Event", "fields": [{"name": "Event_id", "type": "string"}, {"name": "User", "type": {"type": "record", "name": "User", "fields": [{"name": "Name", "type": "string"}]}}]}',
+        '{"type": "record", "name": "Event", "fields": [{"name": "Event_id", "type": "string"}, {"name": "User", "type": {"type": "record", "name": "User", "fields": [{"name": "Name", "type": "string"}]}}]}',  # noqa
     ),
     (
         case.CONSTCASE,
-        '{"type": "record", "name": "Event", "fields": [{"name": "EVENT_ID", "type": "string"}, {"name": "USER", "type": {"type": "record", "name": "User", "fields": [{"name": "NAME", "type": "string"}]}}]}',
+        '{"type": "record", "name": "Event", "fields": [{"name": "EVENT_ID", "type": "string"}, {"name": "USER", "type": {"type": "record", "name": "User", "fields": [{"name": "NAME", "type": "string"}]}}]}',  # noqa
     ),
     (
         case.LOWERCASE,
-        '{"type": "record", "name": "Event", "fields": [{"name": "event_id", "type": "string"}, {"name": "user", "type": {"type": "record", "name": "User", "fields": [{"name": "name", "type": "string"}]}}]}',
+        '{"type": "record", "name": "Event", "fields": [{"name": "event_id", "type": "string"}, {"name": "user", "type": {"type": "record", "name": "User", "fields": [{"name": "name", "type": "string"}]}}]}',  # noqa
     ),
     (
         case.PASCALCASE,
-        '{"type": "record", "name": "Event", "fields": [{"name": "EventId", "type": "string"}, {"name": "User", "type": {"type": "record", "name": "User", "fields": [{"name": "Name", "type": "string"}]}}]}',
+        '{"type": "record", "name": "Event", "fields": [{"name": "EventId", "type": "string"}, {"name": "User", "type": {"type": "record", "name": "User", "fields": [{"name": "Name", "type": "string"}]}}]}',  # noqa
     ),
     (
         case.PATHCASE,
-        '{"type": "record", "name": "Event", "fields": [{"name": "event/id", "type": "string"}, {"name": "user", "type": {"type": "record", "name": "User", "fields": [{"name": "name", "type": "string"}]}}]}',
+        '{"type": "record", "name": "Event", "fields": [{"name": "event/id", "type": "string"}, {"name": "user", "type": {"type": "record", "name": "User", "fields": [{"name": "name", "type": "string"}]}}]}',  # noqa
     ),
     (
         case.SNAKECASE,
-        '{"type": "record", "name": "Event", "fields": [{"name": "event_id", "type": "string"}, {"name": "user", "type": {"type": "record", "name": "User", "fields": [{"name": "name", "type": "string"}]}}]}',
+        '{"type": "record", "name": "Event", "fields": [{"name": "event_id", "type": "string"}, {"name": "user", "type": {"type": "record", "name": "User", "fields": [{"name": "name", "type": "string"}]}}]}',  # noqa
     ),
     (
         case.SPINALCASE,
-        '{"type": "record", "name": "Event", "fields": [{"name": "event-id", "type": "string"}, {"name": "user", "type": {"type": "record", "name": "User", "fields": [{"name": "name", "type": "string"}]}}]}',
+        '{"type": "record", "name": "Event", "fields": [{"name": "event-id", "type": "string"}, {"name": "user", "type": {"type": "record", "name": "User", "fields": [{"name": "name", "type": "string"}]}}]}',  # noqa
     ),
     (
         case.TRIMCASE,
-        '{"type": "record", "name": "Event", "fields": [{"name": "event_id", "type": "string"}, {"name": "user", "type": {"type": "record", "name": "User", "fields": [{"name": "name", "type": "string"}]}}]}',
+        '{"type": "record", "name": "Event", "fields": [{"name": "event_id", "type": "string"}, {"name": "user", "type": {"type": "record", "name": "User", "fields": [{"name": "name", "type": "string"}]}}]}',  # noqa
     ),
     (
         case.UPPERCASE,
-        '{"type": "record", "name": "Event", "fields": [{"name": "EVENT_ID", "type": "string"}, {"name": "USER", "type": {"type": "record", "name": "User", "fields": [{"name": "NAME", "type": "string"}]}}]}',
+        '{"type": "record", "name": "Event", "fields": [{"name": "EVENT_ID", "type": "string"}, {"name": "USER", "type": {"type": "record", "name": "User", "fields": [{"name": "NAME", "type": "string"}]}}]}',  # noqa
     ),
     (
         case.ALPHANUMCASE,
-        '{"type": "record", "name": "Event", "fields": [{"name": "event_id", "type": "string"}, {"name": "user", "type": {"type": "record", "name": "User", "fields": [{"name": "name", "type": "string"}]}}]}',
+        '{"type": "record", "name": "Event", "fields": [{"name": "event_id", "type": "string"}, {"name": "user", "type": {"type": "record", "name": "User", "fields": [{"name": "name", "type": "string"}]}}]}',  # noqa
     ),
 ]
 
@@ -85,94 +85,94 @@ CASE_TO_DATA_NESTED = [
 CASE_TO_DATA_COMPLEX_FIELDS = [
     (
         case.CAMELCASE,
-        '{"type": "record", "name": "UserAdvance", "fields": [{"name": "name", "type": "string"}, {"name": "age", "type": "long"}, {"name": "pets", "type": {"type": "array", "items": "string", "name": "pet"}}, {"name": "accounts", "type": {"type": "map", "values": "long", "name": "account"}}, {"name": "favoriteColors", "type": {"type": "enum", "name": "favoriteColor", "symbols": ["BLUE", "YELLOW", "GREEN"]}}, {"name": "hasCar", "type": "boolean", "default": false}, {"name": "country", "type": "string", "default": "Argentina"}, {"name": "address", "type": ["null", "string"], "default": null}, {"name": "md5", "type": {"type": "fixed", "name": "md5", "size": 16}}]}',
+        '{"type": "record", "name": "UserAdvance", "fields": [{"name": "name", "type": "string"}, {"name": "age", "type": "long"}, {"name": "pets", "type": {"type": "array", "items": "string", "name": "pet"}}, {"name": "accounts", "type": {"type": "map", "values": "long", "name": "account"}}, {"name": "favoriteColors", "type": {"type": "enum", "name": "favoriteColor", "symbols": ["BLUE", "YELLOW", "GREEN"]}}, {"name": "hasCar", "type": "boolean", "default": false}, {"name": "country", "type": "string", "default": "Argentina"}, {"name": "address", "type": ["null", "string"], "default": null}, {"name": "md5", "type": {"type": "fixed", "name": "md5", "size": 16}}]}',  # noqa
     ),
     (
         case.CAPITALCASE,
-        '{"type": "record", "name": "UserAdvance", "fields": [{"name": "Name", "type": "string"}, {"name": "Age", "type": "long"}, {"name": "Pets", "type": {"type": "array", "items": "string", "name": "Pet"}}, {"name": "Accounts", "type": {"type": "map", "values": "long", "name": "Account"}}, {"name": "Favorite_colors", "type": {"type": "enum", "name": "Favorite_color", "symbols": ["BLUE", "YELLOW", "GREEN"]}}, {"name": "Has_car", "type": "boolean", "default": false}, {"name": "Country", "type": "string", "default": "Argentina"}, {"name": "Address", "type": ["null", "string"], "default": null}, {"name": "Md5", "type": {"type": "fixed", "name": "Md5", "size": 16}}]}',
+        '{"type": "record", "name": "UserAdvance", "fields": [{"name": "Name", "type": "string"}, {"name": "Age", "type": "long"}, {"name": "Pets", "type": {"type": "array", "items": "string", "name": "Pet"}}, {"name": "Accounts", "type": {"type": "map", "values": "long", "name": "Account"}}, {"name": "Favorite_colors", "type": {"type": "enum", "name": "Favorite_color", "symbols": ["BLUE", "YELLOW", "GREEN"]}}, {"name": "Has_car", "type": "boolean", "default": false}, {"name": "Country", "type": "string", "default": "Argentina"}, {"name": "Address", "type": ["null", "string"], "default": null}, {"name": "Md5", "type": {"type": "fixed", "name": "Md5", "size": 16}}]}',  # noqa
     ),
     (
         case.CONSTCASE,
-        '{"type": "record", "name": "UserAdvance", "fields": [{"name": "NAME", "type": "string"}, {"name": "AGE", "type": "long"}, {"name": "PETS", "type": {"type": "array", "items": "string", "name": "PET"}}, {"name": "ACCOUNTS", "type": {"type": "map", "values": "long", "name": "ACCOUNT"}}, {"name": "FAVORITE_COLORS", "type": {"type": "enum", "name": "FAVORITE_COLOR", "symbols": ["BLUE", "YELLOW", "GREEN"]}}, {"name": "HAS_CAR", "type": "boolean", "default": false}, {"name": "COUNTRY", "type": "string", "default": "Argentina"}, {"name": "ADDRESS", "type": ["null", "string"], "default": null}, {"name": "MD5", "type": {"type": "fixed", "name": "MD5", "size": 16}}]}',
+        '{"type": "record", "name": "UserAdvance", "fields": [{"name": "NAME", "type": "string"}, {"name": "AGE", "type": "long"}, {"name": "PETS", "type": {"type": "array", "items": "string", "name": "PET"}}, {"name": "ACCOUNTS", "type": {"type": "map", "values": "long", "name": "ACCOUNT"}}, {"name": "FAVORITE_COLORS", "type": {"type": "enum", "name": "FAVORITE_COLOR", "symbols": ["BLUE", "YELLOW", "GREEN"]}}, {"name": "HAS_CAR", "type": "boolean", "default": false}, {"name": "COUNTRY", "type": "string", "default": "Argentina"}, {"name": "ADDRESS", "type": ["null", "string"], "default": null}, {"name": "MD5", "type": {"type": "fixed", "name": "MD5", "size": 16}}]}',  # noqa
     ),
     (
         case.LOWERCASE,
-        '{"type": "record", "name": "UserAdvance", "fields": [{"name": "name", "type": "string"}, {"name": "age", "type": "long"}, {"name": "pets", "type": {"type": "array", "items": "string", "name": "pet"}}, {"name": "accounts", "type": {"type": "map", "values": "long", "name": "account"}}, {"name": "favorite_colors", "type": {"type": "enum", "name": "favorite_color", "symbols": ["BLUE", "YELLOW", "GREEN"]}}, {"name": "has_car", "type": "boolean", "default": false}, {"name": "country", "type": "string", "default": "Argentina"}, {"name": "address", "type": ["null", "string"], "default": null}, {"name": "md5", "type": {"type": "fixed", "name": "md5", "size": 16}}]}',
+        '{"type": "record", "name": "UserAdvance", "fields": [{"name": "name", "type": "string"}, {"name": "age", "type": "long"}, {"name": "pets", "type": {"type": "array", "items": "string", "name": "pet"}}, {"name": "accounts", "type": {"type": "map", "values": "long", "name": "account"}}, {"name": "favorite_colors", "type": {"type": "enum", "name": "favorite_color", "symbols": ["BLUE", "YELLOW", "GREEN"]}}, {"name": "has_car", "type": "boolean", "default": false}, {"name": "country", "type": "string", "default": "Argentina"}, {"name": "address", "type": ["null", "string"], "default": null}, {"name": "md5", "type": {"type": "fixed", "name": "md5", "size": 16}}]}',  # noqa
     ),
     (
         case.PASCALCASE,
-        '{"type": "record", "name": "UserAdvance", "fields": [{"name": "Name", "type": "string"}, {"name": "Age", "type": "long"}, {"name": "Pets", "type": {"type": "array", "items": "string", "name": "Pet"}}, {"name": "Accounts", "type": {"type": "map", "values": "long", "name": "Account"}}, {"name": "FavoriteColors", "type": {"type": "enum", "name": "FavoriteColor", "symbols": ["BLUE", "YELLOW", "GREEN"]}}, {"name": "HasCar", "type": "boolean", "default": false}, {"name": "Country", "type": "string", "default": "Argentina"}, {"name": "Address", "type": ["null", "string"], "default": null}, {"name": "Md5", "type": {"type": "fixed", "name": "Md5", "size": 16}}]}',
+        '{"type": "record", "name": "UserAdvance", "fields": [{"name": "Name", "type": "string"}, {"name": "Age", "type": "long"}, {"name": "Pets", "type": {"type": "array", "items": "string", "name": "Pet"}}, {"name": "Accounts", "type": {"type": "map", "values": "long", "name": "Account"}}, {"name": "FavoriteColors", "type": {"type": "enum", "name": "FavoriteColor", "symbols": ["BLUE", "YELLOW", "GREEN"]}}, {"name": "HasCar", "type": "boolean", "default": false}, {"name": "Country", "type": "string", "default": "Argentina"}, {"name": "Address", "type": ["null", "string"], "default": null}, {"name": "Md5", "type": {"type": "fixed", "name": "Md5", "size": 16}}]}',  # noqa
     ),
     (
         case.PATHCASE,
-        '{"type": "record", "name": "UserAdvance", "fields": [{"name": "name", "type": "string"}, {"name": "age", "type": "long"}, {"name": "pets", "type": {"type": "array", "items": "string", "name": "pet"}}, {"name": "accounts", "type": {"type": "map", "values": "long", "name": "account"}}, {"name": "favorite/colors", "type": {"type": "enum", "name": "favorite/color", "symbols": ["BLUE", "YELLOW", "GREEN"]}}, {"name": "has/car", "type": "boolean", "default": false}, {"name": "country", "type": "string", "default": "Argentina"}, {"name": "address", "type": ["null", "string"], "default": null}, {"name": "md5", "type": {"type": "fixed", "name": "md5", "size": 16}}]}',
+        '{"type": "record", "name": "UserAdvance", "fields": [{"name": "name", "type": "string"}, {"name": "age", "type": "long"}, {"name": "pets", "type": {"type": "array", "items": "string", "name": "pet"}}, {"name": "accounts", "type": {"type": "map", "values": "long", "name": "account"}}, {"name": "favorite/colors", "type": {"type": "enum", "name": "favorite/color", "symbols": ["BLUE", "YELLOW", "GREEN"]}}, {"name": "has/car", "type": "boolean", "default": false}, {"name": "country", "type": "string", "default": "Argentina"}, {"name": "address", "type": ["null", "string"], "default": null}, {"name": "md5", "type": {"type": "fixed", "name": "md5", "size": 16}}]}',  # noqa
     ),
     (
         case.SNAKECASE,
-        '{"type": "record", "name": "UserAdvance", "fields": [{"name": "name", "type": "string"}, {"name": "age", "type": "long"}, {"name": "pets", "type": {"type": "array", "items": "string", "name": "pet"}}, {"name": "accounts", "type": {"type": "map", "values": "long", "name": "account"}}, {"name": "favorite_colors", "type": {"type": "enum", "name": "favorite_color", "symbols": ["BLUE", "YELLOW", "GREEN"]}}, {"name": "has_car", "type": "boolean", "default": false}, {"name": "country", "type": "string", "default": "Argentina"}, {"name": "address", "type": ["null", "string"], "default": null}, {"name": "md5", "type": {"type": "fixed", "name": "md5", "size": 16}}]}',
+        '{"type": "record", "name": "UserAdvance", "fields": [{"name": "name", "type": "string"}, {"name": "age", "type": "long"}, {"name": "pets", "type": {"type": "array", "items": "string", "name": "pet"}}, {"name": "accounts", "type": {"type": "map", "values": "long", "name": "account"}}, {"name": "favorite_colors", "type": {"type": "enum", "name": "favorite_color", "symbols": ["BLUE", "YELLOW", "GREEN"]}}, {"name": "has_car", "type": "boolean", "default": false}, {"name": "country", "type": "string", "default": "Argentina"}, {"name": "address", "type": ["null", "string"], "default": null}, {"name": "md5", "type": {"type": "fixed", "name": "md5", "size": 16}}]}',  # noqa
     ),
     (
         case.SPINALCASE,
-        '{"type": "record", "name": "UserAdvance", "fields": [{"name": "name", "type": "string"}, {"name": "age", "type": "long"}, {"name": "pets", "type": {"type": "array", "items": "string", "name": "pet"}}, {"name": "accounts", "type": {"type": "map", "values": "long", "name": "account"}}, {"name": "favorite-colors", "type": {"type": "enum", "name": "favorite-color", "symbols": ["BLUE", "YELLOW", "GREEN"]}}, {"name": "has-car", "type": "boolean", "default": false}, {"name": "country", "type": "string", "default": "Argentina"}, {"name": "address", "type": ["null", "string"], "default": null}, {"name": "md5", "type": {"type": "fixed", "name": "md5", "size": 16}}]}',
+        '{"type": "record", "name": "UserAdvance", "fields": [{"name": "name", "type": "string"}, {"name": "age", "type": "long"}, {"name": "pets", "type": {"type": "array", "items": "string", "name": "pet"}}, {"name": "accounts", "type": {"type": "map", "values": "long", "name": "account"}}, {"name": "favorite-colors", "type": {"type": "enum", "name": "favorite-color", "symbols": ["BLUE", "YELLOW", "GREEN"]}}, {"name": "has-car", "type": "boolean", "default": false}, {"name": "country", "type": "string", "default": "Argentina"}, {"name": "address", "type": ["null", "string"], "default": null}, {"name": "md5", "type": {"type": "fixed", "name": "md5", "size": 16}}]}',  # noqa
     ),
     (
         case.TRIMCASE,
-        '{"type": "record", "name": "UserAdvance", "fields": [{"name": "name", "type": "string"}, {"name": "age", "type": "long"}, {"name": "pets", "type": {"type": "array", "items": "string", "name": "pet"}}, {"name": "accounts", "type": {"type": "map", "values": "long", "name": "account"}}, {"name": "favorite_colors", "type": {"type": "enum", "name": "favorite_color", "symbols": ["BLUE", "YELLOW", "GREEN"]}}, {"name": "has_car", "type": "boolean", "default": false}, {"name": "country", "type": "string", "default": "Argentina"}, {"name": "address", "type": ["null", "string"], "default": null}, {"name": "md5", "type": {"type": "fixed", "name": "md5", "size": 16}}]}',
+        '{"type": "record", "name": "UserAdvance", "fields": [{"name": "name", "type": "string"}, {"name": "age", "type": "long"}, {"name": "pets", "type": {"type": "array", "items": "string", "name": "pet"}}, {"name": "accounts", "type": {"type": "map", "values": "long", "name": "account"}}, {"name": "favorite_colors", "type": {"type": "enum", "name": "favorite_color", "symbols": ["BLUE", "YELLOW", "GREEN"]}}, {"name": "has_car", "type": "boolean", "default": false}, {"name": "country", "type": "string", "default": "Argentina"}, {"name": "address", "type": ["null", "string"], "default": null}, {"name": "md5", "type": {"type": "fixed", "name": "md5", "size": 16}}]}',  # noqa
     ),
     (
         case.UPPERCASE,
-        '{"type": "record", "name": "UserAdvance", "fields": [{"name": "NAME", "type": "string"}, {"name": "AGE", "type": "long"}, {"name": "PETS", "type": {"type": "array", "items": "string", "name": "PET"}}, {"name": "ACCOUNTS", "type": {"type": "map", "values": "long", "name": "ACCOUNT"}}, {"name": "FAVORITE_COLORS", "type": {"type": "enum", "name": "FAVORITE_COLOR", "symbols": ["BLUE", "YELLOW", "GREEN"]}}, {"name": "HAS_CAR", "type": "boolean", "default": false}, {"name": "COUNTRY", "type": "string", "default": "Argentina"}, {"name": "ADDRESS", "type": ["null", "string"], "default": null}, {"name": "MD5", "type": {"type": "fixed", "name": "MD5", "size": 16}}]}',
+        '{"type": "record", "name": "UserAdvance", "fields": [{"name": "NAME", "type": "string"}, {"name": "AGE", "type": "long"}, {"name": "PETS", "type": {"type": "array", "items": "string", "name": "PET"}}, {"name": "ACCOUNTS", "type": {"type": "map", "values": "long", "name": "ACCOUNT"}}, {"name": "FAVORITE_COLORS", "type": {"type": "enum", "name": "FAVORITE_COLOR", "symbols": ["BLUE", "YELLOW", "GREEN"]}}, {"name": "HAS_CAR", "type": "boolean", "default": false}, {"name": "COUNTRY", "type": "string", "default": "Argentina"}, {"name": "ADDRESS", "type": ["null", "string"], "default": null}, {"name": "MD5", "type": {"type": "fixed", "name": "MD5", "size": 16}}]}',  # noqa
     ),
     (
         case.ALPHANUMCASE,
-        '{"type": "record", "name": "UserAdvance", "fields": [{"name": "name", "type": "string"}, {"name": "age", "type": "long"}, {"name": "pets", "type": {"type": "array", "items": "string", "name": "pet"}}, {"name": "accounts", "type": {"type": "map", "values": "long", "name": "account"}}, {"name": "favorite_colors", "type": {"type": "enum", "name": "favorite_color", "symbols": ["BLUE", "YELLOW", "GREEN"]}}, {"name": "has_car", "type": "boolean", "default": false}, {"name": "country", "type": "string", "default": "Argentina"}, {"name": "address", "type": ["null", "string"], "default": null}, {"name": "md5", "type": {"type": "fixed", "name": "md5", "size": 16}}]}',
+        '{"type": "record", "name": "UserAdvance", "fields": [{"name": "name", "type": "string"}, {"name": "age", "type": "long"}, {"name": "pets", "type": {"type": "array", "items": "string", "name": "pet"}}, {"name": "accounts", "type": {"type": "map", "values": "long", "name": "account"}}, {"name": "favorite_colors", "type": {"type": "enum", "name": "favorite_color", "symbols": ["BLUE", "YELLOW", "GREEN"]}}, {"name": "has_car", "type": "boolean", "default": false}, {"name": "country", "type": "string", "default": "Argentina"}, {"name": "address", "type": ["null", "string"], "default": null}, {"name": "md5", "type": {"type": "fixed", "name": "md5", "size": 16}}]}',  # noqa
     ),
 ]
 
 CASE_TO_DATA_COMPLEX_FIELDS_NESTED = [
     (
         case.CAMELCASE,
-        '{"type": "record", "name": "UserAdvance", "fields": [{"name": "users", "type": {"type": "array", "items": {"type": "record", "name": "User", "fields": [{"name": "name", "type": "string"}], "namespace": "types.user"}, "name": "user"}}, {"name": "accounts", "type": {"type": "map", "values": "types.user.User", "name": "account"}}]}',
+        '{"type": "record", "name": "UserAdvance", "fields": [{"name": "users", "type": {"type": "array", "items": {"type": "record", "name": "User", "fields": [{"name": "name", "type": "string"}], "namespace": "types.user"}, "name": "user"}}, {"name": "accounts", "type": {"type": "map", "values": "types.user.User", "name": "account"}}]}',  # noqa
     ),
     (
         case.CAPITALCASE,
-        '{"type": "record", "name": "UserAdvance", "fields": [{"name": "Users", "type": {"type": "array", "items": {"type": "record", "name": "User", "fields": [{"name": "Name", "type": "string"}], "namespace": "types.user"}, "name": "User"}}, {"name": "Accounts", "type": {"type": "map", "values": "types.user.User", "name": "Account"}}]}',
+        '{"type": "record", "name": "UserAdvance", "fields": [{"name": "Users", "type": {"type": "array", "items": {"type": "record", "name": "User", "fields": [{"name": "Name", "type": "string"}], "namespace": "types.user"}, "name": "User"}}, {"name": "Accounts", "type": {"type": "map", "values": "types.user.User", "name": "Account"}}]}',  # noqa
     ),
     (
         case.CONSTCASE,
-        '{"type": "record", "name": "UserAdvance", "fields": [{"name": "USERS", "type": {"type": "array", "items": {"type": "record", "name": "User", "fields": [{"name": "NAME", "type": "string"}], "namespace": "types.user"}, "name": "USER"}}, {"name": "ACCOUNTS", "type": {"type": "map", "values": "types.user.User", "name": "ACCOUNT"}}]}',
+        '{"type": "record", "name": "UserAdvance", "fields": [{"name": "USERS", "type": {"type": "array", "items": {"type": "record", "name": "User", "fields": [{"name": "NAME", "type": "string"}], "namespace": "types.user"}, "name": "USER"}}, {"name": "ACCOUNTS", "type": {"type": "map", "values": "types.user.User", "name": "ACCOUNT"}}]}',  # noqa
     ),
     (
         case.LOWERCASE,
-        '{"type": "record", "name": "UserAdvance", "fields": [{"name": "users", "type": {"type": "array", "items": {"type": "record", "name": "User", "fields": [{"name": "name", "type": "string"}], "namespace": "types.user"}, "name": "user"}}, {"name": "accounts", "type": {"type": "map", "values": "types.user.User", "name": "account"}}]}',
+        '{"type": "record", "name": "UserAdvance", "fields": [{"name": "users", "type": {"type": "array", "items": {"type": "record", "name": "User", "fields": [{"name": "name", "type": "string"}], "namespace": "types.user"}, "name": "user"}}, {"name": "accounts", "type": {"type": "map", "values": "types.user.User", "name": "account"}}]}',  # noqa
     ),
     (
         case.PASCALCASE,
-        '{"type": "record", "name": "UserAdvance", "fields": [{"name": "Users", "type": {"type": "array", "items": {"type": "record", "name": "User", "fields": [{"name": "Name", "type": "string"}], "namespace": "types.user"}, "name": "User"}}, {"name": "Accounts", "type": {"type": "map", "values": "types.user.User", "name": "Account"}}]}',
+        '{"type": "record", "name": "UserAdvance", "fields": [{"name": "Users", "type": {"type": "array", "items": {"type": "record", "name": "User", "fields": [{"name": "Name", "type": "string"}], "namespace": "types.user"}, "name": "User"}}, {"name": "Accounts", "type": {"type": "map", "values": "types.user.User", "name": "Account"}}]}',  # noqa
     ),
     (
         case.PATHCASE,
-        '{"type": "record", "name": "UserAdvance", "fields": [{"name": "users", "type": {"type": "array", "items": {"type": "record", "name": "User", "fields": [{"name": "name", "type": "string"}], "namespace": "types.user"}, "name": "user"}}, {"name": "accounts", "type": {"type": "map", "values": "types.user.User", "name": "account"}}]}',
+        '{"type": "record", "name": "UserAdvance", "fields": [{"name": "users", "type": {"type": "array", "items": {"type": "record", "name": "User", "fields": [{"name": "name", "type": "string"}], "namespace": "types.user"}, "name": "user"}}, {"name": "accounts", "type": {"type": "map", "values": "types.user.User", "name": "account"}}]}',  # noqa
     ),
     (
         case.SNAKECASE,
-        '{"type": "record", "name": "UserAdvance", "fields": [{"name": "users", "type": {"type": "array", "items": {"type": "record", "name": "User", "fields": [{"name": "name", "type": "string"}], "namespace": "types.user"}, "name": "user"}}, {"name": "accounts", "type": {"type": "map", "values": "types.user.User", "name": "account"}}]}',
+        '{"type": "record", "name": "UserAdvance", "fields": [{"name": "users", "type": {"type": "array", "items": {"type": "record", "name": "User", "fields": [{"name": "name", "type": "string"}], "namespace": "types.user"}, "name": "user"}}, {"name": "accounts", "type": {"type": "map", "values": "types.user.User", "name": "account"}}]}',  # noqa
     ),
     (
         case.SPINALCASE,
-        '{"type": "record", "name": "UserAdvance", "fields": [{"name": "users", "type": {"type": "array", "items": {"type": "record", "name": "User", "fields": [{"name": "name", "type": "string"}], "namespace": "types.user"}, "name": "user"}}, {"name": "accounts", "type": {"type": "map", "values": "types.user.User", "name": "account"}}]}',
+        '{"type": "record", "name": "UserAdvance", "fields": [{"name": "users", "type": {"type": "array", "items": {"type": "record", "name": "User", "fields": [{"name": "name", "type": "string"}], "namespace": "types.user"}, "name": "user"}}, {"name": "accounts", "type": {"type": "map", "values": "types.user.User", "name": "account"}}]}',  # noqa
     ),
     (
         case.TRIMCASE,
-        '{"type": "record", "name": "UserAdvance", "fields": [{"name": "users", "type": {"type": "array", "items": {"type": "record", "name": "User", "fields": [{"name": "name", "type": "string"}], "namespace": "types.user"}, "name": "user"}}, {"name": "accounts", "type": {"type": "map", "values": "types.user.User", "name": "account"}}]}',
+        '{"type": "record", "name": "UserAdvance", "fields": [{"name": "users", "type": {"type": "array", "items": {"type": "record", "name": "User", "fields": [{"name": "name", "type": "string"}], "namespace": "types.user"}, "name": "user"}}, {"name": "accounts", "type": {"type": "map", "values": "types.user.User", "name": "account"}}]}',  # noqa
     ),
     (
         case.UPPERCASE,
-        '{"type": "record", "name": "UserAdvance", "fields": [{"name": "USERS", "type": {"type": "array", "items": {"type": "record", "name": "User", "fields": [{"name": "NAME", "type": "string"}], "namespace": "types.user"}, "name": "USER"}}, {"name": "ACCOUNTS", "type": {"type": "map", "values": "types.user.User", "name": "ACCOUNT"}}]}',
+        '{"type": "record", "name": "UserAdvance", "fields": [{"name": "USERS", "type": {"type": "array", "items": {"type": "record", "name": "User", "fields": [{"name": "NAME", "type": "string"}], "namespace": "types.user"}, "name": "USER"}}, {"name": "ACCOUNTS", "type": {"type": "map", "values": "types.user.User", "name": "ACCOUNT"}}]}',  # noqa
     ),
     (
         case.ALPHANUMCASE,
-        '{"type": "record", "name": "UserAdvance", "fields": [{"name": "users", "type": {"type": "array", "items": {"type": "record", "name": "User", "fields": [{"name": "name", "type": "string"}], "namespace": "types.user"}, "name": "user"}}, {"name": "accounts", "type": {"type": "map", "values": "types.user.User", "name": "account"}}]}',
+        '{"type": "record", "name": "UserAdvance", "fields": [{"name": "users", "type": {"type": "array", "items": {"type": "record", "name": "User", "fields": [{"name": "name", "type": "string"}], "namespace": "types.user"}, "name": "user"}}, {"name": "accounts", "type": {"type": "map", "values": "types.user.User", "name": "account"}}]}',  # noqa
     ),
 ]
 

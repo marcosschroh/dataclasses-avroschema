@@ -135,8 +135,8 @@ advance_user_python_dict = {
     "event_uuid": uuid.UUID("09f00184-7721-4266-a955-21048a5cc235"),
 }
 
-advance_user_avro_binary = b"\x08juan(\x01\x04\x06dog\x06cat\x00\x02\x06ing\xc8\x01\x00\x04\x04\x00\x12Argentina\n\nu00ff\x8a\x9c\x02\xe0\xa7\xd5=\xe0\xd7\xf3\x91\xb8[H09f00184-7721-4266-a955-21048a5cc235"
-advance_user_avro_json = b'{"name": "juan", "age": 20, "is_developer": true, "pets": ["dog", "cat"], "accounts": {"ing": 100}, "favorite_colors": "GREEN", "favorite_language": "JS", "has_car": false, "country": "Argentina", "years_of_expirience": 5, "md5": "u00ff", "birthday": 18181, "meeting_time": 64662000, "release_datetime": 1570903062000, "event_uuid": "09f00184-7721-4266-a955-21048a5cc235"}'
+advance_user_avro_binary = b"\x08juan(\x01\x04\x06dog\x06cat\x00\x02\x06ing\xc8\x01\x00\x04\x04\x00\x12Argentina\n\nu00ff\x8a\x9c\x02\xe0\xa7\xd5=\xe0\xd7\xf3\x91\xb8[H09f00184-7721-4266-a955-21048a5cc235"  # noqa
+advance_user_avro_json = b'{"name": "juan", "age": 20, "is_developer": true, "pets": ["dog", "cat"], "accounts": {"ing": 100}, "favorite_colors": "GREEN", "favorite_language": "JS", "has_car": false, "country": "Argentina", "years_of_expirience": 5, "md5": "u00ff", "birthday": 18181, "meeting_time": 64662000, "release_datetime": 1570903062000, "event_uuid": "09f00184-7721-4266-a955-21048a5cc235"}'  # noqa
 
 CLASSES_DATA_BINARY = (
     (User, data_user, user_avro_binary, user_avro_json, user_json, user_json),
