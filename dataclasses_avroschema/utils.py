@@ -5,7 +5,6 @@ from datetime import datetime
 from pytz import utc
 
 from . import field_utils
-from .types import CUSTOM_TYPES
 
 try:
     import faust
@@ -68,13 +67,6 @@ def is_self_referenced(a_type: type) -> bool:
         and a_type.__args__
         and isinstance(a_type.__args__[0], typing.ForwardRef)  # type: ignore
     )
-
-
-def is_custom_type(value: typing.Any) -> bool:
-    """
-    Given a type, return True if is a custom type (Fixed, Decimal)
-    """
-    return isinstance(value, dict) and value.get("_dataclasses_custom_type") in CUSTOM_TYPES
 
 
 @dataclasses.dataclass

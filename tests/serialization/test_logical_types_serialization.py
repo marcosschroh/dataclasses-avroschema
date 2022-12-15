@@ -142,6 +142,7 @@ def test_decimals_defaults():
     @dataclass
     class LogicalTypes(AvroModel):
         "Some logical types"
+        explicit: decimal.Decimal = types.Decimal(scale=2, precision=3)
         implicit_decimal: decimal.Decimal = decimal.Decimal("3.14")
         explicit_decimal_with_default: decimal.Decimal = types.Decimal(
             scale=5, precision=6, default=decimal.Decimal("3.14159")
@@ -149,14 +150,19 @@ def test_decimals_defaults():
         negative_default: decimal.Decimal = types.Decimal(scale=2, precision=3, default=decimal.Decimal("-1.23"))
 
     data = {
+        "explicit": decimal.Decimal("3.12"),
         "implicit_decimal": decimal.Decimal("3.14"),
         "explicit_decimal_with_default": decimal.Decimal("3.14159"),
         "negative_default": decimal.Decimal("-1.23"),
     }
 
-    data_json = {"implicit_decimal": "3.14", "explicit_decimal_with_default": "3.14159", "negative_default": "-1.23"}
-
-    logical_types = LogicalTypes()
+    data_json = {
+        "explicit": "3.12",
+        "implicit_decimal": "3.14",
+        "explicit_decimal_with_default": "3.14159",
+        "negative_default": "-1.23",
+    }
+    logical_types = LogicalTypes(explicit=decimal.Decimal("3.12"))
 
     # Serialize out to capture the defaults
     avro_binary = logical_types.serialize()
