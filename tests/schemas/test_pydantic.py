@@ -1,4 +1,5 @@
 import datetime
+import decimal
 import enum
 import json
 import typing
@@ -311,6 +312,9 @@ def test_serialization(color_enum):
     class UserAdvance(AvroBaseModel):
         name: str
         age: int
+        explicit: decimal.Decimal = types.Decimal(scale=2, precision=3)
+        explicit_with_default: decimal.Decimal = types.Decimal(scale=2, precision=3, default=decimal.Decimal("3.14"))
+        implicit: decimal.Decimal = decimal.Decimal("3.14")
         pets: typing.List[str] = Field(default_factory=lambda: ["dog", "cat"])
         accounts: typing.Dict[str, int] = Field(default_factory=lambda: {"key": 1})
         has_car: bool = False
@@ -321,9 +325,11 @@ def test_serialization(color_enum):
         class Meta:
             schema_doc = False
 
-    user = UserAdvance(name="bond", age=50)
+    user = UserAdvance(name="bond", age=50, explicit=decimal.Decimal("3.12"))
     event = user.serialize()
 
+    # we need to update the fields that have `types.Decimal`, otherwise the objects will be different
+    user.explicit_with_default = user.explicit_with_default.default
     assert UserAdvance.deserialize(data=event) == user
 
 

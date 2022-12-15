@@ -54,24 +54,30 @@ class Fixed(typing.Generic[T]):
         return f"{self.size}"
 
 
-@dataclasses.dataclass(frozen=True)
-class Decimal(typing.Generic[T]):
+class Decimal:
     """
     Represents an Avro Decimal type
     precision (int): Specifying the number precision
     scale(int): Specifying the number scale. Default 0
     """
 
-    precision: int
-    scale: int = 0
-    default: typing.Any = dataclasses.field(default=MissingSentinel)
-    _dataclasses_custom_type: str = "Decimal"
+    def __init__(
+        self,
+        *,
+        precision: int,
+        scale: int = 0,
+        default: typing.Any = MissingSentinel,
+        aliases: typing.Optional[typing.List] = None,
+    ) -> None:
+        self.precision = precision
+        self.scale = scale
+        self.default = default
+        self.aliases = aliases
 
     # Decimal serializes to bytes, which doesn't support namespace
-    aliases: typing.Optional[typing.List] = None
 
     def __repr__(self) -> str:
-        return f"Decimal precision: {self.precision} scale:{self.scale}"
+        return f"Decimal('{self.default}')"
 
 
 Int32 = Annotated[int, "Int32"]

@@ -12,8 +12,8 @@ from . import case
 from .fields import EnumField, FieldType, RecordField, UnionField
 from .schema_definition import AvroSchemaDefinition
 from .serialization import deserialize, serialize, to_json
-from .types import JsonDict
-from .utils import SchemaMetadata, is_custom_type, is_dataclass_or_pydantic_model
+from .types import Decimal, Fixed, JsonDict
+from .utils import SchemaMetadata, is_dataclass_or_pydantic_model
 
 AVRO = "avro"
 AVRO_JSON = "avro-json"
@@ -142,8 +142,8 @@ class AvroModel:
 
     @staticmethod
     def standardize_custom_type(value: Any) -> Any:
-        if is_custom_type(value):
-            return value["default"]
+        if isinstance(value, (Decimal, Fixed)):
+            return value.default
         elif isinstance(value, dict):
             return {k: AvroModel.standardize_custom_type(v) for k, v in value.items()}
         elif isinstance(value, (list, tuple)):
@@ -153,11 +153,9 @@ class AvroModel:
         return value
 
     def asdict(self) -> JsonDict:
-        data = dataclasses.asdict(self)
-
-        # te standardize called can be replaced if we have a custom implementation of asdict
-        # for now I think is better to use the native implementation
-        return {key: self.standardize_custom_type(value) for key, value in data.items()}
+        return dataclasses.asdict(
+            self, dict_factory=lambda x: {key: self.standardize_custom_type(value) for key, value in x}
+        )
 
     def serialize(self, serialization_type: str = AVRO) -> bytes:
         schema = self.avro_schema_to_python()

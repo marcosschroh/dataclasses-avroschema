@@ -910,6 +910,7 @@ class DecimalField(BaseField):
 
     def get_default_value(self) -> typing.Union[str, dataclasses._MISSING_TYPE, None]:
         default = self.default
+
         if isinstance(default, types.Decimal):
             default = default.default
 
@@ -917,6 +918,7 @@ class DecimalField(BaseField):
             return dataclasses.MISSING
         if default is None:
             return None
+
         return serialization.decimal_to_str(default, self.precision, self.scale)
 
     def fake(self) -> decimal.Decimal:

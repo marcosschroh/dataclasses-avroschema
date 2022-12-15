@@ -83,7 +83,6 @@ def decimal_to_str(value: decimal.Decimal, precision: int, scale: int = 0) -> st
 # This is needed to properly serialize a default decimal.Decimal into the avro schema
 def prepare_bytes_decimal(data: decimal.Decimal, precision: int, scale: int = 0) -> bytes:
     """Convert decimal.Decimal to bytes"""
-
     sign, digits, exp = data.as_tuple()
 
     if len(digits) > precision:
