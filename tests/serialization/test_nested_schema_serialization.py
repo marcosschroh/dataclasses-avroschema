@@ -87,7 +87,7 @@ def test_one_to_many_relationship():
     user = User(**data_user)
 
     avro_binary = b"\x08john(\x02\x08test\x14\xe0\xd7\xf3\x91\xb8[\x00"
-    avro_json_binary = b'{"name": "john", "age": 20, "addresses": [{"street": "test", "street_number": 10, "created_at": 1570903062000}]}'
+    avro_json_binary = b'{"name": "john", "age": 20, "addresses": [{"street": "test", "street_number": 10, "created_at": 1570903062000}]}'  # noqa
     expected = {
         "name": "john",
         "age": 20,

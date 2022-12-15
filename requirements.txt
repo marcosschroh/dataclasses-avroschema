@@ -26,7 +26,6 @@ mkdocs-material
 
 # Coverage
 #-------------------------------------------------------------------------------
-codecov
 pytest-cov
 
 # Publish
