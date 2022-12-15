@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [0.34.3] - 2022-12-15
+
+- `Decimal` fields serialization [222](https://github.com/marcosschroh/dataclasses-avroschema/issues/222)
+
+### Fixed
+
 ## [0.34.2] - 2022-11-18
 
 - pydantic `fake` and nested json serialization [219](https://github.com/marcosschroh/dataclasses-avroschema/issues/219)
