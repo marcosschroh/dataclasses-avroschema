@@ -32,8 +32,12 @@ class User(AvroModel):
 
 
 User.avro_schema()
+```
 
-'{
+*(This script is complete, it should run "as is")*
+
+```json
+{
   "type": "record",
   "name": "User",
   "fields": [
@@ -67,15 +71,14 @@ User.avro_schema()
     }
   ],
   "doc": "An User"
-}'
+}
 ```
 
-*(This script is complete, it should run "as is")*
-
-## Examples with default values
+## Examples with `null`
 
 ```python
 import dataclasses
+from typing import Optional
 
 from dataclasses_avroschema import AvroModel, types
 
@@ -83,20 +86,22 @@ from dataclasses_avroschema import AvroModel, types
 @dataclasses.dataclass
 class User(AvroModel):
     "An User"
-    name: str = None
-    age: int = None
-    height: types.Float32 = None
-    weight: types.Int32 = None
-    is_student: bool = None
-    money_available: float = None
-    encoded: bytes = None
+    name: Optional[str] = None
+    age: Optional[int] = None
+    height: Optional[types.Float32] = None
+    weight: Optional[types.Int32] = None
+    is_student: Optional[bool] = None
+    money_available: Optional[float] = None
+    encoded: Optional[bytes] = None
 
 
 User.avro_schema()
+```
 
-# We can see the use of null in the schema generated:
+*(This script is complete, it should run "as is")*
 
-'{
+```json
+{
   "type": "record",
   "name": "User",
   "fields": [
@@ -137,12 +142,12 @@ User.avro_schema()
     }
   ],
   "doc": "An User"
-}'
+}
 ```
 
 *(This script is complete, it should run "as is")*
 
-## Examples with `null`
+## Examples with default values
 
 ```python
 import dataclasses
@@ -163,8 +168,12 @@ class User(AvroModel):
 
 
 User.avro_schema()
+```
 
-'{
+*(This script is complete, it should run "as is")*
+
+```json
+{
   "type": "record",
   "name": "User",
   "fields": [
@@ -205,7 +214,7 @@ User.avro_schema()
     }
   ],
   "doc": "An User"
-}'
+}
 ```
 
 *(This script is complete, it should run "as is")*
