@@ -32,6 +32,39 @@ User.fake()
 
 *(This script is complete, it should run "as is")*
 
+## Pydantic fixtures
+
+It is also possible to generate fixtures with the `pydantic integration` simply using `AvroBaseModel`:
+
+```python
+import typing
+import dataclasses
+
+from dataclasses_avroschema.avrodantic import AvroBaseModel
+
+
+class Address(AvroBaseModel):
+    "An Address"
+    street: str
+    street_number: int
+
+
+class User(AvroBaseModel):
+    "User with multiple Address"
+    name: str
+    age: int
+    address: typing.Optional[Address] = None
+
+
+Address.fake()
+# >>>> Address(street='PxZJILDRgbXyhWrrPWxQ', street_number=2067)
+
+User.fake()
+# >>>> User(name='MCyzAtufQSwjxwCOmIBV', age=4377, address=Address(street='fUQfMHpvxsfmBDcaWJxb', street_number=722))
+```
+
+*(This script is complete, it should run "as is")*
+
 ## Providing data to the factory
 
 It is also possible to provide data as `keyword arguments` to the factory using the `fake` method.
