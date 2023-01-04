@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [0.34.4] - 2023-01-04
+
+- fake generation with optional user defined types [228](https://github.com/marcosschroh/dataclasses-avroschema/pull/228)
+
+### Fixed
+
 ## [0.34.3] - 2022-12-15
 
 - `Decimal` fields serialization [222](https://github.com/marcosschroh/dataclasses-avroschema/issues/222)
