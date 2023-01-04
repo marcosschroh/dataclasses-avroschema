@@ -174,6 +174,19 @@ def test_self_one_to_many_map_relationship() -> None:
     assert isinstance(User.fake(), User)
 
 
+def test_optional_relationship() -> None:
+    class Address(AvroModel):
+        street: str
+        street_number: int
+
+    class User(AvroModel):
+        name: str
+        age: int
+        address: typing.Optional[Address] = None
+
+    assert isinstance(User.fake(), User)
+
+
 def test_decimals() -> None:
     """
     Test Decimal logical types

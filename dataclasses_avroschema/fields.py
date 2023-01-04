@@ -491,7 +491,6 @@ class UnionField(BaseField):
         return self.default
 
     def fake(self) -> typing.Any:
-        self.unions = self.generate_unions_type()
         # get a random internal field and return a fake value
         field = random.choice(self.internal_fields)
         return field.fake()
