@@ -511,6 +511,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#malformed-schemas" class="md-nav__link">
+    Malformed schemas
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#mapping-avro-fields-to-python-fields-summary" class="md-nav__link">
     Mapping avro fields to python fields summary
   </a>
@@ -591,6 +598,13 @@
         <li class="md-nav__item">
   <a href="#render-pydantic-models" class="md-nav__link">
     Render Pydantic models
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#malformed-schemas" class="md-nav__link">
+    Malformed schemas
   </a>
   
 </li>
@@ -738,6 +752,122 @@ The end result will also include the necessaty imports and the use of <code>pyda
 <p class="admonition-title">Note</p>
 <p>Use the <code>dataclasses_avroschema.BaseClassEnum</code> to specify the <code>base class</code></p>
 </div>
+<h2 id="malformed-schemas">Malformed schemas</h2>
+<p>Some times there are valid avro schemas but we could say that it is "malformed", for example the following schema has a field name called <code>Address</code> which is
+exactly the same name as the record <code>Address</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+  <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;record&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;User&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;age&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;long&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Address&quot;</span><span class="p">,</span>  <span class="c1"># The field name is the same as the record name</span>
+      <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;null&quot;</span><span class="p">,</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;record&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Address&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
+            <span class="p">}</span>
+            <span class="p">]</span>
+        <span class="p">},</span>
+      <span class="p">],</span>
+      <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>If we try to generate the python models that correspond with the previous schema we end up with the following result:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
+<span class="kn">import</span> <span class="nn">dataclasses</span>
+<span class="kn">import</span> <span class="nn">typing</span>
+
+
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span> <span class="nc">Address</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+
+
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">Address</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Address</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+</code></pre></div>
+<p>The result is correct because it translate to python what the schema represents, but if we checked the <code>annotations</code> we see that <code>Address</code> is <code>overshadowed</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="vm">__annotations__</span><span class="p">)</span>
+<span class="c1"># &gt;&gt;&gt; {&#39;name&#39;: str, &#39;age&#39;: int, &#39;Address&#39;: NoneType}</span>
+
+<span class="c1"># We do not want this!!!</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">fake</span><span class="p">())</span>
+<span class="c1"># &gt;&gt;&gt; User(name=&#39;ftXgdDSUzdUIamiiHOiS&#39;, age=2422, Address=None)  </span>
+</code></pre></div>
+<p>If we rename the field name <code>Address</code> to <code>address</code> in the schema:</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+  <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;record&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;User&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;age&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;long&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;address&quot;</span><span class="p">,</span>  <span class="c1"># RENAMED!!!</span>
+      <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;null&quot;</span><span class="p">,</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;record&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Address&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
+            <span class="p">}</span>
+            <span class="p">]</span>
+        <span class="p">},</span>
+      <span class="p">],</span>
+      <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>we get a proper result:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
+<span class="kn">import</span> <span class="nn">dataclasses</span>
+<span class="kn">import</span> <span class="nn">typing</span>
+
+
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span> <span class="nc">Address</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+
+
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">address</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Address</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="vm">__annotations__</span><span class="p">)</span>
+<span class="c1"># &gt;&gt;&gt; {&#39;name&#39;: str, &#39;age&#39;: int, &#39;address&#39;: typing.Optional[__main__.Address]}</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">fake</span><span class="p">())</span>
+<span class="c1"># &gt;&gt;&gt; User(name=&#39;JBZdhEWdXwFLQitWCjkc&#39;, age=3406, address=Address(name=&#39;AhlQsvXnkpcPZJvRSXLr&#39;))</span>
+</code></pre></div>
 <h2 id="mapping-avro-fields-to-python-fields-summary">Mapping <code>avro fields</code> to <code>python fields</code> summary</h2>
 <table>
 <thead>
