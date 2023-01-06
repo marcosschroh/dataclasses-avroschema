@@ -26,8 +26,12 @@ class UserAdvance(faust.Record, AvroModel):
 
 
 UserAdvance.avro_schema()
+```
 
-'{
+resulting in 
+
+```json
+{
   "type": "record",
   "name": "UserAdvance",
   "fields": [
@@ -63,11 +67,9 @@ UserAdvance.avro_schema()
       "default": false
     },
     {
-      "name": "favorite_colors",
+      "name": "favorite_colors", 
       "type": {
-        "type": "enum",
-        "symbols": ["BLUE", "YELLOW", "GREEN"],
-        "name": "favorite_color"
+        "type": "array", "items": "string", "name": "favorite_color"
       }
     },
     {
@@ -81,7 +83,7 @@ UserAdvance.avro_schema()
       "default": null
     }
   ]
-}'
+}
 ```
 
 *(This script is complete, it should run "as is")*

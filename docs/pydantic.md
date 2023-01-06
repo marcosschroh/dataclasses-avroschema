@@ -48,7 +48,7 @@ UserAdvance.avro_schema()
         {"name": "pets", "type": {"type": "array", "items": "string", "name": "pet"}, "default": ["dog", "cat"]},
         {"name": "accounts", "type": {"type": "map", "values": "long", "name": "account"}, "default": {"key": 1}},
         {"name": "has_car", "type": "boolean", "default": false},
-        {"name": "favorite_colors", "type": {"type": "enum", "name": "favorite_color", "symbols": ["BLUE", "YELLOW", "GREEN"]}, "default": "BLUE"},
+        {"name": "favorite_colors", "type": {"type": "enum", "name": "FavoriteColor", "symbols": ["BLUE", "YELLOW", "GREEN"]}, "default": "BLUE"},
         {"name": "country", "type": "string", "default": "Argentina"},
         {"name": "address", "type": ["null", "string"], "default": null}
     ]

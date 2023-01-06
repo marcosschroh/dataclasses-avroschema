@@ -223,6 +223,18 @@ class BaseField:
     def fake(self) -> typing.Any:
         return None
 
+    def exist_type(self) -> int:
+        # filter by the same field types
+        same_types = [
+            field.type
+            for field in self.parent.user_defined_types
+            if field.type == self.type and field.name != self.name
+        ]
+
+        # If length > 0, means that it is the first appearance
+        # of this type, otherwise exist already.
+        return len(same_types)
+
 
 class ImmutableField(BaseField):
     def get_avro_type(self) -> PythonImmutableTypes:
@@ -535,15 +547,24 @@ class EnumField(BaseField):
     def get_symbols(self) -> typing.List[str]:
         return [member.value for member in self.type if member.name != "Meta"]
 
-    def get_avro_type(self) -> JsonDict:
-        avro_type = {
-            "type": ENUM,
-            "name": self.get_singular_name(self.name),
-            "symbols": self.get_symbols(),
-            **self._get_meta_class_attributes(),
-        }
+    def get_avro_type(self) -> typing.Union[str, JsonDict]:
+        metadata = self._get_meta_class_attributes()
+        name = self.type.__name__
 
-        return avro_type
+        if not self.exist_type():
+            user_defined_type = utils.UserDefinedType(name=name, type=self.type)
+            self.parent.user_defined_types.add(user_defined_type)
+            return {
+                "type": ENUM,
+                "name": name,
+                "symbols": self.get_symbols(),
+                **metadata,
+            }
+        else:
+            namespace = metadata.get("namespace")
+            if namespace is None:
+                raise NameSpaceRequiredException(field_type=self.type, field_name=name)
+            return f"{namespace}.{name}"
 
     def get_default_value(self) -> typing.Union[str, dataclasses._MISSING_TYPE, None]:
 
@@ -810,7 +831,7 @@ class UUIDField(LogicalTypeField):
 
 @dataclasses.dataclass
 class RecordField(BaseField):
-    def get_avro_type(self) -> typing.Union[typing.List, typing.Dict]:
+    def get_avro_type(self) -> typing.Union[str, typing.List, typing.Dict]:
         meta = getattr(self.type, "Meta", type)
         metadata = utils.SchemaMetadata.create(meta)
 
@@ -839,18 +860,6 @@ class RecordField(BaseField):
 
     def fake(self) -> typing.Any:
         return self.type.fake()
-
-    def exist_type(self) -> int:
-        # filter by the same field types
-        same_types = [
-            field.type
-            for field in self.parent.user_defined_types
-            if field.type == self.type and field.name != self.name
-        ]
-
-        # If length > 0, means that it is the first appearance
-        # of this type, otherwise exist already.
-        return len(same_types)
 
 
 @dataclasses.dataclass

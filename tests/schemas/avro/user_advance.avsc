@@ -30,7 +30,7 @@
       "name": "favorite_colors",
       "type": {
         "type": "enum",
-        "name": "favorite_color",
+        "name": "FavoriteColor",
         "symbols": ["BLUE", "YELLOW", "GREEN"]
       }
     },
