@@ -37,6 +37,8 @@ class UserAdvance(AvroModel):
 UserAdvance.avro_schema(case_type=case.CAPITALCASE)
 ```
 
+resulting in
+
 ```json
 {
     "type": "record", 
@@ -54,7 +56,7 @@ UserAdvance.avro_schema(case_type=case.CAPITALCASE)
         },
         {"name": "Has_car", "type": "boolean", "default": false},
         {"name": "Favorite_colors", "type": {
-            "type": "enum", "name": "Favorite_color", "symbols": ["BLUE", "YELLOW", "GREEN"]
+            "type": "enum", "name": "FavoriteColor", "symbols": ["BLUE", "YELLOW", "GREEN"]
             }
         },
         {"name": "Country", "type": "string", "default": "Argentina"},
@@ -65,6 +67,9 @@ UserAdvance.avro_schema(case_type=case.CAPITALCASE)
 ```
 
 *(This script is complete, it should run "as is")*
+
+!!! note
+    Cases do not apply to `records` and `enums` names as they are always expressed in `PascalCase`
 
 ## Available cases
 

@@ -1,4 +1,4 @@
-## Complex Types
+# Complex Types
 
 The following list represent the avro complex types mapped to python types:
 
@@ -12,7 +12,7 @@ The following list represent the avro complex types mapped to python types:
 | unions with `null` | typing.Optional                                                    |
 | records            | Python Class                                                       |
 
-### Enums
+## Enums
 
 ```python title="Enum example"
 import enum
@@ -50,7 +50,7 @@ User.avro_schema()
       "type":
       {
         "type": "enum",
-        "name": "favorite_color",
+        "name": "FavoriteColor",
         "symbols":
         [
           "Blue",
@@ -69,7 +69,73 @@ User.avro_schema()
 }'
 ```
 
-### Arrays
+### Repeated Enums
+
+Sometimes we have cases where an `Enum` is used more than once with a particular class, for those cases, you `MUST` define the namespace in order to generate a valid `avro schema`
+
+```python
+import enum
+import dataclasses
+import typing
+
+from dataclasses_avroschema import AvroModel
+
+
+class TripDistance(enum.Enum):
+    CLOSE = "Close"
+    FAR = "Far"
+
+    class Meta:
+        doc = "Distance of the trip"
+        namespace = "trip"
+
+
+@dataclasses.dataclass
+class User(AvroModel):
+    trip_distance: TripDistance
+    optional_distance: typing.Optional[TripDistance] = None
+
+
+print(User.avro_schema())
+```
+
+resulting in
+
+```json
+{
+  "type": "record",
+  "name": "User",
+  "fields": [
+    {
+      "name": "trip_distance",
+      "type": {
+        "type": "enum",
+        "name": "TripDistance",
+        "symbols": [
+          "Close",
+          "Far"
+        ],
+        "doc": "Distance of the trip",
+        "namespace": "trip"
+      }
+    },
+    {
+      "name": "optional_distance",
+      "type": [
+        "null",
+        "trip.TripDistance"
+      ],
+      "default": null
+    }
+  ],
+  "doc": "User(trip_distance: __main__.TripDistance, optional_distance: Optional[__main__.TripDistance] = None)"
+}
+```
+
+!!! warning
+    If you do not specify the `namespace` in the `Enum` the exception `NameSpaceRequiredException` is raised
+
+## Arrays
 
 ```python title="Array example"
 import dataclasses
@@ -123,7 +189,7 @@ UserAdvance.avro_schema()
 }'
 ```
 
-### Maps
+## Maps
 
 ```python title="Map example"
 import dataclasses
@@ -176,7 +242,7 @@ UserAdvance.avro_schema()
 }'
 ```
 
-### Fixed
+## Fixed
 
 ```python title="Fixed example"
 import typing
@@ -202,7 +268,7 @@ UnionSchema.avro_schema()
   'doc': 'UserAdvance(name: str, md5: dataclasses_avroschema.types.Fixed = 16)'}
 ```
 
-### Unions
+## Unions
 
 === "python <= 3.9"
 

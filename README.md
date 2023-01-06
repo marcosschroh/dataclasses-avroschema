@@ -74,7 +74,7 @@ User.avro_schema()
         {"name": "age", "type": "long"},
         {"name": "pets", "type": "array", "items": "string"},
         {"name": "accounts", "type": "map", "values": "long"},
-        {"name": "favorite_colors", "type": "enum", "symbols": ["BLUE", "YELLOW", "GREEN"]},
+        {"name": "favorite_color", "type": {"type": "enum", "name": "FavoriteColor", "symbols": ["Blue", "Yellow", "Green"]}}
         {"name": "country", "type": "string", "default": "Argentina"},
         {"name": "address", "type": ["null", "string"], "default": null}
     ]
@@ -93,7 +93,7 @@ User.avro_schema_to_python()
         {"name": "age", "type": "long"},
         {"name": "pets", "type": {"type": "array", "items": "string", "name": "pet"}},
         {"name": "accounts", "type": {"type": "map", "values": "long", "name": "account"}},
-        {"name": "favorite_colors", "type": {"type": "enum", "name": "favorite_color", "symbols": ["BLUE", "YELLOW", "GREEN"]}},
+        {"name": "favorite_colors", "type": {"type": "enum", "name": "FavoriteColor", "symbols": ["BLUE", "YELLOW", "GREEN"]}},
         {"name": "country", "type": "string", "default": "Argentina"},
         {"name": "address", "type": ["null", "string"], "default": None}
     ],

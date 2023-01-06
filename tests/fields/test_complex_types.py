@@ -453,6 +453,7 @@ def test_enum_type():
     name = "an_enum_field"
     namespace = "my_enum"
     aliases = ["enum", "first enum"]
+    parent = AvroModel()
 
     class CardType(enum.Enum):
         SPADES = "SPADES"
@@ -465,14 +466,14 @@ def test_enum_type():
             aliases = ["enum", "first enum"]
 
     python_type = CardType
-    field = fields.AvroField(name, python_type, default=CardType.CLUBS)
+    field = fields.AvroField(name, python_type, default=CardType.CLUBS, parent=parent)
     symbols = ["SPADES", "HEARTS", "DIAMONDS", "CLUBS"]
 
     expected = {
         "name": name,
         "type": {
             "type": "enum",
-            "name": name,
+            "name": "CardType",
             "symbols": symbols,
             "namespace": namespace,
             "aliases": aliases,
@@ -492,9 +493,9 @@ def test_enum_type():
             namespace = "my_enum"
 
     python_type = CardType
-    field = fields.AvroField(name, python_type)
+    field = fields.AvroField(name, python_type, parent=parent)
 
-    expected = {"name": name, "type": {"type": "enum", "name": name, "symbols": symbols, "namespace": namespace}}
+    expected = {"name": name, "type": {"type": "enum", "name": "CardType", "symbols": symbols, "namespace": namespace}}
 
     assert expected == field.to_dict()
 
@@ -505,13 +506,13 @@ def test_enum_type():
         CLUBS = "CLUBS"
 
     python_type = CardType
-    field = fields.AvroField(name, python_type, default=None)
+    field = fields.AvroField(name, python_type, default=None, parent=parent)
 
     expected = {
         "name": name,
         "type": {
             "type": "enum",
-            "name": name,
+            "name": "CardType",
             "symbols": symbols,
         },
         "default": None,
@@ -520,7 +521,8 @@ def test_enum_type():
     assert expected == field.to_dict()
 
     python_type = typing.Optional[CardType]
-    field = fields.AvroField(name, python_type, default=None)
+    parent.user_defined_types = set()
+    field = fields.AvroField(name, python_type, default=None, parent=parent)
 
     expected = {
         "name": name,
@@ -528,7 +530,7 @@ def test_enum_type():
             "null",
             {
                 "type": "enum",
-                "name": name,
+                "name": "CardType",
                 "symbols": symbols,
             },
         ],
@@ -549,13 +551,14 @@ def test_enum_type():
             SOMETHING = "SOMETHING"
 
         python_type = CardType
-        field = fields.AvroField(name, python_type, default=RandomType.SOMETHING)
-
+        field = fields.AvroField(name, python_type, default=RandomType.SOMETHING, parent=parent)
         field.to_dict()
 
 
 def test_enum_field():
-    enum_field = fields.AvroField("field_name", Color, default=Color.BLUE, metadata={"key": "value"})
+    enum_field = fields.AvroField(
+        "field_name", Color, default=Color.BLUE, metadata={"key": "value"}, parent=AvroModel()
+    )
 
     assert enum_field.get_symbols() == ["Blue", "Green", "Yellow"]
     assert enum_field._get_meta_class_attributes() == {
@@ -565,7 +568,7 @@ def test_enum_field():
     }
     assert enum_field.get_avro_type() == {
         "type": "enum",
-        "name": "field_name",
+        "name": "Color",
         "symbols": ["Blue", "Green", "Yellow"],
         "aliases": ["one", "two"],
         "doc": "colors",

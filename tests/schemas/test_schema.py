@@ -133,10 +133,8 @@ def test_namespace_required():
         bus_one: Bus
         bus_two: Bus
 
-    with pytest.raises(exceptions.NameSpaceRequiredException) as e:
+    with pytest.raises(exceptions.NameSpaceRequiredException):
         assert UnionSchema.avro_schema()
-
-    assert str(e)
 
 
 def test_inherit_dataclass_missing_docs():

@@ -67,12 +67,13 @@
         "long",
         {
           "type": "enum",
-          "name": "trip_distance",
+          "name": "TripDistance",
           "symbols": [
             "Close",
             "Far"
           ],
-          "doc": "Distance of the trip"
+          "doc": "Distance of the trip",
+          "namespace": "trip"
         }
       ],
       "default": null
@@ -81,15 +82,7 @@
       "name": "optional_distance",
       "type": [
         "null",
-        {
-          "type": "enum",
-          "name": "optional_distance",
-          "symbols": [
-            "Close",
-            "Far"
-          ],
-          "doc": "Distance of the trip"
-        }
+        "trip.TripDistance"
       ],
       "default": null
     }

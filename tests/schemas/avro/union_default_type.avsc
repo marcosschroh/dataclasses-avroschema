@@ -4,7 +4,7 @@
    "fields": [
        {"name": "name", "type": "string"},
        {"name": "age", "type": "long"},
-       {"name": "user_type", "type": ["null", {"type": "enum", "name": "user_type", "symbols": ["Basic", "Premium"], "doc": "Type of user"}], "default": null},
+       {"name": "user_type", "type": ["null", {"type": "enum", "name": "UserType", "symbols": ["Basic", "Premium"], "doc": "Type of user"}], "default": null},
        {"name": "school_name", "type": ["null", "string"], "default": null},
        {"name": "school_id", "type": ["string", "long"], "default": ""}
    ],

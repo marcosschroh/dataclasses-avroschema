@@ -222,6 +222,7 @@ def test_pydantic_record_schema_with_unions_type(union_type_schema):
 
         class Meta:
             doc = "Distance of the trip"
+            namespace = "trip"
 
     class UnionSchema(AvroBaseModel):
         "Some Unions"

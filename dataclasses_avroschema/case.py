@@ -2,6 +2,8 @@ import typing
 
 import stringcase
 
+from .fields import ENUM
+
 # Summary from https://github.com/okunishinishi/python-stringcase
 # stringcase.camelcase('foo_bar_baz') # => "fooBarBaz"
 # stringcase.capitalcase('foo_bar_baz') # => "Foo_bar_baz"
@@ -69,7 +71,9 @@ def case_record(avro_schema_dict: typing.Dict, case_type: str) -> typing.Dict:
             new_field = case_item(field, case_type)
             new_fields.append(new_field)
         avro_schema_dict["fields"] = new_fields
-
+        return avro_schema_dict
+    elif avro_schema_dict["type"] == ENUM:
+        # enums should not be case, like records
         return avro_schema_dict
     else:
         return case_item(avro_schema_dict, case_type)
