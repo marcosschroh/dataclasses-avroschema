@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [0.34.5] - 2023-01-06
+
+- schema generation with optional enum when using pydantic. Closes #229
+
+### Fixed
+
 ## [0.34.4] - 2023-01-04
 
 - fake generation with optional user defined types [228](https://github.com/marcosschroh/dataclasses-avroschema/pull/228)
