@@ -7,15 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [0.34.6] - 2023-01-06
+
+- Use namespaces when an enum is used multiple times in a class. Cases should not apply to enum names. Closes [221](https://github.com/marcosschroh/dataclasses-avroschema/issues/221)
+
+### Fixed
+
 ## [0.34.5] - 2023-01-06
 
-- schema generation with optional enum when using pydantic. Closes #229
+- Schema generation with optional enum when using pydantic. Closes [229](https://github.com/marcosschroh/dataclasses-avroschema/issues/229)
 
 ### Fixed
 
 ## [0.34.4] - 2023-01-04
 
-- fake generation with optional user defined types [228](https://github.com/marcosschroh/dataclasses-avroschema/pull/228)
+- Fake generation with optional user defined types [228](https://github.com/marcosschroh/dataclasses-avroschema/pull/228)
 
 ### Fixed
 
