@@ -613,6 +613,7 @@ you can generate your schemas according to your programming language convention:
 
 <span class="n">UserAdvance</span><span class="o">.</span><span class="n">avro_schema</span><span class="p">(</span><span class="n">case_type</span><span class="o">=</span><span class="n">case</span><span class="o">.</span><span class="n">CAPITALCASE</span><span class="p">)</span>
 </code></pre></div>
+<p>resulting in</p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;record&quot;</span><span class="p">,</span><span class="w"> </span>
 <span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;UserAdvance&quot;</span><span class="p">,</span><span class="w"> </span>
@@ -629,7 +630,7 @@ you can generate your schemas according to your programming language convention:
 <span class="w">        </span><span class="p">},</span>
 <span class="w">        </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Has_car&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">},</span>
 <span class="w">        </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Favorite_colors&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;enum&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Favorite_color&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;symbols&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;BLUE&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;YELLOW&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;GREEN&quot;</span><span class="p">]</span>
+<span class="w">            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;enum&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;FavoriteColor&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;symbols&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;BLUE&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;YELLOW&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;GREEN&quot;</span><span class="p">]</span>
 <span class="w">            </span><span class="p">}</span>
 <span class="w">        </span><span class="p">},</span>
 <span class="w">        </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Country&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Argentina&quot;</span><span class="p">},</span>
@@ -639,6 +640,10 @@ you can generate your schemas according to your programming language convention:
 <span class="p">}</span><span class="err">&#39;</span>
 </code></pre></div>
 <p><em>(This script is complete, it should run "as is")</em></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Cases do not apply to <code>records</code> and <code>enums</code> names as they are always expressed in <code>PascalCase</code></p>
+</div>
 <h2 id="available-cases">Available cases</h2>
 <table>
 <thead>
