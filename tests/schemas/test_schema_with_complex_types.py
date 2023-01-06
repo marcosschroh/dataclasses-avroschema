@@ -58,6 +58,7 @@ def test_schema_with_unions_type(union_type_schema: JsonDict) -> None:
         river_trip: typing.Optional[typing.Union[Bus, Car]] = None
         mountain_trip: typing.Union[Bus, Car] = dataclasses.field(default_factory=lambda: {"engine_name": "honda"})
         trip_distance: typing.Optional[typing.Union[int, TripDistance]] = None
+        optional_distance: typing.Optional[TripDistance] = None
 
     assert parse_schema(UnionSchema.avro_schema_to_python())
     assert UnionSchema.avro_schema() == json.dumps(union_type_schema)
@@ -122,6 +123,7 @@ def test_schema_with_new_unions_type_syntax(union_type_schema: JsonDict) -> None
             default_factory=lambda: {"engine_name": "honda"}
         )  # TODO: check this callable
         trip_distance: int | TripDistance | None = None
+        optional_distance: TripDistance | None = None
 
     assert parse_schema(UnionSchema.avro_schema_to_python())
     assert UnionSchema.avro_schema() == json.dumps(union_type_schema)

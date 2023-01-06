@@ -13,6 +13,17 @@ from . import consts
 faker = Faker()
 
 
+class Color(enum.Enum):
+    BLUE = "Blue"
+    GREEN = "Green"
+    YELLOW = "Yellow"
+
+    class Meta:
+        aliases = ["one", "two"]
+        doc = "colors"
+        namespace = "some.name.space"
+
+
 def test_invalid_type_container_field():
     python_type = typing.Set
     name = "test_field"
@@ -508,6 +519,24 @@ def test_enum_type():
 
     assert expected == field.to_dict()
 
+    python_type = typing.Optional[CardType]
+    field = fields.AvroField(name, python_type, default=None)
+
+    expected = {
+        "name": name,
+        "type": [
+            "null",
+            {
+                "type": "enum",
+                "name": name,
+                "symbols": symbols,
+            },
+        ],
+        "default": None,
+    }
+
+    assert expected == field.to_dict()
+
     with pytest.raises(AssertionError):
 
         class CardType(enum.Enum):
@@ -523,17 +552,6 @@ def test_enum_type():
         field = fields.AvroField(name, python_type, default=RandomType.SOMETHING)
 
         field.to_dict()
-
-
-class Color(enum.Enum):
-    BLUE = "Blue"
-    GREEN = "Green"
-    YELLOW = "Yellow"
-
-    class Meta:
-        aliases = ["one", "two"]
-        doc = "colors"
-        namespace = "some.name.space"
 
 
 def test_enum_field():

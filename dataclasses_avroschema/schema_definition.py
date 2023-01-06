@@ -113,7 +113,7 @@ class AvroSchemaDefinition(BaseSchemaDefinition):
         return [
             AvroField(
                 model_field.name,
-                model_field.outer_type_,
+                model_field.annotation,
                 default=dataclasses.MISSING
                 if model_field.required or model_field.default_factory
                 else model_field.default,

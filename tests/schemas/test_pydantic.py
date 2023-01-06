@@ -231,6 +231,7 @@ def test_pydantic_record_schema_with_unions_type(union_type_schema):
         river_trip: typing.Union[Bus, Car] = None
         mountain_trip: typing.Union[Bus, Car] = Field(default_factory=lambda: {"engine_name": "honda"})
         trip_distance: typing.Union[int, TripDistance] = None
+        optional_distance: typing.Optional[TripDistance] = None
 
     assert UnionSchema.avro_schema() == json.dumps(union_type_schema)
 

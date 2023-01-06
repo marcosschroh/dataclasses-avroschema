@@ -1,10 +1,14 @@
 import dataclasses
 import enum
+import logging
 import typing
 
 import pytest
 
 from dataclasses_avroschema import AvroModel, types
+
+# set the faker loglevel to info to avoid noise during testing
+logging.getLogger("faker").setLevel(logging.INFO)
 
 
 @pytest.fixture
