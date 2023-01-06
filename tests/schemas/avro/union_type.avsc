@@ -76,6 +76,22 @@
         }
       ],
       "default": null
+    },
+    {
+      "name": "optional_distance",
+      "type": [
+        "null",
+        {
+          "type": "enum",
+          "name": "optional_distance",
+          "symbols": [
+            "Close",
+            "Far"
+          ],
+          "doc": "Distance of the trip"
+        }
+      ],
+      "default": null
     }
   ],
   "doc": "Some Unions"
