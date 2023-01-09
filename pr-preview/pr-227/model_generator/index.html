@@ -640,6 +640,10 @@
 <p><strong><code>Avro schema</code> --&gt; <code>Python class</code></strong></p>
 <p>In order to create the models, we should use the <code>ModelGenerator</code> class. This class will be in charge of render all the python types in a proper way.
 The rendered result is a string that contains the proper identation, so the result can be saved in a file and it will be ready to use.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In future releases it will be possible to generate models for other programming langagues like <code>java</code> and <code>rust</code></p>
+</div>
 <h2 id="usage">Usage</h2>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">ModelGenerator</span>
 
@@ -751,6 +755,10 @@ The end result will also include the necessaty imports and the use of <code>pyda
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Use the <code>dataclasses_avroschema.BaseClassEnum</code> to specify the <code>base class</code></p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Soon with <a href="https://github.com/marcosschroh/dc-avro">dc-avro</a> will be possible to generate the models from the command line</p>
 </div>
 <h2 id="malformed-schemas">Malformed schemas</h2>
 <p>Some times there are valid avro schemas but we could say that it is "malformed", for example the following schema has a field name called <code>Address</code> which is
