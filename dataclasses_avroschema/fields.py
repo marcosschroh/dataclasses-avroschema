@@ -35,85 +35,6 @@ logger = logging.getLogger(__name__)
 fake = Faker()
 p = inflect.engine()
 
-BOOLEAN = "boolean"
-NULL = "null"
-INT = "int"
-FLOAT = "float"
-LONG = "long"
-DOUBLE = "double"
-BYTES = "bytes"
-STRING = "string"
-ARRAY = "array"
-ENUM = "enum"
-MAP = "map"
-FIXED = "fixed"
-DATE = "date"
-UUID = "uuid"
-DECIMAL = "decimal"
-LOGICAL_DATE = {"type": INT, "logicalType": DATE}
-LOGICAL_TIME_MILIS = {"type": INT, "logicalType": field_utils.TIME_MILLIS}
-LOGICAL_TIME_MICROS = {"type": LONG, "logicalType": field_utils.TIME_MICROS}
-LOGICAL_DATETIME_MILIS = {"type": LONG, "logicalType": field_utils.TIMESTAMP_MILLIS}
-LOGICAL_DATETIME_MICROS = {"type": LONG, "logicalType": field_utils.TIMESTAMP_MICROS}
-LOGICAL_UUID = {"type": STRING, "logicalType": UUID}
-
-PYTHON_TYPE_TO_AVRO = {
-    bool: BOOLEAN,
-    type(None): NULL,
-    int: LONG,
-    float: DOUBLE,
-    bytes: BYTES,
-    str: STRING,
-    list: {"type": ARRAY},
-    tuple: {"type": ARRAY},
-    dict: {"type": MAP},
-    enum.Enum: {"type": ENUM},
-    types.Fixed: {"type": FIXED},
-    types.Int32: INT,
-    types.Float32: FLOAT,
-    datetime.date: {"type": INT, "logicalType": DATE},
-    datetime.time: {"type": INT, "logicalType": field_utils.TIME_MILLIS},
-    datetime.datetime: {"type": LONG, "logicalType": field_utils.TIMESTAMP_MILLIS},
-    uuid.uuid4: {"type": STRING, "logicalType": UUID},
-}
-
-# excluding tuple because is a container
-PYTHON_INMUTABLE_TYPES = (str, int, types.Int32, types.Float32, bool, float, bytes, type(None))
-
-PYTHON_PRIMITIVE_CONTAINERS = (list, tuple, dict)
-
-PYTHON_LOGICAL_TYPES = (
-    datetime.date,
-    datetime.time,
-    types.TimeMicro,
-    datetime.datetime,
-    types.DateTimeMicro,
-    uuid.uuid4,
-    uuid.UUID,
-    decimal.Decimal,
-)
-
-PYTHON_PRIMITIVE_TYPES = PYTHON_INMUTABLE_TYPES + PYTHON_PRIMITIVE_CONTAINERS
-
-PRIMITIVE_AND_LOGICAL_TYPES = PYTHON_INMUTABLE_TYPES + PYTHON_LOGICAL_TYPES
-
-PythonImmutableTypes = typing.Union[
-    str,
-    int,
-    types.Int32,
-    bool,
-    float,
-    types.Float32,
-    list,
-    tuple,
-    dict,
-    datetime.date,
-    datetime.time,
-    datetime.datetime,
-    uuid.UUID,
-    decimal.Decimal,
-]
-
 
 @dataclasses.dataclass  # type: ignore
 class BaseField:
@@ -237,15 +158,15 @@ class BaseField:
 
 
 class ImmutableField(BaseField):
-    def get_avro_type(self) -> PythonImmutableTypes:
+    def get_avro_type(self) -> field_utils.PythonImmutableTypes:
         if self.default is None:
-            return [NULL, self.avro_type]
+            return [field_utils.NULL, self.avro_type]
         return self.avro_type
 
 
 @dataclasses.dataclass
 class StringField(ImmutableField):
-    avro_type: typing.ClassVar[str] = STRING
+    avro_type: typing.ClassVar[str] = field_utils.STRING
 
     def fake(self) -> str:
         return fake.pystr()
@@ -253,7 +174,7 @@ class StringField(ImmutableField):
 
 @dataclasses.dataclass
 class IntField(ImmutableField):
-    avro_type: typing.ClassVar[str] = INT
+    avro_type: typing.ClassVar[str] = field_utils.INT
 
     def fake(self) -> int:
         return fake.pyint()
@@ -261,7 +182,7 @@ class IntField(ImmutableField):
 
 @dataclasses.dataclass
 class LongField(ImmutableField):
-    avro_type: typing.ClassVar[str] = LONG
+    avro_type: typing.ClassVar[str] = field_utils.LONG
 
     def fake(self) -> int:
         return fake.pyint()
@@ -269,7 +190,7 @@ class LongField(ImmutableField):
 
 @dataclasses.dataclass
 class BooleanField(ImmutableField):
-    avro_type: typing.ClassVar[str] = BOOLEAN
+    avro_type: typing.ClassVar[str] = field_utils.BOOLEAN
 
     def fake(self) -> bool:
         return fake.pybool()
@@ -277,7 +198,7 @@ class BooleanField(ImmutableField):
 
 @dataclasses.dataclass
 class DoubleField(ImmutableField):
-    avro_type: typing.ClassVar[str] = DOUBLE
+    avro_type: typing.ClassVar[str] = field_utils.DOUBLE
 
     def fake(self) -> float:
         return fake.pyfloat()
@@ -285,7 +206,7 @@ class DoubleField(ImmutableField):
 
 @dataclasses.dataclass
 class FloatField(ImmutableField):
-    avro_type: typing.ClassVar[str] = FLOAT
+    avro_type: typing.ClassVar[str] = field_utils.FLOAT
 
     def fake(self) -> float:
         return fake.pyfloat()  # Roughly the range on a float32
@@ -293,7 +214,7 @@ class FloatField(ImmutableField):
 
 @dataclasses.dataclass
 class BytesField(ImmutableField):
-    avro_type: typing.ClassVar[str] = BYTES
+    avro_type: typing.ClassVar[str] = field_utils.BYTES
 
     def get_default_value(self) -> typing.Any:
         if self.default in (dataclasses.MISSING, None):
@@ -314,7 +235,7 @@ class BytesField(ImmutableField):
 class NoneField(ImmutableField):
     @property
     def avro_type(self) -> typing.Union[str, typing.Dict]:
-        return NULL
+        return field_utils.NULL
 
 
 @dataclasses.dataclass
@@ -325,7 +246,7 @@ class ContainerField(BaseField):
     def avro_type(self) -> typing.Dict:
         ...  # pragma: no cover
 
-    def get_avro_type(self) -> PythonImmutableTypes:
+    def get_avro_type(self) -> field_utils.PythonImmutableTypes:
         avro_type = self.avro_type
         avro_type["name"] = self.get_singular_name(self.name)
 
@@ -340,7 +261,7 @@ class ListField(ContainerField):
     @property
     def avro_type(self) -> typing.Dict:
         self.generate_items_type()
-        return {"type": ARRAY, "items": self.items_type}
+        return {"type": field_utils.ARRAY, "items": self.items_type}
 
     def get_default_value(self) -> typing.Union[typing.List, dataclasses._MISSING_TYPE]:
         if self.default is None:
@@ -383,6 +304,7 @@ class ListField(ContainerField):
 
     def fake(self) -> typing.List:
         # return a list of one element with the type specified
+        # TODO: check when the internal value is self reference which seems to return `None`
         return [self.internal_field.fake()]
 
 
@@ -400,7 +322,7 @@ class DictField(ContainerField):
     @property
     def avro_type(self) -> JsonDict:
         self.generate_values_type()
-        return {"type": MAP, "values": self.values_type}
+        return {"type": field_utils.MAP, "values": self.values_type}
 
     def get_default_value(self) -> typing.Union[JsonDict, dataclasses._MISSING_TYPE]:
         if self.default is None:
@@ -463,7 +385,7 @@ class UnionField(BaseField):
         # Place default at front of list
         default_type = None
         if self.default is None and self.default_factory is dataclasses.MISSING:
-            unions.insert(0, NULL)
+            unions.insert(0, field_utils.NULL)
         elif type(self.default) is not dataclasses._MISSING_TYPE:
             default_type = type(self.default)
             default_field = AvroField(name, default_type, model_metadata=self.model_metadata, parent=self.parent)
@@ -512,7 +434,7 @@ class UnionField(BaseField):
 class FixedField(BaseField):
     def get_avro_type(self) -> JsonDict:
         avro_type = {
-            "type": FIXED,
+            "type": field_utils.FIXED,
             "name": self.get_singular_name(self.name),
             "size": int(self.default.size),
         }
@@ -555,7 +477,7 @@ class EnumField(BaseField):
             user_defined_type = utils.UserDefinedType(name=name, type=self.type)
             self.parent.user_defined_types.add(user_defined_type)
             return {
-                "type": ENUM,
+                "type": field_utils.ENUM,
                 "name": name,
                 "symbols": self.get_symbols(),
                 **metadata,
@@ -590,7 +512,7 @@ class SelfReferenceField(BaseField):
 
         if self.default is None:
             # means that default value is None
-            return [NULL, str_type]
+            return [field_utils.NULL, str_type]
         return str_type
 
     def get_default_value(self) -> typing.Union[dataclasses._MISSING_TYPE, None]:
@@ -626,7 +548,7 @@ class DateField(LogicalTypeField):
 
     @property
     def avro_type(self) -> typing.Dict:
-        return LOGICAL_DATE
+        return field_utils.LOGICAL_DATE
 
     @staticmethod
     def to_avro(date: datetime.date) -> int:
@@ -663,7 +585,7 @@ class TimeMilliField(LogicalTypeField):
 
     @property
     def avro_type(self) -> typing.Dict:
-        return LOGICAL_TIME_MILIS
+        return field_utils.LOGICAL_TIME_MILIS
 
     @staticmethod
     def to_avro(time: datetime.time) -> int:
@@ -703,7 +625,7 @@ class TimeMicroField(LogicalTypeField):
 
     @property
     def avro_type(self) -> typing.Dict:
-        return LOGICAL_TIME_MICROS
+        return field_utils.LOGICAL_TIME_MICROS
 
     @staticmethod
     def to_avro(time: datetime.time) -> float:
@@ -745,7 +667,7 @@ class DatetimeField(LogicalTypeField):
 
     @property
     def avro_type(self) -> typing.Dict:
-        return LOGICAL_DATETIME_MILIS
+        return field_utils.LOGICAL_DATETIME_MILIS
 
     @staticmethod
     def to_avro(date_time: datetime.datetime) -> float:
@@ -783,7 +705,7 @@ class DatetimeMicroField(LogicalTypeField):
 
     @property
     def avro_type(self) -> typing.Dict:
-        return LOGICAL_DATETIME_MICROS
+        return field_utils.LOGICAL_DATETIME_MICROS
 
     @staticmethod
     def to_avro(date_time: datetime.datetime) -> float:
@@ -813,7 +735,7 @@ class DatetimeMicroField(LogicalTypeField):
 class UUIDField(LogicalTypeField):
     @property
     def avro_type(self) -> typing.Dict:
-        return LOGICAL_UUID
+        return field_utils.LOGICAL_UUID
 
     def validate_default(self) -> bool:
         msg = f"Invalid default type. Default should be {str} or {uuid.UUID}"
@@ -855,7 +777,7 @@ class RecordField(BaseField):
             record_type = f"{metadata.namespace}.{name}"
 
         if self.default is None:
-            return [NULL, record_type]
+            return [field_utils.NULL, record_type]
         return record_type
 
     def fake(self) -> typing.Any:
@@ -910,7 +832,12 @@ class DecimalField(BaseField):
             # self.precision = decimal.Context().prec
 
     def get_avro_type(self) -> typing.Union[JsonDict, typing.List[typing.Union[str, JsonDict]]]:
-        avro_type = {"type": BYTES, "logicalType": DECIMAL, "precision": self.precision, "scale": self.scale}
+        avro_type = {
+            "type": field_utils.BYTES,
+            "logicalType": field_utils.DECIMAL,
+            "precision": self.precision,
+            "scale": self.scale,
+        }
         if not isinstance(self.default, decimal.Decimal) and self.default.default is None:
             return ["null", avro_type]
 
@@ -1010,7 +937,7 @@ def field_factory(
     if metadata is None:
         metadata = {}
 
-    if native_type in PYTHON_INMUTABLE_TYPES:
+    if native_type in field_utils.PYTHON_INMUTABLE_TYPES:
         klass = INMUTABLE_FIELDS_CLASSES[native_type]
         return klass(
             name=name,
@@ -1038,7 +965,7 @@ def field_factory(
             model_metadata=model_metadata,
             parent=parent,
         )
-    elif native_type in PYTHON_LOGICAL_TYPES:
+    elif native_type in field_utils.PYTHON_LOGICAL_TYPES:
         klass = LOGICAL_TYPES_FIELDS_CLASSES[native_type]  # type: ignore
 
         return klass(

@@ -6,7 +6,7 @@ import typing
 import pytest
 from faker import Faker
 
-from dataclasses_avroschema import AvroModel, exceptions, fields, types
+from dataclasses_avroschema import AvroModel, exceptions, field_utils, fields, types
 
 from . import consts
 
@@ -59,7 +59,7 @@ def test_sequence_type(sequence, python_primitive_type, python_type_str):
 
     assert expected == field.to_dict()
 
-    if python_type_str == fields.BYTES:
+    if python_type_str == field_utils.BYTES:
         values = [b"hola", b"hi"]
         default = ["hola", "hi"]
     else:
@@ -138,7 +138,7 @@ def test_sequence_with_union_type(union, items, default):
     assert expected == field.to_dict()
 
     field = fields.AvroField(name, python_type, default=None)
-    items.insert(0, fields.NULL)
+    items.insert(0, field_utils.NULL)
     expected = {
         "name": name,
         "type": {"type": "array", "name": name, "items": items},
@@ -174,7 +174,7 @@ def test_mapping_type(mapping, python_primitive_type, python_type_str):
 
     assert expected == field.to_dict()
 
-    if python_type_str == fields.BYTES:
+    if python_type_str == field_utils.BYTES:
         value = {"hola": b"hi"}
         default = {"hola": "hi"}
     else:
@@ -374,7 +374,7 @@ def test_union_type_with_record_default():
     expected = {
         "name": "an_union_field",
         "type": [
-            fields.NULL,
+            field_utils.NULL,
             {
                 "name": "User",
                 "type": "record",
