@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+## [0.36.0] - 2023-01-18
+
+- Generate a Python module from multiple schemas [235](https://github.com/marcosschroh/dataclasses-avroschema/pull/235)
+
+### Added
+
 ## [0.35.0] - 2023-01-10
 
 - Convert python models from `avsc` schemas [227](https://github.com/marcosschroh/dataclasses-avroschema/pull/227)
