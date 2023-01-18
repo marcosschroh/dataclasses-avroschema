@@ -17,7 +17,7 @@
         <link rel="next" href="../good_practices/">
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.0.3">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.0.5">
     
     
       
@@ -25,7 +25,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.6b71719e.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.558e4712.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.2505c338.min.css">
@@ -163,7 +163,7 @@
           <div class="md-search-result__meta">
             Initializing search
           </div>
-          <ol class="md-search-result__list"></ol>
+          <ol class="md-search-result__list" role="presentation"></ol>
         </div>
       </div>
     </div>
@@ -504,6 +504,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#render-a-python-module" class="md-nav__link">
+    Render a Python module
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#render-pydantic-models" class="md-nav__link">
     Render Pydantic models
   </a>
@@ -596,6 +603,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#render-a-python-module" class="md-nav__link">
+    Render a Python module
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#render-pydantic-models" class="md-nav__link">
     Render Pydantic models
   </a>
@@ -683,6 +697,52 @@ The rendered result is a string that contains the proper identation, so the resu
     <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
         <span class="n">namespace</span> <span class="o">=</span> <span class="s2">&quot;com.kubertenes&quot;</span>
 </code></pre></div>
+<h2 id="render-a-python-module">Render a Python module</h2>
+<p>It's also possible to generate a Python module containing classes from multiple schemas using <code>render_module</code>.</p>
+<p><div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">ModelGenerator</span>
+
+<span class="n">model_generator</span> <span class="o">=</span> <span class="n">ModelGenerator</span><span class="p">()</span>
+
+<span class="n">user_schema</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;record&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;User&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="s2">&quot;marcos&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;age&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;int&quot;</span><span class="p">},</span>
+    <span class="p">],</span>
+<span class="p">}</span>
+<span class="n">address_schema</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;record&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Address&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;street&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;street_number&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;long&quot;</span><span class="p">},</span>
+    <span class="p">],</span>
+<span class="p">}</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">model_generator</span><span class="o">.</span><span class="n">render_module</span><span class="p">(</span><span class="n">schemas</span><span class="o">=</span><span class="p">[</span><span class="n">user_schema</span><span class="p">,</span> <span class="n">address_schema</span><span class="p">])</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;models.py&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;+w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># models.py</span>
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">types</span>
+<span class="kn">import</span> <span class="nn">dataclasses</span>
+
+
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
+    <span class="n">age</span><span class="p">:</span> <span class="n">types</span><span class="o">.</span><span class="n">Int32</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;marcos&quot;</span>
+
+
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span> <span class="nc">Address</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
+    <span class="n">street</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">street_number</span><span class="p">:</span> <span class="nb">int</span>
+</code></pre></div></p>
+<p>Generating a single module from multiple schemas is useful for example to group schemas that belong to the same namespace.</p>
 <h2 id="render-pydantic-models">Render Pydantic models</h2>
 <p>It is also possible to render <code>BaseModel</code> (pydantic) and <code>AvroBaseModel</code> (avro + pydantic) models as well simply specifying the <code>base class</code>.
 The end result will also include the necessaty imports and the use of <code>pydantic.Field</code> in case that it is needed:</p>
@@ -1013,7 +1073,7 @@ exactly the same name as the record <code>Address</code>.</p>
     <script id="__config" type="application/json">{"base": "..", "features": ["search.suggest", "search.highlight", "content.tabs.link", "content.code.annotate"], "search": "../assets/javascripts/workers/search.e5c33ebb.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.ba449ae6.min.js"></script>
+      <script src="../assets/javascripts/bundle.51d95adb.min.js"></script>
       
     
   </body>
