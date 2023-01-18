@@ -322,3 +322,40 @@ class LogicalTypes(AvroModel):
     with open("models.py", mode="w+") as f:
         f.write(result)
     assert result.strip() == expected_result.strip()
+
+
+def test_model_generator_render_module_from_multiple_schemas(schema: types.JsonDict, schema_2: types.JsonDict) -> None:
+    expected_result = """
+from dataclasses_avroschema import AvroModel
+from dataclasses_avroschema import types
+import dataclasses
+
+
+@dataclasses.dataclass
+class User(AvroModel):
+    age: types.Int32
+    weight: types.Int32
+    money_available: float
+    name: str = "marcos"
+    pet_age: types.Int32 = 1
+    height: types.Float32 = 10.1
+    is_student: bool = True
+    encoded: bytes = b"Hi"
+
+    class Meta:
+        namespace = "test"
+        schema_doc = "An User"
+        aliases = ['schema', 'test-schema']
+
+
+@dataclasses.dataclass
+class Address(AvroModel):
+    street: str
+    street_number: int
+
+    class Meta:
+        schema_doc = "An Address"
+"""
+    model_generator = ModelGenerator()
+    result = model_generator.render_module(schemas=[schema, schema_2])
+    assert result.strip() == expected_result.strip()

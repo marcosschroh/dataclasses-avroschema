@@ -139,11 +139,18 @@ class ModelGenerator:
 
     def render(self, *, schema: JsonDict) -> str:
         """
-        Render the module with the classes generated from the schema/s
+        Render the module with the classes generated from the schema
         """
-        self.validate_schema(schema=schema)
+        return self.render_module(schemas=[schema])
 
-        classes = self.render_class(schema=schema)
+    def render_module(self, *, schemas: typing.List[JsonDict]) -> str:
+        """
+        Render the module with the classes generated from the schemas
+        """
+        for schema in schemas:
+            self.validate_schema(schema=schema)
+
+        classes = "\n".join(self.render_class(schema=schema) for schema in schemas)
         imports = self.render_imports()
         extras = self.render_extras()
 
