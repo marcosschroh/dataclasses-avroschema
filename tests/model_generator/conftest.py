@@ -31,6 +31,19 @@ def schema() -> Dict:
 
 
 @pytest.fixture
+def schema_2() -> Dict:
+    return {
+        "type": "record",
+        "name": "Address",
+        "fields": [
+            {"name": "street", "type": "string"},
+            {"name": "street_number", "type": "long"},
+        ],
+        "doc": "An Address",
+    }
+
+
+@pytest.fixture
 def schema_with_nulls() -> Dict:
     return {
         "type": "record",
