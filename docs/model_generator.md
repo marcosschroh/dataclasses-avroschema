@@ -55,6 +55,58 @@ class AvroDeployment(AvroModel):
         namespace = "com.kubertenes"
 ```
 
+## Render a Python module
+
+It's also possible to generate a Python module containing classes from multiple schemas using `render_module`.
+
+```py
+from dataclasses_avroschema import ModelGenerator
+
+model_generator = ModelGenerator()
+
+user_schema = {
+    "type": "record",
+    "name": "User",
+    "fields": [
+        {"name": "name", "type": "string", "default": "marcos"},
+        {"name": "age", "type": "int"},
+    ],
+}
+address_schema = {
+    "type": "record",
+    "name": "Address",
+    "fields": [
+        {"name": "street", "type": "string"},
+        {"name": "street_number", "type": "long"},
+    ],
+}
+
+result = model_generator.render_module(schemas=[user_schema, address_schema])
+
+with open("models.py", mode="+w") as f:
+    f.write(result)
+```
+```py
+# models.py
+from dataclasses_avroschema import AvroModel
+from dataclasses_avroschema import types
+import dataclasses
+
+
+@dataclasses.dataclass
+class User(AvroModel):
+    age: types.Int32
+    name: str = "marcos"
+
+
+@dataclasses.dataclass
+class Address(AvroModel):
+    street: str
+    street_number: int
+```
+
+Generating a single module from multiple schemas is useful for example to group schemas that belong to the same namespace.
+
 ## Render Pydantic models
 
 It is also possible to render `BaseModel` (pydantic) and `AvroBaseModel` (avro + pydantic) models as well simply specifying the `base class`.
