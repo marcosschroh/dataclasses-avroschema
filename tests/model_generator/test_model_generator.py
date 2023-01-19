@@ -334,9 +334,6 @@ class LogicalTypes(AvroModel):
 """
     model_generator = ModelGenerator()
     result = model_generator.render(schema=schema_with_logical_types)
-
-    with open("models.py", mode="w+") as f:
-        f.write(result)
     assert result.strip() == expected_result.strip()
 
 

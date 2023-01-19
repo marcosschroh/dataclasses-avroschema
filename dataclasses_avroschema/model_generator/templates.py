@@ -10,7 +10,6 @@ LIST_TEMPLATE = "typing.List[$type]"
 DICT_TEMPLATE = "typing.Dict[str, $type]"
 FIXED_TEMPLATE = "types.Fixed = types.Fixed($properties)"
 DATACLASS_FIELD = "dataclasses.field($properties)"
-PYDANTIC_FIELD = "Field($properties)"
 TYPE_TEMPLATE = 'typing.Type["$type"]'
 DATE_TEMPLATE = "datetime.date($year, $month, $day)"
 TIME_TEMPLATE = "datetime.time($hour, $minute, $second)"
@@ -48,6 +47,10 @@ $extras
 $classes
 """
 
+# Pydanntic specific
+PYDANTIC_FIELD = "Field($properties)"
+PYDANTIC_DECIMAL_TYPE_TEMPLATE = "condecimal(max_digits=$precision, decimal_places=$scale)"
+
 field_template = Template(FIELD_TEMPLATE)
 metaclass_field_template = Template(METACLASS_FIELD_TEMPLATE)
 metaclass_alias_field_template = Template(METACLASS_ALIAS_FIELD)
@@ -59,6 +62,7 @@ dict_template = Template(DICT_TEMPLATE)
 fixed_template = Template(FIXED_TEMPLATE)
 decimal_template = Template(DECIMAL_TEMPLATE)
 decimal_type_template = Template(DECIMAL_TYPE_TEMPLATE)
+pydantic_decimal_type_template = Template(PYDANTIC_DECIMAL_TYPE_TEMPLATE)
 enum_symbol_template = Template(ENUM_SYMBOL_TEMPLATE)
 enum_template = Template(ENUM_TEMPLATE)
 dataclass_field_template = Template(DATACLASS_FIELD)

@@ -71,7 +71,6 @@ class User(AvroBaseModel):
     addresses: typing.Dict[str, Address]
     crazy_union: typing.Union[str, typing.Dict[str, Address]]
     optional_addresses: typing.Optional[typing.Dict[str, Address]] = None
-
 """
     model_generator = ModelGenerator(base_class=BaseClassEnum.AVRO_DANTIC_MODEL.value)
     result = model_generator.render(schema=schema_one_to_many_map_relationship)
@@ -92,8 +91,23 @@ class User(AvroBaseModel):
     friend: typing.Optional[typing.Type["User"]] = None
     relatives: typing.List[typing.Type["User"]] = Field(default_factory=list)
     teammates: typing.Dict[str, typing.Type["User"]] = Field(default_factory=dict)
-
 """
     model_generator = ModelGenerator(base_class=BaseClassEnum.AVRO_DANTIC_MODEL.value)
     result = model_generator.render(schema=schema_one_to_self_relationship)
+    assert result.strip() == expected_result.strip()
+
+
+def test_decimal_field(schema_with_decimal_field: types.JsonDict) -> None:
+    expected_result = """
+from dataclasses_avroschema.avrodantic import AvroBaseModel
+from pydantic import condecimal
+import decimal
+
+
+
+class Demo(AvroBaseModel):
+    foo: decimal.Decimal = condecimal(max_digits=10, decimal_places=3)
+"""
+    model_generator = ModelGenerator(base_class=BaseClassEnum.AVRO_DANTIC_MODEL.value)
+    result = model_generator.render(schema=schema_with_decimal_field)
     assert result.strip() == expected_result.strip()
