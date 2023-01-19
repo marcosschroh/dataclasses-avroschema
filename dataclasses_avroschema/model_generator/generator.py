@@ -185,7 +185,7 @@ class ModelGenerator:
 
             if type == field_utils.DECIMAL:
                 # set default to None because all the decimal has a default by design
-                # and they are calculated in _parse_decimal method
+                # and they are calculated in parse_decimal method
                 default = None
         elif isinstance(type, dict):
             language_type = self.render_field(field=type, model_name=model_name)
@@ -247,28 +247,32 @@ class ModelGenerator:
 
             if logical_type == field_utils.DECIMAL:
                 # this is a special case for logical types
-                default_decimal = self._parse_decimal(field=field)
+                default_decimal = self.parse_decimal(field=field)
                 field_repr += templates.field_default_template.safe_substitute(default=default_decimal)
 
             return field_repr
         return avro_to_python_utils.AVRO_TYPE_TO_PYTHON[logical_type]
 
-    def _parse_decimal(self, *, field: JsonDict) -> str:
-        self.imports.add("from dataclasses_avroschema import types")
-
+    def parse_decimal(self, *, field: JsonDict) -> str:
         schema: JsonDict = field["type"]
         precision = schema["precision"]
         scale = schema["scale"]
         properties = f"scale={scale}, precision={precision}"
         default = field.get("default")
 
-        if default is not None:
-            default = templates.decimal_template.safe_substitute(
-                value=serialization.string_to_decimal(value=default, schema=schema)
-            )
-            properties += f", default={default}"
+        if self.base_class == BaseClassEnum.AVRO_MODEL.value:
+            self.imports.add("from dataclasses_avroschema import types")
 
-        return templates.decimal_type_template.safe_substitute(properties=properties)
+            if default is not None:
+                default = templates.decimal_template.safe_substitute(
+                    value=serialization.string_to_decimal(value=default, schema=schema)
+                )
+                properties += f", default={default}"
+            return templates.decimal_type_template.safe_substitute(properties=properties)
+        else:
+            # we should render a pydantic condecimal
+            self.imports.add("from pydantic import condecimal")
+            return templates.pydantic_decimal_type_template.safe_substitute(scale=scale, precision=precision)
 
     def parse_union(self, *, field_types: typing.List, model_name: str) -> str:
         """

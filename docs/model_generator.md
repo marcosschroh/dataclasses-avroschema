@@ -10,6 +10,9 @@ The rendered result is a string that contains the proper identation, so the resu
 !!! note
     In future releases it will be possible to generate models for other programming langagues like `java` and `rust`
 
+!!! note
+    Soon with [dc-avro](https://github.com/marcosschroh/dc-avro) will be possible to generate the models from the command line
+
 ## Usage
 
 ```python
@@ -86,6 +89,9 @@ result = model_generator.render_module(schemas=[user_schema, address_schema])
 with open("models.py", mode="+w") as f:
     f.write(result)
 ```
+
+Then, the end result is:
+
 ```py
 # models.py
 from dataclasses_avroschema import AvroModel
@@ -124,6 +130,7 @@ schema = {
         {"name": "friend", "type": ["null", "User"], "default": None},
         {"name": "relatives", "type": {"type": "array", "items": "User", "name": "relative"}, "default": []},
         {"name": "teammates", "type": {"type": "map", "values": "User", "name": "teammate"}, "default": {}},
+        {"name": "money", "type": {"type": "bytes", "logicalType": "decimal", "precision": 10, "scale": 3}},
     ],
 }
 ```
@@ -145,12 +152,15 @@ and then render the result:
     # models.py
     from pydantic import BaseModel
     from pydantic import Field
+    from pydantic import condecimal
+    import decimal
     import typing
 
 
     class User(BaseModel):
         name: str
         age: int
+        money: decimal.Decimal = condecimal(max_digits=10, decimal_places=3)
         friend: typing.Optional[typing.Type["User"]] = None
         relatives: typing.List[typing.Type["User"]] = Field(default_factory=list)
         teammates: typing.Dict[str, typing.Type["User"]] = Field(default_factory=dict)
@@ -171,12 +181,15 @@ and then render the result:
     # models.py
     from dataclasses_avroschema.avrodantic import AvroBaseModel
     from pydantic import Field
+    from pydantic import condecimal
+    import decimal
     import typing
 
 
     class User(AvroBaseModel):
         name: str
         age: int
+        money: decimal.Decimal = condecimal(max_digits=10, decimal_places=3)
         friend: typing.Optional[typing.Type["User"]] = None
         relatives: typing.List[typing.Type["User"]] = Field(default_factory=list)
         teammates: typing.Dict[str, typing.Type["User"]] = Field(default_factory=dict)
@@ -186,7 +199,7 @@ and then render the result:
     Use the `dataclasses_avroschema.BaseClassEnum` to specify the `base class`
 
 !!! note
-    Soon with [dc-avro](https://github.com/marcosschroh/dc-avro) will be possible to generate the models from the command line
+    `decimal.Decimal` are created using `pydantic condecimal`
 
 ## Malformed schemas
 
