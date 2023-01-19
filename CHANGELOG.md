@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+### Fixed
+
+## [0.36.1] - 2023-01-19
+
+- Model generator with only decimal fields.
+- Use `pydantic.condecimal` instead of the custom `Decimal` as default value when generate `pydantic` models
+
 ### Added
 
 ## [0.36.0] - 2023-01-18
