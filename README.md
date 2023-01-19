@@ -343,5 +343,5 @@ User.fake()
 
 1. Create a `virtualenv`: `python3.7 -m venv venv && source venv/bin/activate`
 2. Install requirements: `pip install -r requirements.txt`
-3. Code linting: `./scripts/lint`
+3. Code linting: `./scripts/format`
 4. Run tests: `./scripts/test`

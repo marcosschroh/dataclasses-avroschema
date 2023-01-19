@@ -2,19 +2,42 @@
 line-length = 120
 target_version = ['py37']
 
-[tool.isort]
-combine_as_imports = true
-from_first = false
-include_trailing_comma = true
-length_sort = false
-multi_line_output = 3
-order_by_type = true
-line_length = 120
-force_grid_wrap = 0
-
 [tool.mypy]
 allow_empty_bodies = true
 
 [[tool.mypy.overrides]]
 module = "stringcase.*"
 ignore_missing_imports = true
+
+[tool.ruff]
+line-length = 120
+select = [
+    # Pyflakes
+    "F",
+    # isort
+    "I001"
+]
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    ".venv",
+]
+
+[tool.ruff.pydocstyle]
+convention = "google"
