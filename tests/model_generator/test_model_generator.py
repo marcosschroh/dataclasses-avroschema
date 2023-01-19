@@ -1,5 +1,4 @@
-from dataclasses_avroschema import ModelGenerator, types, field_utils
-
+from dataclasses_avroschema import ModelGenerator, field_utils, types
 from dataclasses_avroschema.model_generator.avro_to_python_utils import render_datetime
 
 
@@ -279,6 +278,23 @@ class User(AvroModel):
 """
     model_generator = ModelGenerator()
     result = model_generator.render(schema=schema_one_to_self_relationship)
+    assert result.strip() == expected_result.strip()
+
+
+def test_decimal_field(schema_with_decimal_field: types.JsonDict) -> None:
+    expected_result = """
+from dataclasses_avroschema import AvroModel
+from dataclasses_avroschema import types
+import dataclasses
+import decimal
+
+
+@dataclasses.dataclass
+class Demo(AvroModel):
+    foo: decimal.Decimal = types.Decimal(scale=3, precision=10)
+"""
+    model_generator = ModelGenerator()
+    result = model_generator.render(schema=schema_with_decimal_field)
     assert result.strip() == expected_result.strip()
 
 

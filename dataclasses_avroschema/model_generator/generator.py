@@ -253,8 +253,9 @@ class ModelGenerator:
             return field_repr
         return avro_to_python_utils.AVRO_TYPE_TO_PYTHON[logical_type]
 
-    @staticmethod
-    def _parse_decimal(*, field: JsonDict) -> str:
+    def _parse_decimal(self, *, field: JsonDict) -> str:
+        self.imports.add("from dataclasses_avroschema import types")
+
         schema: JsonDict = field["type"]
         precision = schema["precision"]
         scale = schema["scale"]
@@ -295,11 +296,6 @@ class ModelGenerator:
                 language_types = self.parse_union(field_types=field_types[1:], model_name=model_name)
             elif isinstance(field_types[1], dict):
                 # TODO: check what happens with more than 2 complex types
-                # it is a complex type like array, dict, enum, fixed or record
-                # it needs to be render
-                # if self._is_logical_type(field_type=field_types[1]):
-                #     language_types = self.parse_logical_type(field=field_types[1])
-                # else:
                 language_types = self.render_field(field=field_types[1], model_name=model_name)
             else:
                 language_types = ", ".join(
