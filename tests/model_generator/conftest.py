@@ -314,6 +314,15 @@ def schema_one_to_self_relationship() -> JsonDict:
 
 
 @pytest.fixture
+def schema_with_decimal_field() -> JsonDict:
+    return {
+        "type": "record",
+        "name": "demo",
+        "fields": [{"name": "foo", "type": {"type": "bytes", "logicalType": "decimal", "precision": 10, "scale": 3}}],
+    }
+
+
+@pytest.fixture
 def schema_with_logical_types() -> JsonDict:
     return {
         "type": "record",
