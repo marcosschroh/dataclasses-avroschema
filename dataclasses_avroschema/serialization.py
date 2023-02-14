@@ -106,7 +106,7 @@ def prepare_bytes_decimal(data: decimal.Decimal, precision: int, scale: int = 0)
     if len(digits) > precision:
         raise ValueError("The decimal precision is bigger than allowed by schema")
 
-    delta = exp + scale
+    delta = int(exp) + scale
 
     if delta < 0:
         raise ValueError("Scale provided in schema does not match the decimal")

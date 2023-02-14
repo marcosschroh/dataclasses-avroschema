@@ -38,7 +38,6 @@ p = inflect.engine()
 
 @dataclasses.dataclass  # type: ignore
 class BaseField:
-
     __slots__ = (
         "name",
         "type",
@@ -489,7 +488,6 @@ class EnumField(BaseField):
             return f"{namespace}.{name}"
 
     def get_default_value(self) -> typing.Union[str, dataclasses._MISSING_TYPE, None]:
-
         if self.default == types.MissingSentinel:
             return dataclasses.MISSING
         elif self.default in (dataclasses.MISSING, None):
@@ -786,7 +784,6 @@ class RecordField(BaseField):
 
 @dataclasses.dataclass
 class DecimalField(BaseField):
-
     precision: int = -1
     scale: int = 0
 
@@ -796,8 +793,8 @@ class DecimalField(BaseField):
     def set_precision_scale(self) -> None:
         if self.default != types.MissingSentinel:
             if isinstance(self.default, decimal.Decimal):
-                sign, digits, scale = self.default.as_tuple()
-                self.scale = scale * -1  # Make scale positive, as that's what Avro expects
+                _, digits, scale = self.default.as_tuple()
+                self.scale = int(scale) * -1  # Make scale positive, as that's what Avro expects
                 # decimal.Context has a precision property
                 # BUT the precision property is independent of the number of digits stored in the Decimal instance
                 # # # FROM THE DOCS HERE https://docs.python.org/3/library/decimal.html

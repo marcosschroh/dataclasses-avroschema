@@ -49,7 +49,6 @@ class BaseSchemaDefinition(abc.ABC):
 
 @dataclasses.dataclass
 class AvroSchemaDefinition(BaseSchemaDefinition):
-
     fields: typing.List[FieldType] = dataclasses.field(default_factory=list)
 
     def __post_init__(self) -> None:
