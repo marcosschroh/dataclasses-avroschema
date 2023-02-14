@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [0.36.2] - 2023-02-14
+
+- Do not persist the schema when the parent class is not an AvroModel. Closes #241
+
+### Fixed
+
 ## [0.36.1] - 2023-01-19
 
 - Model generator with only decimal fields.
