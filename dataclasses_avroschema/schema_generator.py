@@ -44,7 +44,7 @@ class AvroModel:
 
     @classmethod
     def generate_schema(cls: Type[CT], schema_type: str = "avro") -> Optional[OrderedDict]:
-        if cls.schema_def is None:
+        if cls.schema_def is None or cls.__mro__[1] != AvroModel:
             # Generate dataclass and metadata
             cls.klass = cls.generate_dataclass()
 
@@ -170,7 +170,6 @@ class AvroModel:
         create_instance: bool = True,
         writer_schema: Optional[Union[JsonDict, Type[CT]]] = None,
     ) -> Union[JsonDict, CT]:
-
         if inspect.isclass(writer_schema) and issubclass(writer_schema, AvroModel):
             # mypy does not undersdtand redefinitions
             writer_schema: JsonDict = writer_schema.avro_schema_to_python()  # type: ignore
