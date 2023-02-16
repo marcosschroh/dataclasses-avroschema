@@ -155,6 +155,7 @@ def test_self_one_to_many_relationship() -> None:
     class User(AvroModel):
         name: str
         age: int
+        points: typing.List[typing.Optional[types.Float32]]
         teamates: typing.Optional[typing.List[typing.Type["User"]]] = None
 
     assert isinstance(User.fake(), User)
