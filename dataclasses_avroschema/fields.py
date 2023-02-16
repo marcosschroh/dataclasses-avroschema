@@ -287,23 +287,22 @@ class ListField(ContainerField):
         items_type = self.type.__args__[0]
 
         if utils.is_union(items_type):
-            self.items_type = UnionField(
+            self.internal_field = UnionField(
                 self.name,
                 items_type,
                 default=self.default,
                 default_factory=self.default_factory,
                 model_metadata=self.model_metadata,
                 parent=self.parent,
-            ).get_avro_type()
+            )
         else:
             self.internal_field = AvroField(
                 self.name, items_type, model_metadata=self.model_metadata, parent=self.parent
             )
-            self.items_type = self.internal_field.get_avro_type()
+
+        self.items_type = self.internal_field.get_avro_type()
 
     def fake(self) -> typing.List:
-        # return a list of one element with the type specified
-        # TODO: check when the internal value is self reference which seems to return `None`
         return [self.internal_field.fake()]
 
 
