@@ -208,16 +208,20 @@ class AvroModel:
         """
         # We need to make sure that the `avro schemas` has been generated, otherwise cls.klass is empty
         # It won't affect the performance because the rendered schema will be store in cls.rendered_schema
-        if cls.klass is None:
-            # Generate dataclass and metadata
-            cls.klass = cls.generate_dataclass()
+        cls.generate_schema()
+        dacite_user_config = cls.metadata.dacite_config  # type: ignore
 
-        return {
+        dacite_config = {
             "check_types": False,
             "forward_references": {
-                cls.klass.__name__: cls.klass,
+                cls.klass.__name__: cls.klass,  # type: ignore
             },
         }
+
+        if dacite_user_config is not None:
+            dacite_config.update(dacite_user_config)
+
+        return dacite_config
 
     @classmethod
     def fake(cls: Type[CT], **data: Dict[str, Any]) -> CT:

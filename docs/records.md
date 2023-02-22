@@ -45,7 +45,7 @@ User.avro_schema()
 
 ## Class Meta
 
-The `class Meta` is used to specify schema attributes that are not represented by the class fields like `namespace`, `aliases` and whether to include the `schema documentation`. One can also provide a custom schema name (the default is the class' name) via `schema_name` attribute and `alias_nested_items` when you have nested items and you want to use custom naming for them.
+The `class Meta` is used to specify schema attributes that are not represented by the class fields like `namespace`, `aliases` and whether to include the `schema documentation`. Also custom schema name (the default is the class' name) via `schema_name` attribute and `alias_nested_items` when you have nested items and you want to use custom naming for them and `custom dacite` configuration can be provided.
 
 ```python title="Class Meta description"
 class Meta:
@@ -54,6 +54,10 @@ class Meta:
     namespace = "test.com.ar/user/v1"
     aliases = ["User", "My favorite User"]
     alias_nested_items = {"address": "Address"}
+    dacite_config = {
+        "strict_unions_match": True,
+        "strict": True,
+    }
 ```
 
 `schema_doc (Union[boolean, str])`: Whether include the `schema documentation` generated from `docstrings`. Default `True`. If the value is a `string` if will be used to generate the schema documentation.
@@ -91,6 +95,129 @@ user.to_json()
 user.to_dict()
 # >>> {'name': 'Bond', 'age': 50, 'has_pets': False, 'money': 100.3}
 ```
+
+*(This script is complete, it should run "as is")*
+
+## Parsing objects
+
+It is possible to create `python instances` from a `dictionary` using the `parse_obj` method. If you are familiar with `pydantic`, this functionality does the same.
+Under the hood `dataclasses-avroschema` uses [dacite](https://github.com/konradhalas/dacite) with a default configuration:
+
+```python
+"check_types": False,
+"forward_references": {
+    Model.__name__: Model,
+},
+```
+
+where `Model` is the model that you have defined in your code
+
+```python title="Usage"
+import typing
+from dataclasses import dataclass
+
+from dataclasses_avroschema import AvroModel
+
+
+@dataclass
+class Bus(AvroModel):
+    driver: str
+    total: int
+
+data = {"driver": "Marcos", "total": 10}
+bus = Bus.parse_obj(data=data)
+
+print(bus)
+# >>>> Bus(driver='Marcos', total=10)
+```
+
+*(This script is complete, it should run "as is")*
+
+### Override dacite config
+
+There are some use cases where a custom `dacite` config is needed, so you can provide one using the `dacite_config` in the `class Meta`.
+
+For example using [Strict unions match](https://github.com/konradhalas/dacite#strict-unions-match)
+
+=== "Default dacite configuration"
+
+    ```python
+    import typing
+    from dataclasses import dataclass
+
+    from dataclasses_avroschema import AvroModel
+
+
+    @dataclass
+    class Car(AvroModel):
+        total: int
+
+
+    @dataclass
+    class Bus(AvroModel):
+        driver: str
+        total: int
+
+
+    @dataclass
+    class Trip(AvroModel):
+        transport: typing.Union[Car, Bus]
+
+    data = {"driver": "Marcos", "total": 10}
+    bus = Bus.parse_obj(data=data)
+
+    serialized_val = Trip(transport=bus).serialize()
+
+    print(Trip.deserialize(serialized_val, create_instance=False)) 
+    # >>> {"transport": {"driver": "Marcos", "total": 10}}
+    
+    instance = Trip.deserialize(serialized_val)
+    print(instance.transport)  # This is a Car but it should be a Bus!!!
+    # >>> Car(total=10)
+    ```
+
+=== "Custom dacite configuration"
+
+    ```python
+    import typing
+    from dataclasses import dataclass
+
+    from dataclasses_avroschema import AvroModel
+
+
+    @dataclass
+    class Car(AvroModel):
+        total: int
+
+
+    @dataclass
+    class Bus(AvroModel):
+        driver: str
+        total: int
+
+
+    @dataclass
+    class Trip(AvroModel):
+        transport: typing.Union[Car, Bus]
+
+        class Meta:
+            dacite_config = {
+                "strict_unions_match": True,
+                "strict": True,
+            }
+
+    data = {"driver": "Marcos", "total": 10}
+    bus = Bus.parse_obj(data=data)
+
+    serialized_val = Trip(transport=bus).serialize()
+    print(Trip.deserialize(serialized_val, create_instance=False))
+    # >>> {"transport": {"driver": "Marcos", "total": 10}}
+    
+    instance = Trip.deserialize(serialized_val)
+    print(instance.transport)  # Is it s Bus and not a Car!!!
+    # >>> Bus(driver='Marcos', total=10)
+
+    ```
 
 *(This script is complete, it should run "as is")*
 

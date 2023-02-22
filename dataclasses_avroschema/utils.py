@@ -4,7 +4,7 @@ from datetime import datetime
 
 from pytz import utc
 
-from . import field_utils
+from .types import JsonDict
 
 try:
     import faust
@@ -76,8 +76,7 @@ class SchemaMetadata:
     namespace: typing.Optional[typing.List[str]] = None
     aliases: typing.Optional[typing.List[str]] = None
     alias_nested_items: typing.Dict[str, str] = dataclasses.field(default_factory=dict)
-    time_precision: str = field_utils.TIME_MILLIS
-    datetime_precision: str = field_utils.TIMESTAMP_MILLIS
+    dacite_config: typing.Optional[JsonDict] = None
 
     @classmethod
     def create(cls: typing.Type["SchemaMetadata"], klass: type) -> typing.Any:
@@ -87,8 +86,7 @@ class SchemaMetadata:
             namespace=getattr(klass, "namespace", None),
             aliases=getattr(klass, "aliases", None),
             alias_nested_items=getattr(klass, "alias_nested_items", {}),
-            time_precision=getattr(klass, "time_precision", field_utils.TIME_MILLIS),
-            datetime_precision=getattr(klass, "datetime_precision", field_utils.TIMESTAMP_MILLIS),
+            dacite_config=getattr(klass, "dacite_config", None),
         )
 
     def get_alias_nested_items(self, name: str) -> typing.Optional[str]:
