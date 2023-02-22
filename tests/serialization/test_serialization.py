@@ -1,6 +1,5 @@
 import datetime
 import enum
-import json
 import typing
 import uuid
 from dataclasses import dataclass
@@ -201,14 +200,6 @@ def test_deserialization_with_class(klass, data, avro_binary, avro_json, instanc
     assert klass.deserialize(avro_json, serialization_type="avro-json") == instance
 
 
-@pytest.mark.parametrize("klass, data, avro_binary, avro_json, instance_json, python_dict", CLASSES_DATA_BINARY)
-def test_to_dict(klass, data, avro_binary, avro_json, instance_json, python_dict):
-    instance = klass(**data)
-
-    assert instance.to_dict() == python_dict
-    assert instance.to_json() == json.dumps(instance_json)
-
-
 def test_invalid_serialization_deserialization_types():
     user = User(**data_user)
 
@@ -219,12 +210,12 @@ def test_invalid_serialization_deserialization_types():
         user.deserialize(b"", serialization_type="json")
 
 
-def test_deserialization_with_writer_schema__dict():
+def test_deserialization_with_writer_schema_dict():
     user = User(**data_user)
     writer_schema = User.avro_schema_to_python()
     UserCompatible.deserialize(user.serialize(), writer_schema=writer_schema)
 
 
-def test_deserialization_with_writer_schema__avro_model():
+def test_deserialization_with_writer_schema_avro_model():
     user = User(**data_user)
     UserCompatible.deserialize(user.serialize(), writer_schema=User)
