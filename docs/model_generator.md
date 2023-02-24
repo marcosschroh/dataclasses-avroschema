@@ -201,6 +201,9 @@ and then render the result:
 !!! note
     `decimal.Decimal` are created using `pydantic condecimal`
 
+!!! note
+    `uuid` types are created using `pydantic.UUID4`
+
 ## Malformed schemas
 
 Some times there are valid avro schemas but we could say that it is "malformed", for example the following schema has a field name called `Address` which is
