@@ -1,4 +1,3 @@
-import enum
 import typing
 from dataclasses import dataclass, field
 from string import Template
@@ -10,12 +9,7 @@ from dataclasses_avroschema import field_utils, serialization
 from dataclasses_avroschema.types import JsonDict
 
 from . import avro_to_python_utils, templates
-
-
-class BaseClassEnum(str, enum.Enum):
-    AVRO_MODEL = "AvroModel"
-    PYDANTIC_MODEL = "BaseModel"
-    AVRO_DANTIC_MODEL = "AvroBaseModel"
+from .base_class import BaseClassEnum
 
 
 @dataclass
@@ -50,9 +44,13 @@ class ModelGenerator:
     )
     # represent the decorator to add in the base class
     base_class_decotator: str = ""
+    avro_type_to_python: typing.Dict[str, str] = field(init=False)
+    logical_types_imports: typing.Dict[str, str] = field(init=False)
 
     def __post_init__(self) -> None:
         self.imports.add(self.base_class_to_imports[self.base_class])
+        self.avro_type_to_python = avro_to_python_utils.AVRO_TYPE_TO_PYTHON[self.base_class]
+        self.logical_types_imports = avro_to_python_utils.LOGICAL_TYPES_IMPORTS[self.base_class]
 
         if self.base_class == BaseClassEnum.AVRO_MODEL.value:
             self.imports.add("import dataclasses")
@@ -237,12 +235,12 @@ class ModelGenerator:
         logical_type = field.get("logicalType") or field["type"]["logicalType"]
 
         # add the logical type import
-        self.imports.add(avro_to_python_utils.LOGICAL_TYPES_IMPORTS[logical_type])
+        self.imports.add(self.logical_types_imports[logical_type])
         field_name = field.get("name")
 
         if field_name is not None:
             field_repr = templates.field_template.safe_substitute(
-                name=field_name, type=avro_to_python_utils.AVRO_TYPE_TO_PYTHON[logical_type]
+                name=field_name, type=self.avro_type_to_python[logical_type]
             )
 
             if logical_type == field_utils.DECIMAL:
@@ -251,7 +249,7 @@ class ModelGenerator:
                 field_repr += templates.field_default_template.safe_substitute(default=default_decimal)
 
             return field_repr
-        return avro_to_python_utils.AVRO_TYPE_TO_PYTHON[logical_type]
+        return self.avro_type_to_python[logical_type]
 
     def parse_decimal(self, *, field: JsonDict) -> str:
         schema: JsonDict = field["type"]
@@ -431,8 +429,8 @@ class ModelGenerator:
             return templates.type_template.safe_substitute(type=type)
 
         if default is not None:
-            return str(avro_to_python_utils.AVRO_TYPE_TO_PYTHON.get(type, default))
-        return str(avro_to_python_utils.AVRO_TYPE_TO_PYTHON.get(type, type))
+            return str(self.avro_type_to_python.get(type, default))
+        return str(self.avro_type_to_python.get(type, type))
 
     def get_field_default(self, *, field_type: str, default: typing.Any, name: str) -> typing.Any:
         """
