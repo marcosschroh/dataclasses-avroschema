@@ -831,6 +831,10 @@ The end result will also include the necessaty imports and the use of <code>pyda
 <p class="admonition-title">Note</p>
 <p><code>decimal.Decimal</code> are created using <code>pydantic condecimal</code></p>
 </div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code>uuid</code> types are created using <code>pydantic.UUID4</code></p>
+</div>
 <h2 id="malformed-schemas">Malformed schemas</h2>
 <p>Some times there are valid avro schemas but we could say that it is "malformed", for example the following schema has a field name called <code>Address</code> which is
 exactly the same name as the record <code>Address</code>.</p>
