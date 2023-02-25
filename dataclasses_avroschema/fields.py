@@ -667,16 +667,10 @@ class DatetimeField(LogicalTypeField):
         return field_utils.LOGICAL_DATETIME_MILIS
 
     @staticmethod
-    def to_avro(date_time: datetime.datetime) -> float:
+    def to_avro(date_time: datetime.datetime) -> int:
         """
         Returns the number of milliseconds from the unix epoch,
         1 January 1970 00:00:00.000 UTC for a given datetime
-
-        Arguments:
-            date_time (datetime.datetime)
-
-        Returns:
-            float
         """
         if date_time.tzinfo:
             ts = (date_time - utils.epoch).total_seconds()
@@ -705,16 +699,10 @@ class DatetimeMicroField(LogicalTypeField):
         return field_utils.LOGICAL_DATETIME_MICROS
 
     @staticmethod
-    def to_avro(date_time: datetime.datetime) -> float:
+    def to_avro(date_time: datetime.datetime) -> int:
         """
         Returns the number of milliseconds from the unix epoch,
         1 January 1970 00:00:00.000000 UTC for a given datetime
-
-        Arguments:
-            date_time (datetime.datetime)
-
-        Returns:
-            float
         """
         if date_time.tzinfo:
             ts = (date_time - utils.epoch).total_seconds()

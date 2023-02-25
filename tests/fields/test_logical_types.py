@@ -103,7 +103,7 @@ def test_logical_type_datetime_micros_with_default() -> None:
     python_type = types.DateTimeMicro
     field = fields.AvroField(name, python_type, default=consts.now)
 
-    ts = (consts.now - datetime.datetime(1970, 1, 1)).total_seconds()
+    ts = consts.now.timestamp()
 
     expected = {
         "name": name,
@@ -119,7 +119,7 @@ def test_logical_type_datetime_with_default() -> None:
     python_type = datetime.datetime
     field = fields.AvroField(name, python_type, default=consts.now)
 
-    ts = (consts.now - datetime.datetime(1970, 1, 1)).total_seconds()
+    ts = consts.now.timestamp()
 
     expected = {
         "name": name,

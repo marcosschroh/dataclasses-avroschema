@@ -10,7 +10,7 @@ def test_logical_types_schema(logical_types_schema):
     """
     Test a schema with Logical Types
     """
-    a_datetime = datetime.datetime(2019, 10, 12, 17, 57, 42)
+    a_datetime = datetime.datetime.fromtimestamp(1570903062, datetime.timezone.utc)
 
     class LogicalTypes(AvroModel):
         "Some logical types"
@@ -26,7 +26,7 @@ def test_logical_micro_types_schema(logical_types_micro_schemas):
     """
     Test a schema with Logical Types
     """
-    a_datetime = datetime.datetime(2019, 10, 12, 17, 57, 42)
+    a_datetime = datetime.datetime.fromtimestamp(1570903062, datetime.timezone.utc)
 
     class LogicalTypesMicro(AvroModel):
         "Some logical types"

@@ -14,8 +14,10 @@ TYPE_TEMPLATE = '"$type"'
 DATE_TEMPLATE = "datetime.date($year, $month, $day)"
 TIME_TEMPLATE = "datetime.time($hour, $minute, $second)"
 TIME_MICROS_TEMPLATE = "datetime.time($hour, $minute, $second, $microsecond)"
-DATETIME_TEMPLATE = "datetime.datetime($year, $month, $day, $hour, $minute, $second)"
-DATETIME_MICROS_TEMPLATE = "datetime.datetime($year, $month, $day, $hour, $minute, $second, $microsecond)"
+DATETIME_TEMPLATE = "datetime.datetime($year, $month, $day, $hour, $minute, $second, tzinfo=datetime.timezone.utc)"
+DATETIME_MICROS_TEMPLATE = (
+    "datetime.datetime($year, $month, $day, $hour, $minute, $second, $microsecond, tzinfo=datetime.timezone.utc)"
+)
 DECIMAL_TEMPLATE = "decimal.Decimal('$value')"
 DECIMAL_TYPE_TEMPLATE = "types.Decimal($properties)"
 

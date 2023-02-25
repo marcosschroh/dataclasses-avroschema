@@ -64,7 +64,7 @@ def test_pydantic_record_schema_complex_types_with_defaults(user_advance_with_de
 
 
 def test_pydantic_record_schema_logical_types(logical_types_schema):
-    a_datetime = datetime.datetime(2019, 10, 12, 17, 57, 42)
+    a_datetime = datetime.datetime.fromtimestamp(1570903062, datetime.timezone.utc)
 
     class LogicalTypes(AvroBaseModel):
         "Some logical types"

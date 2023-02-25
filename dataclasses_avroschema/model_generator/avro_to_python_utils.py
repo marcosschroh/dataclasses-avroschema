@@ -61,8 +61,10 @@ LOGICAL_TYPES_TO_PYTHON = {
     field_utils.DATE: lambda value: datetime.date.fromtimestamp(60 * 60 * 24 * value),
     field_utils.TIME_MILLIS: lambda value: (datetime.datetime.min + datetime.timedelta(milliseconds=value)).time(),
     field_utils.TIME_MICROS: lambda value: (datetime.datetime.min + datetime.timedelta(microseconds=value)).time(),
-    field_utils.TIMESTAMP_MILLIS: lambda value: datetime.datetime.fromtimestamp(value / 1000),
-    field_utils.TIMESTAMP_MICROS: lambda value: datetime.datetime.fromtimestamp(value / 1000000),
+    field_utils.TIMESTAMP_MILLIS: lambda value: datetime.datetime.fromtimestamp(value / 1000, tz=datetime.timezone.utc),
+    field_utils.TIMESTAMP_MICROS: lambda value: datetime.datetime.fromtimestamp(
+        value / 1000000, tz=datetime.timezone.utc
+    ),
 }
 
 # Logical types objects to template
