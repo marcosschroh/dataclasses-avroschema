@@ -447,7 +447,7 @@ class ModelGenerator:
         elif field_type == field_utils.BYTES:
             return f'b"{default}"'
         elif isinstance(field_type, dict) and field_type.get("type") == field_utils.ENUM:
-            return f"{stringcase.pascalcase(name)}.{stringcase.uppercase(default)}"
+            return f"{stringcase.pascalcase(field_type['name'])}.{stringcase.uppercase(default)}"
         elif isinstance(
             default,
             (
