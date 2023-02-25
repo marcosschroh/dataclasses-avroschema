@@ -14,9 +14,6 @@ marks = {
     "decimal": [
         pytest.mark.xfail(raises=ValueError, reason="model generator looses decimal precision for default-null fields")
     ],
-    "user_extra_avro_attributes": [
-        pytest.mark.xfail(raises=AssertionError, reason="model generator does not handle aliases yet")
-    ],
     "user_with_field_metadata": [
         pytest.mark.xfail(raises=AssertionError, reason="model generator does not support metadata yet")
     ],

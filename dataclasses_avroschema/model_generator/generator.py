@@ -26,14 +26,14 @@ class ModelGenerator:
         default_factory=lambda: {
             "namespace": "namespace",
             "doc": "schema_doc",
-            "alias": "aliases",
+            "aliases": "aliases",
         }
     )
     matadata_field_templates: typing.Dict[str, Template] = field(
         default_factory=lambda: {
             "namespace": templates.metaclass_field_template,
             "doc": templates.metaclass_field_template,
-            "alias": templates.metaclass_alias_field_template,
+            "aliases": templates.metaclass_alias_field_template,
         }
     )
     base_class_to_imports: typing.Dict[str, str] = field(

@@ -26,7 +26,7 @@ def schema() -> Dict:
         ],
         "doc": "An User",
         "namespace": "test",
-        "alias": ["schema", "test-schema"],
+        "aliases": ["schema", "test-schema"],
     }
 
 
