@@ -261,7 +261,7 @@ class User(AvroModel):
     assert result.strip() == expected_result.strip()
 
 
-def test_schema_one_to_self_relathionship(schema_one_to_self_relationship: types.JsonDict) -> None:
+def test_schema_one_to_self_relationship(schema_one_to_self_relationship: types.JsonDict) -> None:
     expected_result = """
 from dataclasses_avroschema import AvroModel
 import dataclasses
@@ -272,9 +272,9 @@ import typing
 class User(AvroModel):
     name: str
     age: int
-    friend: typing.Optional[typing.Type["User"]] = None
-    relatives: typing.List[typing.Type["User"]] = dataclasses.field(default_factory=list)
-    teammates: typing.Dict[str, typing.Type["User"]] = dataclasses.field(default_factory=dict)
+    friend: typing.Optional["User"] = None
+    relatives: typing.List["User"] = dataclasses.field(default_factory=list)
+    teammates: typing.Dict[str, "User"] = dataclasses.field(default_factory=dict)
 """
     model_generator = ModelGenerator()
     result = model_generator.render(schema=schema_one_to_self_relationship)

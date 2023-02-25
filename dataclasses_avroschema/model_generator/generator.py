@@ -208,7 +208,7 @@ class ModelGenerator:
             language_type = stringcase.pascalcase(field["name"])
         else:
             # Native field or Logical type using a native
-            language_type = self.get_language_type(type=type)
+            language_type = self.get_language_type(type=type, model_name=model_name)
 
         if is_complex_type:
             # If the field is a complext type, we need to return just the language_type

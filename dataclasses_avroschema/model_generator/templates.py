@@ -10,7 +10,7 @@ LIST_TEMPLATE = "typing.List[$type]"
 DICT_TEMPLATE = "typing.Dict[str, $type]"
 FIXED_TEMPLATE = "types.Fixed = types.Fixed($properties)"
 DATACLASS_FIELD = "dataclasses.field($properties)"
-TYPE_TEMPLATE = 'typing.Type["$type"]'
+TYPE_TEMPLATE = '"$type"'
 DATE_TEMPLATE = "datetime.date($year, $month, $day)"
 TIME_TEMPLATE = "datetime.time($hour, $minute, $second)"
 TIME_MICROS_TEMPLATE = "datetime.time($hour, $minute, $second, $microsecond)"
