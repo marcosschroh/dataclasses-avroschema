@@ -47,7 +47,7 @@ class User(AvroModel):
     money_available: float
     name: typing.Optional[str] = None
     age: typing.Optional[types.Int32] = None
-    pet_age: types.Int32 = 1
+    pet_age: typing.Optional[types.Int32] = 1
     height: types.Float32 = 10.1
     is_student: bool = True
     encoded: bytes = b"Hi"
@@ -72,7 +72,7 @@ class User(AvroModel):
     age: typing.Union[types.Int32, str] = 10
     pet_age: typing.Union[str, bool] = "bond"
     height: types.Float32 = 10.1
-    weight: typing.Optional[typing.Union[types.Float32, types.Int32]] = None
+    weight: typing.Union[None, types.Float32, types.Int32] = None
     is_student: bool = True
     encoded: bytes = b"Hi"
 """

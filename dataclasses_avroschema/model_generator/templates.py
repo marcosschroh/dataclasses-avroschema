@@ -4,7 +4,7 @@ FIELD_TEMPLATE = "$name: $type"
 METACLASS_FIELD_TEMPLATE = '$name = "$value"'
 METACLASS_ALIAS_FIELD = "$name = $value"
 FIELD_DEFAULT_TEMPLATE = " = $default"
-OPTIONAL_TEMPLATE = "typing.Optional[$type] = None"
+OPTIONAL_TEMPLATE = "typing.Optional[$type]"
 UNION_TEMPLATE = "typing.Union[$type]"
 LIST_TEMPLATE = "typing.List[$type]"
 DICT_TEMPLATE = "typing.Dict[str, $type]"

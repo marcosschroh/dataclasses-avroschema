@@ -7,6 +7,7 @@ from . import templates
 from .base_class import BaseClassEnum
 
 _AVRO_TYPE_TO_PYTHON: typing.Dict[str, str] = {
+    field_utils.NULL: "None",
     field_utils.BOOLEAN: "bool",
     field_utils.LONG: "int",
     field_utils.DOUBLE: "float",
