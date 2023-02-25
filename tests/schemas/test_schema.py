@@ -330,14 +330,17 @@ def test_avro_schema_to_python_method_with_inheritance(user_avro_json: JsonDict)
 def test_avro_schema_method_with_inheritance() -> None:
     @dataclass
     class Common(AvroModel):
+        """Common docs"""
         some_data: str
 
     @dataclass
     class DerivedA(Common):
+        """DerivedA docs"""
         some_more_data_A: str
 
     @dataclass
     class DerivedB(Common):
+        """DerivedB docs"""
         some_more_data_B: str
 
     common_schema = Common.avro_schema()
@@ -346,13 +349,13 @@ def test_avro_schema_method_with_inheritance() -> None:
 
     assert (
         common_schema
-        == '{"type": "record", "name": "Common", "fields": [{"name": "some_data", "type": "string"}], "doc": "Common(some_data: str)"}'
+        == '{"type": "record", "name": "Common", "fields": [{"name": "some_data", "type": "string"}], "doc": "Common docs"}'
     )
     assert (
         derived_a_schema
-        == '{"type": "record", "name": "DerivedA", "fields": [{"name": "some_data", "type": "string"}, {"name": "some_more_data_A", "type": "string"}], "doc": "DerivedA(some_data: str, some_more_data_A: str)"}'
+        == '{"type": "record", "name": "DerivedA", "fields": [{"name": "some_data", "type": "string"}, {"name": "some_more_data_A", "type": "string"}], "doc": "DerivedA docs"}'
     )
     assert (
         derived_b_schema
-        == '{"type": "record", "name": "DerivedB", "fields": [{"name": "some_data", "type": "string"}, {"name": "some_more_data_B", "type": "string"}], "doc": "DerivedB(some_data: str, some_more_data_B: str)"}'
+        == '{"type": "record", "name": "DerivedB", "fields": [{"name": "some_data", "type": "string"}, {"name": "some_more_data_B", "type": "string"}], "doc": "DerivedB docs"}'
     )
