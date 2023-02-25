@@ -10,6 +10,9 @@ import typing
 
 
 class Address(BaseModel):
+    \"""
+    An Address
+    \"""
     street: str
     street_number: int
 
@@ -58,6 +61,9 @@ import typing
 
 
 class Address(AvroBaseModel):
+    \"""
+    An Address
+    \"""
     street: str
     street_number: int
 

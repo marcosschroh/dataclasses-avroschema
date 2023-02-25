@@ -105,6 +105,17 @@ class ModelGenerator:
             )
         return None
 
+    def render_docstring(self, *, docstring: typing.Optional[str]) -> str:
+        """
+        Render the module with the classes generated from the schema
+        """
+        if not docstring:
+            return ""
+
+        indented = self.field_identation + self.field_identation.join(docstring.splitlines())
+
+        return f'{self.field_identation}"""{indented}{self.field_identation}"""'
+
     def render_class(self, *, schema: JsonDict) -> str:
         """
         Render the class generated from the schema
@@ -118,9 +129,14 @@ class ModelGenerator:
         rendered_fields = self.field_identation.join(
             [self.render_field(field=field, model_name=name) for field in record_fields]
         )
+        docstring = self.render_docstring(docstring=schema.get("doc"))
 
         rendered_class = templates.class_template.safe_substitute(
-            name=name, decorator=self.base_class_decotator, base_class=self.base_class, fields=rendered_fields
+            name=name,
+            decorator=self.base_class_decotator,
+            base_class=self.base_class,
+            fields=rendered_fields,
+            docstring=docstring,
         )
 
         class_metadata = self.render_metaclass(schema=schema)
@@ -397,8 +413,9 @@ class ModelGenerator:
                 for symbol in field["symbols"]
             ]
         )
+        docstring = self.render_docstring(docstring=field.get("doc"))
 
-        enum_class = templates.enum_template.safe_substitute(name=enum_name, symbols=symbols)
+        enum_class = templates.enum_template.safe_substitute(name=enum_name, symbols=symbols, docstring=docstring)
         self.extras.append(enum_class)
 
         return enum_name

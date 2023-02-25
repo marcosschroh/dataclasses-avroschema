@@ -56,7 +56,7 @@ class BaseSchemaDefinition(abc.ABC):
                 return None
 
         if doc is not None:
-            return doc.replace("\n", "")
+            return doc.strip()
         return None
 
 

@@ -39,13 +39,13 @@ def test_schema_render_from_instance(user_dataclass, user_avro_json):
 
 
 def test_schema_render_from_class_with_doc(user_dataclass_with_doc, user_avro_json):
-    user_avro_json["doc"] = "User(name: str, age: int, has_pets: bool, money: float, encoded: bytes)"
+    user_avro_json["doc"] = "I am documented."
 
     assert user_dataclass_with_doc.avro_schema() == json.dumps(user_avro_json)
 
 
 def test_schema_render_from_instance_with_doc(user_dataclass_with_doc, user_avro_json):
-    user_avro_json["doc"] = "User(name: str, age: int, has_pets: bool, money: float, encoded: bytes)"
+    user_avro_json["doc"] = "I am documented."
     user = user_dataclass_with_doc("test", 20, True, 10.4, encoded)
 
     assert user.avro_schema() == json.dumps(user_avro_json)

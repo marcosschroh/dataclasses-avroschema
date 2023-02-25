@@ -11,6 +11,9 @@ import dataclasses
 
 @dataclasses.dataclass
 class User(AvroModel):
+    \"""
+    An User
+    \"""
     age: types.Int32
     weight: types.Int32
     money_available: float
@@ -145,6 +148,9 @@ import typing
 
 
 class FavoriteColor(enum.Enum):
+    \"""
+    A favorite color
+    \"""
     BLUE = "Blue"
     YELLOW = "Yellow"
     GREEN = "Green"
@@ -182,6 +188,9 @@ import typing
 
 @dataclasses.dataclass
 class Address(AvroModel):
+    \"""
+    An Address
+    \"""
     street: str
     street_number: int
 
@@ -212,6 +221,9 @@ import typing
 
 @dataclasses.dataclass
 class Address(AvroModel):
+    \"""
+    An Address
+    \"""
     street: str
     street_number: int
 
@@ -241,6 +253,9 @@ import typing
 
 @dataclasses.dataclass
 class Address(AvroModel):
+    \"""
+    An Address
+    \"""
     street: str
     street_number: int
 
@@ -346,6 +361,9 @@ import dataclasses
 
 @dataclasses.dataclass
 class User(AvroModel):
+    \"""
+    An User
+    \"""
     age: types.Int32
     weight: types.Int32
     money_available: float
@@ -363,6 +381,9 @@ class User(AvroModel):
 
 @dataclasses.dataclass
 class Address(AvroModel):
+    \"""
+    An Address
+    \"""
     street: str
     street_number: int
 

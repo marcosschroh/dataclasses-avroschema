@@ -24,13 +24,13 @@ DECIMAL_TYPE_TEMPLATE = "types.Decimal($properties)"
 ENUM_SYMBOL_TEMPLATE = "$key = $value"
 ENUM_TEMPLATE = """
 
-class $name(enum.Enum):
+class $name(enum.Enum):$docstring
     $symbols
 """
 
 CLASS_TEMPLATE = """
 $decorator
-class $name($base_class):
+class $name($base_class):$docstring
     $fields
 """
 
