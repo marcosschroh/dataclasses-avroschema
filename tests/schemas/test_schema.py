@@ -331,16 +331,19 @@ def test_avro_schema_method_with_inheritance() -> None:
     @dataclass
     class Common(AvroModel):
         """Common docs"""
+
         some_data: str
 
     @dataclass
     class DerivedA(Common):
         """DerivedA docs"""
+
         some_more_data_A: str
 
     @dataclass
     class DerivedB(Common):
         """DerivedB docs"""
+
         some_more_data_B: str
 
     common_schema = Common.avro_schema()

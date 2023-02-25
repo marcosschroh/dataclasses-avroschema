@@ -2,8 +2,6 @@ import dataclasses
 import typing
 from datetime import datetime, timezone
 
-from pytz import utc
-
 from .types import JsonDict
 
 try:

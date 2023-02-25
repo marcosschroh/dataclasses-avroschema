@@ -302,6 +302,7 @@ class ModelGenerator:
             field_types: List of avro types
             model_name: name of the model that contains the `union`
         """
+
         # XXX: Maybe more useful in general
         def render_type(typ: str) -> str:
             if isinstance(typ, dict):
@@ -313,16 +314,13 @@ class ModelGenerator:
             # It is an optional field, we should include in the imports typing
             # and use the optional Template
             self.imports.add("import typing")
-            field_type, = [f for f in field_types if f != field_utils.NULL]
+            (field_type,) = [f for f in field_types if f != field_utils.NULL]
             language_types = render_type(field_type)
             return templates.optional_template.safe_substitute(type=language_types)
         elif len(field_types) >= 2:
             # a union with more than 2 types
             self.imports.add("import typing")
-            language_types_repr = ", ".join(
-                render_type(t)
-                for t in field_types
-            )
+            language_types_repr = ", ".join(render_type(t) for t in field_types)
             return templates.union_template.safe_substitute(type=language_types_repr)
         else:
             return render_type(field_types[0])

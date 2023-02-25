@@ -47,10 +47,7 @@ class BaseSchemaDefinition(abc.ABC):
             is_dataclass_with_default_docstring = (
                 dataclasses.is_dataclass(self.klass)
                 # from https://github.com/python/cpython/blob/3.10/Lib/dataclasses.py
-                and doc == (
-                    self.klass.__name__
-                    + str(inspect.signature(self.klass)).replace(" -> None", "")
-                )
+                and doc == (self.klass.__name__ + str(inspect.signature(self.klass)).replace(" -> None", ""))
             )
             if is_dataclass_with_default_docstring:
                 return None

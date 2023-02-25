@@ -51,6 +51,7 @@ def user_dataclass_with_doc():
     @dataclasses.dataclass(repr=False)
     class User(AvroModel):
         """I am documented."""
+
         name: str
         age: int
         has_pets: bool
