@@ -1,8 +1,7 @@
 import dataclasses
 import typing
-from datetime import datetime
+from datetime import datetime, timezone
 
-from pytz import utc
 from typing_extensions import Annotated, get_origin
 
 from .types import JsonDict
@@ -122,5 +121,5 @@ class UserDefinedType(typing.NamedTuple):
     type: typing.Any
 
 
-epoch: datetime = datetime(1970, 1, 1, tzinfo=utc)
+epoch: datetime = datetime(1970, 1, 1, tzinfo=timezone.utc)
 epoch_naive: datetime = datetime(1970, 1, 1)

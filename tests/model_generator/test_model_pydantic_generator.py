@@ -10,11 +10,11 @@ import typing
 
 
 class Address(BaseModel):
+    \"""
+    An Address
+    \"""
     street: str
     street_number: int
-
-    class Meta:
-        schema_doc = "An Address"
 
 
 
@@ -41,9 +41,9 @@ import typing
 class User(BaseModel):
     name: str
     age: int
-    friend: typing.Optional[typing.Type["User"]] = None
-    relatives: typing.List[typing.Type["User"]] = Field(default_factory=list)
-    teammates: typing.Dict[str, typing.Type["User"]] = Field(default_factory=dict)
+    friend: typing.Optional["User"] = None
+    relatives: typing.List["User"] = Field(default_factory=list)
+    teammates: typing.Dict[str, "User"] = Field(default_factory=dict)
 """
     model_generator = ModelGenerator(base_class=BaseClassEnum.PYDANTIC_MODEL.value)
     result = model_generator.render(schema=schema_one_to_self_relationship)
@@ -58,11 +58,11 @@ import typing
 
 
 class Address(AvroBaseModel):
+    \"""
+    An Address
+    \"""
     street: str
     street_number: int
-
-    class Meta:
-        schema_doc = "An Address"
 
 
 
@@ -89,9 +89,9 @@ import typing
 class User(AvroBaseModel):
     name: str
     age: int
-    friend: typing.Optional[typing.Type["User"]] = None
-    relatives: typing.List[typing.Type["User"]] = Field(default_factory=list)
-    teammates: typing.Dict[str, typing.Type["User"]] = Field(default_factory=dict)
+    friend: typing.Optional["User"] = None
+    relatives: typing.List["User"] = Field(default_factory=list)
+    teammates: typing.Dict[str, "User"] = Field(default_factory=dict)
 """
     model_generator = ModelGenerator(base_class=BaseClassEnum.AVRO_DANTIC_MODEL.value)
     result = model_generator.render(schema=schema_one_to_self_relationship)

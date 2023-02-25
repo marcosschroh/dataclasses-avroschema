@@ -4,31 +4,33 @@ FIELD_TEMPLATE = "$name: $type"
 METACLASS_FIELD_TEMPLATE = '$name = "$value"'
 METACLASS_ALIAS_FIELD = "$name = $value"
 FIELD_DEFAULT_TEMPLATE = " = $default"
-OPTIONAL_TEMPLATE = "typing.Optional[$type] = None"
+OPTIONAL_TEMPLATE = "typing.Optional[$type]"
 UNION_TEMPLATE = "typing.Union[$type]"
 LIST_TEMPLATE = "typing.List[$type]"
 DICT_TEMPLATE = "typing.Dict[str, $type]"
 FIXED_TEMPLATE = "types.Fixed = types.Fixed($properties)"
 DATACLASS_FIELD = "dataclasses.field($properties)"
-TYPE_TEMPLATE = 'typing.Type["$type"]'
+TYPE_TEMPLATE = '"$type"'
 DATE_TEMPLATE = "datetime.date($year, $month, $day)"
 TIME_TEMPLATE = "datetime.time($hour, $minute, $second)"
 TIME_MICROS_TEMPLATE = "datetime.time($hour, $minute, $second, $microsecond)"
-DATETIME_TEMPLATE = "datetime.datetime($year, $month, $day, $hour, $minute, $second)"
-DATETIME_MICROS_TEMPLATE = "datetime.datetime($year, $month, $day, $hour, $minute, $second, $microsecond)"
+DATETIME_TEMPLATE = "datetime.datetime($year, $month, $day, $hour, $minute, $second, tzinfo=datetime.timezone.utc)"
+DATETIME_MICROS_TEMPLATE = (
+    "datetime.datetime($year, $month, $day, $hour, $minute, $second, $microsecond, tzinfo=datetime.timezone.utc)"
+)
 DECIMAL_TEMPLATE = "decimal.Decimal('$value')"
 DECIMAL_TYPE_TEMPLATE = "types.Decimal($properties)"
 
 ENUM_SYMBOL_TEMPLATE = "$key = $value"
 ENUM_TEMPLATE = """
 
-class $name(enum.Enum):
+class $name(enum.Enum):$docstring
     $symbols
 """
 
 CLASS_TEMPLATE = """
 $decorator
-class $name($base_class):
+class $name($base_class):$docstring
     $fields
 """
 
