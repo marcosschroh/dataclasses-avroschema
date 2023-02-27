@@ -81,7 +81,7 @@ def schema_with_unions() -> Dict:
                 "type": "boolean",
                 "default": True,
             },
-            {"name": "money_available", "type": "double"},
+            {"name": "money_available", "type": ["double"]},
             {"name": "encoded", "type": "bytes", "default": "Hi"},
         ],
     }
