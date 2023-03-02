@@ -332,7 +332,7 @@ class LogicalTypes(AvroModel):
     birthday: datetime.date
     birthday_time: datetime.time
     birthday_datetime: datetime.datetime
-    uuid_1: uuid.uuid4
+    uuid_1: uuid.UUID
     money: decimal.Decimal = types.Decimal(scale=2, precision=3)
     meeting_date: typing.Optional[datetime.date] = None
     release_date: datetime.date = datetime.date(2019, 10, 12)
@@ -342,8 +342,8 @@ class LogicalTypes(AvroModel):
     meeting_datetime: typing.Optional[datetime.datetime] = None
     release_datetime: datetime.datetime = {release_datetime}
     release_datetime_micro: types.DateTimeMicro = {release_datetime_micro}
-    uuid_2: typing.Optional[uuid.uuid4] = None
-    event_uuid: uuid.uuid4 = "ad0677ab-bd1c-4383-9d45-e46c56bcc5c9"
+    uuid_2: typing.Optional[uuid.UUID] = None
+    event_uuid: uuid.UUID = "ad0677ab-bd1c-4383-9d45-e46c56bcc5c9"
     explicit_with_default: decimal.Decimal = types.Decimal(scale=2, precision=3, default=decimal.Decimal('3.14'))
 
 """
