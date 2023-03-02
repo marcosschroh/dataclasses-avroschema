@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [0.37.2] - 2023-03-02
+
+- Use `UUID` type instead of function `uuid4` on model generation (#251)
+
+### Fixed
+
 ## [0.37.1] - 2023-02-24
 
 - Use `pydantic UUID4` when generating pydantic models. (#247)
