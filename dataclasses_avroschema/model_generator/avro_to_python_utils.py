@@ -20,7 +20,7 @@ _AVRO_TYPE_TO_PYTHON: typing.Dict[str, str] = {
     field_utils.TIME_MICROS: "types.TimeMicro",
     field_utils.TIMESTAMP_MILLIS: "datetime.datetime",
     field_utils.TIMESTAMP_MICROS: "types.DateTimeMicro",
-    field_utils.UUID: "uuid.uuid4",
+    field_utils.UUID: "uuid.UUID",
 }
 
 AVRO_TYPE_TO_PYTHON: typing.Dict[str, typing.Dict[str, str]] = {
