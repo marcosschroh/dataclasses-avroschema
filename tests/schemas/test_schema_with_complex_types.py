@@ -9,7 +9,7 @@ import uuid
 import pytest
 from fastavro import parse_schema
 
-from dataclasses_avroschema import AvroModel, exceptions
+from dataclasses_avroschema import AvroModel
 from dataclasses_avroschema.types import JsonDict
 
 PY_VER = sys.version_info
@@ -155,7 +155,7 @@ def test_schema_with_new_unions_defaults_syntax(default_union_schema: JsonDict) 
     assert User.avro_schema() == json.dumps(default_union_schema)
 
 
-def test_enum_namespace_required() -> None:
+def test_repeated_enum_without_namespace() -> None:
     class UserType(enum.Enum):
         BASIC = "Basic"
         PREMIUM = "Premium"
@@ -165,8 +165,7 @@ def test_enum_namespace_required() -> None:
         user_type: UserType
         user_type_optional: typing.Optional[UserType]
 
-    with pytest.raises(exceptions.NameSpaceRequiredException):
-        User.avro_schema()
+    parse_schema(User.avro_schema_to_python())
 
 
 # This is to explicitly test the behavior for a typing.Optional[T] field with no default

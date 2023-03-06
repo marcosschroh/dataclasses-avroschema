@@ -278,11 +278,10 @@ User.avro_schema()
 
 ## Avoid name collision in multiple relationships
 
-Sometimes we have relationships where a class is related more than once with a particular class,
-and the name for the nested schemas must be different, otherwise we will generate an invalid `avro schema`.
-For those cases, you *MUST* define the `namespace`.
+Sometimes we have relationships where a class is related more than once with a particular class.
+In those cases, the `predifne` type is used in order to generate a valid schema. It is a good practice but *NOT* neccesary to a define the `namespace` on the repeated `type`.
 
-```python title="Avoiding name collision example"
+```python title="Repetead types"
 from dataclasses import dataclass
 from datetime import datetime
 import json
@@ -296,7 +295,7 @@ class Location(AvroModel):
     longitude: float
 
     class Meta:
-        namespace = "types.location_type"
+        namespace = "types.location_type"  # Good practise to use `namespaces`
 
 @dataclass
 class Trip(AvroModel):
@@ -333,7 +332,7 @@ Trip.avro_schema()
       "type": {"type": "long", "logicalType": "timestamp-millis"}
     },
     {
-      "name": "finish_location", "type": "types.location_type.Location"  // using the namespace
+      "name": "finish_location", "type": "types.location_type.Location"  // using the namespace and the Location type
     }
   ],
   "doc": "Trip(start_time: datetime.datetime, start_location: __main__.Location, finish_time: datetime.datetime, finish_location: __main__.Location)"
