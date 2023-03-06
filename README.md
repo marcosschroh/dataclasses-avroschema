@@ -23,6 +23,12 @@ or with `pydantic` funcionalities
 pip install 'dataclasses-avroschema[pydantic]'
 ```
 
+or with command line [dc-avro](https://marcosschroh.github.io/dc-avro/)
+
+```bash
+pip install 'dataclasses-avroschema[cli]'
+```
+
 ## Documentation
 
 https://marcosschroh.github.io/dataclasses-avroschema/
