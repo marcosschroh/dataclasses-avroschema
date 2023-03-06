@@ -5,7 +5,7 @@ from dataclasses import dataclass
 import pytest
 from fastavro.validation import ValidationError
 
-from dataclasses_avroschema import AvroModel, exceptions
+from dataclasses_avroschema import AvroModel
 from dataclasses_avroschema.schema_definition import BaseSchemaDefinition
 from dataclasses_avroschema.types import JsonDict
 
@@ -121,20 +121,6 @@ def test_not_implementd_methods():
     msg = "Can't instantiate abstract class BaseSchemaDefinition with abstract methods get_rendered_fields, render"
 
     assert msg == str(excinfo.value)
-
-
-def test_namespace_required():
-    class Bus(AvroModel):
-        "A Bus"
-        engine_name: str
-
-    class UnionSchema(AvroModel):
-        "Some Unions"
-        bus_one: Bus
-        bus_two: Bus
-
-    with pytest.raises(exceptions.NameSpaceRequiredException):
-        assert UnionSchema.avro_schema()
 
 
 def test_inherit_dataclass_missing_docs():

@@ -11,7 +11,7 @@ The rendered result is a string that contains the proper identation, so the resu
     In future releases it will be possible to generate models for other programming langagues like `java` and `rust`
 
 !!! note
-    You can also use [dc-avro](https://github.com/marcosschroh/dc-avro)d to generate the models from the command line
+    You can also use [dc-avro](https://github.com/marcosschroh/dc-avro) to generate the models from the command line
 
 ## Usage
 
