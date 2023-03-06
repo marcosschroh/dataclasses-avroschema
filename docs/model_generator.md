@@ -11,7 +11,7 @@ The rendered result is a string that contains the proper identation, so the resu
     In future releases it will be possible to generate models for other programming langagues like `java` and `rust`
 
 !!! note
-    Soon with [dc-avro](https://github.com/marcosschroh/dc-avro) will be possible to generate the models from the command line
+    You can also use [dc-avro](https://github.com/marcosschroh/dc-avro)d to generate the models from the command line
 
 ## Usage
 
@@ -360,4 +360,4 @@ print(User.fake())
 | timestamp-millis| datetime.datetime|
 | timestamp-micros| types.DateTimeMicro|
 | decimal | decimal.Decimal|
-| uuid | uuid.uuid4    |
+| uuid | uuid.UUID    |
