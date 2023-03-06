@@ -909,10 +909,9 @@
 </code></pre></div>
 <p><em>(This script is complete, it should run "as is")</em></p>
 <h2 id="avoid-name-collision-in-multiple-relationships">Avoid name collision in multiple relationships</h2>
-<p>Sometimes we have relationships where a class is related more than once with a particular class,
-and the name for the nested schemas must be different, otherwise we will generate an invalid <code>avro schema</code>.
-For those cases, you <em>MUST</em> define the <code>namespace</code>.</p>
-<div class="highlight"><span class="filename">Avoiding name collision example</span><pre><span></span><code><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<p>Sometimes we have relationships where a class is related more than once with a particular class.
+In those cases, the <code>predifne</code> type is used in order to generate a valid schema. It is a good practice but <em>NOT</em> neccesary to a define the <code>namespace</code> on the repeated <code>type</code>.</p>
+<div class="highlight"><span class="filename">Repetead types</span><pre><span></span><code><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">import</span> <span class="nn">json</span>
 
@@ -925,7 +924,7 @@ For those cases, you <em>MUST</em> define the <code>namespace</code>.</p>
     <span class="n">longitude</span><span class="p">:</span> <span class="nb">float</span>
 
     <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
-        <span class="n">namespace</span> <span class="o">=</span> <span class="s2">&quot;types.location_type&quot;</span>
+        <span class="n">namespace</span> <span class="o">=</span> <span class="s2">&quot;types.location_type&quot;</span>  <span class="c1"># Good practise to use `namespaces`</span>
 
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">Trip</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
@@ -960,7 +959,7 @@ For those cases, you <em>MUST</em> define the <code>namespace</code>.</p>
 <span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;long&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;logicalType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;timestamp-millis&quot;</span><span class="p">}</span>
 <span class="w">    </span><span class="p">},</span>
 <span class="w">    </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;finish_location&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;types.location_type.Location&quot;</span><span class="w">  </span><span class="c1">// using the namespace</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;finish_location&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;types.location_type.Location&quot;</span><span class="w">  </span><span class="c1">// using the namespace and the Location type</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">],</span>
 <span class="w">  </span><span class="nt">&quot;doc&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Trip(start_time: datetime.datetime, start_location: __main__.Location, finish_time: datetime.datetime, finish_location: __main__.Location)&quot;</span>

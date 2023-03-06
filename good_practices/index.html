@@ -486,6 +486,8 @@
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
+        
+      
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
           Good Practices
@@ -502,6 +504,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -510,29 +514,23 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#streaming" class="md-nav__link">
-    Streaming
-  </a>
-  
-    <nav class="md-nav" aria-label="Streaming">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
   <a href="#schema-server-and-avromodel" class="md-nav__link">
     Schema server and AvroModel
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#include-event-metadata" class="md-nav__link">
     Include event metadata
   </a>
   
 </li>
-        
-      </ul>
-    </nav>
+      
+        <li class="md-nav__item">
+  <a href="#define-namespaces" class="md-nav__link">
+    Define Namespaces
+  </a>
   
 </li>
       
@@ -576,6 +574,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -584,29 +584,23 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#streaming" class="md-nav__link">
-    Streaming
-  </a>
-  
-    <nav class="md-nav" aria-label="Streaming">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
   <a href="#schema-server-and-avromodel" class="md-nav__link">
     Schema server and AvroModel
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#include-event-metadata" class="md-nav__link">
     Include event metadata
   </a>
   
 </li>
-        
-      </ul>
-    </nav>
+      
+        <li class="md-nav__item">
+  <a href="#define-namespaces" class="md-nav__link">
+    Define Namespaces
+  </a>
   
 </li>
       
@@ -628,10 +622,8 @@
   
 
 
-  <h1>Good Practices</h1>
-
-<h2 id="streaming">Streaming</h2>
-<h3 id="schema-server-and-avromodel">Schema server and AvroModel</h3>
+<h1 id="streaming">Streaming</h1>
+<h2 id="schema-server-and-avromodel">Schema server and AvroModel</h2>
 <p>First, let's clarify what a schema server is: It is a <code>central place/repository</code> that contains schemas with formats like <code>avro</code>, <code>json</code> or <code>protobuf</code>, with the purpose of exposing them through an <code>API</code>, so applications can access them and <code>serialize/deserialize</code> events. The schema server could have a <code>RESTful</code> interface so tasks like <code>create</code>, <code>delete</code> <code>get</code> schemas can be performed easily. </p>
 <p>In a <code>pythonic world</code>, you wouldn't need a <code>schema server</code> because using only the <code>AvroModel</code> will be enough as all the teams in your organization will use the same models, but this is not always the case. Somethimes, in big companies teams use different programming languages to talk the streaming layer, like <code>python</code>, <code>java</code>, <code>go</code>, etc. In this sense, you need a way to share <code>schemas</code> and you will need a <code>schema server</code>, otherwise it will be really hard to maintain the whole proccess.</p>
 <p>If you have a <code>Schema Server</code> and you want to use <code>AvroModel</code>, I would recommend you to add the <code>schema_id</code> in the <code>Model.Meta</code> that matches the schema in the <code>schema server</code>:</p>
@@ -652,7 +644,7 @@
         <span class="n">schema_id</span> <span class="o">=</span> <span class="s2">&quot;https://my-schema-server/users/schema.avsc&quot;</span> <span class="c1"># or in a Concluent way: https://my-schema-server/schemas/ids/{int: id}</span>
 </code></pre></div>
 <p>The purpose of the <code>schema_id</code> is to give a fast notion what the model is representing. Also, could be used as <code>documentation</code></p>
-<h3 id="include-event-metadata">Include event metadata</h3>
+<h2 id="include-event-metadata">Include event metadata</h2>
 <p><code>avro schemas</code> are used widely in <code>streaming</code> to <code>serialize</code> events, and with <code>dataclasses-avroschemas</code> it is straigtforward. Once 
 that you have the event, it is a good practice to also add the <code>event metadata</code> at the moment of <code>producing</code> so <code>consumers</code> will know what to do.</p>
 <p>Event metadata:</p>
@@ -675,7 +667,7 @@ that you have the event, it is a good practice to also add the <code>event metad
     <span class="n">money</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">100.3</span>
 
     <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
-        <span class="n">schema_id</span> <span class="o">=</span> <span class="s2">&quot;https://my-schema-server/users/schema.avsc&quot;</span> <span class="c1"># or in a Concluent way: https://my-schema-server/schemas/ids/{int: id}</span>
+        <span class="n">schema_id</span> <span class="o">=</span> <span class="s2">&quot;https://my-schema-server/users/schema.avsc&quot;</span> <span class="c1"># or in a Confluent way: https://my-schema-server/schemas/ids/{int: id}</span>
 
 
 <span class="k">async</span> <span class="k">def</span> <span class="nf">produce</span><span class="p">():</span>
@@ -700,6 +692,14 @@ that you have the event, it is a good practice to also add the <code>event metad
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">produce</span><span class="p">)</span>
 </code></pre></div>
+<h2 id="define-namespaces">Define Namespaces</h2>
+<p>When there are types that are used more than once in a schema, for example <code>records</code> and <code>enums</code> it is a good practice to define <code>namespace</code> for the repeated type.
+This will allow you to identify more easily the <code>types</code>, specially if you have all the schemas in a <code>schema server</code> like <code>confluent</code>.</p>
+<p>Uses cases:</p>
+<ul>
+<li><a href="https://marcosschroh.github.io/dataclasses-avroschema/schema_relationships/#avoid-name-collision-in-multiple-relationships">Reusing types with records</a></li>
+<li><a href="https://marcosschroh.github.io/dataclasses-avroschema/complex_types/#repeated-enums">Reusing types with enums</a></li>
+</ul>
 
 
 
