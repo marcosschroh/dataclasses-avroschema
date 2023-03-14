@@ -71,7 +71,8 @@ User.avro_schema()
 
 ### Repeated Enums
 
-Sometimes we have cases where an `Enum` is used more than once with a particular class, for those cases, you `MUST` define the namespace in order to generate a valid `avro schema`
+Sometimes we have cases where an `Enum` is used more than once with a particular class, for those cases the same `type` is used in order to generate a valid schema.
+It is a good practice but *NOT* neccesary to a define the `namespace` on the repeated `type`.
 
 ```python
 import enum
@@ -123,7 +124,7 @@ resulting in
       "name": "optional_distance",
       "type": [
         "null",
-        "trip.TripDistance"
+        "trip.TripDistance"  // using the namespace and the TripDistance type
       ],
       "default": null
     }
@@ -131,9 +132,6 @@ resulting in
   "doc": "User(trip_distance: __main__.TripDistance, optional_distance: Optional[__main__.TripDistance] = None)"
 }
 ```
-
-!!! warning
-    If you do not specify the `namespace` in the `Enum` the exception `NameSpaceRequiredException` is raised
 
 ## Arrays
 

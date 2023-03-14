@@ -20,7 +20,7 @@ from pytz import utc
 from dataclasses_avroschema import schema_generator, serialization, types, utils
 
 from . import field_utils
-from .exceptions import InvalidMap, NameSpaceRequiredException
+from .exceptions import InvalidMap
 from .types import JsonDict
 
 PY_VER = sys.version_info
@@ -483,8 +483,9 @@ class EnumField(BaseField):
         else:
             namespace = metadata.get("namespace")
             if namespace is None:
-                raise NameSpaceRequiredException(field_type=self.type, field_name=name)
-            return f"{namespace}.{name}"
+                return name
+            else:
+                return f"{namespace}.{name}"
 
     def get_default_value(self) -> typing.Union[str, dataclasses._MISSING_TYPE, None]:
         if self.default == types.MissingSentinel:
@@ -758,8 +759,9 @@ class RecordField(BaseField):
             record_type["name"] = name
         else:
             if metadata.namespace is None:
-                raise NameSpaceRequiredException(field_type=self.type, field_name=self.name)
-            record_type = f"{metadata.namespace}.{name}"
+                record_type = name
+            else:
+                record_type = f"{metadata.namespace}.{name}"
 
         if self.default is None:
             return [field_utils.NULL, record_type]

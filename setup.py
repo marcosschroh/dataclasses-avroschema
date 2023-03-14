@@ -5,7 +5,7 @@
 
 from setuptools import find_packages, setup
 
-__version__ = "0.37.2"
+__version__ = "0.37.4"
 
 
 with open("README.md") as readme_file:
@@ -22,13 +22,14 @@ setup(
         "inflect>=5.3.0",
         "fastavro>=1.7.0",
         "pytz",
-        "dacite>=1.6.0",
-        "faker>=8.1.1",
+        "dacite>=1.8.0",
+        "faker>=17.6.0",
         'typing_extensions>=3.7.4;python_version<"3.9"',
         "stringcase>=1.2.0",
     ],
     extras_require={
         "pydantic": ["pydantic>=1.9.0"],
+        "cli": ["dc-avro>=0.6.1"],
     },
     author_email="schrohm@gmail.com",
     url="https://github.com/marcosschroh/dataclasses-avroschema",

@@ -152,6 +152,19 @@ def test_one_to_one_repeated_schema():
     assert Trip.fake()
 
 
+def test_repeated_schema_without_namespace():
+    class Bus(AvroModel):
+        "A Bus"
+        engine_name: str
+
+    class UnionSchema(AvroModel):
+        "Some Unions"
+        bus_one: Bus
+        bus_two: Bus
+
+    parse_schema(UnionSchema.avro_schema_to_python())
+
+
 def test_one_to_one_repeated_schema_in_array():
     """
     Test relationship one-to-one with more than once schema

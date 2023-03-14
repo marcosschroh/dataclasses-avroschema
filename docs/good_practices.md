@@ -1,6 +1,6 @@
-## Streaming
+# Streaming
 
-### Schema server and AvroModel
+## Schema server and AvroModel
 
 First, let's clarify what a schema server is: It is a `central place/repository` that contains schemas with formats like `avro`, `json` or `protobuf`, with the purpose of exposing them through an `API`, so applications can access them and `serialize/deserialize` events. The schema server could have a `RESTful` interface so tasks like `create`, `delete` `get` schemas can be performed easily. 
 
@@ -29,8 +29,7 @@ class User(AvroModel):
 
 The purpose of the `schema_id` is to give a fast notion what the model is representing. Also, could be used as `documentation`
 
-
-### Include event metadata
+## Include event metadata
 
 `avro schemas` are used widely in `streaming` to `serialize` events, and with `dataclasses-avroschemas` it is straigtforward. Once 
 that you have the event, it is a good practice to also add the `event metadata` at the moment of `producing` so `consumers` will know what to do.
@@ -56,7 +55,7 @@ class User(AvroModel):
     money: float = 100.3
 
     class Meta:
-        schema_id = "https://my-schema-server/users/schema.avsc" # or in a Concluent way: https://my-schema-server/schemas/ids/{int: id}
+        schema_id = "https://my-schema-server/users/schema.avsc" # or in a Confluent way: https://my-schema-server/schemas/ids/{int: id}
 
 
 async def produce():
@@ -81,3 +80,13 @@ async def produce():
 if __name__ == "__main__":
     asyncio.run(produce)
 ```
+
+## Define Namespaces
+
+When there are types that are used more than once in a schema, for example `records` and `enums` it is a good practice to define `namespace` for the repeated type.
+This will allow you to identify more easily the `types`, specially if you have all the schemas in a `schema server` like `confluent`.
+
+Uses cases:
+
+- [Reusing types with records](https://marcosschroh.github.io/dataclasses-avroschema/schema_relationships/#avoid-name-collision-in-multiple-relationships)
+- [Reusing types with enums](https://marcosschroh.github.io/dataclasses-avroschema/complex_types/#repeated-enums)
