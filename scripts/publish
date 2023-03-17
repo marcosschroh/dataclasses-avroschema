@@ -1,7 +1,10 @@
-#!/bin/sh
+#!/bin/bash -e
 
-./scripts/clean
+export PREFIX=""
+if [ -d '.venv' ] ; then
+    export PREFIX=".venv/bin/"
+fi
 
-# # uploading to pypi
-python setup.py sdist bdist_wheel
-twine upload dist/* -u $TWINE_USERNAME -p $TWINE_PASSWORD
+. ${PREFIX}activate
+
+poetry publish --build -u $TWINE_USERNAME -p $TWINE_PASSWORD
