@@ -1,4 +1,5 @@
 import enum
+import json
 import typing
 
 import pytest
@@ -186,6 +187,7 @@ def test_case_record(case_type, schema):
             schema_doc = False
 
     assert schema == Event.avro_schema(case_type=case_type)
+    assert json.loads(schema) == Event.avro_schema_to_python(case_type=case_type)
 
 
 @pytest.mark.parametrize("case_type, schema", CASE_TO_DATA_NESTED)
@@ -204,6 +206,7 @@ def test_case_nested_records(case_type, schema):
             schema_doc = False
 
     assert schema == Event.avro_schema(case_type=case_type)
+    assert json.loads(schema) == Event.avro_schema_to_python(case_type=case_type)
 
 
 @pytest.mark.parametrize("case_type, schema", CASE_TO_DATA_COMPLEX_FIELDS)
@@ -228,6 +231,7 @@ def test_case_complex_fields(case_type, schema):
             schema_doc = False
 
     assert schema == UserAdvance.avro_schema(case_type=case_type)
+    assert json.loads(schema) == UserAdvance.avro_schema_to_python(case_type=case_type)
 
 
 @pytest.mark.parametrize("case_type, schema", CASE_TO_DATA_COMPLEX_FIELDS_NESTED)
@@ -247,3 +251,4 @@ def test_case_complex_fields_nested(case_type, schema):
             schema_doc = False
 
     assert schema == UserAdvance.avro_schema(case_type=case_type)
+    assert json.loads(schema) == UserAdvance.avro_schema_to_python(case_type=case_type)

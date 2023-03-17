@@ -67,15 +67,12 @@ class AvroModel:
 
     @classmethod
     def avro_schema(cls: Type[CT], case_type: Optional[str] = None) -> str:
-        avro_schema = cls.generate_schema(schema_type=AVRO)
-
-        if case_type is not None:
-            avro_schema = case.case_record(cls.rendered_schema, case_type)  # type: ignore
-
-        return json.dumps(avro_schema)
+        return json.dumps(cls.avro_schema_to_python(case_type=case_type))
 
     @classmethod
-    def avro_schema_to_python(cls: Type[CT], parent: Optional["AvroModel"] = None) -> Dict[str, Any]:
+    def avro_schema_to_python(
+        cls: Type[CT], parent: Optional["AvroModel"] = None, case_type: Optional[str] = None
+    ) -> Dict[str, Any]:
         if parent is not None:
             # in this case the current class is a child with a parent
             # we recalculate the schema definition to prevent re usages
@@ -92,7 +89,12 @@ class AvroModel:
             # B should clean the data that was only valid when it was the child
             cls._reset_schema_definition()
 
-        return json.loads(cls.avro_schema())
+        avro_schema = cls.generate_schema(schema_type=AVRO)
+
+        if case_type is not None:
+            avro_schema = case.case_record(cls.rendered_schema, case_type)  # type: ignore
+
+        return json.loads(json.dumps(avro_schema))
 
     @classmethod
     def get_fields(cls: Type[CT]) -> List[FieldType]:
@@ -153,7 +155,7 @@ class AvroModel:
         return value
 
     def asdict(self) -> JsonDict:
-        return dataclasses.asdict(
+        return dataclasses.asdict(  # type: ignore
             self, dict_factory=lambda x: {key: self.standardize_custom_type(value) for key, value in x}
         )
 
