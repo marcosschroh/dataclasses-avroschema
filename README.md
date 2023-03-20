@@ -347,7 +347,8 @@ User.fake()
 
 ## Development
 
-1. Create a `virtualenv`: `python3.7 -m venv venv && source venv/bin/activate`
-2. Install requirements: `pip install -r requirements.txt`
-3. Code linting: `./scripts/format`
-4. Run tests: `./scripts/test`
+[Poetry](https://python-poetry.org/docs/) is needed to install the dependencies and develope locally
+
+1. Install dependencies: `poetry install`
+2. Code linting: `./scripts/format`
+3. Run tests: `./scripts/test`

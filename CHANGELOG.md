@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [0.37.5] - 2023-03-17
+
+- Avro schema generation should always return the same result. Close #254 (#255)
+
+### Fixed
+
 ## [0.37.4] - 2023-03-06
 
 - Exception `NameSpaceRequiredException` removed. Close #246 (#253)

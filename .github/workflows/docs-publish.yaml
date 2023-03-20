@@ -17,11 +17,14 @@ jobs:
 
     - name: Install Dependencies
       run: |
-        pip install mkdocs mkdocs-material
+        python -m pip install -U pip poetry
+        poetry --version
+        poetry config --local virtualenvs.in-project true
+        poetry install --only docs
 
     - name: Build docs
       run: |
-        mkdocs build
+        poetry run mkdocs build
 
     - name: Push doc to Github Page
       uses: peaceiris/actions-gh-pages@v3
