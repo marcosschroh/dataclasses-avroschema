@@ -1,4 +1,4 @@
-name: Pubkish Package
+name: Publish Package
 
 on:
   push:
