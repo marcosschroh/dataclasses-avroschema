@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 0.38.0 (2023-03-22)
 
+- First release added with `commitizen`
+
 ## [0.37.5] - 2023-03-17
 
 - Avro schema generation should always return the same result. Close #254 (#255)

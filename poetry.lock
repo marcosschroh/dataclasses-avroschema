@@ -284,7 +284,7 @@ dev = ["black", "coveralls", "mypy", "pre-commit", "pylint", "pytest (>=5)", "py
 
 [[package]]
 name = "dc-avro"
-version = "0.6.3"
+version = "0.6.4"
 description = ""
 category = "main"
 optional = false
@@ -292,7 +292,7 @@ python-versions = ">=3.7,<4.0"
 
 [package.dependencies]
 aiofiles = ">=22.1.0,<23.0.0"
-dataclasses-avroschema = ">=0.37.1,<0.38.0"
+dataclasses-avroschema = ">=0,<1"
 deepdiff = ">=6.2.3,<7.0.0"
 httpx = ">=0.23.3,<0.24.0"
 typer = {version = ">=0.7.0,<0.8.0", extras = ["all"]}
@@ -1436,8 +1436,8 @@ dacite = [
     {file = "dacite-1.8.0.tar.gz", hash = "sha256:6257a5e505b61a8cafee7ef3ad08cf32ee9b885718f42395d017e0a9b4c6af65"},
 ]
 dc-avro = [
-    {file = "dc_avro-0.6.3-py3-none-any.whl", hash = "sha256:85f75c24e60cd79ab051ff381715b82755abd34a1abc33c2d0b9873283d6d9dd"},
-    {file = "dc_avro-0.6.3.tar.gz", hash = "sha256:5d202513dbb692b03c239837c6227219adbca28bff1ba31fabe62a54d4b952b9"},
+    {file = "dc_avro-0.6.4-py3-none-any.whl", hash = "sha256:dde7b1622a48635483784c8c39a3b2931f05b8f12fc427097f3d2acd61c36f4f"},
+    {file = "dc_avro-0.6.4.tar.gz", hash = "sha256:a774d88d4ad567624f915ea374538bfea0db92d8d156ae57105c832ff72bf724"},
 ]
 decli = [
     {file = "decli-0.5.2-py3-none-any.whl", hash = "sha256:d3207bc02d0169bf6ed74ccca09ce62edca0eb25b0ebf8bf4ae3fb8333e15ca0"},
