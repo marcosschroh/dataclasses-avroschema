@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## 0.38.1 (2023-03-22)
+
+### Fix
+
+- dc-avro dependency (#262)
+
 ## 0.38.0 (2023-03-22)
 
 - First release added with `commitizen`
