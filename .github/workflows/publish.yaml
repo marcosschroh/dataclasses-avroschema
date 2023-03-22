@@ -21,7 +21,7 @@ jobs:
         python -m pip install -U pip poetry
         poetry --version
         poetry config --local virtualenvs.in-project true
-        poetry install
+        poetry install --only ci-publish
 
     - name: Publish
       env:
