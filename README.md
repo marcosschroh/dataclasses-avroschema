@@ -352,3 +352,5 @@ User.fake()
 1. Install dependencies: `poetry install`
 2. Code linting: `./scripts/format`
 3. Run tests: `./scripts/test`
+
+For commit messages we use [commitizen](https://commitizen-tools.github.io/commitizen/) in order to standardize a way of committing rules
