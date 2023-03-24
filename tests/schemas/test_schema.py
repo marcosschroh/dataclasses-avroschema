@@ -219,6 +219,15 @@ def test_get_enum_type_map_with_unions(user_advance_dataclass_with_union_enum, c
     }
 
 
+def test_get_enum_type_map_with_unions_with_annotated(
+    user_advance_dataclass_with_union_enum_with_annotated, color_enum, user_type_enum
+):
+    assert user_advance_dataclass_with_union_enum_with_annotated._get_enum_type_map() == {
+        "favorite_colors": color_enum,
+        "user_type": user_type_enum,
+    }
+
+
 def test_get_enum_type_map_with_sub_record(user_advance_dataclass_with_sub_record_and_enum, color_enum, user_type_enum):
     assert user_advance_dataclass_with_sub_record_and_enum._get_enum_type_map() == {
         "favorite_colors": color_enum,

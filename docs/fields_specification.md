@@ -137,6 +137,62 @@ Python Type | Avro Type   | Logical Type |
 | uuid.uuid4  | string    |  uuid        |
 | uuid.UUID    |  string        | uuid |
 
+## typing.Annotated
+
+All the types can be [Annotated](https://docs.python.org/3/library/typing.html#typing.Annotated) so `metadata` can be added to the fields. This library will use the `python type` to generate the `avro field` and it will ignore the extra `metadata`.
+
+```python title="Annotated"
+import dataclasses
+import enum
+import typing
+
+from dataclasses_avroschema import AvroModel
+
+ 
+class FavoriteColor(str, enum.Enum):
+    BLUE = "BLUE"
+    YELLOW = "YELLOW"
+    GREEN = "GREEN"
+
+
+@dataclasses.dataclass
+class UserAdvance(AvroModel):
+    name: typing.Annotated[str, "string"]
+    age: typing.Annotated[int, "integer"]
+    pets: typing.List[typing.Annotated[str, "string"]]
+    accounts: typing.Dict[str, typing.Annotated[int, "integer"]]
+    favorite_colors: typing.Annotated[FavoriteColor, "a color enum"]
+    has_car: typing.Annotated[bool, "boolean"] = False
+    country: str = "Argentina"
+    address: typing.Optional[typing.Annotated[str, "string"]] = None
+
+    class Meta:
+        schema_doc = False
+
+
+UserAdvance.avro_schema()
+```
+
+resulting in
+
+```json
+{
+  "type": "record", 
+  "name": "UserAdvance", 
+  "fields": [
+    {"name": "name", "type": "string"},
+    {"name": "age", "type": "long"},
+    {"name": "pets", "type": {"type": "array", "items": "string", "name": "pet"}},
+    {"name": "accounts", "type": {"type": "map", "values": "long", "name": "account"}},
+    {"name": "favorite_colors", "type": {"type": "enum", "name": "FavoriteColor", "symbols": ["BLUE", "YELLOW", "GREEN"]}},
+    {"name": "has_car", "type": "boolean", "default": false}, 
+    {"name": "country", "type": "string", "default": "Argentina"},
+    {"name": "address", "type": ["null", "string"], "default": null}]
+}'
+```
+
+*(This script is complete, it should run "as is")*
+
 ## Adding Custom Field-level Attributes
 
 You may want to add field-level attributes which are not automatically populated according to the typing semantics
@@ -148,8 +204,6 @@ When your Python class is serialised to Avro, each field will contain a number o
 to all fields such as `"name"` and others are specific to the datatype (e.g. `array` will have the `items` attribute).
 In order to add custom fields, you can use the `field` descriptor of the built-in `dataclasses` package and provide a
 `dict` of key-value pairs to the `metadata` parameter as in `dataclasses.field(metadata={'doc': 'foo'})`.
-
-### Examples
 
 ```python title="Adding a doc attribute to fields"
 from dataclasses import dataclass, field

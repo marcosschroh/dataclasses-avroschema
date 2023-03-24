@@ -16,6 +16,7 @@ from collections import OrderedDict
 import inflect
 from faker import Faker
 from pytz import utc
+from typing_extensions import get_args
 
 from dataclasses_avroschema import schema_generator, serialization, types, utils
 
@@ -49,6 +50,7 @@ class BaseField:
     type: typing.Any  # store the python primitive type
     default: typing.Any
     parent: typing.Any
+    field_info: typing.Optional[types.FieldInfo] = None
     metadata: typing.Optional[typing.Mapping] = None
     model_metadata: typing.Optional[utils.SchemaMetadata] = None
 
@@ -122,11 +124,12 @@ class BaseField:
             return self.default
 
     def validate_default(self) -> bool:
+        a_type = self.type
         msg = f"Invalid default type. Default should be {self.type}"
-        if getattr(self.type, "__metadata__", [None])[0] in types.CUSTOM_TYPES:
-            assert isinstance(self.default, self.type.__origin__)
-        else:
-            assert isinstance(self.default, self.type), msg
+        if utils.is_annotated(self.type):
+            a_type, _ = get_args(self.type)
+
+        assert isinstance(self.default, a_type), msg
 
         return True
 
@@ -929,11 +932,20 @@ def field_factory(
     *,
     default: typing.Any = dataclasses.MISSING,
     default_factory: typing.Any = dataclasses.MISSING,
-    metadata: typing.Optional[typing.Mapping] = None,
+    metadata: typing.Optional[typing.Dict[str, typing.Any]] = None,
     model_metadata: typing.Optional[utils.SchemaMetadata] = None,
 ) -> FieldType:
     if metadata is None:
         metadata = {}
+
+    field_info = None
+
+    if utils.is_annotated(native_type):
+        a_type, *extra_args = get_args(native_type)
+        field_info = next((arg for arg in extra_args if isinstance(arg, types.FieldInfo)), None)
+
+        if field_info is None:
+            native_type = a_type
 
     if native_type in field_utils.PYTHON_INMUTABLE_TYPES:
         klass = INMUTABLE_FIELDS_CLASSES[native_type]
@@ -944,6 +956,7 @@ def field_factory(
             metadata=metadata,
             model_metadata=model_metadata,
             parent=parent,
+            field_info=field_info,
         )
     elif utils.is_self_referenced(native_type):
         return SelfReferenceField(
@@ -953,6 +966,7 @@ def field_factory(
             metadata=metadata,
             model_metadata=model_metadata,
             parent=parent,
+            field_info=field_info,
         )
     elif native_type is types.Fixed:
         return FixedField(
@@ -962,6 +976,7 @@ def field_factory(
             metadata=metadata,
             model_metadata=model_metadata,
             parent=parent,
+            field_info=field_info,
         )
     elif native_type in field_utils.PYTHON_LOGICAL_TYPES:
         klass = LOGICAL_TYPES_FIELDS_CLASSES[native_type]  # type: ignore
@@ -973,6 +988,7 @@ def field_factory(
             metadata=metadata,
             model_metadata=model_metadata,
             parent=parent,
+            field_info=field_info,
         )
     elif isinstance(native_type, GenericAlias):  # type: ignore
         origin = native_type.__origin__
@@ -1003,6 +1019,7 @@ def field_factory(
             default_factory=default_factory,
             model_metadata=model_metadata,
             parent=parent,
+            field_info=field_info,
         )
     elif inspect.isclass(native_type) and issubclass(native_type, enum.Enum):
         return EnumField(
@@ -1012,6 +1029,7 @@ def field_factory(
             metadata=metadata,
             model_metadata=model_metadata,
             parent=parent,
+            field_info=field_info,
         )
     elif types.UnionType is not None and isinstance(native_type, types.UnionType):
         # we need to check whether types.UnionType because it works only in
@@ -1026,6 +1044,7 @@ def field_factory(
             default_factory=default_factory,
             model_metadata=model_metadata,
             parent=parent,
+            field_info=field_info,
         )
     elif inspect.isclass(native_type) and issubclass(native_type, schema_generator.AvroModel):
         return RecordField(
@@ -1035,6 +1054,7 @@ def field_factory(
             metadata=metadata,
             model_metadata=model_metadata,
             parent=parent,
+            field_info=field_info,
         )
     else:
         msg = (

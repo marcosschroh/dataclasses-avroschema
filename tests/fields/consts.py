@@ -4,6 +4,7 @@ import typing
 import uuid
 
 import pytest
+from typing_extensions import Annotated
 
 from dataclasses_avroschema import field_utils
 
@@ -17,6 +18,11 @@ PRIMITIVE_TYPES = (
     (bool, field_utils.BOOLEAN),
     (float, field_utils.DOUBLE),
     (bytes, field_utils.BYTES),
+    (Annotated[str, "string"], field_utils.STRING),
+    (Annotated[int, "integer"], field_utils.LONG),
+    (Annotated[bool, "boolean"], field_utils.BOOLEAN),
+    (Annotated[float, "float"], field_utils.DOUBLE),
+    (Annotated[bytes, "bytes"], field_utils.BYTES),
 )
 
 PRIMITIVE_TYPES_AND_DEFAULTS = (
@@ -25,6 +31,11 @@ PRIMITIVE_TYPES_AND_DEFAULTS = (
     (bool, True),
     (float, 10.4),
     (bytes, b"test"),
+    (Annotated[str, "string"], "test"),
+    (Annotated[int, "int"], 1),
+    (Annotated[bool, "boolen"], True),
+    (Annotated[float, "float"], 10.4),
+    (Annotated[bytes, "bytes"], b"test"),
 )
 
 PRIMITIVE_TYPES_AND_INVALID_DEFAULTS = (
@@ -35,19 +46,15 @@ PRIMITIVE_TYPES_AND_INVALID_DEFAULTS = (
     (bytes, "test"),
 )
 
-LIST_TYPE_AND_ITEMS_TYPE = (
-    (str, "string"),
-    (int, "long"),
-    (bool, "boolean"),
-    (float, "double"),
-    (bytes, "bytes"),
-)
-
 LOGICAL_TYPES = (
     (datetime.date, field_utils.LOGICAL_DATE, now.date()),
     (datetime.time, field_utils.LOGICAL_TIME_MILIS, now.time()),
     (datetime.datetime, field_utils.LOGICAL_DATETIME_MILIS, now),
-    (uuid.uuid4, field_utils.LOGICAL_UUID, uuid.uuid4()),
+    (uuid.UUID, field_utils.LOGICAL_UUID, uuid.uuid4()),
+    (Annotated[datetime.date, "date"], field_utils.LOGICAL_DATE, now.date()),
+    (Annotated[datetime.time, "time"], field_utils.LOGICAL_TIME_MILIS, now.time()),
+    (Annotated[datetime.datetime, "datetime"], field_utils.LOGICAL_DATETIME_MILIS, now),
+    (Annotated[uuid.UUID, "uuid"], field_utils.LOGICAL_UUID, uuid.uuid4()),
 )
 
 UNION_PRIMITIVE_ELEMENTS = (
@@ -75,6 +82,10 @@ UNION_PRIMITIVE_ELEMENTS = (
         typing.Union[str, float, int, bool],
         (field_utils.STRING, field_utils.DOUBLE, field_utils.LONG, field_utils.BOOLEAN),
     ),
+    (
+        typing.Union[Annotated[str, "string"], int],
+        (field_utils.STRING, field_utils.LONG),
+    ),
 )
 
 UNION_PRIMITIVE_ELEMENTS_DEFAULTS = (
@@ -95,6 +106,7 @@ UNION_PRIMITIVE_ELEMENTS_DEFAULTS = (
         (field_utils.BOOLEAN, field_utils.STRING, field_utils.DOUBLE, field_utils.LONG),
         False,
     ),
+    (typing.Union[Annotated[str, "string"], int], (field_utils.STRING, field_utils.LONG), "test"),
 )
 
 UNION_WITH_ARRAY = (
@@ -111,8 +123,12 @@ UNION_WITH_ARRAY = (
         (field_utils.LOGICAL_DATETIME_MILIS, field_utils.LOGICAL_DATETIME_MILIS),
     ),
     (
-        typing.Union[typing.List[uuid.uuid4], bytes],
+        typing.Union[typing.List[uuid.UUID], bytes],
         (field_utils.LOGICAL_UUID, field_utils.BYTES),
+    ),
+    (
+        typing.Union[typing.List[Annotated[int, "integer"]], str],
+        (field_utils.LONG, field_utils.STRING),
     ),
 )
 
@@ -130,8 +146,12 @@ UNION_WITH_MAP = (
         (field_utils.LOGICAL_DATETIME_MILIS, field_utils.LOGICAL_DATETIME_MILIS),
     ),
     (
-        typing.Union[typing.Dict[str, uuid.uuid4], bytes],
+        typing.Union[typing.Dict[str, uuid.UUID], bytes],
         (field_utils.LOGICAL_UUID, field_utils.BYTES),
+    ),
+    (
+        typing.Union[typing.Dict[str, Annotated[int, "integer"]], str],
+        (field_utils.LONG, field_utils.STRING),
     ),
 )
 

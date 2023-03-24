@@ -3,6 +3,7 @@ import typing
 from datetime import datetime
 
 from pytz import utc
+from typing_extensions import Annotated, get_origin
 
 from .types import JsonDict
 
@@ -67,6 +68,11 @@ def is_self_referenced(a_type: type) -> bool:
         and a_type.__args__
         and isinstance(a_type.__args__[0], typing.ForwardRef)  # type: ignore
     )
+
+
+def is_annotated(a_type: typing.Any) -> bool:
+    origin = get_origin(a_type)
+    return origin is not None and isinstance(origin, type) and issubclass(origin, Annotated)  # type: ignore[arg-type]
 
 
 @dataclasses.dataclass

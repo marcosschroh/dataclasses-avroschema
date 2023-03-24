@@ -12,16 +12,15 @@ from . import consts
 def test_primitive_types(primitive_type):
     name = "a_field"
     field = fields.AvroField(name, primitive_type, default=dataclasses.MISSING)
-    avro_type = field_utils.PYTHON_TYPE_TO_AVRO[primitive_type]
 
-    assert {"name": name, "type": avro_type} == field.to_dict()
+    assert {"name": name, "type": field.avro_type} == field.to_dict()
 
 
 @pytest.mark.parametrize("primitive_type", field_utils.PYTHON_INMUTABLE_TYPES)
 def test_primitive_types_with_default_value_none(primitive_type):
     name = "a_field"
     field = fields.AvroField(name, primitive_type, default=None)
-    avro_type = [field_utils.NULL, field_utils.PYTHON_TYPE_TO_AVRO[primitive_type]]
+    avro_type = [field_utils.NULL, field.avro_type]
 
     assert {"name": name, "type": avro_type, "default": None} == field.to_dict()
 
@@ -30,12 +29,11 @@ def test_primitive_types_with_default_value_none(primitive_type):
 def test_primitive_types_with_default_value(primitive_type, default):
     name = "a_field"
     field = fields.AvroField(name, primitive_type, default=default)
-    avro_type = field_utils.PYTHON_TYPE_TO_AVRO[primitive_type]
 
-    if primitive_type is bytes:
+    if field.avro_type == field_utils.BYTES:
         default = default.decode()
 
-    assert {"name": name, "type": avro_type, "default": default} == field.to_dict()
+    assert {"name": name, "type": field.avro_type, "default": default} == field.to_dict()
 
 
 @pytest.mark.parametrize("primitive_type,invalid_default", consts.PRIMITIVE_TYPES_AND_INVALID_DEFAULTS)
