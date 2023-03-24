@@ -4,6 +4,7 @@ import logging
 import typing
 
 import pytest
+from typing_extensions import Annotated
 
 from dataclasses_avroschema import AvroModel, types
 
@@ -154,8 +155,29 @@ def user_advance_dataclass_with_union_enum(color_enum: type, user_type_enum: typ
         favorite_colors: color_enum
         has_car: bool = False
         country: str = "Argentina"
-        address: str = None
+        address: typing.Optional[str] = None
         user_type: typing.Union[int, user_type_enum] = -1
+        md5: types.Fixed = types.Fixed(16)
+
+        class Meta:
+            schema_doc = False
+
+    return UserAdvance
+
+
+@pytest.fixture
+def user_advance_dataclass_with_union_enum_with_annotated(color_enum: type, user_type_enum: type):
+    @dataclasses.dataclass
+    class UserAdvance(AvroModel):
+        name: Annotated[str, "string"]
+        age: Annotated[int, "integer"]
+        pets: typing.List[Annotated[str, "string"]]
+        accounts: typing.Dict[str, Annotated[int, "integer"]]
+        favorite_colors: Annotated[color_enum, "a color enum"]
+        has_car: Annotated[bool, "boolean"] = False
+        country: str = "Argentina"
+        address: typing.Optional[Annotated[str, "string"]] = None
+        user_type: typing.Union[Annotated[int, "integer"], user_type_enum] = -1
         md5: types.Fixed = types.Fixed(16)
 
         class Meta:

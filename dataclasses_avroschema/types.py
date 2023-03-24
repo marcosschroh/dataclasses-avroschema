@@ -28,6 +28,21 @@ CUSTOM_TYPES = (
 __all__ = CUSTOM_TYPES
 
 
+class FieldInfo:
+    def __init__(self, **kwargs) -> None:
+        self.type = kwargs.get("type")
+        self.max_digits = kwargs.get("max_digits")
+        self.decimal_places = kwargs.get("decimal_places")
+
+    @property
+    def metadata(self):
+        return {
+            "type": self.type,
+            "max_digits": self.max_digits,
+            "decimal_places": self.decimal_places,
+        }
+
+
 class MissingSentinel(typing.Generic[T]):
     """
     Class to detect when a field is not initialized
@@ -80,7 +95,7 @@ class Decimal:
         return f"Decimal('{self.default}')"
 
 
-Int32 = Annotated[int, "Int32"]
-Float32 = Annotated[float, "Float32"]
-TimeMicro = Annotated[datetime.time, "TimeMicro"]
-DateTimeMicro = Annotated[datetime.datetime, "DateTimeMicro"]
+Int32 = Annotated[int, FieldInfo(type="Int32")]
+Float32 = Annotated[float, FieldInfo(type="Float32")]
+TimeMicro = Annotated[datetime.time, FieldInfo(type="TimeMicro")]
+DateTimeMicro = Annotated[datetime.datetime, FieldInfo(type="DateTimeMicro")]

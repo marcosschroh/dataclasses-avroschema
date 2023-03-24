@@ -91,7 +91,17 @@ PYTHON_TYPE_TO_AVRO = {
 }
 
 # excluding tuple because is a container
-PYTHON_INMUTABLE_TYPES = (str, int, types.Int32, types.Float32, bool, float, bytes, type(None))
+PYTHON_INMUTABLE_TYPES = (
+    str,
+    int,
+    types.Int32,
+    types.Float32,
+    bool,
+    float,
+    bytes,
+    type(None),
+)
+
 PYTHON_PRIMITIVE_CONTAINERS = (list, tuple, dict)
 
 PYTHON_LOGICAL_TYPES = (

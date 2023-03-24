@@ -68,7 +68,7 @@ class AvroSchemaDefinition(BaseSchemaDefinition):
                 dataclass_field.type,
                 default=dataclass_field.default,
                 default_factory=dataclass_field.default_factory,  # type: ignore  # TODO: resolve mypy
-                metadata=dataclass_field.metadata,
+                metadata=dict(dataclass_field.metadata),
                 model_metadata=self.metadata,
                 parent=self.parent,
             )
@@ -100,7 +100,7 @@ class AvroSchemaDefinition(BaseSchemaDefinition):
                         dataclass_field.type,
                         default=default,
                         default_factory=default_factory,
-                        metadata=metadata,
+                        metadata=dict(metadata),
                         model_metadata=self.metadata,
                         parent=self.parent,
                     )
