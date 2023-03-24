@@ -338,19 +338,6 @@
     typing.Annotated
   </a>
   
-    <nav class="md-nav" aria-label="typing.Annotated">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#example" class="md-nav__link">
-    Example
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
       
         <li class="md-nav__item">
@@ -655,19 +642,6 @@
   <a href="#typingannotated" class="md-nav__link">
     typing.Annotated
   </a>
-  
-    <nav class="md-nav" aria-label="typing.Annotated">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#example" class="md-nav__link">
-    Example
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -1062,8 +1036,7 @@ Dataclasses-avroschema will automatically generate the appropriate array if a de
 </table>
 <h2 id="typingannotated">typing.Annotated</h2>
 <p>All the types can be <a href="https://docs.python.org/3/library/typing.html#typing.Annotated">Annotated</a> so <code>metadata</code> can be added to the fields. This library will use the <code>python type</code> to generate the <code>avro field</code> and it will ignore the extra <code>metadata</code>.</p>
-<h3 id="example">Example</h3>
-<div class="highlight"><span class="filename">typing.Annotated</span><pre><span></span><code><span class="kn">import</span> <span class="nn">dataclasses</span>
+<div class="highlight"><span class="filename">Annotated</span><pre><span></span><code><span class="kn">import</span> <span class="nn">dataclasses</span>
 <span class="kn">import</span> <span class="nn">enum</span>
 <span class="kn">import</span> <span class="nn">typing</span>
 
@@ -1093,6 +1066,7 @@ Dataclasses-avroschema will automatically generate the appropriate array if a de
 
 <span class="n">UserAdvance</span><span class="o">.</span><span class="n">avro_schema</span><span class="p">()</span>
 </code></pre></div>
+<p>resulting in</p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;record&quot;</span><span class="p">,</span><span class="w"> </span>
 <span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;UserAdvance&quot;</span><span class="p">,</span><span class="w"> </span>
