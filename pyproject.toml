@@ -26,7 +26,7 @@ fastavro = "^1.7.3"
 inflect = "^6.0.2"
 pytz = "^2022.7.1"
 dacite = "^1.8.0"
-faker = "^17.6.0"
+faker = ">=17.6,<19.0"
 stringcase = "^1.2.0"
 pydantic = {version = "^1.10.6", extras = ["pydantics"]}
 dc-avro = {version = "^0.6.3", extras = ["cli"]}
