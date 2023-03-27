@@ -24,7 +24,7 @@ classifiers = [
 python = "^3.7"
 fastavro = "^1.7.3"
 inflect = "^6.0.2"
-pytz = "^2022.7.1"
+pytz = ">=2022.7.1,<2024.0.0"
 dacite = "^1.8.0"
 faker = "^17.6.0"
 stringcase = "^1.2.0"
