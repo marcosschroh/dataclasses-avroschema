@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## 0.39.2 (2023-03-28)
+
+### Fix
+
+- use `extras` in a correct way. Closes #272 (#273)
+
 ## 0.39.1 (2023-03-27)
 
 ### Fix
