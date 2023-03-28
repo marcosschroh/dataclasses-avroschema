@@ -28,8 +28,8 @@ pytz = "^2023.2"
 dacite = "^1.8.0"
 faker = "^18.3.1"
 stringcase = "^1.2.0"
-pydantic = {version = "^1.10.6", extras = ["pydantics"]}
-dc-avro = {version = "^0.6.3", extras = ["cli"]}
+pydantic = {version = "^1.10.6", optional = true}
+dc-avro = {version = "^0.6.3", optional = true}
 faust-streaming = "^0.10.8"
 
 [tool.poetry.group.dev.dependencies]
@@ -46,6 +46,14 @@ mkdocs-material = "^9.1.4"
 
 [tool.poetry.group.ci-publish.dependencies]
 commitizen = "^2.42.1"
+
+[tool.poetry.extras]
+pydantic = [
+    "pydantic",
+]
+cli = [
+    "dc-avro",
+]
 
 [build-system]
 requires = ["poetry-core"]
