@@ -117,7 +117,7 @@ class AvroSchemaDefinition(BaseSchemaDefinition):
                 if model_field.required or model_field.default_factory
                 else model_field.default,
                 default_factory=model_field.default_factory,
-                metadata=getattr(model_field, "metadata", {}),
+                metadata=model_field.field_info.extra.get("metadata", {}),
                 model_metadata=self.metadata,
                 parent=self.parent,
             )

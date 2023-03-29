@@ -28,6 +28,17 @@ def test_pydantic_record_schema_primitive_types(user_avro_json):
     assert User.avro_schema() == json.dumps(user_avro_json)
 
 
+def test_pydantic_record_schema_with_metadata():
+    class User(AvroBaseModel):
+        name: str = Field(metadata={"doc": "bar"})
+
+        class Meta:
+            schema_doc = False
+
+    expected_schema = {"type": "record", "name": "User", "fields": [{"doc": "bar", "name": "name", "type": "string"}]}
+    assert User.avro_schema() == json.dumps(expected_schema)
+
+
 def test_pydantic_record_schema_complex_types(user_advance_avro_json, color_enum):
     class UserAdvance(AvroBaseModel):
         name: str
