@@ -10,7 +10,7 @@ from dataclasses_avroschema import field_utils
 
 PY_VER = sys.version_info
 
-now = datetime.datetime.now()
+now = datetime.datetime.now(tz=datetime.timezone.utc)
 
 PRIMITIVE_TYPES = (
     (str, field_utils.STRING),

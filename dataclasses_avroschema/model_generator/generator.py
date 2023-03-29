@@ -1,3 +1,4 @@
+import dataclasses
 import typing
 from dataclasses import dataclass, field
 from string import Template
@@ -23,16 +24,16 @@ class ModelGenerator:
     dataclass_field_template: Template = templates.dataclass_field_template
     metadata_fields_mapper: typing.Dict[str, str] = field(
         default_factory=lambda: {
+            # doc is not included because it is rendered as docstrings
             "namespace": "namespace",
-            "doc": "schema_doc",
-            "alias": "aliases",
+            "aliases": "aliases",
         }
     )
     matadata_field_templates: typing.Dict[str, Template] = field(
         default_factory=lambda: {
             "namespace": templates.metaclass_field_template,
             "doc": templates.metaclass_field_template,
-            "alias": templates.metaclass_alias_field_template,
+            "aliases": templates.metaclass_alias_field_template,
         }
     )
     base_class_to_imports: typing.Dict[str, str] = field(
@@ -105,6 +106,17 @@ class ModelGenerator:
             )
         return None
 
+    def render_docstring(self, *, docstring: typing.Optional[str]) -> str:
+        """
+        Render the module with the classes generated from the schema
+        """
+        if not docstring:
+            return ""
+
+        indented = self.field_identation + self.field_identation.join(docstring.splitlines())
+
+        return f'{self.field_identation}"""{indented}{self.field_identation}"""'
+
     def render_class(self, *, schema: JsonDict) -> str:
         """
         Render the class generated from the schema
@@ -118,9 +130,14 @@ class ModelGenerator:
         rendered_fields = self.field_identation.join(
             [self.render_field(field=field, model_name=name) for field in record_fields]
         )
+        docstring = self.render_docstring(docstring=schema.get("doc"))
 
         rendered_class = templates.class_template.safe_substitute(
-            name=name, decorator=self.base_class_decotator, base_class=self.base_class, fields=rendered_fields
+            name=name,
+            decorator=self.base_class_decotator,
+            base_class=self.base_class,
+            fields=rendered_fields,
+            docstring=docstring,
         )
 
         class_metadata = self.render_metaclass(schema=schema)
@@ -170,7 +187,7 @@ class ModelGenerator:
         """
         name = field.get("name", "")
         type = field["type"]
-        default = field.get("default")
+        default = field.get("default", dataclasses.MISSING)
 
         # This flag tells whether the field is array, map, fixed
         is_complex_type = False
@@ -184,7 +201,7 @@ class ModelGenerator:
             if type == field_utils.DECIMAL:
                 # set default to None because all the decimal has a default by design
                 # and they are calculated in parse_decimal method
-                default = None
+                default = dataclasses.MISSING
         elif isinstance(type, dict):
             language_type = self.render_field(field=type, model_name=model_name)
         elif isinstance(type, list):
@@ -208,7 +225,7 @@ class ModelGenerator:
             language_type = stringcase.pascalcase(field["name"])
         else:
             # Native field or Logical type using a native
-            language_type = self.get_language_type(type=type)
+            language_type = self.get_language_type(type=type, model_name=model_name)
 
         if is_complex_type:
             # If the field is a complext type, we need to return just the language_type
@@ -216,9 +233,9 @@ class ModelGenerator:
         else:
             result = templates.field_template.safe_substitute(name=name, type=language_type)
 
-        if default is not None:
+        if default is not dataclasses.MISSING:
             # optional field attribute
-            default = self.get_field_default(field_type=type, default=field.get("default"), name=name)
+            default = self.get_field_default(field_type=type, default=default, name=name)
             result += templates.field_default_template.safe_substitute(default=default)
 
         return result
@@ -285,57 +302,28 @@ class ModelGenerator:
             field_types: List of avro types
             model_name: name of the model that contains the `union`
         """
-        first_type = field_types[0]
 
-        if first_type == field_utils.NULL:
+        # XXX: Maybe more useful in general
+        def render_type(typ: str) -> str:
+            if isinstance(typ, dict):
+                return self.render_field(field=typ, model_name=model_name)
+            else:
+                return self.get_language_type(type=typ, model_name=model_name)
+
+        if field_utils.NULL in field_types and len(field_types) == 2:
             # It is an optional field, we should include in the imports typing
-            # an use the optional Template
+            # and use the optional Template
             self.imports.add("import typing")
-
-            # the union can have native types or custom types
-            # if the type is not in the AVRO_TYPE_TO_PYTHON it means that it is a CustomType
-            if len(field_types) > 2:
-                language_types = self.parse_union(field_types=field_types[1:], model_name=model_name)
-            elif isinstance(field_types[1], dict):
-                # TODO: check what happens with more than 2 complex types
-                language_types = self.render_field(field=field_types[1], model_name=model_name)
-            else:
-                language_types = ", ".join(
-                    # TODO: check default, seems doing nothing
-                    [self.get_language_type(type=type, default=type, model_name=model_name) for type in field_types[1:]]
-                )
-
+            (field_type,) = [f for f in field_types if f != field_utils.NULL]
+            language_types = render_type(field_type)
             return templates.optional_template.safe_substitute(type=language_types)
+        elif len(field_types) >= 2:
+            # a union with more than 2 types
+            self.imports.add("import typing")
+            language_types_repr = ", ".join(render_type(t) for t in field_types)
+            return templates.union_template.safe_substitute(type=language_types_repr)
         else:
-            # It is a field that does not contain `null`
-            # unions like ["string", "null"] don't make sense for the language as
-            # the default value should be `string`, `null` is not possible as default
-
-            # remove all the `null` apparences
-            field_types = [field for field in field_types if field != field_utils.NULL]
-
-            if len(field_types) >= 2:
-                # an union with more than 2 types
-                self.imports.add("import typing")
-
-                language_types_list = []
-                for type in field_types:
-                    if isinstance(type, dict):
-                        # it is a complex type like array, dict, enum, fixed or record
-                        # it needs to be render
-                        language_types_list.append(self.render_field(field=type, model_name=model_name))
-                    else:
-                        language_types_list.append(self.get_language_type(type=type, default=type))
-
-                language_types_repr = ", ".join(
-                    [self.get_language_type(type=type, default=type) for type in language_types_list]
-                )
-                return templates.union_template.safe_substitute(type=language_types_repr)
-            else:
-                # If for some reason `null` was inluded we should ignore it
-                # the union has 2 types, so we return the first language type
-                # example: "types": ["string", "null"]
-                return self.get_language_type(type=first_type)
+            return render_type(field_types[0])
 
     def parse_array(self, field: JsonDict, model_name: str) -> str:
         """
@@ -397,8 +385,9 @@ class ModelGenerator:
                 for symbol in field["symbols"]
             ]
         )
+        docstring = self.render_docstring(docstring=field.get("doc"))
 
-        enum_class = templates.enum_template.safe_substitute(name=enum_name, symbols=symbols)
+        enum_class = templates.enum_template.safe_substitute(name=enum_name, symbols=symbols, docstring=docstring)
         self.extras.append(enum_class)
 
         return enum_name
@@ -447,7 +436,7 @@ class ModelGenerator:
         elif field_type == field_utils.BYTES:
             return f'b"{default}"'
         elif isinstance(field_type, dict) and field_type.get("type") == field_utils.ENUM:
-            return f"{stringcase.pascalcase(name)}.{stringcase.uppercase(default)}"
+            return f"{stringcase.pascalcase(field_type['name'])}.{stringcase.uppercase(default)}"
         elif isinstance(
             default,
             (

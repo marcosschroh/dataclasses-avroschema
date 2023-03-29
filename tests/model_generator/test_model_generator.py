@@ -11,6 +11,9 @@ import dataclasses
 
 @dataclasses.dataclass
 class User(AvroModel):
+    \"""
+    An User
+    \"""
     age: types.Int32
     weight: types.Int32
     money_available: float
@@ -22,7 +25,6 @@ class User(AvroModel):
 
     class Meta:
         namespace = "test"
-        schema_doc = "An User"
         aliases = ['schema', 'test-schema']
 """
     model_generator = ModelGenerator()
@@ -44,7 +46,7 @@ class User(AvroModel):
     money_available: float
     name: typing.Optional[str] = None
     age: typing.Optional[types.Int32] = None
-    pet_age: types.Int32 = 1
+    pet_age: typing.Optional[types.Int32] = 1
     height: types.Float32 = 10.1
     is_student: bool = True
     encoded: bytes = b"Hi"
@@ -69,7 +71,7 @@ class User(AvroModel):
     age: typing.Union[types.Int32, str] = 10
     pet_age: typing.Union[str, bool] = "bond"
     height: types.Float32 = 10.1
-    weight: typing.Optional[typing.Union[types.Float32, types.Int32]] = None
+    weight: typing.Union[None, types.Float32, types.Int32] = None
     is_student: bool = True
     encoded: bytes = b"Hi"
 """
@@ -145,6 +147,9 @@ import typing
 
 
 class FavoriteColor(enum.Enum):
+    \"""
+    A favorite color
+    \"""
     BLUE = "Blue"
     YELLOW = "Yellow"
     GREEN = "Green"
@@ -182,11 +187,11 @@ import typing
 
 @dataclasses.dataclass
 class Address(AvroModel):
+    \"""
+    An Address
+    \"""
     street: str
     street_number: int
-
-    class Meta:
-        schema_doc = "An Address"
 
 
 @dataclasses.dataclass
@@ -212,11 +217,11 @@ import typing
 
 @dataclasses.dataclass
 class Address(AvroModel):
+    \"""
+    An Address
+    \"""
     street: str
     street_number: int
-
-    class Meta:
-        schema_doc = "An Address"
 
 
 @dataclasses.dataclass
@@ -241,11 +246,11 @@ import typing
 
 @dataclasses.dataclass
 class Address(AvroModel):
+    \"""
+    An Address
+    \"""
     street: str
     street_number: int
-
-    class Meta:
-        schema_doc = "An Address"
 
 
 @dataclasses.dataclass
@@ -261,7 +266,7 @@ class User(AvroModel):
     assert result.strip() == expected_result.strip()
 
 
-def test_schema_one_to_self_relathionship(schema_one_to_self_relationship: types.JsonDict) -> None:
+def test_schema_one_to_self_relationship(schema_one_to_self_relationship: types.JsonDict) -> None:
     expected_result = """
 from dataclasses_avroschema import AvroModel
 import dataclasses
@@ -272,9 +277,9 @@ import typing
 class User(AvroModel):
     name: str
     age: int
-    friend: typing.Optional[typing.Type["User"]] = None
-    relatives: typing.List[typing.Type["User"]] = dataclasses.field(default_factory=list)
-    teammates: typing.Dict[str, typing.Type["User"]] = dataclasses.field(default_factory=dict)
+    friend: typing.Optional["User"] = None
+    relatives: typing.List["User"] = dataclasses.field(default_factory=list)
+    teammates: typing.Dict[str, "User"] = dataclasses.field(default_factory=dict)
 """
     model_generator = ModelGenerator()
     result = model_generator.render(schema=schema_one_to_self_relationship)
@@ -346,6 +351,9 @@ import dataclasses
 
 @dataclasses.dataclass
 class User(AvroModel):
+    \"""
+    An User
+    \"""
     age: types.Int32
     weight: types.Int32
     money_available: float
@@ -357,17 +365,17 @@ class User(AvroModel):
 
     class Meta:
         namespace = "test"
-        schema_doc = "An User"
         aliases = ['schema', 'test-schema']
 
 
 @dataclasses.dataclass
 class Address(AvroModel):
+    \"""
+    An Address
+    \"""
     street: str
     street_number: int
 
-    class Meta:
-        schema_doc = "An Address"
 """
     model_generator = ModelGenerator()
     result = model_generator.render_module(schemas=[schema, schema_2])

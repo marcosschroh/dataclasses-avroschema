@@ -63,7 +63,7 @@ def test_faust_record_schema_complex_types_with_defaults(user_advance_with_defau
 
 
 def test_faust_record_schema_logical_types(logical_types_schema):
-    a_datetime = datetime.datetime(2019, 10, 12, 17, 57, 42)
+    a_datetime = datetime.datetime(2019, 10, 12, 17, 57, 42, tzinfo=datetime.timezone.utc)
 
     class LogicalTypes(faust.Record, AvroModel):
         "Some logical types"

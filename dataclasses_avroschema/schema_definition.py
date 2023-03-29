@@ -1,5 +1,6 @@
 import abc
 import dataclasses
+import inspect
 import typing
 from collections import OrderedDict
 
@@ -41,9 +42,18 @@ class BaseSchemaDefinition(abc.ABC):
             doc = self.metadata.schema_doc
         else:
             doc = self.klass.__doc__
+            # dataclasses create a (in avro context) useless docstring by default,
+            # which we don't want in the schema.
+            is_dataclass_with_default_docstring = (
+                dataclasses.is_dataclass(self.klass)
+                # from https://github.com/python/cpython/blob/3.10/Lib/dataclasses.py
+                and doc == (self.klass.__name__ + str(inspect.signature(self.klass)).replace(" -> None", ""))
+            )
+            if is_dataclass_with_default_docstring:
+                return None
 
         if doc is not None:
-            return doc.replace("\n", "")
+            return doc.strip()
         return None
 
 
