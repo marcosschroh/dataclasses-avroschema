@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## 0.40.0 (2023-03-29)
+
+### Fix
+
+- correctly generate enum default values (#275)
+- correctly generate type annotations
+
+fix: do not generate default dataclass docstrings
+
+fix: datetime model generation
+
+the previous implementation did not roundtrip
+
+feat: render docstrings in generated classes
+
+fix: correct union and optional conversion
+
+test: add avsc -> python -> avsc roundtrip test
+
+fix: properly handle aliases in the model generator
+
+tests: add coverage for single-type unions model generation
+
+Co-authored-by: Maximilian Hils <git@maximilianhils.com>
+
 ## 0.39.3 (2023-03-29)
 
 ### Fix
