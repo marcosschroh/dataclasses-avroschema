@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## 0.39.3 (2023-03-29)
+
+### Fix
+
+- include matadata when using pydantic.Field with AvroBaseMode. Closes #263 (#274)
+
 ## 0.39.2 (2023-03-28)
 
 ### Fix
