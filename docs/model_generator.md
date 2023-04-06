@@ -153,14 +153,13 @@ and then render the result:
     from pydantic import BaseModel
     from pydantic import Field
     from pydantic import condecimal
-    import decimal
     import typing
 
 
     class User(BaseModel):
         name: str
         age: int
-        money: decimal.Decimal = condecimal(max_digits=10, decimal_places=3)
+        money: condecimal(max_digits=10, decimal_places=3)
         friend: typing.Optional[typing.Type["User"]] = None
         relatives: typing.List[typing.Type["User"]] = Field(default_factory=list)
         teammates: typing.Dict[str, typing.Type["User"]] = Field(default_factory=dict)
@@ -182,14 +181,13 @@ and then render the result:
     from dataclasses_avroschema.avrodantic import AvroBaseModel
     from pydantic import Field
     from pydantic import condecimal
-    import decimal
     import typing
 
 
     class User(AvroBaseModel):
         name: str
         age: int
-        money: decimal.Decimal = condecimal(max_digits=10, decimal_places=3)
+        money: condecimal(max_digits=10, decimal_places=3)
         friend: typing.Optional[typing.Type["User"]] = None
         relatives: typing.List[typing.Type["User"]] = Field(default_factory=list)
         teammates: typing.Dict[str, typing.Type["User"]] = Field(default_factory=dict)
@@ -359,5 +357,5 @@ print(User.fake())
 | time-micros| types.TimeMicro|
 | timestamp-millis| datetime.datetime|
 | timestamp-micros| types.DateTimeMicro|
-| decimal | decimal.Decimal|
+| decimal | types.condecimal|
 | uuid | uuid.UUID    |
