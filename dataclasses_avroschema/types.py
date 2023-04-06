@@ -1,5 +1,6 @@
 import dataclasses
 import datetime
+import decimal
 import sys
 import typing
 
@@ -16,31 +17,15 @@ else:
 T = typing.TypeVar("T")
 JsonDict = typing.Dict[str, typing.Any]
 
-CUSTOM_TYPES = (
-    "Fixed",
-    "Decimal",
-    "Int32",
-    "Float32",
-    "TimeMicro",
-    "DateTimeMicro",
-)
-
-__all__ = CUSTOM_TYPES
-
 
 class FieldInfo:
     def __init__(self, **kwargs) -> None:
         self.type = kwargs.get("type")
-        self.max_digits = kwargs.get("max_digits")
-        self.decimal_places = kwargs.get("decimal_places")
+        self.max_digits = kwargs.get("max_digits", -1)
+        self.decimal_places = kwargs.get("decimal_places", 0)
 
-    @property
-    def metadata(self):
-        return {
-            "type": self.type,
-            "max_digits": self.max_digits,
-            "decimal_places": self.decimal_places,
-        }
+    def __repr__(self) -> str:
+        return f"FieldInfo(type='{self.type}', max_digits={self.max_digits}, decimal_places={self.decimal_places})"
 
 
 class MissingSentinel(typing.Generic[T]):
@@ -69,33 +54,22 @@ class Fixed(typing.Generic[T]):
         return f"{self.size}"
 
 
-class Decimal:
-    """
-    Represents an Avro Decimal type
-    precision (int): Specifying the number precision
-    scale(int): Specifying the number scale. Default 0
-    """
-
-    def __init__(
-        self,
-        *,
-        precision: int,
-        scale: int = 0,
-        default: typing.Any = MissingSentinel,
-        aliases: typing.Optional[typing.List] = None,
-    ) -> None:
-        self.precision = precision
-        self.scale = scale
-        self.default = default
-        self.aliases = aliases
-
-    # Decimal serializes to bytes, which doesn't support namespace
-
-    def __repr__(self) -> str:
-        return f"Decimal('{self.default}')"
+def condecimal(*, max_digits, decimal_places) -> typing.Type[decimal.Decimal]:
+    return Annotated[  # type: ignore[return-value]
+        decimal.Decimal, FieldInfo(type="Decimal", max_digits=max_digits, decimal_places=decimal_places)
+    ]
 
 
-Int32 = Annotated[int, FieldInfo(type="Int32")]
-Float32 = Annotated[float, FieldInfo(type="Float32")]
-TimeMicro = Annotated[datetime.time, FieldInfo(type="TimeMicro")]
-DateTimeMicro = Annotated[datetime.datetime, FieldInfo(type="DateTimeMicro")]
+Int32 = Annotated[int, "Int32"]
+Float32 = Annotated[float, "Float32"]
+TimeMicro = Annotated[datetime.time, "TimeMicro"]
+DateTimeMicro = Annotated[datetime.datetime, "DateTimeMicro"]
+
+CUSTOM_TYPES = (
+    Fixed,
+    Int32,
+    Float32,
+    TimeMicro,
+    DateTimeMicro,
+    condecimal,
+)

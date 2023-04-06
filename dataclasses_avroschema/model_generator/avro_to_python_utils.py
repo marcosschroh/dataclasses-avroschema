@@ -15,7 +15,6 @@ _AVRO_TYPE_TO_PYTHON: typing.Dict[str, str] = {
     field_utils.STRING: "str",
     field_utils.INT: "types.Int32",
     field_utils.FLOAT: "types.Float32",
-    field_utils.DECIMAL: "decimal.Decimal",
     field_utils.DATE: "datetime.date",
     field_utils.TIME_MILLIS: "datetime.time",
     field_utils.TIME_MICROS: "types.TimeMicro",

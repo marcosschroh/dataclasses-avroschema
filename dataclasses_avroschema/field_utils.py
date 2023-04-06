@@ -112,7 +112,6 @@ PYTHON_LOGICAL_TYPES = (
     types.DateTimeMicro,
     uuid.uuid4,
     uuid.UUID,
-    decimal.Decimal,
 )
 
 PYTHON_PRIMITIVE_TYPES = PYTHON_INMUTABLE_TYPES + PYTHON_PRIMITIVE_CONTAINERS

@@ -12,7 +12,7 @@ from . import case
 from .fields import EnumField, FieldType, RecordField, UnionField
 from .schema_definition import AvroSchemaDefinition
 from .serialization import deserialize, serialize, to_json
-from .types import Decimal, Fixed, JsonDict
+from .types import Fixed, JsonDict
 from .utils import SchemaMetadata, is_dataclass_or_pydantic_model
 
 AVRO = "avro"
@@ -144,7 +144,7 @@ class AvroModel:
 
     @staticmethod
     def standardize_custom_type(value: Any) -> Any:
-        if isinstance(value, (Decimal, Fixed)):
+        if isinstance(value, Fixed):
             return value.default
         elif isinstance(value, dict):
             return {k: AvroModel.standardize_custom_type(v) for k, v in value.items()}

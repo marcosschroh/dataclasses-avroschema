@@ -169,7 +169,7 @@ def test_decimal_type():
     name = "a_decimal_field"
     # A default decimal.Decimal sets precision and scale implicitly
     default = decimal.Decimal("3.14")
-    python_type = decimal.Decimal
+    python_type = types.condecimal(max_digits=3, decimal_places=2)
     field = fields.AvroField(name, python_type, default=default)
 
     expected = {
@@ -186,8 +186,8 @@ def test_decimal_type():
     assert expected == field.to_dict()
 
     # Use types.Decimal to set explicitly
-    default = types.Decimal(scale=5, precision=7)
-    field = fields.AvroField(name, python_type, default=default)
+    python_type = types.condecimal(max_digits=7, decimal_places=5)
+    field = fields.AvroField(name, python_type)
 
     expected = {
         "name": name,
@@ -201,8 +201,8 @@ def test_decimal_type():
 
     assert expected == field.to_dict()
 
-    default = types.Decimal(scale=5, precision=7, default=decimal.Decimal("3.14"))
-    field = fields.AvroField(name, python_type, default=default)
+    python_type = types.condecimal(max_digits=7, decimal_places=5)
+    field = fields.AvroField(name, python_type, default=decimal.Decimal("3.14"))
 
     expected = {
         "name": name,
@@ -217,8 +217,8 @@ def test_decimal_type():
 
     assert expected == field.to_dict()
 
-    default = types.Decimal(scale=5, precision=7, default=None)
-    field = fields.AvroField(name, python_type, default=default)
+    python_type = types.condecimal(max_digits=7, decimal_places=5)
+    field = fields.AvroField(name, python_type, default=None)
 
     expected = {
         "name": name,
@@ -228,53 +228,28 @@ def test_decimal_type():
 
     assert expected == field.to_dict()
 
-    # If default is missing, default out scale by Avro spec and pull precision from default decimal context
-    # On my machine, this makes the "decimal" field a glorified 28-digit int, which is likely not what is wanted
-    # so there is a good argument to error this out and force the dev to provide a default
-    # default = types.MissingSentinel
-    # field = fields.AvroField(name, python_type, default)
-    #
-    # expected = {
-    #     "name": name,
-    #     "type": {
-    #         "type": "bytes",
-    #         "logicalType": "decimal",
-    #         "precision": decimal.Context().prec,
-    #         "scale": 0,
-    #     },
-    # }
-    #
-    # assert expected == field.to_dict()
-
     # Validate 0 <= scale <= precision
     with pytest.raises(
-        ValueError, match="Scale must be zero or a positive integer less than or equal to the precision."
+        ValueError, match="`decimal_places` must be zero or a positive integer less than or equal to the precision."
     ):
-        default = types.Decimal(scale=-1, precision=1)
-        field = fields.AvroField(name, python_type, default=default)
+        python_type = types.condecimal(max_digits=1, decimal_places=-1)
+        field = fields.AvroField(name, python_type)
 
         field.to_dict()
 
     # Validate 0 <= scale <= precision
     with pytest.raises(
-        ValueError, match="Scale must be zero or a positive integer less than or equal to the precision."
+        ValueError, match="`decimal_places` must be zero or a positive integer less than or equal to the precision."
     ):
-        default = types.Decimal(scale=3, precision=1)
-        field = fields.AvroField(name, python_type, default=default)
+        python_type = types.condecimal(max_digits=1, decimal_places=3)
+        field = fields.AvroField(name, python_type)
 
         field.to_dict()
 
     # Validate precision >= 0
-    with pytest.raises(ValueError, match="Precision must be a positive integer greater than zero"):
-        default = types.Decimal(scale=2, precision=-1)
-        field = fields.AvroField(name, python_type, default=default)
-
-        field.to_dict()
-
-    # Require a default be provided for decimal.Decimal
-    with pytest.raises(ValueError):
-        default = types.MissingSentinel
-        field = fields.AvroField(name, python_type, default=default)
+    with pytest.raises(ValueError, match="`max_digits` must be a positive integer greater than zero"):
+        python_type = types.condecimal(max_digits=-1, decimal_places=2)
+        field = fields.AvroField(name, python_type)
 
         field.to_dict()
 
@@ -287,21 +262,21 @@ def test_decimal_type():
 
     # Default decimal.Decimal has more digits than listed precision
     with pytest.raises(ValueError):
-        default = types.Decimal(scale=2, precision=3, default=decimal.Decimal("3.14159"))
-        field = fields.AvroField(name, python_type, default=default)
+        python_type = types.condecimal(max_digits=3, decimal_places=2)
+        field = fields.AvroField(name, python_type, default=decimal.Decimal("3.14159"))
 
         field.to_dict()
 
     # Default decimal.Decimal has more digits past decimal than scale
     with pytest.raises(ValueError):
-        default = types.Decimal(scale=1, precision=3, default=decimal.Decimal("3.14"))
-        field = fields.AvroField(name, python_type, default=default)
+        python_type = types.condecimal(max_digits=3, decimal_places=1)
+        field = fields.AvroField(name, python_type, default=decimal.Decimal("3.14"))
 
         field.to_dict()
 
     # Just for code coverage
     with pytest.raises(ValueError):
-        default = types.Decimal(scale=1, precision=3, default=decimal.Decimal("3.14"))
-        field = fields.AvroField(name, python_type, default=default)
+        python_type = types.condecimal(max_digits=3, decimal_places=1)
+        field = fields.AvroField(name, python_type, default=decimal.Decimal("3.14"))
 
         field.to_dict()

@@ -289,14 +289,13 @@ class User(AvroModel):
 def test_decimal_field(schema_with_decimal_field: types.JsonDict) -> None:
     expected_result = """
 from dataclasses_avroschema import AvroModel
-from dataclasses_avroschema import types
+from dataclasses_avroschema.types import condecimal
 import dataclasses
-import decimal
 
 
 @dataclasses.dataclass
 class Demo(AvroModel):
-    foo: decimal.Decimal = types.Decimal(scale=3, precision=10)
+    foo: condecimal(max_digits=10, decimal_places=3)
 """
     model_generator = ModelGenerator()
     result = model_generator.render(schema=schema_with_decimal_field)
@@ -310,6 +309,7 @@ def test_schema_logical_types(schema_with_logical_types: types.JsonDict) -> None
     expected_result = f"""
 from dataclasses_avroschema import AvroModel
 from dataclasses_avroschema import types
+from dataclasses_avroschema.types import condecimal
 import dataclasses
 import datetime
 import decimal
@@ -323,7 +323,7 @@ class LogicalTypes(AvroModel):
     birthday_time: datetime.time
     birthday_datetime: datetime.datetime
     uuid_1: uuid.UUID
-    money: decimal.Decimal = types.Decimal(scale=2, precision=3)
+    money: condecimal(max_digits=3, decimal_places=2)
     meeting_date: typing.Optional[datetime.date] = None
     release_date: datetime.date = datetime.date(2019, 10, 12)
     meeting_time: typing.Optional[datetime.time] = None
@@ -334,7 +334,7 @@ class LogicalTypes(AvroModel):
     release_datetime_micro: types.DateTimeMicro = {release_datetime_micro}
     uuid_2: typing.Optional[uuid.UUID] = None
     event_uuid: uuid.UUID = "ad0677ab-bd1c-4383-9d45-e46c56bcc5c9"
-    explicit_with_default: decimal.Decimal = types.Decimal(scale=2, precision=3, default=decimal.Decimal('3.14'))
+    explicit_with_default: condecimal(max_digits=3, decimal_places=2) = decimal.Decimal('3.14')
 
 """
     model_generator = ModelGenerator()

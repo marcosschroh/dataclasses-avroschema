@@ -11,7 +11,7 @@ The following list represent the avro logical types mapped to python types:
 | long      |  timestamp-micros | types.DateTimeMicro |
 | string    |  uuid        | uuid.uuid4 |
 | string    |  uuid        | uuid.UUID |
-| bytes     | decimal      | decimal.Decimal
+| bytes     | decimal      | types.condecimal |
 
 ## Date
 
@@ -214,28 +214,21 @@ UUIDLogicalTypes.avro_schema()
 
 ## Decimal
 
-The below code shows an example on how to use decimals. There's a few important things to note:
-* A default IS REQUIRED in order to set scale and precision on the Avro schema
-* It is strongly recommended to set these explicitly using `types.Decimal(scale=, precision=)`
-* They can be set implicitly by using a default `decimal.Decimal`
-* If set implicitly, scale and precision will be derived from the default as follows:
-```python
-    default: decimal.Decimal = decimal.Decimal('3.14')
-    sign, digits, exp = default.as_tuple()
-    precision = len(digits)
-    scale = exp * -1  # Avro schema defines scale as a positive, as_tuple provides negative
-```
-* This CAN and WILL have strange consequences if not careful, ESPECIALLY if constructing `decimal.Decimal` with a float. For example:
-```python
-    string_definition: decimal.Decimal = decimal.Decimal('3.14')
-    # scale = 2, precision = 3
-    float_definition: decimal.Decimal = decimal.Decimal(3.14)
-    # scale = 51, precision = 52
-```
+`Decimal` types in `avro` must specify two required attributes: `precision` and `scale`. `Precision` represents the amount of digits and `scale` the amount of decimal places.
+Because with the python type `decimal.Decimal` is not possible to supply the required arguments, `dataclasses-avroschema` provides a funtion to create the decimals.
+The function `types.condecimal` annotates the `decimal.Decimal` type and it adds the required attibutes.
+
+### Arguments to condecimal
+
+The following arguments are available when using the condecimal type function
+
+- max_digits (int): total number digits
+- decimal_places (int): total decimal places
 
 ```python title="Decimal example"
 import decimal
 import dataclasses
+import typing
 
 from dataclasses_avroschema import AvroModel, types
 
@@ -243,10 +236,10 @@ from dataclasses_avroschema import AvroModel, types
 @dataclasses.dataclass
 class DecimalLogicalTypes(AvroModel):
     "Decimal logical types"
-    explicit: decimal.Decimal = types.Decimal(scale=2, precision=3)
-    explicit_with_default: decimal.Decimal = types.Decimal(scale=2, precision=3, default=decimal.Decimal('3.14'))
-    implicit: decimal.Decimal = decimal.Decimal('3.14') # sets scale = 2, precision = 3, derived from provided default
-    # will_error: decimal.Decimal  # THIS WILL ERROR
+    money: types.condecimal(max_digits=3, decimal_places=2)
+    decimal_with_default: types.condecimal(max_digits=3, decimal_places=2) = decimal.Decimal('3.14')
+    optional_decimal: typing.Optional[types.condecimal(max_digits=3, decimal_places=2)] = None
+
 DecimalLogicalTypes.avro_schema()
 
 '{
@@ -254,7 +247,7 @@ DecimalLogicalTypes.avro_schema()
   "name": "DecimalLogicalTypes",
   "fields": [
     {
-      "name": "explicit",
+      "name": "money",
       "type": {
         "type": "bytes",
         "logicalType": "decimal",
@@ -263,7 +256,7 @@ DecimalLogicalTypes.avro_schema()
       }
     },
     {
-      "name": "explicit_with_default",
+      "name": "decimal_with_default",
       "type": {
         "type": "bytes",
         "logicalType": "decimal",
@@ -273,14 +266,17 @@ DecimalLogicalTypes.avro_schema()
       "default": "\\u013a"
     },
     {
-      "name": "implicit",
-      "type": {
-        "type": "bytes",
-        "logicalType": "decimal",
-        "precision": 3,
-        "scale": 2
-      },
-      "default": "\\u013a"
+      "name": "optional_decimal",
+      "type": [
+        "null",
+        {
+          "type": "bytes",
+          "logicalType": "decimal",
+          "precision": 3,
+          "scale": 2
+        }
+      ]
+      "default": "null"
     }
   ],
   "doc": "Decimal logical types"

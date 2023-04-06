@@ -249,45 +249,43 @@ class ModelGenerator:
         return isinstance(field_type, dict) and field_type.get("logicalType") is not None
 
     def parse_logical_type(self, *, field: JsonDict) -> str:
-        logical_type = field.get("logicalType") or field["type"]["logicalType"]
-
-        # add the logical type import
-        self.imports.add(self.logical_types_imports[logical_type])
         field_name = field.get("name")
+        default = field.get("default")
+        field = field if field_name is None else field["type"]
+        logical_type = field["logicalType"]
+
+        if logical_type == field_utils.DECIMAL:
+            # this is a special case for logical types
+            type = self.parse_decimal(field=field, default=default)
+        else:
+            # add the logical type import
+            self.imports.add(self.logical_types_imports[logical_type])
+            type = self.avro_type_to_python[logical_type]
 
         if field_name is not None:
-            field_repr = templates.field_template.safe_substitute(
-                name=field_name, type=self.avro_type_to_python[logical_type]
-            )
-
-            if logical_type == field_utils.DECIMAL:
-                # this is a special case for logical types
-                default_decimal = self.parse_decimal(field=field)
-                field_repr += templates.field_default_template.safe_substitute(default=default_decimal)
+            field_repr = templates.field_template.safe_substitute(name=field_name, type=type)
 
             return field_repr
-        return self.avro_type_to_python[logical_type]
+        return type
 
-    def parse_decimal(self, *, field: JsonDict) -> str:
-        schema: JsonDict = field["type"]
-        precision = schema["precision"]
-        scale = schema["scale"]
-        properties = f"scale={scale}, precision={precision}"
-        default = field.get("default")
+    def parse_decimal(self, *, field: JsonDict, default: typing.Optional[str] = None) -> str:
+        precision = field["precision"]
+        scale = field["scale"]
 
         if self.base_class == BaseClassEnum.AVRO_MODEL.value:
-            self.imports.add("from dataclasses_avroschema import types")
-
-            if default is not None:
-                default = templates.decimal_template.safe_substitute(
-                    value=serialization.string_to_decimal(value=default, schema=schema)
-                )
-                properties += f", default={default}"
-            return templates.decimal_type_template.safe_substitute(properties=properties)
+            self.imports.add("from dataclasses_avroschema.types import condecimal")
         else:
-            # we should render a pydantic condecimal
             self.imports.add("from pydantic import condecimal")
-            return templates.pydantic_decimal_type_template.safe_substitute(scale=scale, precision=precision)
+
+        field_repr = templates.decimal_type_template.safe_substitute(precision=precision, scale=scale)
+
+        if default is not None:
+            self.imports.add("import decimal")
+            default = templates.decimal_template.safe_substitute(
+                value=serialization.string_to_decimal(value=default, schema=field)
+            )
+            field_repr += templates.field_default_template.safe_substitute(default=default)
+        return field_repr
 
     def parse_union(self, *, field_types: typing.List, model_name: str) -> str:
         """

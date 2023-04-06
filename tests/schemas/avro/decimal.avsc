@@ -9,8 +9,7 @@
         "logicalType": "decimal",
         "precision": 3,
         "scale": 2
-      },
-      "default": "\\u013a"
+      }
     },
     {
       "name": "explicit",

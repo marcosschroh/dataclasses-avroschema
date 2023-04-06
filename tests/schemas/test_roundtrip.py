@@ -11,9 +11,6 @@ marks = {
     "union_type": [
         pytest.mark.xfail(raises=RuntimeError, reason="model generator borks on difficult union namespaces")
     ],
-    "decimal": [
-        pytest.mark.xfail(raises=ValueError, reason="model generator looses decimal precision for default-null fields")
-    ],
     "user_with_field_metadata": [
         pytest.mark.xfail(raises=AssertionError, reason="model generator does not support metadata yet")
     ],
@@ -45,6 +42,8 @@ def test_roundtrip(filename: Path, schema: BaseClassEnum):
         code = compile(result, filename.with_suffix(".py").name, "exec")
     except Exception as e:
         raise RuntimeError(f"Failed to compile {filename}:\n" + result) from e
+
+    print(code)
 
     ns = {}
     try:
