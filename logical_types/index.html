@@ -381,6 +381,19 @@
     Decimal
   </a>
   
+    <nav class="md-nav" aria-label="Decimal">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#arguments-to-condecimal" class="md-nav__link">
+    Arguments to condecimal
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -630,6 +643,19 @@
     Decimal
   </a>
   
+    <nav class="md-nav" aria-label="Decimal">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#arguments-to-condecimal" class="md-nav__link">
+    Arguments to condecimal
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -699,7 +725,7 @@
 <tr>
 <td>bytes</td>
 <td>decimal</td>
-<td>decimal.Decimal</td>
+<td>types.condecimal</td>
 </tr>
 </tbody>
 </table>
@@ -889,24 +915,18 @@
 </code></pre></div>
 <p><em>(This script is complete, it should run "as is")</em></p>
 <h2 id="decimal">Decimal</h2>
-<p>The below code shows an example on how to use decimals. There's a few important things to note:
-* A default IS REQUIRED in order to set scale and precision on the Avro schema
-* It is strongly recommended to set these explicitly using <code>types.Decimal(scale=, precision=)</code>
-* They can be set implicitly by using a default <code>decimal.Decimal</code>
-* If set implicitly, scale and precision will be derived from the default as follows:
-<div class="highlight"><pre><span></span><code>    <span class="n">default</span><span class="p">:</span> <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span> <span class="o">=</span> <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">(</span><span class="s1">&#39;3.14&#39;</span><span class="p">)</span>
-    <span class="n">sign</span><span class="p">,</span> <span class="n">digits</span><span class="p">,</span> <span class="n">exp</span> <span class="o">=</span> <span class="n">default</span><span class="o">.</span><span class="n">as_tuple</span><span class="p">()</span>
-    <span class="n">precision</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">digits</span><span class="p">)</span>
-    <span class="n">scale</span> <span class="o">=</span> <span class="n">exp</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span>  <span class="c1"># Avro schema defines scale as a positive, as_tuple provides negative</span>
-</code></pre></div>
-* This CAN and WILL have strange consequences if not careful, ESPECIALLY if constructing <code>decimal.Decimal</code> with a float. For example:
-<div class="highlight"><pre><span></span><code>    <span class="n">string_definition</span><span class="p">:</span> <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span> <span class="o">=</span> <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">(</span><span class="s1">&#39;3.14&#39;</span><span class="p">)</span>
-    <span class="c1"># scale = 2, precision = 3</span>
-    <span class="n">float_definition</span><span class="p">:</span> <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span> <span class="o">=</span> <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">(</span><span class="mf">3.14</span><span class="p">)</span>
-    <span class="c1"># scale = 51, precision = 52</span>
-</code></pre></div></p>
+<p><code>Decimal</code> types in <code>avro</code> must specify two required attributes: <code>precision</code> and <code>scale</code>. <code>Precision</code> represents the amount of digits and <code>scale</code> the amount of decimal places.
+Because with the python type <code>decimal.Decimal</code> is not possible to supply the required arguments, <code>dataclasses-avroschema</code> provides a funtion to create the decimals.
+The function <code>types.condecimal</code> annotates the <code>decimal.Decimal</code> type and it adds the required attibutes.</p>
+<h3 id="arguments-to-condecimal">Arguments to condecimal</h3>
+<p>The following arguments are available when using the condecimal type function</p>
+<ul>
+<li>max_digits (int): total number digits</li>
+<li>decimal_places (int): total decimal places</li>
+</ul>
 <div class="highlight"><span class="filename">Decimal example</span><pre><span></span><code><span class="kn">import</span> <span class="nn">decimal</span>
 <span class="kn">import</span> <span class="nn">dataclasses</span>
+<span class="kn">import</span> <span class="nn">typing</span>
 
 <span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span><span class="p">,</span> <span class="n">types</span>
 
@@ -914,10 +934,10 @@
 <span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span> <span class="nc">DecimalLogicalTypes</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
     <span class="s2">&quot;Decimal logical types&quot;</span>
-    <span class="n">explicit</span><span class="p">:</span> <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span> <span class="o">=</span> <span class="n">types</span><span class="o">.</span><span class="n">Decimal</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-    <span class="n">explicit_with_default</span><span class="p">:</span> <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span> <span class="o">=</span> <span class="n">types</span><span class="o">.</span><span class="n">Decimal</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">(</span><span class="s1">&#39;3.14&#39;</span><span class="p">))</span>
-    <span class="n">implicit</span><span class="p">:</span> <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span> <span class="o">=</span> <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">(</span><span class="s1">&#39;3.14&#39;</span><span class="p">)</span> <span class="c1"># sets scale = 2, precision = 3, derived from provided default</span>
-    <span class="c1"># will_error: decimal.Decimal  # THIS WILL ERROR</span>
+    <span class="n">money</span><span class="p">:</span> <span class="n">types</span><span class="o">.</span><span class="n">condecimal</span><span class="p">(</span><span class="n">max_digits</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">decimal_places</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">decimal_with_default</span><span class="p">:</span> <span class="n">types</span><span class="o">.</span><span class="n">condecimal</span><span class="p">(</span><span class="n">max_digits</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">decimal_places</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="o">=</span> <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">(</span><span class="s1">&#39;3.14&#39;</span><span class="p">)</span>
+    <span class="n">optional_decimal</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">types</span><span class="o">.</span><span class="n">condecimal</span><span class="p">(</span><span class="n">max_digits</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">decimal_places</span><span class="o">=</span><span class="mi">2</span><span class="p">)]</span> <span class="o">=</span> <span class="kc">None</span>
+
 <span class="n">DecimalLogicalTypes</span><span class="o">.</span><span class="n">avro_schema</span><span class="p">()</span>
 
 <span class="s1">&#39;{</span>
@@ -925,7 +945,7 @@
   <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;DecimalLogicalTypes&quot;</span><span class="p">,</span>
   <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">[</span>
     <span class="p">{</span>
-      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;explicit&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;money&quot;</span><span class="p">,</span>
       <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;bytes&quot;</span><span class="p">,</span>
         <span class="s2">&quot;logicalType&quot;</span><span class="p">:</span> <span class="s2">&quot;decimal&quot;</span><span class="p">,</span>
@@ -934,7 +954,7 @@
       <span class="p">}</span>
     <span class="p">},</span>
     <span class="p">{</span>
-      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;explicit_with_default&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;decimal_with_default&quot;</span><span class="p">,</span>
       <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;bytes&quot;</span><span class="p">,</span>
         <span class="s2">&quot;logicalType&quot;</span><span class="p">:</span> <span class="s2">&quot;decimal&quot;</span><span class="p">,</span>
@@ -944,14 +964,17 @@
       <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">u013a&quot;</span>
     <span class="p">},</span>
     <span class="p">{</span>
-      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;implicit&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;bytes&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;logicalType&quot;</span><span class="p">:</span> <span class="s2">&quot;decimal&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;precision&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
-        <span class="s2">&quot;scale&quot;</span><span class="p">:</span> <span class="mi">2</span>
-      <span class="p">},</span>
-      <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">u013a&quot;</span>
+      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;optional_decimal&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;null&quot;</span><span class="p">,</span>
+        <span class="p">{</span>
+          <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;bytes&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;logicalType&quot;</span><span class="p">:</span> <span class="s2">&quot;decimal&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;precision&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+          <span class="s2">&quot;scale&quot;</span><span class="p">:</span> <span class="mi">2</span>
+        <span class="p">}</span>
+      <span class="p">]</span>
+      <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="s2">&quot;null&quot;</span>
     <span class="p">}</span>
   <span class="p">],</span>
   <span class="s2">&quot;doc&quot;</span><span class="p">:</span> <span class="s2">&quot;Decimal logical types&quot;</span>
