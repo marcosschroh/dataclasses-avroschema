@@ -19,7 +19,7 @@ DATETIME_MICROS_TEMPLATE = (
     "datetime.datetime($year, $month, $day, $hour, $minute, $second, $microsecond, tzinfo=datetime.timezone.utc)"
 )
 DECIMAL_TEMPLATE = "decimal.Decimal('$value')"
-DECIMAL_TYPE_TEMPLATE = "types.Decimal($properties)"
+DECIMAL_TYPE_TEMPLATE = "condecimal(max_digits=$precision, decimal_places=$scale)"
 
 ENUM_SYMBOL_TEMPLATE = "$key = $value"
 ENUM_TEMPLATE = """
@@ -51,7 +51,6 @@ $classes
 
 # Pydanntic specific
 PYDANTIC_FIELD = "Field($properties)"
-PYDANTIC_DECIMAL_TYPE_TEMPLATE = "condecimal(max_digits=$precision, decimal_places=$scale)"
 
 field_template = Template(FIELD_TEMPLATE)
 metaclass_field_template = Template(METACLASS_FIELD_TEMPLATE)
@@ -64,7 +63,6 @@ dict_template = Template(DICT_TEMPLATE)
 fixed_template = Template(FIXED_TEMPLATE)
 decimal_template = Template(DECIMAL_TEMPLATE)
 decimal_type_template = Template(DECIMAL_TYPE_TEMPLATE)
-pydantic_decimal_type_template = Template(PYDANTIC_DECIMAL_TYPE_TEMPLATE)
 enum_symbol_template = Template(ENUM_SYMBOL_TEMPLATE)
 enum_template = Template(ENUM_TEMPLATE)
 dataclass_field_template = Template(DATACLASS_FIELD)

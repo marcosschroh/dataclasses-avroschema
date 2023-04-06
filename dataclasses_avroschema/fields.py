@@ -22,7 +22,7 @@ from dataclasses_avroschema import schema_generator, serialization, types, utils
 
 from . import field_utils
 from .exceptions import InvalidMap
-from .types import JsonDict
+from .types import CUSTOM_TYPES, JsonDict
 
 PY_VER = sys.version_info
 
@@ -50,7 +50,6 @@ class BaseField:
     type: typing.Any  # store the python primitive type
     default: typing.Any
     parent: typing.Any
-    field_info: typing.Optional[types.FieldInfo] = None
     metadata: typing.Optional[typing.Mapping] = None
     model_metadata: typing.Optional[utils.SchemaMetadata] = None
 
@@ -433,6 +432,8 @@ class UnionField(BaseField):
 
 @dataclasses.dataclass
 class FixedField(BaseField):
+    field_info: typing.Optional[types.FieldInfo] = None
+
     def get_avro_type(self) -> JsonDict:
         avro_type = {
             "type": field_utils.FIXED,
@@ -776,77 +777,47 @@ class RecordField(BaseField):
 
 @dataclasses.dataclass
 class DecimalField(BaseField):
-    precision: int = -1
-    scale: int = 0
+    field_info: typing.Optional[types.FieldInfo] = None
+    max_digits: int = -1  # amount of digits, in avro is called `precision`
+    decimal_places: int = 0  # amount of digits to the right side, in avro is called `scale`
 
     def __post_init__(self) -> None:
         self.set_precision_scale()
 
     def set_precision_scale(self) -> None:
-        if self.default != types.MissingSentinel:
-            if isinstance(self.default, decimal.Decimal):
-                _, digits, scale = self.default.as_tuple()
-                self.scale = int(scale) * -1  # Make scale positive, as that's what Avro expects
-                # decimal.Context has a precision property
-                # BUT the precision property is independent of the number of digits stored in the Decimal instance
-                # # # FROM THE DOCS HERE https://docs.python.org/3/library/decimal.html
-                #  The context precision does not affect how many digits are stored.
-                #  That is determined exclusively by the number of digits in value.
-                #  For example, Decimal('3.00000') records all five zeros even if the context precision is only three.
-                # # #
-                # Avro is concerned with *what form the number takes* and not with *handling errors in the Python env*
-                # so we take the number of digits stored in the decimal as Avro precision
-                self.precision = len(digits)
-            elif isinstance(self.default, types.Decimal):
-                self.scale = self.default.scale
-                self.precision = self.default.precision
-            else:
-                raise ValueError("decimal.Decimal default types must be either decimal.Decimal or types.Decimal")
-        else:
-            raise ValueError(
-                "decimal.Decimal default types must be specified to provide precision and scale,"
-                " and must be either decimal.Decimal or types.Decimal"
-            )
+        if self.field_info is not None:
+            self.max_digits = self.field_info.max_digits
+            self.decimal_places = self.field_info.decimal_places
 
         # Validation on precision and scale per Avro schema
-        if self.precision <= 0:
-            raise ValueError("Precision must be a positive integer greater than zero")
+        if self.max_digits <= 0:
+            raise ValueError("`max_digits` must be a positive integer greater than zero")
 
-        if self.scale < 0 or self.precision < self.scale:
-            raise ValueError("Scale must be zero or a positive integer less than or equal to the precision.")
-
-            # Just pull the precision from default context and default out scale
-            # Not ideal
-            #
-            # self.precision = decimal.Context().prec
+        if self.decimal_places < 0 or self.max_digits < self.decimal_places:
+            raise ValueError("`decimal_places` must be zero or a positive integer less than or equal to the precision.")
 
     def get_avro_type(self) -> typing.Union[JsonDict, typing.List[typing.Union[str, JsonDict]]]:
         avro_type = {
             "type": field_utils.BYTES,
             "logicalType": field_utils.DECIMAL,
-            "precision": self.precision,
-            "scale": self.scale,
+            "precision": self.max_digits,
+            "scale": self.decimal_places,
         }
-        if not isinstance(self.default, decimal.Decimal) and self.default.default is None:
+
+        if self.default is None:
             return ["null", avro_type]
 
         return avro_type
 
     def get_default_value(self) -> typing.Union[str, dataclasses._MISSING_TYPE, None]:
-        default = self.default
+        default = super().get_default_value()
 
-        if isinstance(default, types.Decimal):
-            default = default.default
-
-        if default == types.MissingSentinel:
-            return dataclasses.MISSING
-        if default is None:
-            return None
-
-        return serialization.decimal_to_str(default, self.precision, self.scale)
+        if default not in (dataclasses.MISSING, None):
+            return serialization.decimal_to_str(default, self.max_digits, self.decimal_places)
+        return default
 
     def fake(self) -> decimal.Decimal:
-        return fake.pydecimal(right_digits=self.scale, left_digits=self.precision - self.scale)
+        return fake.pydecimal(right_digits=self.decimal_places, left_digits=self.max_digits - self.decimal_places)
 
 
 INMUTABLE_FIELDS_CLASSES = {
@@ -880,36 +851,43 @@ LOGICAL_TYPES_FIELDS_CLASSES = {
     uuid.uuid4: UUIDField,
     uuid.UUID: UUIDField,
     bytes: BytesField,
+}
+
+SPACIAL_ANNOTATED_TYPES = {
     decimal.Decimal: DecimalField,
+    types.Fixed: FixedField,
 }
 
 PRIMITIVE_LOGICAL_TYPES_FIELDS_CLASSES = {
     **INMUTABLE_FIELDS_CLASSES,  # type: ignore
     **LOGICAL_TYPES_FIELDS_CLASSES,  # type: ignore
-    types.Fixed: FixedField,
 }
 
 LOGICAL_CLASSES = LOGICAL_TYPES_FIELDS_CLASSES.keys()
+SPECIAL_ANNOTATED_CLASSES = SPACIAL_ANNOTATED_TYPES.keys()
 
 FieldType = typing.Union[
-    StringField,
-    LongField,
     BooleanField,
-    DoubleField,
     BytesField,
-    NoneField,
-    ListField,
-    DictField,
-    UnionField,
-    FixedField,
-    EnumField,
-    SelfReferenceField,
     DateField,
-    TimeMilliField,
     DatetimeField,
-    UUIDField,
-    RecordField,
+    DatetimeMicroField,
+    DecimalField,
+    DictField,
+    DoubleField,
+    EnumField,
+    FixedField,
     ImmutableField,
+    ListField,
+    LongField,
+    NoneField,
+    RecordField,
+    SelfReferenceField,
+    StringField,
+    TimeMicroField,
+    TimeMilliField,
+    UnionField,
+    UUIDField,
 ]
 
 
@@ -928,11 +906,14 @@ def field_factory(
 
     field_info = None
 
-    if utils.is_annotated(native_type):
+    if native_type not in CUSTOM_TYPES and utils.is_annotated(native_type):
         a_type, *extra_args = get_args(native_type)
         field_info = next((arg for arg in extra_args if isinstance(arg, types.FieldInfo)), None)
 
-        if field_info is None:
+        if field_info is None or a_type in (decimal.Decimal,):
+            # it means that it is a custom type defined by us
+            # `Int32`, `Float32`,`TimeMicro` or `DateTimeMicro`
+            # or a type Annotated with the end user
             native_type = a_type
 
     if native_type in field_utils.PYTHON_INMUTABLE_TYPES:
@@ -944,7 +925,6 @@ def field_factory(
             metadata=metadata,
             model_metadata=model_metadata,
             parent=parent,
-            field_info=field_info,
         )
     elif utils.is_self_referenced(native_type):
         return SelfReferenceField(
@@ -954,10 +934,10 @@ def field_factory(
             metadata=metadata,
             model_metadata=model_metadata,
             parent=parent,
-            field_info=field_info,
         )
-    elif native_type is types.Fixed:
-        return FixedField(
+    elif native_type in (types.Fixed, decimal.Decimal):
+        klass = SPACIAL_ANNOTATED_TYPES[native_type]  # type: ignore
+        return klass(  # type: ignore
             name=name,
             type=native_type,
             default=default,
@@ -976,7 +956,6 @@ def field_factory(
             metadata=metadata,
             model_metadata=model_metadata,
             parent=parent,
-            field_info=field_info,
         )
     elif isinstance(native_type, GenericAlias):  # type: ignore
         origin = native_type.__origin__
@@ -1007,7 +986,6 @@ def field_factory(
             default_factory=default_factory,
             model_metadata=model_metadata,
             parent=parent,
-            field_info=field_info,
         )
     elif inspect.isclass(native_type) and issubclass(native_type, enum.Enum):
         return EnumField(
@@ -1017,7 +995,6 @@ def field_factory(
             metadata=metadata,
             model_metadata=model_metadata,
             parent=parent,
-            field_info=field_info,
         )
     elif types.UnionType is not None and isinstance(native_type, types.UnionType):
         # we need to check whether types.UnionType because it works only in
@@ -1032,7 +1009,6 @@ def field_factory(
             default_factory=default_factory,
             model_metadata=model_metadata,
             parent=parent,
-            field_info=field_info,
         )
     elif inspect.isclass(native_type) and issubclass(native_type, schema_generator.AvroModel):
         return RecordField(
@@ -1042,7 +1018,6 @@ def field_factory(
             metadata=metadata,
             model_metadata=model_metadata,
             parent=parent,
-            field_info=field_info,
         )
     else:
         msg = (

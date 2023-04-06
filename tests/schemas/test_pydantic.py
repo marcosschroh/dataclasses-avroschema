@@ -325,9 +325,9 @@ def test_serialization(color_enum):
     class UserAdvance(AvroBaseModel):
         name: str
         age: int
-        explicit: decimal.Decimal = types.Decimal(scale=2, precision=3)
-        explicit_with_default: decimal.Decimal = types.Decimal(scale=2, precision=3, default=decimal.Decimal("3.14"))
-        implicit: decimal.Decimal = decimal.Decimal("3.14")
+        explicit: types.condecimal(max_digits=3, decimal_places=2)
+        explicit_with_default: typing.Optional[types.condecimal(max_digits=3, decimal_places=2)] = None
+        implicit: types.condecimal(max_digits=3, decimal_places=2) = decimal.Decimal("3.14")
         pets: typing.List[str] = Field(default_factory=lambda: ["dog", "cat"])
         accounts: typing.Dict[str, int] = Field(default_factory=lambda: {"key": 1})
         has_car: bool = False
@@ -342,7 +342,6 @@ def test_serialization(color_enum):
     event = user.serialize()
 
     # we need to update the fields that have `types.Decimal`, otherwise the objects will be different
-    user.explicit_with_default = user.explicit_with_default.default
     assert UserAdvance.deserialize(data=event) == user
 
 

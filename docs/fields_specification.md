@@ -102,7 +102,7 @@ Language implementations must ignore unknown logical types when reading, and sho
 | long      |  timestamp-micros | types.DateTimeMicro |
 | string    |  uuid        | uuid.uuid4 |
 | string    |  uuid        | uuid.UUID |
-| bytes     | decimal      | decimal.Decimal |
+| bytes     | decimal      | types.condecimal |
 
 ### Avro Field and Python Types Summary
 

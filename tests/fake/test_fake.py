@@ -54,7 +54,7 @@ def test_fake_with_logical_types() -> None:
         meeting_time_micro: types.TimeMicro
         release_datetime: datetime.datetime
         release_datetime_micro: types.DateTimeMicro
-        event_uuid: uuid.uuid4
+        event_uuid: uuid.UUID
 
     assert isinstance(LogicalTypes.fake(), LogicalTypes)
 
@@ -196,8 +196,8 @@ def test_decimals() -> None:
     class User(AvroModel):
         name: str
         age: int
-        test_score_1: decimal.Decimal = decimal.Decimal("100.00")
-        test_score_2: decimal.Decimal = types.Decimal(scale=5, precision=11)
+        test_score_1: types.condecimal(max_digits=11, decimal_places=5)
+        test_score_2: types.condecimal(max_digits=5, decimal_places=2) = decimal.Decimal("100.00")
 
     assert isinstance(User.fake(), User)
 
