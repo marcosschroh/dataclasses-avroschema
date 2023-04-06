@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## 0.41.0 (2023-04-06)
+
+### BREAKING CHANGE
+
+- types.Decimal has been replaced by condecimal (Annotated[decimal.Decimal]). Closes #260 (#282)
+
 ## 0.40.0 (2023-03-29)
 
 ### Fix
