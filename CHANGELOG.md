@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## 0.41.1 (2023-04-06)
+
+### Fix
+
+- dependencies updated. Model generator documentation updated (#285)
+
 ## 0.41.0 (2023-04-06)
 
 ### BREAKING CHANGE
