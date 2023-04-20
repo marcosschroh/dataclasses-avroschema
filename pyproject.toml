@@ -33,19 +33,19 @@ dc-avro = {version = "^0.6.3", optional = true}
 faust-streaming = "^0.10.8"
 
 [tool.poetry.group.dev.dependencies]
-mypy = "^1.1.1"
-ruff = "^0.0.259"
-black = "^23.1.0"
-pytest = "^7.2.2"
-pytest-cov = "^4.0.0"
-types-pytz = "^2023.2.0.1"
+mypy = "^1"
+ruff = "^0"
+black = "^23"
+pytest = "^7"
+pytest-cov = "^4"
+types-pytz = "^2023"
 
 [tool.poetry.group.docs.dependencies]
-mkdocs = "^1.4.2"
-mkdocs-material = "^9.1.4"
+mkdocs = "^1"
+mkdocs-material = "^9"
 
 [tool.poetry.group.ci-publish.dependencies]
-commitizen = "^2.42.1"
+commitizen = "^2"
 
 [tool.poetry.extras]
 pydantic = [
