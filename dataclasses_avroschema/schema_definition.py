@@ -60,9 +60,12 @@ class BaseSchemaDefinition(abc.ABC):
 @dataclasses.dataclass
 class AvroSchemaDefinition(BaseSchemaDefinition):
     fields: typing.List[FieldType] = dataclasses.field(default_factory=list)
+    # mapping of field_name: FieldType
+    fields_map: typing.Dict[str, FieldType] = dataclasses.field(default_factory=dict)
 
     def __post_init__(self) -> None:
         self.fields = self.parse_dataclasses_fields()
+        self.fields_map = {field.name: field for field in self.fields}
 
     def parse_dataclasses_fields(self) -> typing.List[FieldType]:
         if utils.is_faust_model(self.klass):

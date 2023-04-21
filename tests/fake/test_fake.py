@@ -113,8 +113,27 @@ def test_fake_one_to_many_relationship() -> None:
         age: int
         addresses: typing.List[Address]
 
-    assert isinstance(User.fake(), User)
+    user = User.fake()
+    assert isinstance(user, User)
     assert User.avro_schema()
+
+
+def test_fake_one_to_many_with_tuples() -> None:
+    """
+    Test schema relationship one-to-many
+    """
+
+    class Address(AvroModel):
+        street: str
+        street_number: int
+
+    class User(AvroModel):
+        addresses: typing.Tuple[Address, ...]
+
+    user = User.fake()
+    assert isinstance(user, User)
+    assert User.avro_schema()
+    assert isinstance(user.addresses, tuple)
 
 
 def test_fake_one_to_many_map_relationship() -> None:

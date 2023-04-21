@@ -16,11 +16,9 @@ from collections import OrderedDict
 import inflect
 from faker import Faker
 from pytz import utc
-from typing_extensions import get_args
+from typing_extensions import get_args, get_origin
 
-from dataclasses_avroschema import schema_generator, serialization, types, utils
-
-from . import field_utils
+from . import field_utils, schema_generator, serialization, types, utils
 from .exceptions import InvalidMap
 from .types import CUSTOM_TYPES, JsonDict
 
@@ -255,7 +253,7 @@ class ContainerField(BaseField):
 
 
 @dataclasses.dataclass
-class ListField(ContainerField):
+class BaseListField(ContainerField):
     items_type: typing.Any = None
     internal_field: typing.Any = None
 
@@ -304,8 +302,24 @@ class ListField(ContainerField):
 
         self.items_type = self.internal_field.get_avro_type()
 
+
+@dataclasses.dataclass
+class ListField(BaseListField):
     def fake(self) -> typing.List:
         return [self.internal_field.fake()]
+
+
+@dataclasses.dataclass
+class TupleField(BaseListField):
+    """
+    This behaves on the same way as `ListField` with
+    as in avro schema does not exist `tuples`
+
+    The reason to have this is to generate a proper `fake`
+    """
+
+    def fake(self) -> typing.Tuple:
+        return (self.internal_field.fake(),)
 
 
 @dataclasses.dataclass
@@ -832,7 +846,7 @@ INMUTABLE_FIELDS_CLASSES = {
 }
 
 CONTAINER_FIELDS_CLASSES = {
-    tuple: ListField,
+    tuple: TupleField,
     list: ListField,
     collections.abc.Sequence: ListField,
     collections.abc.MutableSequence: ListField,
@@ -958,7 +972,7 @@ def field_factory(
             parent=parent,
         )
     elif isinstance(native_type, GenericAlias):  # type: ignore
-        origin = native_type.__origin__
+        origin = get_origin(native_type)
 
         if origin not in (
             tuple,

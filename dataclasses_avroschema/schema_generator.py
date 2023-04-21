@@ -8,10 +8,8 @@ from typing import Any, Dict, List, Optional, Set, Type, TypeVar, Union
 from dacite import Config, from_dict
 from fastavro.validation import validate
 
-from . import case
-from .fields import EnumField, FieldType, RecordField, UnionField
+from . import case, fields, serialization
 from .schema_definition import AvroSchemaDefinition
-from .serialization import deserialize, serialize, to_json
 from .types import Fixed, JsonDict
 from .utils import SchemaMetadata, is_dataclass_or_pydantic_model
 
@@ -97,7 +95,7 @@ class AvroModel:
         return json.loads(json.dumps(avro_schema))
 
     @classmethod
-    def get_fields(cls: Type[CT]) -> List[FieldType]:
+    def get_fields(cls: Type[CT]) -> List[fields.FieldType]:
         if cls.schema_def is None:
             cls.generate_schema()
         return cls.schema_def.fields  # type: ignore
@@ -106,23 +104,41 @@ class AvroModel:
     def _get_enum_type_map(cls: Type[CT]) -> Dict[str, enum.EnumMeta]:
         enum_types = {}
         for field_type in cls.get_fields():
-            if isinstance(field_type, EnumField):
+            if isinstance(field_type, fields.EnumField):
                 enum_types[field_type.name] = field_type.type
-            elif isinstance(field_type, UnionField):
+            elif isinstance(field_type, fields.UnionField):
                 for sub_type in field_type.type.__args__:
                     if inspect.isclass(sub_type) and issubclass(sub_type, enum.Enum):
                         enum_types[field_type.name] = sub_type
-            elif isinstance(field_type, RecordField):
+            elif isinstance(field_type, fields.RecordField):
                 enum_types.update(field_type.type._get_enum_type_map())
         return enum_types
 
     @classmethod
+    def _deserialize_list_type(cls: Type[CT], *, field_name: str, payload: Any) -> List:
+        data: List = []
+        for value in payload:
+            if isinstance(value, dict):
+                data.append(cls._deserialize_complex_types(value))
+            elif isinstance(value, list):
+                data.append(cls._deserialize_list_type(field_name=field_name, payload=value))
+            else:
+                data.append(value)
+        return data
+
+    @classmethod
     def _deserialize_complex_types(cls: Type[CT], payload: Dict[str, Any]) -> Dict:
-        output = {}
+        output: Dict[str, Any] = {}
         enum_type_map = cls._get_enum_type_map()
         for field, value in payload.items():
             if isinstance(value, dict):
                 output[field] = cls._deserialize_complex_types(value)
+            elif isinstance(value, list):
+                data = cls._deserialize_list_type(field_name=field, payload=value)
+                if isinstance(cls.schema_def.fields_map[field], fields.TupleField):  # type: ignore
+                    output[field] = tuple(data)
+                else:
+                    output[field] = data
             elif field in enum_type_map and isinstance(value, str):
                 try:
                     enum_field = enum_type_map[field]
@@ -148,8 +164,10 @@ class AvroModel:
             return value.default
         elif isinstance(value, dict):
             return {k: AvroModel.standardize_custom_type(v) for k, v in value.items()}
-        elif isinstance(value, (list, tuple)):
+        elif isinstance(value, list):
             return [AvroModel.standardize_custom_type(v) for v in value]
+        elif isinstance(value, tuple):
+            return tuple(AvroModel.standardize_custom_type(v) for v in value)
         elif issubclass(type(value), enum.Enum):
             return value.value
         return value
@@ -162,7 +180,7 @@ class AvroModel:
     def serialize(self, serialization_type: str = AVRO) -> bytes:
         schema = self.avro_schema_to_python()
 
-        return serialize(self.asdict(), schema, serialization_type=serialization_type)
+        return serialization.serialize(self.asdict(), schema, serialization_type=serialization_type)
 
     @classmethod
     def deserialize(
@@ -177,7 +195,7 @@ class AvroModel:
             writer_schema: JsonDict = writer_schema.avro_schema_to_python()  # type: ignore
 
         schema = cls.avro_schema_to_python()
-        payload = deserialize(
+        payload = serialization.deserialize(
             data, schema, serialization_type=serialization_type, writer_schema=writer_schema  # type: ignore
         )
         output = cls._deserialize_complex_types(payload)
@@ -200,7 +218,7 @@ class AvroModel:
         return self.asdict()
 
     def to_json(self) -> str:
-        data = to_json(self.asdict())
+        data = serialization.to_json(self.asdict())
         return json.dumps(data)
 
     @classmethod

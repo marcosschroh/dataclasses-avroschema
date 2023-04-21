@@ -138,8 +138,8 @@ def serialize_value(*, value: typing.Any) -> typing.Any:
         value = str(value)
     elif isinstance(value, dict):
         value = to_json(value)
-    elif isinstance(value, list):
-        value = [serialize_value(value=item) for item in value]
+    elif isinstance(value, (list, tuple)):
+        value = type(value)(serialize_value(value=item) for item in value)
 
     return value
 
