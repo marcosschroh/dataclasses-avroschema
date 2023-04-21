@@ -72,26 +72,36 @@ def test_one_to_many_relationship():
         name: str
         age: int
         addresses: typing.List[Address]
+        addresses_as_tuple: typing.Tuple[Address, ...]
 
     created_at = datetime.datetime(2019, 10, 12, 17, 57, 42, tzinfo=datetime.timezone.utc)
     address_data = {"street": "test", "street_number": 10, "created_at": created_at}
 
     address = Address(**address_data)
+    second_address = Address(**address_data)
 
     data_user = {
         "name": "john",
         "age": 20,
         "addresses": [address],
+        "addresses_as_tuple": (
+            address,
+            second_address,
+        ),
     }
 
     user = User(**data_user)
 
-    avro_binary = b"\x08john(\x02\x08test\x14\xe0\xd7\xf3\x91\xb8[\x00"
-    avro_json_binary = b'{"name": "john", "age": 20, "addresses": [{"street": "test", "street_number": 10, "created_at": 1570903062000}]}'  # noqa
+    avro_binary = b"\x08john(\x02\x08test\x14\xe0\xd7\xf3\x91\xb8[\x00\x04\x08test\x14\xe0\xd7\xf3\x91\xb8[\x08test\x14\xe0\xd7\xf3\x91\xb8[\x00"  # noqa
+    avro_json_binary = b'{"name": "john", "age": 20, "addresses": [{"street": "test", "street_number": 10, "created_at": 1570903062000}], "addresses_as_tuple": [{"street": "test", "street_number": 10, "created_at": 1570903062000}, {"street": "test", "street_number": 10, "created_at": 1570903062000}]}'  # noqa
     expected = {
         "name": "john",
         "age": 20,
         "addresses": [{"street": "test", "street_number": 10, "created_at": created_at}],
+        "addresses_as_tuple": (
+            {"street": "test", "street_number": 10, "created_at": created_at},
+            {"street": "test", "street_number": 10, "created_at": created_at},
+        ),
     }
 
     assert user.serialize() == avro_binary
