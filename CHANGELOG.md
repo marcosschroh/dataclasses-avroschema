@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## 0.42.0 (2023-04-21)
+
+### Feat
+
+- TupleField added in order to deserialize typing.Tuple as tuples rather than list. Closes #291 (#296)
+
 ## 0.41.2 (2023-04-20)
 
 ### Fix
