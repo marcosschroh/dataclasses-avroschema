@@ -13,7 +13,7 @@ except ImportError:  # pragma: no cover
 
 try:
     import pydantic  # pragma: no cover
-except ImportError:  # type: ignore # pragma: no cover
+except ImportError:  # pragma: no cover
     pydantic = None  # type: ignore # pragma: no cover
 
 
@@ -65,7 +65,7 @@ def is_self_referenced(a_type: type) -> bool:
     return (
         isinstance(a_type, typing._GenericAlias)  # type: ignore
         and a_type.__args__
-        and isinstance(a_type.__args__[0], typing.ForwardRef)  # type: ignore
+        and isinstance(a_type.__args__[0], typing.ForwardRef)
     )
 
 

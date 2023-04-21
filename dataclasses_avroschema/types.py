@@ -7,7 +7,7 @@ import typing
 if sys.version_info >= (3, 9):
     from typing import Annotated
 else:
-    from typing_extensions import Annotated  # type: ignore # pragma: no cover
+    from typing_extensions import Annotated  # pragma: no cover
 
 if sys.version_info >= (3, 10):
     from types import UnionType  # pragma: no cover
@@ -19,10 +19,10 @@ JsonDict = typing.Dict[str, typing.Any]
 
 
 class FieldInfo:
-    def __init__(self, **kwargs) -> None:
-        self.type = kwargs.get("type")
-        self.max_digits = kwargs.get("max_digits", -1)
-        self.decimal_places = kwargs.get("decimal_places", 0)
+    def __init__(self, type: str, max_digits: int = -1, decimal_places: int = 0) -> None:
+        self.type = type
+        self.max_digits = max_digits
+        self.decimal_places = decimal_places
 
     def __repr__(self) -> str:
         return f"FieldInfo(type='{self.type}', max_digits={self.max_digits}, decimal_places={self.decimal_places})"
@@ -54,7 +54,7 @@ class Fixed(typing.Generic[T]):
         return f"{self.size}"
 
 
-def condecimal(*, max_digits, decimal_places) -> typing.Type[decimal.Decimal]:
+def condecimal(*, max_digits: int, decimal_places: int) -> typing.Type[decimal.Decimal]:
     return Annotated[  # type: ignore[return-value]
         decimal.Decimal, FieldInfo(type="Decimal", max_digits=max_digits, decimal_places=decimal_places)
     ]

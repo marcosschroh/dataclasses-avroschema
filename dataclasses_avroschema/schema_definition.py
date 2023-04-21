@@ -8,7 +8,7 @@ from dataclasses_avroschema import utils
 from dataclasses_avroschema.fields import AvroField, FieldType
 
 
-@dataclasses.dataclass  # type: ignore
+@dataclasses.dataclass
 class BaseSchemaDefinition(abc.ABC):
     """
     Minimal Schema definition
@@ -80,7 +80,7 @@ class AvroSchemaDefinition(BaseSchemaDefinition):
                 dataclass_field.name,
                 dataclass_field.type,
                 default=dataclass_field.default,
-                default_factory=dataclass_field.default_factory,  # type: ignore  # TODO: resolve mypy
+                default_factory=dataclass_field.default_factory,
                 metadata=dict(dataclass_field.metadata),
                 model_metadata=self.metadata,
                 parent=self.parent,

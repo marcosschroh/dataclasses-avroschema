@@ -35,15 +35,8 @@ fake = Faker()
 p = inflect.engine()
 
 
-@dataclasses.dataclass  # type: ignore
+@dataclasses.dataclass(slots=True)
 class BaseField:
-    __slots__ = (
-        "name",
-        "type",
-        "default",
-        "parent",
-    )
-
     name: str
     type: typing.Any  # store the python primitive type
     default: typing.Any
@@ -52,11 +45,11 @@ class BaseField:
     model_metadata: typing.Optional[utils.SchemaMetadata] = None
 
     def __post_init__(self) -> None:
-        self.model_metadata = self.model_metadata or utils.SchemaMetadata()  # type: ignore
+        self.model_metadata = self.model_metadata or utils.SchemaMetadata()
 
     @property
-    def avro_type(self) -> typing.Union[str, typing.Dict]:
-        ...  # pragma: no cover
+    def avro_type(self) -> typing.Union[str, typing.Dict, None]:
+        return None
 
     @staticmethod
     def _get_self_reference_type(a_type: typing.Any) -> str:
@@ -157,7 +150,7 @@ class BaseField:
 
 
 class ImmutableField(BaseField):
-    def get_avro_type(self) -> field_utils.PythonImmutableTypes:
+    def get_avro_type(self) -> typing.Optional[field_utils.PythonImmutableTypes]:
         if self.default is None:
             return [field_utils.NULL, self.avro_type]
         return self.avro_type
@@ -243,7 +236,7 @@ class ContainerField(BaseField):
 
     @property
     def avro_type(self) -> typing.Dict:
-        ...  # pragma: no cover
+        return {}
 
     def get_avro_type(self) -> field_utils.PythonImmutableTypes:
         avro_type = self.avro_type
@@ -548,8 +541,8 @@ class LogicalTypeField(ImmutableField):
             return self.to_avro(self.default)
 
     @staticmethod
-    def to_avro(value: typing.Any) -> typing.Union[int, float, str]:
-        ...  # type: ignore  # pragma: no cover
+    def to_avro(value: typing.Any) -> typing.Union[int, float, str, None]:
+        return None
 
 
 @dataclasses.dataclass
@@ -761,7 +754,7 @@ class RecordField(BaseField):
         meta = getattr(self.type, "Meta", type)
         metadata = utils.SchemaMetadata.create(meta)
 
-        alias = self.parent.metadata.get_alias_nested_items(self.name) or metadata.get_alias_nested_items(self.name)  # type: ignore  # noqa E501
+        alias = self.parent.metadata.get_alias_nested_items(self.name) or metadata.get_alias_nested_items(self.name)  # noqa E501
 
         # The priority for the schema name
         # 1. Check if exists an alias_nested_items in parent class or Meta class of own model
@@ -873,7 +866,7 @@ SPACIAL_ANNOTATED_TYPES = {
 }
 
 PRIMITIVE_LOGICAL_TYPES_FIELDS_CLASSES = {
-    **INMUTABLE_FIELDS_CLASSES,  # type: ignore
+    **INMUTABLE_FIELDS_CLASSES,
     **LOGICAL_TYPES_FIELDS_CLASSES,  # type: ignore
 }
 
@@ -961,7 +954,7 @@ def field_factory(
             field_info=field_info,
         )
     elif native_type in field_utils.PYTHON_LOGICAL_TYPES:
-        klass = LOGICAL_TYPES_FIELDS_CLASSES[native_type]  # type: ignore
+        klass = LOGICAL_TYPES_FIELDS_CLASSES[native_type]
 
         return klass(
             name=name,
@@ -971,7 +964,7 @@ def field_factory(
             model_metadata=model_metadata,
             parent=parent,
         )
-    elif isinstance(native_type, GenericAlias):  # type: ignore
+    elif isinstance(native_type, GenericAlias):
         origin = get_origin(native_type)
 
         if origin not in (
