@@ -698,9 +698,11 @@
 <p>with <code>pip</code> or <code>poetry</code>:</p>
 <p><code>pip install dataclasses-avroschema</code> or <code>poetry install</code></p>
 <h3 id="extras">Extras</h3>
-<p><a href="https://docs.pydantic.dev/">pydantic</a>: <code>pip install 'dataclasses-avroschema[pydantic]'</code> or <code>poetry install --extras "pydantic"</code>
-<a href="https://github.com/faust-streaming/faust">faust-streaming</a>: <code>pip install 'dataclasses-avroschema[faust]'</code> or <code>poetry install --extras "faust"</code></p>
-<p><em>Note</em>: You can install all extra dependencies with <code>pip install dataclasses-avroschema  ".[extras]"</code> or <code>poetry install --extras "pydantic faust"</code></p>
+<ul>
+<li><a href="https://docs.pydantic.dev/">pydantic</a>: <code>pip install 'dataclasses-avroschema[pydantic]'</code> or <code>poetry install --extras "pydantic"</code></li>
+<li><a href="https://github.com/faust-streaming/faust">faust-streaming</a>: <code>pip install 'dataclasses-avroschema[faust]'</code> or <code>poetry install --extras "faust"</code></li>
+</ul>
+<p><em>Note</em>: You can install all extra dependencies with <code>pip install dataclasses-avroschema[faust, pydantic]</code> or <code>poetry install --extras "pydantic faust"</code></p>
 <h3 id="cli">CLI</h3>
 <p>To add <code>avro schemas cli</code> install <a href="https://marcosschroh.github.io/dc-avro/">dc-avro</a></p>
 <p><code>pip install 'dataclasses-avroschema[cli]'</code> or <code>poetry install --with cli</code></p>
