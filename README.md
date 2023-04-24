@@ -19,10 +19,10 @@ with `pip` or `poetry`:
 
 ### Extras
 
-[pydantic](https://docs.pydantic.dev/): `pip install 'dataclasses-avroschema[pydantic]'` or `poetry install --extras "pydantic"`
-[faust-streaming](https://github.com/faust-streaming/faust): `pip install 'dataclasses-avroschema[faust]'` or `poetry install --extras "faust"`
+- [pydantic](https://docs.pydantic.dev/): `pip install 'dataclasses-avroschema[pydantic]'` or `poetry install --extras "pydantic"`
+- [faust-streaming](https://github.com/faust-streaming/faust): `pip install 'dataclasses-avroschema[faust]'` or `poetry install --extras "faust"`
 
-*Note*: You can install all extra dependencies with `pip install dataclasses-avroschema  ".[extras]"` or `poetry install --extras "pydantic faust"`
+*Note*: You can install all extra dependencies with `pip install dataclasses-avroschema[faust, pydantic]` or `poetry install --extras "pydantic faust"`
 
 ### CLI
 
