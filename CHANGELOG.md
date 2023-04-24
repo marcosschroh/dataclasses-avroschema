@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## 0.42.1 (2023-04-24)
+
+### Fix
+
+- **typing**: incorrect type annotations in avrodantic.py (#302)
+
 ## 0.42.0 (2023-04-21)
 
 ### Feat
