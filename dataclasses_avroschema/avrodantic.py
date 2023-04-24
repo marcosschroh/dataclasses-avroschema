@@ -35,11 +35,11 @@ class AvroBaseModel(BaseModel, AvroModel):  # type: ignore
         return validate(self.asdict(), schema)
 
     @classmethod
-    def parse_obj(cls: Type["AvroBaseModel"], data: Dict) -> "AvroBaseModel":
+    def parse_obj(cls: Type[CT], data: Dict) -> CT:
         return super().parse_obj(data)
 
     @classmethod
-    def fake(cls: Type[CT], **data: Dict[str, Any]) -> "AvroBaseModel":
+    def fake(cls: Type[CT], **data: Dict[str, Any]) -> CT:
         """
         Creates a fake instance of the model.
 
