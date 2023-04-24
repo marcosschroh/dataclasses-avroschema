@@ -13,9 +13,8 @@ import typing
 import uuid
 from collections import OrderedDict
 
-import inflect
 from faker import Faker
-from pytz import utc
+from inflector import Inflector
 from typing_extensions import get_args, get_origin
 
 from . import field_utils, schema_generator, serialization, types, utils
@@ -32,7 +31,7 @@ else:
 logger = logging.getLogger(__name__)
 
 fake = Faker()
-p = inflect.engine()
+p = Inflector()
 
 
 @dataclasses.dataclass  # type: ignore
@@ -66,13 +65,7 @@ class BaseField:
 
     @staticmethod
     def get_singular_name(name: str) -> str:
-        singular = p.singular_noun(name)
-
-        # do the check because of mypy.
-        # p.singular_noun returns Union[str, bool]
-        if isinstance(singular, str):
-            return singular
-        return name
+        return p.singularize(name)
 
     def get_metadata(self) -> typing.List[typing.Tuple[str, str]]:
         meta_data_for_template = []
@@ -665,7 +658,7 @@ class TimeMicroField(LogicalTypeField):
         return int((((hour * 60 + minutes) * 60 + seconds) * 1000000) + microseconds)
 
     def fake(self) -> datetime.time:
-        datetime_object: datetime.datetime = fake.date_time(tzinfo=utc)
+        datetime_object: datetime.datetime = fake.date_time(tzinfo=datetime.timezone.utc)
         datetime_object = datetime_object + datetime.timedelta(microseconds=random.randint(0, 999))
         return datetime_object.time()
 
@@ -699,7 +692,7 @@ class DatetimeField(LogicalTypeField):
         return int(ts * 1000)
 
     def fake(self) -> datetime.datetime:
-        return fake.date_time(tzinfo=utc)
+        return fake.date_time(tzinfo=datetime.timezone.utc)
 
 
 @dataclasses.dataclass
@@ -731,7 +724,7 @@ class DatetimeMicroField(LogicalTypeField):
         return int(ts * 1000000)
 
     def fake(self) -> datetime.datetime:
-        datetime_object: datetime.datetime = fake.date_time(tzinfo=utc)
+        datetime_object: datetime.datetime = fake.date_time(tzinfo=datetime.timezone.utc)
         return datetime_object + datetime.timedelta(microseconds=random.randint(0, 999))
 
 

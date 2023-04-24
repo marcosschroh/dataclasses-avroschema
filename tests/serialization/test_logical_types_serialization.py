@@ -5,12 +5,9 @@ import typing
 import uuid
 from dataclasses import dataclass
 
-import pytz
-
 from dataclasses_avroschema import AvroModel, serialization, types
 
-a_datetime = datetime.datetime(2019, 10, 12, 17, 57, 42)
-a_datetime = pytz.utc.localize(a_datetime)
+a_datetime = datetime.datetime(2019, 10, 12, 17, 57, 42, tzinfo=datetime.timezone.utc)
 
 
 def test_logical_types():

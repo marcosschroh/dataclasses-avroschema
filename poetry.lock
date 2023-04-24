@@ -2,8 +2,8 @@
 name = "aiofiles"
 version = "22.1.0"
 description = "File support for asyncio."
-category = "main"
-optional = true
+category = "dev"
+optional = false
 python-versions = ">=3.7,<4.0"
 
 [[package]]
@@ -11,7 +11,7 @@ name = "aiohttp"
 version = "3.8.4"
 description = "Async http client/server framework (asyncio)"
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.6"
 
 [package.dependencies]
@@ -33,7 +33,7 @@ name = "aiohttp-cors"
 version = "0.7.0"
 description = "CORS support for aiohttp"
 category = "main"
-optional = false
+optional = true
 python-versions = "*"
 
 [package.dependencies]
@@ -44,7 +44,7 @@ name = "aiokafka"
 version = "0.8.0"
 description = "Kafka integration with asyncio."
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.7"
 
 [package.dependencies]
@@ -64,7 +64,7 @@ name = "aiosignal"
 version = "1.3.1"
 description = "aiosignal: a list of registered asynchronous callbacks"
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.7"
 
 [package.dependencies]
@@ -74,8 +74,8 @@ frozenlist = ">=1.1.0"
 name = "anyio"
 version = "3.6.2"
 description = "High level compatibility layer for multiple asynchronous event loop implementations"
-category = "main"
-optional = true
+category = "dev"
+optional = false
 python-versions = ">=3.6.2"
 
 [package.dependencies]
@@ -108,7 +108,7 @@ name = "async-timeout"
 version = "4.0.2"
 description = "Timeout context manager for asyncio programs"
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.6"
 
 [package.dependencies]
@@ -119,7 +119,7 @@ name = "asynctest"
 version = "0.13.0"
 description = "Enhance the standard unittest package with features for testing asyncio libraries"
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.5"
 
 [[package]]
@@ -127,7 +127,7 @@ name = "attrs"
 version = "23.1.0"
 description = "Classes Without Boilerplate"
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.7"
 
 [package.dependencies]
@@ -168,7 +168,7 @@ uvloop = ["uvloop (>=0.15.2)"]
 name = "certifi"
 version = "2022.12.7"
 description = "Python package for providing Mozilla's CA Bundle."
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.6"
 
@@ -208,7 +208,7 @@ name = "colorlog"
 version = "6.7.0"
 description = "Add colours to the output of Python's logging module."
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.6"
 
 [package.dependencies]
@@ -242,8 +242,8 @@ typing-extensions = ">=4.0.1,<5.0.0"
 name = "commonmark"
 version = "0.9.1"
 description = "Python parser for the CommonMark Markdown spec"
-category = "main"
-optional = true
+category = "dev"
+optional = false
 python-versions = "*"
 
 [package.extras]
@@ -268,7 +268,7 @@ name = "croniter"
 version = "1.3.14"
 description = "croniter provides iteration for datetime object with cron like format"
 category = "main"
-optional = false
+optional = true
 python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [package.dependencies]
@@ -289,8 +289,8 @@ dev = ["black", "coveralls", "mypy", "pre-commit", "pylint", "pytest (>=5)", "py
 name = "dc-avro"
 version = "0.6.4"
 description = ""
-category = "main"
-optional = true
+category = "dev"
+optional = false
 python-versions = ">=3.7,<4.0"
 
 [package.dependencies]
@@ -312,8 +312,8 @@ python-versions = ">=3.6"
 name = "deepdiff"
 version = "6.3.0"
 description = "Deep Difference and Search of any Python object/data. Recreate objects by adding adding deltas to each other."
-category = "main"
-optional = true
+category = "dev"
+optional = false
 python-versions = ">=3.7"
 
 [package.dependencies]
@@ -365,7 +365,7 @@ name = "faust-streaming"
 version = "0.10.11"
 description = "Python Stream processing."
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.7.0"
 
 [package.dependencies]
@@ -409,7 +409,7 @@ name = "frozenlist"
 version = "1.3.3"
 description = "A list-like structure which implements collections.abc.MutableSequence"
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.7"
 
 [[package]]
@@ -430,8 +430,8 @@ dev = ["flake8", "markdown", "twine", "wheel"]
 name = "h11"
 version = "0.14.0"
 description = "A pure-Python, bring-your-own-I/O implementation of HTTP/1.1"
-category = "main"
-optional = true
+category = "dev"
+optional = false
 python-versions = ">=3.7"
 
 [package.dependencies]
@@ -441,8 +441,8 @@ typing-extensions = {version = "*", markers = "python_version < \"3.8\""}
 name = "httpcore"
 version = "0.16.3"
 description = "A minimal low-level HTTP client."
-category = "main"
-optional = true
+category = "dev"
+optional = false
 python-versions = ">=3.7"
 
 [package.dependencies]
@@ -459,8 +459,8 @@ socks = ["socksio (>=1.0.0,<2.0.0)"]
 name = "httpx"
 version = "0.23.3"
 description = "The next generation HTTP client."
-category = "main"
-optional = true
+category = "dev"
+optional = false
 python-versions = ">=3.7"
 
 [package.dependencies]
@@ -501,19 +501,12 @@ perf = ["ipython"]
 testing = ["flake8 (<5)", "flufl.flake8", "importlib-resources (>=1.3)", "packaging", "pyfakefs", "pytest (>=6)", "pytest-black (>=0.3.7)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=1.3)", "pytest-flake8", "pytest-mypy (>=0.9.1)", "pytest-perf (>=0.9.2)"]
 
 [[package]]
-name = "inflect"
-version = "6.0.4"
-description = "Correctly generate plurals, singular nouns, ordinals, indefinite articles; convert numbers to words"
+name = "inflector"
+version = "3.1.0"
+description = "Inflector for Python"
 category = "main"
 optional = false
-python-versions = ">=3.7"
-
-[package.dependencies]
-pydantic = ">=1.9.1"
-
-[package.extras]
-docs = ["furo", "jaraco.packaging (>=9)", "jaraco.tidelift (>=1.4)", "rst.linker (>=1.9)", "sphinx (>=3.5)", "sphinx-lint"]
-testing = ["flake8 (<5)", "pygments", "pytest (>=6)", "pytest-black (>=0.3.7)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=1.3)", "pytest-flake8", "pytest-mypy (>=0.9.1)"]
+python-versions = "*"
 
 [[package]]
 name = "iniconfig"
@@ -528,7 +521,7 @@ name = "intervaltree"
 version = "3.1.0"
 description = "Editable interval tree data structure for Python 2 and 3"
 category = "main"
-optional = false
+optional = true
 python-versions = "*"
 
 [package.dependencies]
@@ -553,7 +546,7 @@ name = "kafka-python"
 version = "2.0.2"
 description = "Pure Python client for Apache Kafka"
 category = "main"
-optional = false
+optional = true
 python-versions = "*"
 
 [package.extras]
@@ -647,7 +640,7 @@ name = "mode-streaming"
 version = "0.3.5"
 description = "AsyncIO Service-based programming."
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.7"
 
 [package.dependencies]
@@ -667,7 +660,7 @@ name = "multidict"
 version = "6.0.4"
 description = "multidict implementation"
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.7"
 
 [[package]]
@@ -703,7 +696,7 @@ name = "opentracing"
 version = "2.4.0"
 description = "OpenTracing API for Python. See documentation at http://opentracing.io"
 category = "main"
-optional = false
+optional = true
 python-versions = "*"
 
 [package.extras]
@@ -713,8 +706,8 @@ tests = ["Sphinx", "doubles", "flake8", "flake8-quotes", "gevent", "mock", "pyte
 name = "ordered-set"
 version = "4.1.0"
 description = "An OrderedSet is a custom MutableSet that remembers its order, so that every"
-category = "main"
-optional = true
+category = "dev"
+optional = false
 python-versions = ">=3.7"
 
 [package.extras]
@@ -782,7 +775,7 @@ name = "pydantic"
 version = "1.10.7"
 description = "Data validation and settings management using python type hints"
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.7"
 
 [package.dependencies]
@@ -796,7 +789,7 @@ email = ["email-validator (>=1.0.3)"]
 name = "pygments"
 version = "2.15.1"
 description = "Pygments is a syntax highlighting package written in Python."
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 
@@ -862,14 +855,6 @@ python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
 six = ">=1.5"
 
 [[package]]
-name = "pytz"
-version = "2023.3"
-description = "World timezone definitions, modern and historical"
-category = "main"
-optional = false
-python-versions = "*"
-
-[[package]]
 name = "pyyaml"
 version = "6.0"
 description = "YAML parser and emitter for Python"
@@ -932,8 +917,8 @@ use-chardet-on-py3 = ["chardet (>=3.0.2,<6)"]
 name = "rfc3986"
 version = "1.5.0"
 description = "Validating URI References per RFC 3986"
-category = "main"
-optional = true
+category = "dev"
+optional = false
 python-versions = "*"
 
 [package.dependencies]
@@ -946,8 +931,8 @@ idna2008 = ["idna"]
 name = "rich"
 version = "12.6.0"
 description = "Render rich text, tables, progress bars, syntax highlighting, markdown and more to the terminal"
-category = "main"
-optional = true
+category = "dev"
+optional = false
 python-versions = ">=3.6.3,<4.0.0"
 
 [package.dependencies]
@@ -970,8 +955,8 @@ python-versions = ">=3.7"
 name = "shellingham"
 version = "1.5.0.post1"
 description = "Tool to Detect Surrounding Shell"
-category = "main"
-optional = true
+category = "dev"
+optional = false
 python-versions = ">=3.7"
 
 [[package]]
@@ -986,8 +971,8 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
 name = "sniffio"
 version = "1.3.0"
 description = "Sniff out which async library your code is running under"
-category = "main"
-optional = true
+category = "dev"
+optional = false
 python-versions = ">=3.7"
 
 [[package]]
@@ -995,7 +980,7 @@ name = "sortedcontainers"
 version = "2.4.0"
 description = "Sorted Containers -- Sorted List, Sorted Dict, Sorted Set"
 category = "main"
-optional = false
+optional = true
 python-versions = "*"
 
 [[package]]
@@ -1022,7 +1007,7 @@ name = "terminaltables"
 version = "3.1.10"
 description = "Generate simple tables in terminals from a nested list of strings."
 category = "main"
-optional = false
+optional = true
 python-versions = ">=2.6"
 
 [[package]]
@@ -1053,8 +1038,8 @@ python-versions = ">=3.6"
 name = "typer"
 version = "0.7.0"
 description = "Typer, build great CLIs. Easy to code. Based on Python type hints."
-category = "main"
-optional = true
+category = "dev"
+optional = false
 python-versions = ">=3.6"
 
 [package.dependencies]
@@ -1103,7 +1088,7 @@ name = "venusian"
 version = "3.0.0"
 description = "A library for deferring decorator actions"
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.5"
 
 [package.extras]
@@ -1134,7 +1119,7 @@ name = "yarl"
 version = "1.8.2"
 description = "Yet another URL library"
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.7"
 
 [package.dependencies]
@@ -1155,13 +1140,13 @@ docs = ["furo", "jaraco.packaging (>=9)", "jaraco.tidelift (>=1.4)", "rst.linker
 testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more-itertools", "pytest (>=6)", "pytest-black (>=0.3.7)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=1.3)", "pytest-flake8", "pytest-mypy (>=0.9.1)"]
 
 [extras]
-cli = ["dc-avro"]
+faust = ["faust-streaming"]
 pydantic = ["pydantic"]
 
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "00fd9176808b031e9c4db030cc7cde39bba3c48e9f458ea08fc08ba825b53009"
+content-hash = "a24d6239a2be191a49212e25a49db3e13ef7102aac195ad1b0d1f18e3e8fdad9"
 
 [metadata.files]
 aiofiles = [
@@ -1605,9 +1590,9 @@ importlib-metadata = [
     {file = "importlib_metadata-5.2.0-py3-none-any.whl", hash = "sha256:0eafa39ba42bf225fc00e67f701d71f85aead9f878569caf13c3724f704b970f"},
     {file = "importlib_metadata-5.2.0.tar.gz", hash = "sha256:404d48d62bba0b7a77ff9d405efd91501bef2e67ff4ace0bed40a0cf28c3c7cd"},
 ]
-inflect = [
-    {file = "inflect-6.0.4-py3-none-any.whl", hash = "sha256:2d592e7e4eafb6e51f9c626c5dd4288f5ce55981eaac9b342e868ead95ead5c3"},
-    {file = "inflect-6.0.4.tar.gz", hash = "sha256:1842649a17b6cad66812a5c9bdfacb6310e1e7b6dd8a31f026766df1b62612eb"},
+inflector = [
+    {file = "Inflector-3.1.0-py3-none-any.whl", hash = "sha256:74b8f0f2e212c7129c26ad2058f82612a4a97ff45a7945d8eed2ff71b57e9a1b"},
+    {file = "Inflector-3.1.0.tar.gz", hash = "sha256:0a9be5dd1646512f5ab602dcf8723787331594d822d02f382323963787043ee7"},
 ]
 iniconfig = [
     {file = "iniconfig-2.0.0-py3-none-any.whl", hash = "sha256:b6a85871a79d2e3b22d2d1b94ac2824226a63c6b741c88f7ae975f18b6778374"},
@@ -1892,10 +1877,6 @@ pytest-cov = [
 python-dateutil = [
     {file = "python-dateutil-2.8.2.tar.gz", hash = "sha256:0123cacc1627ae19ddf3c27a5de5bd67ee4586fbdd6440d9748f8abb483d3e86"},
     {file = "python_dateutil-2.8.2-py2.py3-none-any.whl", hash = "sha256:961d03dc3453ebbc59dbdea9e4e11c5651520a876d0f4db161e8674aae935da9"},
-]
-pytz = [
-    {file = "pytz-2023.3-py2.py3-none-any.whl", hash = "sha256:a151b3abb88eda1d4e34a9814df37de2a80e301e68ba0fd856fb9b46bfbbbffb"},
-    {file = "pytz-2023.3.tar.gz", hash = "sha256:1d8ce29db189191fb55338ee6d0387d82ab59f3d00eac103412d64e0ebd0c588"},
 ]
 pyyaml = [
     {file = "PyYAML-6.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:d4db7c7aef085872ef65a8fd7d6d09a14ae91f691dec3e87ee5ee0539d516f53"},

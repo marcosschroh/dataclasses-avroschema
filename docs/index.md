@@ -13,21 +13,22 @@ Generate [Avro](https://avro.apache.org/docs/1.8.2/spec.html) Schemas from a Pyt
 
 ## Installation
 
-```bash
-pip install dataclasses-avroschema
-```
+with `pip` or `poetry`:
 
-or with `pydantic` funcionalities
+`pip install dataclasses-avroschema` or `poetry install`
 
-```bash
-pip install 'dataclasses-avroschema[pydantic]'
-```
+### Extras
 
-or with command line [dc-avro](https://marcosschroh.github.io/dc-avro/)
+[pydantic](https://docs.pydantic.dev/): `pip install 'dataclasses-avroschema[pydantic]'` or `poetry install --extras "pydantic"`
+[faust-streaming](https://github.com/faust-streaming/faust): `pip install 'dataclasses-avroschema[faust]'` or `poetry install --extras "faust"`
 
-```bash
-pip install 'dataclasses-avroschema[cli]'
-```
+*Note*: You can install all extra dependencies with `pip install dataclasses-avroschema  ".[extras]"` or `poetry install --extras "pydantic faust"`
+
+### CLI
+
+To add `avro schemas cli` install [dc-avro](https://marcosschroh.github.io/dc-avro/)
+
+`pip install 'dataclasses-avroschema[cli]'` or `poetry install --with cli`
 
 ## Usage
 
