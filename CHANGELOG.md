@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## 0.42.2 (2023-04-24)
+
+### Fix
+
+- pydantic and faust-streaming optional dependencies. Remove pytz as dependency. Closes #292 (#297)
+
 ## 0.42.1 (2023-04-24)
 
 ### Fix
