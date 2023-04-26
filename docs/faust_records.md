@@ -1,17 +1,22 @@
-This library also has support to generate `Avro Schemas` from a `faust.Record`
+# Faust integration
+
+This library also has support to generate `Avro Schemas` from a `faust.Record` using `AvroRecord`.
+`AvroRecord` is just a class that inherits from `faust.Record` and `AvroModel` respectively.
+
+!!! note
+    All the AvroModel features like `serialization`, `parsing objects`, `validation` and `fake`, are available with AvroRecord
 
 Example:
 
 ```python title="Basic usage"
-import faust
 import dataclasses
 import typing
 
-from dataclasses_avroschema import AvroModel
+from dataclasses_avroschema.faust import AvroRecord
 
 
 @dataclasses.dataclass
-class UserAdvance(faust.Record, AvroModel):
+class UserAdvance(AvroRecord):
     name: str
     age: int
     pets: typing.List[str] = dataclasses.field(default_factory=lambda: ['dog', 'cat'])
@@ -19,7 +24,7 @@ class UserAdvance(faust.Record, AvroModel):
     has_car: bool = False
     favorite_colors: typing.Tuple[str] = ("BLUE", "YELLOW", "GREEN")
     country: str = "Argentina"
-    address: str = None
+    address: typing.Optional[str] = None
 
     class Meta:
         schema_doc = False
@@ -28,7 +33,7 @@ class UserAdvance(faust.Record, AvroModel):
 UserAdvance.avro_schema()
 ```
 
-resulting in 
+resulting in
 
 ```json
 {

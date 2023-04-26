@@ -380,7 +380,7 @@ def test_parse_obj():
             }
         ],
     }
-    user = User.parse_obj(data=data_user)
+    user = User.parse_obj(data_user)
     assert type(user.addresses[0]) is Address
     assert User.avro_schema()
 

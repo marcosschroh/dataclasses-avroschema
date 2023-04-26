@@ -35,13 +35,13 @@ nav:
   - Records: 'records.md'
   - Schema Relationships: 'schema_relationships.md'
   - Serialization: 'serialization.md'
-  - Pydantic: 'pydantic.md'
-  - Faust Records: 'faust_records.md'
   - Case Schemas: 'case.md'
-  - Kafka examples: 'kafka_examples.md'
-  - Redis examples: 'redis_examples.md'
   - Factory and fixtures: 'factories_and_fixtures.md'
   - Model Generator: 'model_generator.md'
+  - Pydantic: 'pydantic.md'
+  - Faust: 'faust_records.md'
+  - Kafka examples: 'kafka_examples.md'
+  - Redis examples: 'redis_examples.md'
   - Good Practices: good_practices.md
   - Migration Guide: 'migration_guide.md'
 

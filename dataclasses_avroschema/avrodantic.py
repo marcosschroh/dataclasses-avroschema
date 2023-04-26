@@ -29,14 +29,10 @@ class AvroBaseModel(BaseModel, AvroModel):  # type: ignore
 
     def validate_avro(self) -> bool:
         """
-        Document this!!!
+        Validate that instance matches the avro schema
         """
         schema = self.avro_schema_to_python()
         return validate(self.asdict(), schema)
-
-    @classmethod
-    def parse_obj(cls: Type[CT], data: Dict) -> CT:
-        return super().parse_obj(data)
 
     @classmethod
     def fake(cls: Type[CT], **data: Dict[str, Any]) -> CT:
