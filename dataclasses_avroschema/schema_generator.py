@@ -201,7 +201,7 @@ class AvroModel:
         output = cls._deserialize_complex_types(payload)
 
         if create_instance:
-            return cls.parse_obj(data=output)
+            return cls.parse_obj(output)
         return output
 
     @classmethod

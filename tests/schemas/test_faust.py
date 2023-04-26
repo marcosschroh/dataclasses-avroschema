@@ -5,16 +5,16 @@ import json
 import typing
 import uuid
 
-import faust
 import pytest
 
-from dataclasses_avroschema import AvroModel, types, utils
+from dataclasses_avroschema import types, utils
+from dataclasses_avroschema.faust import AvroRecord
 
 encoded = "test".encode()
 
 
 def test_faust_record_schema_primitive_types(user_avro_json):
-    class User(faust.Record, AvroModel):
+    class User(AvroRecord):
         name: str
         age: int
         has_pets: bool
@@ -28,7 +28,7 @@ def test_faust_record_schema_primitive_types(user_avro_json):
 
 
 def test_faust_record_schema_complex_types(user_advance_avro_json, color_enum):
-    class UserAdvance(faust.Record, AvroModel):
+    class UserAdvance(AvroRecord):
         name: str
         age: int
         pets: typing.List[str]
@@ -46,7 +46,7 @@ def test_faust_record_schema_complex_types(user_advance_avro_json, color_enum):
 
 
 def test_faust_record_schema_complex_types_with_defaults(user_advance_with_defaults_avro_json, color_enum):
-    class UserAdvance(faust.Record, AvroModel):
+    class UserAdvance(AvroRecord):
         name: str
         age: int
         pets: typing.List[str] = dataclasses.field(default_factory=lambda: ["dog", "cat"])
@@ -65,7 +65,7 @@ def test_faust_record_schema_complex_types_with_defaults(user_advance_with_defau
 def test_faust_record_schema_logical_types(logical_types_schema):
     a_datetime = datetime.datetime(2019, 10, 12, 17, 57, 42, tzinfo=datetime.timezone.utc)
 
-    class LogicalTypes(faust.Record, AvroModel):
+    class LogicalTypes(AvroRecord):
         "Some logical types"
         birthday: datetime.date = a_datetime.date()
         meeting_time: datetime.time = a_datetime.time()
@@ -80,12 +80,12 @@ def test_faust_record_one_to_one_relationship(user_one_address_schema):
     Test schema relationship one-to-one
     """
 
-    class Address(faust.Record, AvroModel):
+    class Address(AvroRecord):
         "An Address"
         street: str
         street_number: int
 
-    class User(faust.Record, AvroModel):
+    class User(AvroRecord):
         "An User with Address"
         name: str
         age: int
@@ -99,12 +99,12 @@ def test_faust_record_one_to_one_relationship_with_none_default(user_one_address
     Test schema relationship one-to-one
     """
 
-    class Address(faust.Record, AvroModel):
+    class Address(AvroRecord):
         "An Address"
         street: str
         street_number: int
 
-    class User(faust.Record, AvroModel):
+    class User(AvroRecord):
         "An User with Address"
         name: str
         age: int
@@ -118,12 +118,12 @@ def test_faust_record_one_to_many_relationship(user_many_address_schema):
     Test schema relationship one-to-many
     """
 
-    class Address(faust.Record, AvroModel):
+    class Address(AvroRecord):
         "An Address"
         street: str
         street_number: int
 
-    class User(faust.Record, AvroModel):
+    class User(AvroRecord):
         "User with multiple Address"
         name: str
         age: int
@@ -137,12 +137,12 @@ def test_faust_record_one_to_many_map_relationship(user_many_address_map_schema)
     Test schema relationship one-to-many using a map
     """
 
-    class Address(faust.Record, AvroModel):
+    class Address(AvroRecord):
         "An Address"
         street: str
         street_number: int
 
-    class User(faust.Record, AvroModel):
+    class User(AvroRecord):
         "User with multiple Address"
         name: str
         age: int
@@ -156,7 +156,7 @@ def test_faust_record_self_one_to_one_relationship(user_self_reference_one_to_on
     Test self relationship one-to-one
     """
 
-    class User(faust.Record, AvroModel):
+    class User(AvroRecord):
         "User with self reference as friend"
         name: str
         age: int
@@ -173,7 +173,7 @@ def test_faust_record_self_one_to_many_relationship(
     Test self relationship one-to-many
     """
 
-    class User(faust.Record, AvroModel):
+    class User(AvroRecord):
         "User with self reference as friends"
         name: str
         age: int
@@ -190,7 +190,7 @@ def test_faust_record_self_one_to_many_map_relationship(
     Test self relationship one-to-many Map
     """
 
-    class User(faust.Record, AvroModel):
+    class User(AvroRecord):
         "User with self reference as friends"
         name: str
         age: int
@@ -202,14 +202,14 @@ def test_faust_record_self_one_to_many_map_relationship(
 
 @pytest.mark.skip(reason="skiping conflict with new faust-streaming version")
 def test_faust_record_schema_with_unions_type(union_type_schema):
-    class Bus(faust.Record, AvroModel):
+    class Bus(AvroRecord):
         "A Bus"
         engine_name: str
 
         class Meta:
             namespace = "types.bus_type"
 
-    class Car(faust.Record, AvroModel):
+    class Car(AvroRecord):
         "A Car"
         engine_name: str
 
@@ -223,7 +223,7 @@ def test_faust_record_schema_with_unions_type(union_type_schema):
         class Meta:
             doc = "Distance of the trip"
 
-    class UnionSchema(faust.Record, AvroModel):
+    class UnionSchema(AvroRecord):
         "Some Unions"
         first_union: typing.Union[str, int]
         logical_union: typing.Union[datetime.datetime, datetime.date, uuid.uuid4]
@@ -239,7 +239,7 @@ def test_field_metadata() -> None:
     field_matadata = {"aliases": ["username"]}
 
     @dataclasses.dataclass
-    class UserRecord(faust.Record, AvroModel):
+    class UserRecord(AvroRecord):
         name: str = dataclasses.field(metadata=field_matadata)
 
     schema = UserRecord.avro_schema_to_python()
@@ -254,3 +254,14 @@ def test_not_faust_not_installed(monkeypatch):
         pass
 
     assert not utils.is_faust_model(Bus)
+
+
+def test_validate():
+    class User(AvroRecord):
+        name: str
+        age: int
+        has_pets: bool = True
+
+    user = User(name="batman", age=20)
+    assert user.validate() == []
+    assert user.validate_avro()
