@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## 0.43.1 (2023-05-19)
+
+### Fix
+
+- excluded pydantic.Fields should be used on avro serialization. Closes #314 (#322)
+
 ## 0.43.0 (2023-04-26)
 
 ### Feat
