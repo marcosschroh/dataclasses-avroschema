@@ -21,7 +21,7 @@ class AvroBaseModel(BaseModel, AvroModel):  # type: ignore
         """
         Document this. asdict vs dict
         """
-        data = self.dict()
+        data = dict(self)
 
         # te standardize called can be replaced if we have a custom implementation of asdict
         # for now I think is better to use the native implementation

@@ -182,3 +182,31 @@ print(User.fake())
 ```
 
 *(This script is complete, it should run "as is")*
+
+### Excluding fields
+
+Pydantic Fields can be excluded when `dict`, `json` or `copy` methods are called. This meaans that the exclusion is only for [exporting models](https://docs.pydantic.dev/latest/usage/exporting_models/) but not excluded in the instance creations, then the `avro serialization` will include all the class attributes.
+
+```python
+import typing
+from pydantic import Field
+from dataclasses_avroschema.avrodantic import AvroBaseModel
+
+
+class User(AvroBaseModel):
+    name: str
+    age: int
+    pets: typing.List[str] = Field(default_factory=lambda: ["dog", "cat"], exclude=True)
+    accounts: typing.Dict[str, int] = Field(default_factory=lambda: {"key": 1}, exclude=True)
+    has_car: bool = False
+
+user = User(name="bond", age=50, has_car=True)
+print(user)
+# >>> User(name='bond', age=50, pets=['dog', 'cat'], accounts={'key': 1}, has_car=True)
+
+print(user.dict())
+# >>> {'name': 'bond', 'age': 50, 'has_car': True} Excludes pets and accounts !!!
+
+event = user.serialize()
+assert user == User.deserialize(event)
+```

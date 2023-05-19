@@ -6,6 +6,7 @@ import uuid
 
 import fastavro
 
+from .schema_generator import AvroModel
 from .types import JsonDict
 
 DATETIME_STR_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
@@ -140,6 +141,8 @@ def serialize_value(*, value: typing.Any) -> typing.Any:
         value = to_json(value)
     elif isinstance(value, (list, tuple)):
         value = type(value)(serialize_value(value=item) for item in value)
+    elif isinstance(value, AvroModel):
+        value = to_json(value.asdict())
 
     return value
 
