@@ -684,11 +684,9 @@
 <h2 id="data-validation">Data validation</h2>
 <p>For models there is no validation of data by default in <code>Faust</code>, however there is an option that will enable validation for all common JSON fields (int, float, str, etc.), and some commonly used Python ones (datetime, Decimal, etc.)</p>
 <p>In order to validate the data <code>validation=True</code> must be used as is described in tha <a href="https://faust-streaming.github.io/faust/userguide/models.html#validation">faust documenation</a></p>
-<div class="tabbed-set tabbed-alternate" data-tabs="1:1"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Data validation</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Data validation</label><label for="__tabbed_1_2">No Data validation</label></div>
 <div class="tabbed-content">
-<div class="tabbed-block"></div>
-</div>
-</div>
+<div class="tabbed-block">
 <div class="highlight"><span class="filename">Data validation</span><pre><span></span><code><span class="kn">import</span> <span class="nn">dataclasses</span>
 <span class="kn">import</span> <span class="nn">typing</span>
 
@@ -713,11 +711,8 @@
 
 <span class="ne">ValueError</span><span class="p">:</span> <span class="n">invalid</span> <span class="n">literal</span> <span class="k">for</span> <span class="nb">int</span><span class="p">()</span> <span class="k">with</span> <span class="n">base</span> <span class="mi">10</span><span class="p">:</span> <span class="s1">&#39;bond&#39;</span>
 </code></pre></div>
-<div class="tabbed-set tabbed-alternate" data-tabs="2:1"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">No Data validation</label></div>
-<div class="tabbed-content">
-<div class="tabbed-block"></div>
 </div>
-</div>
+<div class="tabbed-block">
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">dataclasses</span>
 <span class="kn">import</span> <span class="nn">typing</span>
 
@@ -740,6 +735,9 @@
 
 <span class="n">UserAdvance</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;marcos&quot;</span><span class="p">,</span> <span class="n">age</span><span class="o">=</span><span class="s2">&quot;juan&quot;</span><span class="p">)</span>  <span class="c1"># WRONG data</span>
 </code></pre></div>
+</div>
+</div>
+</div>
 <p><em>(This script is complete, it should run "as is")</em></p>
 
 
