@@ -9,13 +9,11 @@ This library also has support to generate `Avro Schemas` from a `faust.Record` u
 Example:
 
 ```python title="Basic usage"
-import dataclasses
 import typing
 
 from dataclasses_avroschema.faust import AvroRecord
 
 
-@dataclasses.dataclass
 class UserAdvance(AvroRecord):
     name: str
     age: int
@@ -90,5 +88,62 @@ resulting in
   ]
 }
 ```
+
+*(This script is complete, it should run "as is")*
+
+## Data validation
+
+For models there is no validation of data by default in `Faust`, however there is an option that will enable validation for all common JSON fields (int, float, str, etc.), and some commonly used Python ones (datetime, Decimal, etc.)
+
+In order to validate the data `validation=True` must be used as is described in tha [faust documenation](https://faust-streaming.github.io/faust/userguide/models.html#validation)
+
+=== "Data validation"
+
+    ```python title="Data validation"
+    import typing
+
+    from dataclasses_avroschema.faust import AvroRecord
+
+
+    class UserAdvance(AvroRecord, validation=True):
+        name: str
+        age: int
+        pets: typing.List[str] = dataclasses.field(default_factory=lambda: ['dog', 'cat'])
+        accounts: typing.Dict[str, int] = dataclasses.field(default_factory=lambda: {"key": 1})
+        has_car: bool = False
+        favorite_colors: typing.Tuple[str] = ("BLUE", "YELLOW", "GREEN")
+        country: str = "Argentina"
+        address: typing.Optional[str] = None
+
+        class Meta:
+            schema_doc = False
+
+    UserAdvance(name="marcos", age="bond")
+
+    ValueError: invalid literal for int() with base 10: 'bond'
+    ```
+
+=== "No Data validation"
+    ```python
+    import typing
+
+    from dataclasses_avroschema.faust import AvroRecord
+
+
+    class UserAdvance(AvroRecord):
+        name: str
+        age: int
+        pets: typing.List[str] = dataclasses.field(default_factory=lambda: ['dog', 'cat'])
+        accounts: typing.Dict[str, int] = dataclasses.field(default_factory=lambda: {"key": 1})
+        has_car: bool = False
+        favorite_colors: typing.Tuple[str] = ("BLUE", "YELLOW", "GREEN")
+        country: str = "Argentina"
+        address: typing.Optional[str] = None
+
+        class Meta:
+            schema_doc = False
+
+    UserAdvance(name="marcos", age="juan")  # WRONG data
+    ```
 
 *(This script is complete, it should run "as is")*
