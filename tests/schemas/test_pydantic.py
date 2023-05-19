@@ -293,6 +293,8 @@ def test_to_dict(AvroBaseModel_model):
 
 def test_to_json(AvroBaseModel_model):
     instance = AvroBaseModel_model(first_union="hi!", logical_union=uuid.uuid4())
+    print(instance.to_json(), instance.asdict())
+
     assert instance.to_json() == instance.json()
 
 
@@ -404,3 +406,19 @@ def test_fake(color_enum) -> None:
     # just calling fake is enougt to know that a proper instance was created,
     # otherwise a pydantic validation should have been raised
     User.fake()
+
+
+def test_exclude_fields() -> None:
+    class Message(AvroBaseModel):
+        internal_field: str = Field(exclude=True)
+        public_field: str
+
+    assert Message.avro_schema()
+
+    message = Message(internal_field="internal", public_field="public")
+    assert not "internal_field" in message.dict()
+
+    event = message.serialize(serialization_type="avro-json")
+
+    assert Message.deserialize(event, serialization_type="avro-json") == message
+    assert Message.deserialize(event, serialization_type="avro-json", create_instance=False) != message.dict()
