@@ -3,7 +3,7 @@ import enum
 import inspect
 import json
 from collections import OrderedDict
-from typing import Any, Dict, List, Optional, Set, Type, TypeVar, Union
+from typing import Any, Dict, List, Optional, Set, Type, TypeVar, Union, ForwardRef
 
 from dacite import Config, from_dict
 from fastavro.validation import validate
@@ -115,30 +115,31 @@ class AvroModel:
         return enum_types
 
     @classmethod
-    def _deserialize_list_type(cls: Type[CT], *, field_name: str, payload: Any) -> List:
-        data: List = []
-        for value in payload:
-            if isinstance(value, dict):
-                data.append(cls._deserialize_complex_types(value))
-            elif isinstance(value, list):
-                data.append(cls._deserialize_list_type(field_name=field_name, payload=value))
-            else:
-                data.append(value)
-        return data
+    def _deserialize_list(cls: Type[CT], field: str, payload: Any) -> List:
+        field_def = cls.schema_def.fields_map[field]
+        item_type = field_def.type.__args__[0]  # it could be List[SOMETHING] or Tuple[Something]
+        forward_type = Type[ForwardRef(field_def.parent.__name__)]
+
+        if item_type == forward_type:  # recurcive case
+            return [field_def.parent._deserialize_complex_types(v) for v in payload]
+        elif issubclass(item_type, AvroModel):
+            return [field_def.type.__args__[0]._deserialize_complex_types(v) for v in payload]
+        else:
+            return [v for v in payload]
 
     @classmethod
     def _deserialize_complex_types(cls: Type[CT], payload: Dict[str, Any]) -> Dict:
         output: Dict[str, Any] = {}
         enum_type_map = cls._get_enum_type_map()
         for field, value in payload.items():
-            if isinstance(value, dict):
-                output[field] = cls._deserialize_complex_types(value)
-            elif isinstance(value, list):
-                data = cls._deserialize_list_type(field_name=field, payload=value)
-                if isinstance(cls.schema_def.fields_map[field], fields.TupleField):  # type: ignore
-                    output[field] = tuple(data)
-                else:
-                    output[field] = data
+            field_def = cls.schema_def.fields_map[field]
+            if isinstance(field_def, fields.ListField):
+                output[field] = cls._deserialize_list(field, value)
+            if isinstance(field_def, fields.TupleField):
+                output[field] = tuple(cls._deserialize_list(field, value))
+            elif isinstance(field_def, fields.RecordField):
+                record_type = field_def.type
+                output[field] = record_type._deserialize_complex_types(value)
             elif field in enum_type_map and isinstance(value, str):
                 try:
                     enum_field = enum_type_map[field]

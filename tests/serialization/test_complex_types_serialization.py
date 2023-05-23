@@ -1,3 +1,5 @@
+from typing import List
+
 import dataclasses
 import enum
 import json
@@ -54,6 +56,38 @@ def test_complex_fields(user_advance_dataclass, color_enum):
 
     assert user_advance_dataclass.deserialize(avro_binary) == user
     assert user_advance_dataclass.deserialize(avro_json, serialization_type="avro-json") == user
+
+
+def test_serializing_array_of_arrays():
+    @dataclasses.dataclass
+    class Friend(AvroModel):
+        name: str
+        hobbies: List[str]
+
+    @dataclasses.dataclass
+    class User(AvroModel):
+        name: str
+        friends: List[Friend]
+
+    user = User(name="Alex", friends=[Friend(name="Mr. Robot", hobbies=["fishing", "codding"])])
+    avro_binary = user.serialize()
+    avro_json = user.serialize(serialization_type="avro-json")
+
+    expected_data = {
+        "name": "Alex",
+        "friends": [
+            {
+                "name": "Mr. Robot",
+                "hobbies": ["fishing", "codding"],
+            }
+        ],
+    }
+    assert User.deserialize(avro_binary, create_instance=False) == expected_data
+    assert User.deserialize(avro_json, serialization_type="avro-json", create_instance=False) == expected_data
+    assert user.to_json() == json.dumps(expected_data)
+
+    assert User.deserialize(avro_binary) == user
+    assert User.deserialize(avro_json, serialization_type="avro-json") == user
 
 
 def test_complex_fields_with_defaults(user_advance_with_defaults_dataclass, color_enum):
