@@ -507,6 +507,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#model-config" class="md-nav__link">
+    Model Config
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -661,6 +668,13 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#model-config" class="md-nav__link">
+    Model Config
+  </a>
   
 </li>
       
@@ -868,6 +882,52 @@
 <span class="n">event</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">serialize</span><span class="p">()</span>
 <span class="k">assert</span> <span class="n">user</span> <span class="o">==</span> <span class="n">User</span><span class="o">.</span><span class="n">deserialize</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
 </code></pre></div>
+<h2 id="model-config">Model Config</h2>
+<p>With <code>AvroBaseModel</code> you can use the same <a href="https://docs.pydantic.dev/latest/usage/model_config/">Model Config</a> that <code>pydantic</code> provides,
+for example:</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Not use Enum values</label><label for="__tabbed_1_2">Use Enum values</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">enum</span>
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema.avrodantic</span> <span class="kn">import</span> <span class="n">AvroBaseModel</span>
+
+<span class="k">class</span> <span class="nc">Color</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="n">BLUE</span> <span class="o">=</span> <span class="s2">&quot;BLUE&quot;</span>
+    <span class="n">RED</span> <span class="o">=</span> <span class="s2">&quot;RED&quot;</span>
+
+
+<span class="k">class</span> <span class="nc">Bus</span><span class="p">(</span><span class="n">AvroBaseModel</span><span class="p">):</span>
+    <span class="n">driver</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">color</span><span class="p">:</span> <span class="n">Color</span>
+
+<span class="n">bus</span> <span class="o">=</span>  <span class="n">Bus</span><span class="p">(</span><span class="n">driver</span><span class="o">=</span><span class="s2">&quot;bond&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">Color</span><span class="o">.</span><span class="n">RED</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">bus</span><span class="o">.</span><span class="n">dict</span><span class="p">())</span>
+<span class="c1"># &gt;&gt;&gt; {&#39;driver&#39;: &#39;bond&#39;, &#39;color&#39;: &lt;Color.RED: &#39;RED&#39;&gt;}</span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">enum</span>
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema.avrodantic</span> <span class="kn">import</span> <span class="n">AvroBaseModel</span>
+
+<span class="k">class</span> <span class="nc">Color</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="n">BLUE</span> <span class="o">=</span> <span class="s2">&quot;BLUE&quot;</span>
+    <span class="n">RED</span> <span class="o">=</span> <span class="s2">&quot;RED&quot;</span>
+
+
+<span class="k">class</span> <span class="nc">Bus</span><span class="p">(</span><span class="n">AvroBaseModel</span><span class="p">):</span>
+    <span class="n">driver</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">color</span><span class="p">:</span> <span class="n">Color</span>
+
+    <span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
+        <span class="n">use_enum_values</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="n">bus</span> <span class="o">=</span>  <span class="n">Bus</span><span class="p">(</span><span class="n">driver</span><span class="o">=</span><span class="s2">&quot;bond&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">Color</span><span class="o">.</span><span class="n">RED</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">bus</span><span class="o">.</span><span class="n">dict</span><span class="p">())</span>
+<span class="c1"># &gt;&gt;&gt; {&#39;driver&#39;: &#39;bond&#39;, &#39;color&#39;: &#39;RED&#39;}</span>
+</code></pre></div>
+</div>
+</div>
+</div>
 
 
 
