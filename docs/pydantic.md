@@ -210,3 +210,49 @@ print(user.dict())
 event = user.serialize()
 assert user == User.deserialize(event)
 ```
+
+## Model Config
+
+With `AvroBaseModel` you can use the same [Model Config](https://docs.pydantic.dev/latest/usage/model_config/) that `pydantic` provides,
+for example:
+
+=== "Not use Enum values"
+    ```python
+    import enum
+    from dataclasses_avroschema.avrodantic import AvroBaseModel
+
+    class Color(str, enum.Enum):
+        BLUE = "BLUE"
+        RED = "RED"
+
+
+    class Bus(AvroBaseModel):
+        driver: str
+        color: Color
+
+    bus =  Bus(driver="bond", color=Color.RED)
+    print(bus.dict())
+    # >>> {'driver': 'bond', 'color': <Color.RED: 'RED'>}
+    ```
+
+=== "Use Enum values"
+    ```python
+    import enum
+    from dataclasses_avroschema.avrodantic import AvroBaseModel
+
+    class Color(str, enum.Enum):
+        BLUE = "BLUE"
+        RED = "RED"
+
+
+    class Bus(AvroBaseModel):
+        driver: str
+        color: Color
+
+        class Config:
+            use_enum_values = True
+
+    bus =  Bus(driver="bond", color=Color.RED)
+    print(bus.dict())
+    # >>> {'driver': 'bond', 'color': 'RED'}
+    ```

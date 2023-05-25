@@ -291,10 +291,26 @@ def test_to_dict(AvroBaseModel_model):
     assert instance.to_dict() == instance.dict()
 
 
+def test_asdict():
+    class MyEnum(enum.IntEnum):
+        x = 1
+
+    class ModelA(AvroBaseModel):
+        a: int = 1
+        d: MyEnum = MyEnum.x
+
+    class ModelB(AvroBaseModel):
+        b: ModelA
+        d: MyEnum = MyEnum.x
+
+    target = repr({"b": {"a": 1, "d": 1}, "d": 1})
+    model_b = ModelB(b=ModelA())
+    res_asdict = repr(model_b.asdict())
+    assert res_asdict == target, res_asdict
+
+
 def test_to_json(AvroBaseModel_model):
     instance = AvroBaseModel_model(first_union="hi!", logical_union=uuid.uuid4())
-    print(instance.to_json(), instance.asdict())
-
     assert instance.to_json() == instance.json()
 
 
