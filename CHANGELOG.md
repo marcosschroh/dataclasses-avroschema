@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## 0.43.2 (2023-05-25)
+
+### Fix
+
+- deserialization with more than tow layers. Closes #326 (#329)
+
 ## 0.43.1 (2023-05-19)
 
 ### Fix
