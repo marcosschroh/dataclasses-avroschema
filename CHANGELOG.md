@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## 0.43.3 (2023-05-25)
+
+### Fix
+
+- dict conversion of AvroBaseModel. Closes #324 (#331)
+
 ## 0.43.2 (2023-05-25)
 
 ### Fix
