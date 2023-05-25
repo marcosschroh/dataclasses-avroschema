@@ -261,3 +261,19 @@ def test_nested_scheamas_splitted_with_intermediates() -> None:
 
     assert d.serialize() == b""
     assert c.serialize() == b""
+
+
+def test_nested_several_layers():
+    @dataclasses.dataclass
+    class Friend(AvroModel):
+        name: str
+        hobbies: typing.List[str]
+
+    @dataclasses.dataclass
+    class User(AvroModel):
+        name: str
+        friends: typing.List[Friend]
+
+    user = User(name="Alex", friends=[Friend(name="Mr. Robot", hobbies=["fishing", "codding"])])
+
+    assert User.deserialize(user.serialize()) == user

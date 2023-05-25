@@ -3,15 +3,15 @@ import enum
 import inspect
 import json
 from collections import OrderedDict
-from typing import Any, Dict, List, Optional, Set, Type, TypeVar, Union
+from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Type, TypeVar, Union
 
 from dacite import Config, from_dict
 from fastavro.validation import validate
 
 from . import case, fields, serialization
 from .schema_definition import AvroSchemaDefinition
-from .types import Fixed, JsonDict
-from .utils import SchemaMetadata, is_dataclass_or_pydantic_model
+from .types import JsonDict
+from .utils import SchemaMetadata, standardize_custom_type
 
 AVRO = "avro"
 AVRO_JSON = "avro-json"
@@ -30,8 +30,8 @@ class AvroModel:
 
     @classmethod
     def generate_dataclass(cls: Type[CT]) -> Type[CT]:
-        if is_dataclass_or_pydantic_model(cls):
-            return cls
+        if dataclasses.is_dataclass(cls):
+            return cls  # type: ignore
         return dataclasses.dataclass(cls)
 
     @classmethod
@@ -101,55 +101,6 @@ class AvroModel:
         return cls.schema_def.fields  # type: ignore
 
     @classmethod
-    def _get_enum_type_map(cls: Type[CT]) -> Dict[str, enum.EnumMeta]:
-        enum_types = {}
-        for field_type in cls.get_fields():
-            if isinstance(field_type, fields.EnumField):
-                enum_types[field_type.name] = field_type.type
-            elif isinstance(field_type, fields.UnionField):
-                for sub_type in field_type.type.__args__:
-                    if inspect.isclass(sub_type) and issubclass(sub_type, enum.Enum):
-                        enum_types[field_type.name] = sub_type
-            elif isinstance(field_type, fields.RecordField):
-                enum_types.update(field_type.type._get_enum_type_map())
-        return enum_types
-
-    @classmethod
-    def _deserialize_list_type(cls: Type[CT], *, field_name: str, payload: Any) -> List:
-        data: List = []
-        for value in payload:
-            if isinstance(value, dict):
-                data.append(cls._deserialize_complex_types(value))
-            elif isinstance(value, list):
-                data.append(cls._deserialize_list_type(field_name=field_name, payload=value))
-            else:
-                data.append(value)
-        return data
-
-    @classmethod
-    def _deserialize_complex_types(cls: Type[CT], payload: Dict[str, Any]) -> Dict:
-        output: Dict[str, Any] = {}
-        enum_type_map = cls._get_enum_type_map()
-        for field, value in payload.items():
-            if isinstance(value, dict):
-                output[field] = cls._deserialize_complex_types(value)
-            elif isinstance(value, list):
-                data = cls._deserialize_list_type(field_name=field, payload=value)
-                if isinstance(cls.schema_def.fields_map[field], fields.TupleField):  # type: ignore
-                    output[field] = tuple(data)
-                else:
-                    output[field] = data
-            elif field in enum_type_map and isinstance(value, str):
-                try:
-                    enum_field = enum_type_map[field]
-                    output[field] = enum_field(value)
-                except ValueError as e:
-                    raise ValueError(f"Value {value} is not a valid instance of {enum_type_map[field]}", e)
-            else:
-                output[field] = value
-        return output
-
-    @classmethod
     def _reset_schema_definition(cls: Type[CT]) -> None:
         """
         Reset all the values to original state.
@@ -158,29 +109,19 @@ class AvroModel:
         cls.schema_def = None
         cls.parent = None
 
-    @staticmethod
-    def standardize_custom_type(value: Any) -> Any:
-        if isinstance(value, Fixed):
-            return value.default
-        elif isinstance(value, dict):
-            return {k: AvroModel.standardize_custom_type(v) for k, v in value.items()}
-        elif isinstance(value, list):
-            return [AvroModel.standardize_custom_type(v) for v in value]
-        elif isinstance(value, tuple):
-            return tuple(AvroModel.standardize_custom_type(v) for v in value)
-        elif issubclass(type(value), enum.Enum):
-            return value.value
-        return value
-
-    def asdict(self) -> JsonDict:
-        return dataclasses.asdict(  # type: ignore
-            self, dict_factory=lambda x: {key: self.standardize_custom_type(value) for key, value in x}
-        )
+    def asdict(self, standardize_factory: Optional[Callable[..., Any]] = None) -> JsonDict:
+        if standardize_factory is not None:
+            return dataclasses.asdict(self, dict_factory=lambda x: {key: standardize_factory(value) for key, value in x})  # type: ignore
+        return dataclasses.asdict(self)  # type: ignore
 
     def serialize(self, serialization_type: str = AVRO) -> bytes:
         schema = self.avro_schema_to_python()
 
-        return serialization.serialize(self.asdict(), schema, serialization_type=serialization_type)
+        return serialization.serialize(
+            self.asdict(standardize_factory=standardize_custom_type),
+            schema,
+            serialization_type=serialization_type,
+        )
 
     @classmethod
     def deserialize(
@@ -198,15 +139,15 @@ class AvroModel:
         payload = serialization.deserialize(
             data, schema, serialization_type=serialization_type, writer_schema=writer_schema  # type: ignore
         )
-        output = cls._deserialize_complex_types(payload)
+        obj = cls.parse_obj(payload)
 
-        if create_instance:
-            return cls.parse_obj(output)
-        return output
+        if not create_instance:
+            return obj.asdict()
+        return obj
 
     @classmethod
-    def parse_obj(cls: Type[CT], data: Dict) -> Union[JsonDict, CT]:
-        return from_dict(data_class=cls, data=data, config=Config(**cls.config()))
+    def parse_obj(cls: Type[CT], data: Dict) -> CT:
+        return from_dict(data_class=cls, data=data, config=cls.config())
 
     def validate(self) -> bool:
         schema = self.avro_schema_to_python()
@@ -222,7 +163,7 @@ class AvroModel:
         return json.dumps(data)
 
     @classmethod
-    def config(cls: Type[CT]) -> JsonDict:
+    def config(cls: Type[CT]) -> Config:
         """
         Get the default config for dacite and always include the self reference
         """
@@ -233,6 +174,7 @@ class AvroModel:
 
         dacite_config = {
             "check_types": False,
+            "cast": [],
             "forward_references": {
                 cls.klass.__name__: cls.klass,  # type: ignore
             },
@@ -241,7 +183,12 @@ class AvroModel:
         if dacite_user_config is not None:
             dacite_config.update(dacite_user_config)
 
-        return dacite_config
+        config = Config(**dacite_config)  # type: ignore
+
+        # we always need to have this values regardless
+        # the user config
+        config.cast.extend([Tuple, tuple, enum.Enum])  # type: ignore
+        return config
 
     @classmethod
     def fake(cls: Type[CT], **data: Dict[str, Any]) -> CT:
@@ -255,4 +202,4 @@ class AvroModel:
         payload = {field.name: field.fake() for field in cls.get_fields() if field.name not in data.keys()}
         payload.update(data)
 
-        return from_dict(data_class=cls, data=payload, config=Config(**cls.config()))
+        return from_dict(data_class=cls, data=payload, config=cls.config())

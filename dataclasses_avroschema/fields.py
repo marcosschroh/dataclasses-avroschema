@@ -384,7 +384,7 @@ class UnionField(BaseField):
         Returns:
             typing.List: List of avro types
         """
-        elements = self.type.__args__
+        elements = get_args(self.type)
         name = self.get_singular_name(self.name)
 
         unions: typing.List = []

@@ -1,10 +1,11 @@
 import dataclasses
+import enum
 import typing
 from datetime import datetime, timezone
 
 from typing_extensions import Annotated, get_origin
 
-from .types import JsonDict
+from .types import Fixed, JsonDict
 
 try:
     import faust
@@ -21,10 +22,6 @@ def is_pydantic_model(klass: type) -> bool:
     if pydantic is not None:
         return issubclass(klass, pydantic.BaseModel)
     return False
-
-
-def is_dataclass_or_pydantic_model(type: type) -> bool:
-    return dataclasses.is_dataclass(type) or is_pydantic_model(type)
 
 
 def is_faust_model(klass: type) -> bool:
@@ -72,6 +69,20 @@ def is_self_referenced(a_type: type) -> bool:
 def is_annotated(a_type: typing.Any) -> bool:
     origin = get_origin(a_type)
     return origin is not None and isinstance(origin, type) and issubclass(origin, Annotated)  # type: ignore[arg-type]
+
+
+def standardize_custom_type(value: typing.Any) -> typing.Any:
+    if isinstance(value, Fixed):
+        return value.default
+    elif isinstance(value, dict):
+        return {k: standardize_custom_type(v) for k, v in value.items()}
+    elif isinstance(value, list):
+        return [standardize_custom_type(v) for v in value]
+    elif isinstance(value, tuple):
+        return tuple(standardize_custom_type(v) for v in value)
+    elif issubclass(type(value), enum.Enum):
+        return value.value
+    return value
 
 
 @dataclasses.dataclass
