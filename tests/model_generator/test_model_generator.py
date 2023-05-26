@@ -32,6 +32,26 @@ class User(AvroModel):
     assert result.strip() == expected_result.strip()
 
 
+def test_model_generator_primitive_types_as_defined_types(
+    schema_primitive_types_as_defined_types: types.JsonDict,
+) -> None:
+    expected_result = """
+from dataclasses_avroschema import AvroModel
+import dataclasses
+import typing
+
+
+@dataclasses.dataclass
+class Address(AvroModel):
+    street: str
+    name: typing.Optional[str]
+
+"""
+    model_generator = ModelGenerator()
+    result = model_generator.render(schema=schema_primitive_types_as_defined_types)
+    assert result.strip() == expected_result.strip()
+
+
 def test_model_generator_primitive_types_with_default_null(schema_with_nulls: types.JsonDict) -> None:
     expected_result = """
 from dataclasses_avroschema import AvroModel

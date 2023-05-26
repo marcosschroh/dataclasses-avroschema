@@ -44,6 +44,18 @@ def schema_2() -> Dict:
 
 
 @pytest.fixture
+def schema_primitive_types_as_defined_types() -> Dict:
+    return {
+        "type": "record",
+        "name": "Address",
+        "fields": [
+            {"name": "street", "type": {"type": "string"}},
+            {"name": "name", "type": ["null", {"type": "string"}]},
+        ],
+    }
+
+
+@pytest.fixture
 def schema_with_nulls() -> Dict:
     return {
         "type": "record",
