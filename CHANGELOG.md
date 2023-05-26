@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## 0.43.4 (2023-05-26)
+
+### Fix
+
+- proper schema generation when primitive types are defined types. Closes #330 (#332)
+
 ## 0.43.3 (2023-05-25)
 
 ### Fix
