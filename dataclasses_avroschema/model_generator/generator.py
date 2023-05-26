@@ -227,8 +227,10 @@ class ModelGenerator:
             # Native field or Logical type using a native
             language_type = self.get_language_type(type=type, model_name=model_name)
 
-        if is_complex_type:
-            # If the field is a complext type, we need to return just the language_type
+        if is_complex_type or not name:
+            # If the field is a complext type or
+            # name is an empty string (it means that the type is a native type
+            # with the form {"type": "a_primitive_type"}, example {"type": "string"})
             result = language_type
         else:
             result = templates.field_template.safe_substitute(name=name, type=language_type)
