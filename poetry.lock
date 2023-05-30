@@ -92,7 +92,7 @@ trio = ["trio (>=0.16,<0.22)"]
 name = "argcomplete"
 version = "3.0.8"
 description = "Bash tab completion for argparse"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.6"
 
@@ -220,7 +220,7 @@ development = ["black", "flake8", "mypy", "pytest", "types-colorama"]
 name = "commitizen"
 version = "3.2.2"
 description = "Python commitizen client tool"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7,<4.0"
 
@@ -304,7 +304,7 @@ typer = {version = ">=0.7.0,<0.8.0", extras = ["all"]}
 name = "decli"
 version = "0.6.0"
 description = "Minimal, easy-to-use, declarative cli tool"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 
@@ -531,7 +531,7 @@ sortedcontainers = ">=2.0,<3.0"
 name = "jinja2"
 version = "3.1.2"
 description = "A very fast and expressive template engine."
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 
@@ -570,7 +570,7 @@ testing = ["coverage", "pyyaml"]
 name = "markupsafe"
 version = "2.1.2"
 description = "Safely add untrusted strings to HTML/XML markup."
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 
@@ -763,7 +763,7 @@ testing = ["pytest", "pytest-benchmark"]
 name = "prompt-toolkit"
 version = "3.0.38"
 description = "Library for building powerful interactive command lines in Python"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7.0"
 
@@ -858,7 +858,7 @@ six = ">=1.5"
 name = "pyyaml"
 version = "6.0"
 description = "YAML parser and emitter for Python"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.6"
 
@@ -877,7 +877,7 @@ pyyaml = "*"
 name = "questionary"
 version = "1.10.0"
 description = "Python library to build pretty command line user prompts ⭐️"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.6,<4.0"
 
@@ -995,7 +995,7 @@ python-versions = "*"
 name = "termcolor"
 version = "2.3.0"
 description = "ANSI color formatting for output in terminal"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 
@@ -1022,7 +1022,7 @@ python-versions = ">=3.7"
 name = "tomlkit"
 version = "0.11.8"
 description = "Style preserving TOML library"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 
@@ -1111,7 +1111,7 @@ watchmedo = ["PyYAML (>=3.10)"]
 name = "wcwidth"
 version = "0.2.6"
 description = "Measures the displayed width of unicode strings in a terminal"
-category = "main"
+category = "dev"
 optional = false
 python-versions = "*"
 
@@ -1147,7 +1147,7 @@ pydantic = ["pydantic"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "f3343810efab68de5f79ea0ceedb4bf9b27110f2d1d919eac13dbe338a0bc4e9"
+content-hash = "713b4d9ab2d1ea3f953b51ed4abfad9910f46f654af4d39987c7156693d28b7f"
 
 [metadata.files]
 aiofiles = [
