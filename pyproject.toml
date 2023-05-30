@@ -29,6 +29,7 @@ stringcase = "^1.2.0"
 inflector = "^3.1.0"
 pydantic = {version = "^1.10.7", optional = true}
 faust-streaming = {version = "^0.10.11", optional = true}
+commitizen = "^3.2.2"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1"
@@ -41,9 +42,6 @@ types-pytz = "^2023"
 [tool.poetry.group.docs.dependencies]
 mkdocs = "^1"
 mkdocs-material = "^9"
-
-[tool.poetry.group.ci-publish.dependencies]
-commitizen = "^2"
 
 [tool.poetry.group.cli.dependencies]
 dc-avro = "^0.6.4"
