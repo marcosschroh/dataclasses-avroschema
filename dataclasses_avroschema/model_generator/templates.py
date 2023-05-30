@@ -8,7 +8,7 @@ OPTIONAL_TEMPLATE = "typing.Optional[$type]"
 UNION_TEMPLATE = "typing.Union[$type]"
 LIST_TEMPLATE = "typing.List[$type]"
 DICT_TEMPLATE = "typing.Dict[str, $type]"
-FIXED_TEMPLATE = "types.Fixed = types.Fixed($properties)"
+FIXED_TEMPLATE = "types.confixed($properties)"
 DATACLASS_FIELD = "dataclasses.field($properties)"
 TYPE_TEMPLATE = '"$type"'
 DATE_TEMPLATE = "datetime.date($year, $month, $day)"

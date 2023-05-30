@@ -151,7 +151,7 @@ import dataclasses
 
 @dataclasses.dataclass
 class User(AvroModel):
-    md5: types.Fixed = types.Fixed(16, namespace="md5", aliases=['md5', 'hash'])
+    md5: types.confixed(size=16, namespace="md5", aliases=['md5', 'hash'])
 """
     model_generator = ModelGenerator()
     result = model_generator.render(schema=schema_with_fixed_types)

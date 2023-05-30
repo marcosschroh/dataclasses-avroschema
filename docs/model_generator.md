@@ -346,7 +346,7 @@ print(User.fake())
 | bytes     | bytes       |
 | array     | typing.List |
 | map       | typing.Dict |
-| fixed     | types.Fixed |
+| fixed     | types.confixed |
 | enum      | enum.Enum   |
 | int       | types.Int32 |
 | float     | types.Float32|

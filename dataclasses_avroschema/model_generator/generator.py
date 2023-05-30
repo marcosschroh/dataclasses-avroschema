@@ -355,7 +355,7 @@ class ModelGenerator:
 
     def parse_fixed(self, field: JsonDict) -> str:
         self.imports.add("from dataclasses_avroschema import types")
-        properties = f"{field['size']}"
+        properties = f"size={field['size']}"
 
         namespace = field.get("namespace")
         aliases = field.get("aliases")
