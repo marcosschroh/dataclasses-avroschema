@@ -378,6 +378,19 @@
     Fixed
   </a>
   
+    <nav class="md-nav" aria-label="Fixed">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#arguments-to-confixed" class="md-nav__link">
+    Arguments to confixed
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -675,6 +688,19 @@
     Fixed
   </a>
   
+    <nav class="md-nav" aria-label="Fixed">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#arguments-to-confixed" class="md-nav__link">
+    Arguments to confixed
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -746,7 +772,7 @@
 </tr>
 <tr>
 <td>fixed</td>
-<td>types.Fixed</td>
+<td>types.confixed</td>
 </tr>
 <tr>
 <td>unions</td>
@@ -975,6 +1001,14 @@ It is a good practice but <em>NOT</em> neccesary to a define the <code>namespace
 <span class="p">}</span><span class="s1">&#39;</span>
 </code></pre></div>
 <h2 id="fixed">Fixed</h2>
+<p>Fixed types in avro must specify one required attribute size  which specifies the number of bytes per value. Because the <code>fixed</code> type does not exist in python it is not possible to supply the required arguments directly in the type so dataclasses-avroschema provides a funtion to create fixed. The function types.confixed annotates the <code>types.Fixed</code> type and it adds the required attibutes.</p>
+<h3 id="arguments-to-confixed">Arguments to confixed</h3>
+<p>The following arguments are available when using the confixed type function</p>
+<ul>
+<li>size (int): number of bytes per value</li>
+<li>aliases (List[str]):  a List of strings, providing alternate names (optional)</li>
+<li>namespace (str): a string that qualifies the name (optional);</li>
+</ul>
 <div class="highlight"><span class="filename">Fixed example</span><pre><span></span><code><span class="kn">import</span> <span class="nn">typing</span>
 <span class="kn">import</span> <span class="nn">dataclasses</span>
 
@@ -983,8 +1017,8 @@ It is a good practice but <em>NOT</em> neccesary to a define the <code>namespace
 
 <span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span> <span class="nc">UserAdvance</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
-    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">md5</span><span class="p">:</span> <span class="n">types</span><span class="o">.</span><span class="n">Fixed</span> <span class="o">=</span> <span class="n">types</span><span class="o">.</span><span class="n">Fixed</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s1">&#39;md5&#39;</span><span class="p">,</span> <span class="n">aliases</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;md5&quot;</span><span class="p">,</span> <span class="s2">&quot;hash&quot;</span><span class="p">])</span>
+    <span class="n">md5</span><span class="p">:</span> <span class="n">types</span><span class="o">.</span><span class="n">confixed</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s1">&#39;md5&#39;</span><span class="p">,</span> <span class="n">aliases</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;md5&quot;</span><span class="p">,</span> <span class="s2">&quot;hash&quot;</span><span class="p">])</span>
+    <span class="n">name</span><span class="p">:</span> <span class="n">types</span><span class="o">.</span><span class="n">confixed</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;u00ffffffffffffx&quot;</span>
 
 <span class="n">UnionSchema</span><span class="o">.</span><span class="n">avro_schema</span><span class="p">()</span>
 
@@ -992,8 +1026,8 @@ It is a good practice but <em>NOT</em> neccesary to a define the <code>namespace
   <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;record&#39;</span><span class="p">,</span>
   <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;UserAdvance&#39;</span><span class="p">,</span>
   <span class="s1">&#39;fields&#39;</span><span class="p">:</span> <span class="p">[</span>
-    <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;string&#39;</span><span class="p">},</span>
-    <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;md5&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;fixed&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;md5&#39;</span><span class="p">,</span> <span class="s1">&#39;size&#39;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span><span class="s1">&#39;namespace&#39;</span><span class="p">:</span> <span class="s1">&#39;md5&#39;</span><span class="p">,</span> <span class="s1">&#39;aliases&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;md5&#39;</span><span class="p">,</span> <span class="s1">&#39;hash&#39;</span><span class="p">]}}</span>
+    <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;md5&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;fixed&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;md5&#39;</span><span class="p">,</span> <span class="s1">&#39;size&#39;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span><span class="s1">&#39;namespace&#39;</span><span class="p">:</span> <span class="s1">&#39;md5&#39;</span><span class="p">,</span> <span class="s1">&#39;aliases&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;md5&#39;</span><span class="p">,</span> <span class="s1">&#39;hash&#39;</span><span class="p">]}},</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;fixed&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="mi">16</span><span class="p">},</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="s2">&quot;u00ffffffffffffx&quot;</span><span class="p">}</span>
   <span class="p">],</span>
   <span class="s1">&#39;doc&#39;</span><span class="p">:</span> <span class="s1">&#39;UserAdvance(name: str, md5: dataclasses_avroschema.types.Fixed = 16)&#39;</span><span class="p">}</span>
 </code></pre></div>
