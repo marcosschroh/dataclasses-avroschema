@@ -436,8 +436,33 @@ def test_fixed_type():
     name = "a_fixed_field"
     namespace = "md5"
     aliases = ["md5", "hash"]
-    default = types.Fixed(16, namespace=namespace, aliases=aliases)
-    python_type = types.Fixed
+    python_type = types.confixed(size=16, aliases=aliases, namespace=namespace)
+    field = fields.AvroField(name, python_type)
+
+    expected = {
+        "name": name,
+        "type": {
+            "type": "fixed",
+            "name": name,
+            "size": 16,
+            "namespace": namespace,
+            "aliases": aliases,
+        },
+    }
+
+    assert expected == field.to_dict()
+
+
+def test_fixed_type_with_default():
+    """
+    When the type is types.Fixed, the Avro field type should be fixed
+    with size attribute present.
+    """
+    name = "a_fixed_field"
+    namespace = "md5"
+    aliases = ["md5", "hash"]
+    default = b"u00ffffffffffffx"
+    python_type = types.confixed(size=16, aliases=aliases, namespace=namespace)
     field = fields.AvroField(name, python_type, default=default)
 
     expected = {
@@ -445,10 +470,11 @@ def test_fixed_type():
         "type": {
             "type": "fixed",
             "name": name,
-            "size": default.size,
+            "size": 16,
             "namespace": namespace,
             "aliases": aliases,
         },
+        "default": default.decode(),
     }
 
     assert expected == field.to_dict()
@@ -588,7 +614,7 @@ def test_enum_field():
 
 
 def test_enum_field_default():
-    enum_field1 = fields.AvroField("field_name", Color, default=types.MissingSentinel, metadata={"key": "value"})
+    enum_field1 = fields.AvroField("field_name", Color, metadata={"key": "value"})
     enum_field2 = fields.AvroField("field_name", Color, default=dataclasses.MISSING, metadata={"key": "value"})
     enum_field3 = fields.AvroField("field_name", Color, default=None, metadata={"key": "value"})
     enum_field4 = fields.AvroField("field_name", Color, default=Color.GREEN, metadata={"key": "value"})

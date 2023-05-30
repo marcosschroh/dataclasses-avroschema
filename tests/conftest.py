@@ -114,10 +114,10 @@ def user_advance_dataclass(color_enum):
         pets: typing.List[str]
         accounts: typing.Dict[str, int]
         favorite_colors: color_enum
+        md5: types.confixed(size=16)
         has_car: bool = False
         country: str = "Argentina"
         address: typing.Optional[str] = None
-        md5: types.Fixed = types.Fixed(16)
 
         class Meta:
             schema_doc = False
@@ -134,11 +134,11 @@ def user_advance_dataclass_with_enum(color_enum: type, user_type_enum: type):
         pets: typing.List[str]
         accounts: typing.Dict[str, int]
         favorite_colors: color_enum
+        md5: types.confixed(size=16)
         has_car: bool = False
         country: str = "Argentina"
         address: typing.Optional[str] = None
         user_type: typing.Optional[user_type_enum] = None
-        md5: types.Fixed = types.Fixed(16)
 
         class Meta:
             schema_doc = False
@@ -155,11 +155,11 @@ def user_advance_dataclass_with_union_enum(color_enum: type, user_type_enum: typ
         pets: typing.List[str]
         accounts: typing.Dict[str, int]
         favorite_colors: color_enum
+        md5: types.confixed(size=16)
         has_car: bool = False
         country: str = "Argentina"
         address: typing.Optional[str] = None
         user_type: typing.Union[int, user_type_enum] = -1
-        md5: types.Fixed = types.Fixed(16)
 
         class Meta:
             schema_doc = False

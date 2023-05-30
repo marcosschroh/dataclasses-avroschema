@@ -34,10 +34,10 @@ def test_faust_record_schema_complex_types(user_advance_avro_json, color_enum):
         pets: typing.List[str]
         accounts: typing.Dict[str, int]
         favorite_colors: color_enum
+        md5: types.confixed(size=16)
         has_car: bool = False
         country: str = "Argentina"
         address: str = None
-        md5: types.Fixed = types.Fixed(16)
 
         class Meta:
             schema_doc = False

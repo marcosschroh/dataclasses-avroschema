@@ -120,7 +120,6 @@ class BaseField:
             a_type, _ = get_args(self.type)
 
         assert isinstance(self.default, a_type), msg
-
         return True
 
     def to_json(self) -> str:
@@ -438,29 +437,43 @@ class UnionField(BaseField):
 
 
 @dataclasses.dataclass
-class FixedField(BaseField):
-    field_info: typing.Optional[types.FieldInfo] = None
+class FixedField(BytesField):
+    field_info: typing.Optional[types.FixedFieldInfo] = None
+    size: int = 0
+    aliases: typing.Optional[typing.List[str]] = None
+    namespace: typing.Optional[str] = None
+
+    def __post_init__(self) -> None:
+        self.set_fixed()
+
+    def set_fixed(self) -> None:
+        if self.field_info is not None:
+            self.size = self.field_info.size
+            self.aliases = self.field_info.aliases
+            self.namespace = self.field_info.namespace
 
     def get_avro_type(self) -> JsonDict:
         avro_type = {
             "type": field_utils.FIXED,
             "name": self.get_singular_name(self.name),
-            "size": int(self.default.size),
+            "size": int(self.size),
         }
 
-        if self.default.namespace is not None:
-            avro_type["namespace"] = self.default.namespace
+        if self.namespace is not None:
+            avro_type["namespace"] = self.namespace
 
-        if self.default.aliases is not None:
-            avro_type["aliases"] = self.default.aliases
+        if self.aliases is not None:
+            avro_type["aliases"] = self.aliases
 
         return avro_type
 
-    def get_default_value(self) -> dataclasses._MISSING_TYPE:
-        return dataclasses.MISSING
+    def validate_default(self) -> bool:
+        msg = "Invalid default type. Default should be bytes"
+        assert isinstance(self.default, bytes), msg
+        return True
 
     def fake(self) -> bytes:
-        return fake.pystr(max_chars=self.default.size).encode()
+        return fake.pystr(max_chars=self.size).encode()
 
 
 @dataclasses.dataclass
@@ -499,9 +512,7 @@ class EnumField(BaseField):
                 return f"{namespace}.{name}"
 
     def get_default_value(self) -> typing.Union[str, dataclasses._MISSING_TYPE, None]:
-        if self.default == types.MissingSentinel:
-            return dataclasses.MISSING
-        elif self.default in (dataclasses.MISSING, None):
+        if self.default in (dataclasses.MISSING, None):
             return self.default
         else:
             # check that the default value is listed in symbols
@@ -784,7 +795,7 @@ class RecordField(BaseField):
 
 @dataclasses.dataclass
 class DecimalField(BaseField):
-    field_info: typing.Optional[types.FieldInfo] = None
+    field_info: typing.Optional[types.DecimalFieldInfo] = None
     max_digits: int = -1  # amount of digits, in avro is called `precision`
     decimal_places: int = 0  # amount of digits to the right side, in avro is called `scale`
 
@@ -917,7 +928,7 @@ def field_factory(
         a_type, *extra_args = get_args(native_type)
         field_info = next((arg for arg in extra_args if isinstance(arg, types.FieldInfo)), None)
 
-        if field_info is None or a_type in (decimal.Decimal,):
+        if field_info is None or a_type in (decimal.Decimal, types.Fixed):
             # it means that it is a custom type defined by us
             # `Int32`, `Float32`,`TimeMicro` or `DateTimeMicro`
             # or a type Annotated with the end user

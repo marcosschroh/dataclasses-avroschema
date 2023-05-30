@@ -1,4 +1,3 @@
-import dataclasses
 import datetime
 import decimal
 import sys
@@ -19,44 +18,45 @@ JsonDict = typing.Dict[str, typing.Any]
 
 
 class FieldInfo:
-    def __init__(self, **kwargs) -> None:
-        self.type = kwargs.get("type")
-        self.max_digits = kwargs.get("max_digits", -1)
-        self.decimal_places = kwargs.get("decimal_places", 0)
-
-    def __repr__(self) -> str:
-        return f"FieldInfo(type='{self.type}', max_digits={self.max_digits}, decimal_places={self.decimal_places})"
-
-
-class MissingSentinel(typing.Generic[T]):
-    """
-    Class to detect when a field is not initialized
-    """
-
     ...
 
 
-@dataclasses.dataclass(frozen=True)
-class Fixed(typing.Generic[T]):
-    """
-    Represents an Avro Fixed type
+class Fixed:
+    ...
 
-    size (int): Specifying the number of bytes per value
-    """
 
-    size: int
-    default: typing.Any = dataclasses.field(default=MissingSentinel)
-    namespace: typing.Optional[str] = None
-    aliases: typing.Optional[typing.List] = None
-    _dataclasses_custom_type: str = "Fixed"
+class DecimalFieldInfo(FieldInfo):
+    def __init__(self, max_digits: int = -1, decimal_places: int = 0) -> None:
+        self.max_digits = max_digits
+        self.decimal_places = decimal_places
 
     def __repr__(self) -> str:
-        return f"{self.size}"
+        return f"DecimalFieldInfo(max_digits={self.max_digits}, decimal_places={self.decimal_places})"
 
 
-def condecimal(*, max_digits, decimal_places) -> typing.Type[decimal.Decimal]:
+class FixedFieldInfo(FieldInfo):
+    def __init__(
+        self, size: int, aliases: typing.Optional[typing.List[str]] = None, namespace=typing.Optional[str]
+    ) -> None:
+        self.size = size
+        self.aliases = aliases
+        self.namespace = namespace
+
+    def __repr__(self) -> str:
+        return f"FixedFieldInfo(size={self.size}, aliases={self.aliases}, namespace={self.namespace})"
+
+
+def confixed(
+    *, size, aliases: typing.Optional[typing.List[str]] = None, namespace: typing.Optional[str] = None
+) -> typing.Type[bytes]:
     return Annotated[  # type: ignore[return-value]
-        decimal.Decimal, FieldInfo(type="Decimal", max_digits=max_digits, decimal_places=decimal_places)
+        Fixed, FixedFieldInfo(size=size, aliases=aliases, namespace=namespace)
+    ]
+
+
+def condecimal(*, max_digits: int, decimal_places: int) -> typing.Type[decimal.Decimal]:
+    return Annotated[  # type: ignore[return-value]
+        decimal.Decimal, DecimalFieldInfo(max_digits=max_digits, decimal_places=decimal_places)
     ]
 
 
@@ -66,10 +66,10 @@ TimeMicro = Annotated[datetime.time, "TimeMicro"]
 DateTimeMicro = Annotated[datetime.datetime, "DateTimeMicro"]
 
 CUSTOM_TYPES = (
-    Fixed,
     Int32,
     Float32,
     TimeMicro,
     DateTimeMicro,
     condecimal,
+    confixed,
 )

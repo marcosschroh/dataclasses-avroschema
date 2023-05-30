@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 
 from typing_extensions import Annotated, get_origin
 
-from .types import Fixed, JsonDict
+from .types import JsonDict
 
 try:
     import faust
@@ -72,9 +72,7 @@ def is_annotated(a_type: typing.Any) -> bool:
 
 
 def standardize_custom_type(value: typing.Any) -> typing.Any:
-    if isinstance(value, Fixed):
-        return value.default
-    elif isinstance(value, dict):
+    if isinstance(value, dict):
         return {k: standardize_custom_type(v) for k, v in value.items()}
     elif isinstance(value, list):
         return [standardize_custom_type(v) for v in value]

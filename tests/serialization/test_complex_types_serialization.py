@@ -34,10 +34,10 @@ def test_complex_fields(user_advance_dataclass, color_enum):
         "pets": ["dog"],
         "accounts": {"ing": 100},
         "favorite_colors": color_enum.GREEN.value,
+        "md5": "u00ffffffffffffx",
         "has_car": True,
         "country": "Argentina",
         "address": None,
-        "md5": "u00ffffffffffffx",
     }
 
     user = user_advance_dataclass(**data)
@@ -142,11 +142,11 @@ def test_complex_fields_with_enum(user_advance_dataclass_with_enum, color_enum):
         "pets": ["dog"],
         "accounts": {"ing": 100},
         "favorite_colors": "GREEN",
+        "md5": "u00ffffffffffffx",
         "has_car": True,
         "country": "Argentina",
         "address": None,
         "user_type": None,
-        "md5": "u00ffffffffffffx",
     }
 
     user = user_advance_dataclass_with_enum(**data)

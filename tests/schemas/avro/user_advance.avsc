@@ -35,6 +35,14 @@
       }
     },
     {
+      "name": "md5",
+      "type": {
+        "type": "fixed",
+        "name": "md5",
+        "size": 16
+      }
+    },
+    {
       "name": "has_car",
       "type": "boolean",
       "default": false
@@ -48,14 +56,6 @@
       "name": "address",
       "type": ["null", "string"],
       "default": null
-    },
-    {
-      "name": "md5",
-      "type": {
-        "type": "fixed",
-        "name": "md5",
-        "size": 16
-      }
     }
   ]
 }

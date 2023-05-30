@@ -4,10 +4,10 @@ The following list represent the avro complex types mapped to python types:
 
 | Avro Type          | Python Type                                                        |
 | ------------------ | ------------------------------------------------------------------ |
-| enums              | enum.Enum                                                         |
+| enums              | enum.Enum                                                          |
 | arrays             | typing.List, typing.Tuple, typing.Sequence, typing.MutableSequence |
 | maps               | typing.Dict, typing.Mapping, typing.MutableMapping                 |
-| fixed              | types.Fixed                                                        |
+| fixed              | types.confixed                                                     |
 | unions             | typing.Union                                                       |
 | unions with `null` | typing.Optional                                                    |
 | records            | Python Class                                                       |
@@ -242,6 +242,16 @@ UserAdvance.avro_schema()
 
 ## Fixed
 
+Fixed types in avro must specify one required attribute size  which specifies the number of bytes per value. Because the `fixed` type does not exist in python it is not possible to supply the required arguments directly in the type so dataclasses-avroschema provides a funtion to create fixed. The function types.confixed annotates the `types.Fixed` type and it adds the required attibutes.
+
+### Arguments to confixed
+
+The following arguments are available when using the confixed type function
+
+- size (int): number of bytes per value
+- aliases (List[str]):  a List of strings, providing alternate names (optional)
+- namespace (str): a string that qualifies the name (optional);
+
 ```python title="Fixed example"
 import typing
 import dataclasses
@@ -251,8 +261,8 @@ from dataclasses_avroschema import AvroModel, types
 
 @dataclasses.dataclass
 class UserAdvance(AvroModel):
-    name: str
-    md5: types.Fixed = types.Fixed(16, namespace='md5', aliases=["md5", "hash"])
+    md5: types.confixed(size=16, namespace='md5', aliases=["md5", "hash"])
+    name: types.confixed(size=16) = b"u00ffffffffffffx"
 
 UnionSchema.avro_schema()
 
@@ -260,8 +270,8 @@ UnionSchema.avro_schema()
   'type': 'record',
   'name': 'UserAdvance',
   'fields': [
-    {'name': 'name', 'type': 'string'},
-    {'name': 'md5', 'type': {'type': 'fixed', 'name': 'md5', 'size': 16,'namespace': 'md5', 'aliases': ['md5', 'hash']}}
+    {'name': 'md5', 'type': {'type': 'fixed', 'name': 'md5', 'size': 16,'namespace': 'md5', 'aliases': ['md5', 'hash']}},
+    {"name": "name", "type": {"type": "fixed", "name": "name", "size": 16}, "default": "u00ffffffffffffx"}
   ],
   'doc': 'UserAdvance(name: str, md5: dataclasses_avroschema.types.Fixed = 16)'}
 ```
