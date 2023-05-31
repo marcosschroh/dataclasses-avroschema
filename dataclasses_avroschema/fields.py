@@ -19,7 +19,6 @@ from typing_extensions import get_args, get_origin
 
 from . import field_utils, schema_generator, serialization, types, utils
 from .exceptions import InvalidMap
-from .types import CUSTOM_TYPES, JsonDict
 
 PY_VER = sys.version_info
 
@@ -35,7 +34,7 @@ p = Inflector()
 
 
 @dataclasses.dataclass  # type: ignore
-class BaseField:
+class Field:
     __slots__ = (
         "name",
         "type",
@@ -148,7 +147,7 @@ class BaseField:
         return len(same_types)
 
 
-class ImmutableField(BaseField):
+class ImmutableField(Field):
     def get_avro_type(self) -> field_utils.PythonImmutableTypes:
         if self.default is None:
             return [field_utils.NULL, self.avro_type]
@@ -230,7 +229,7 @@ class NoneField(ImmutableField):
 
 
 @dataclasses.dataclass
-class ContainerField(BaseField):
+class ContainerField(Field):
     default_factory: typing.Optional[typing.Callable] = None
 
     @property
@@ -326,11 +325,11 @@ class DictField(ContainerField):
             raise InvalidMap(self.name, key_type)
 
     @property
-    def avro_type(self) -> JsonDict:
+    def avro_type(self) -> types.JsonDict:
         self.generate_values_type()
         return {"type": field_utils.MAP, "values": self.values_type}
 
-    def get_default_value(self) -> typing.Union[JsonDict, dataclasses._MISSING_TYPE]:
+    def get_default_value(self) -> typing.Union[types.JsonDict, dataclasses._MISSING_TYPE]:
         if self.default is None:
             return {}
         elif callable(self.default_factory):
@@ -365,7 +364,7 @@ class DictField(ContainerField):
 
 
 @dataclasses.dataclass
-class UnionField(BaseField):
+class UnionField(Field):
     default_factory: typing.Optional[typing.Callable] = None
     unions: typing.List = dataclasses.field(default_factory=list)
     internal_fields: typing.List = dataclasses.field(default_factory=list)
@@ -452,7 +451,7 @@ class FixedField(BytesField):
             self.aliases = self.field_info.aliases
             self.namespace = self.field_info.namespace
 
-    def get_avro_type(self) -> JsonDict:
+    def get_avro_type(self) -> types.JsonDict:
         avro_type = {
             "type": field_utils.FIXED,
             "name": self.get_singular_name(self.name),
@@ -477,7 +476,7 @@ class FixedField(BytesField):
 
 
 @dataclasses.dataclass
-class EnumField(BaseField):
+class EnumField(Field):
     def _get_meta_class_attributes(self) -> typing.Dict[str, typing.Any]:
         # get Enum members
         members = self.type.__members__
@@ -491,7 +490,7 @@ class EnumField(BaseField):
     def get_symbols(self) -> typing.List[str]:
         return [member.value for member in self.type if member.name != "Meta"]
 
-    def get_avro_type(self) -> typing.Union[str, JsonDict]:
+    def get_avro_type(self) -> typing.Union[str, types.JsonDict]:
         metadata = self._get_meta_class_attributes()
         name = self.type.__name__
 
@@ -526,7 +525,7 @@ class EnumField(BaseField):
 
 
 @dataclasses.dataclass
-class SelfReferenceField(BaseField):
+class SelfReferenceField(Field):
     def get_avro_type(self) -> typing.Union[typing.List[str], str]:
         str_type = self._get_self_reference_type(self.type)
 
@@ -760,7 +759,7 @@ class UUIDField(LogicalTypeField):
 
 
 @dataclasses.dataclass
-class RecordField(BaseField):
+class RecordField(Field):
     def get_avro_type(self) -> typing.Union[str, typing.List, typing.Dict]:
         meta = getattr(self.type, "Meta", type)
         metadata = utils.SchemaMetadata.create(meta)
@@ -794,7 +793,7 @@ class RecordField(BaseField):
 
 
 @dataclasses.dataclass
-class DecimalField(BaseField):
+class DecimalField(Field):
     field_info: typing.Optional[types.DecimalFieldInfo] = None
     max_digits: int = -1  # amount of digits, in avro is called `precision`
     decimal_places: int = 0  # amount of digits to the right side, in avro is called `scale`
@@ -814,7 +813,7 @@ class DecimalField(BaseField):
         if self.decimal_places < 0 or self.max_digits < self.decimal_places:
             raise ValueError("`decimal_places` must be zero or a positive integer less than or equal to the precision.")
 
-    def get_avro_type(self) -> typing.Union[JsonDict, typing.List[typing.Union[str, JsonDict]]]:
+    def get_avro_type(self) -> typing.Union[types.JsonDict, typing.List[typing.Union[str, types.JsonDict]]]:
         avro_type = {
             "type": field_utils.BYTES,
             "logicalType": field_utils.DECIMAL,
@@ -838,75 +837,14 @@ class DecimalField(BaseField):
         return fake.pydecimal(right_digits=self.decimal_places, left_digits=self.max_digits - self.decimal_places)
 
 
-INMUTABLE_FIELDS_CLASSES = {
-    bool: BooleanField,
-    int: LongField,
-    types.Int32: IntField,
-    float: DoubleField,
-    types.Float32: FloatField,
-    bytes: BytesField,
-    str: StringField,
-    type(None): NoneField,
-}
-
-CONTAINER_FIELDS_CLASSES = {
-    tuple: TupleField,
-    list: ListField,
-    collections.abc.Sequence: ListField,
-    collections.abc.MutableSequence: ListField,
-    dict: DictField,
-    collections.abc.Mapping: DictField,
-    collections.abc.MutableMapping: DictField,
-    typing.Union: UnionField,
-}
-
-LOGICAL_TYPES_FIELDS_CLASSES = {
-    datetime.date: DateField,
-    datetime.time: TimeMilliField,
-    types.TimeMicro: TimeMicroField,
-    datetime.datetime: DatetimeField,
-    types.DateTimeMicro: DatetimeMicroField,
-    uuid.uuid4: UUIDField,
-    uuid.UUID: UUIDField,
-    bytes: BytesField,
-}
-
-SPACIAL_ANNOTATED_TYPES = {
-    decimal.Decimal: DecimalField,
-    types.Fixed: FixedField,
-}
-
-PRIMITIVE_LOGICAL_TYPES_FIELDS_CLASSES = {
-    **INMUTABLE_FIELDS_CLASSES,  # type: ignore
-    **LOGICAL_TYPES_FIELDS_CLASSES,  # type: ignore
-}
+from .field_mapper import (
+    CONTAINER_FIELDS_CLASSES,
+    INMUTABLE_FIELDS_CLASSES,
+    LOGICAL_TYPES_FIELDS_CLASSES,
+    SPECIAL_ANNOTATED_TYPES,
+)
 
 LOGICAL_CLASSES = LOGICAL_TYPES_FIELDS_CLASSES.keys()
-SPECIAL_ANNOTATED_CLASSES = SPACIAL_ANNOTATED_TYPES.keys()
-
-FieldType = typing.Union[
-    BooleanField,
-    BytesField,
-    DateField,
-    DatetimeField,
-    DatetimeMicroField,
-    DecimalField,
-    DictField,
-    DoubleField,
-    EnumField,
-    FixedField,
-    ImmutableField,
-    ListField,
-    LongField,
-    NoneField,
-    RecordField,
-    SelfReferenceField,
-    StringField,
-    TimeMicroField,
-    TimeMilliField,
-    UnionField,
-    UUIDField,
-]
 
 
 def field_factory(
@@ -918,13 +856,13 @@ def field_factory(
     default_factory: typing.Any = dataclasses.MISSING,
     metadata: typing.Optional[typing.Dict[str, typing.Any]] = None,
     model_metadata: typing.Optional[utils.SchemaMetadata] = None,
-) -> FieldType:
+) -> Field:
     if metadata is None:
         metadata = {}
 
     field_info = None
 
-    if native_type not in CUSTOM_TYPES and utils.is_annotated(native_type):
+    if native_type not in types.CUSTOM_TYPES and utils.is_annotated(native_type):
         a_type, *extra_args = get_args(native_type)
         field_info = next((arg for arg in extra_args if isinstance(arg, types.FieldInfo)), None)
 
@@ -954,7 +892,7 @@ def field_factory(
             parent=parent,
         )
     elif native_type in (types.Fixed, decimal.Decimal):
-        klass = SPACIAL_ANNOTATED_TYPES[native_type]  # type: ignore
+        klass = SPECIAL_ANNOTATED_TYPES[native_type]  # type: ignore
         return klass(  # type: ignore
             name=name,
             type=native_type,

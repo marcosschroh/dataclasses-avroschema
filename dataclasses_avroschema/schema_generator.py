@@ -95,7 +95,7 @@ class AvroModel:
         return json.loads(json.dumps(avro_schema))
 
     @classmethod
-    def get_fields(cls: Type[CT]) -> List[fields.FieldType]:
+    def get_fields(cls: Type[CT]) -> List[fields.Field]:
         if cls.schema_def is None:
             cls.generate_schema()
         return cls.schema_def.fields  # type: ignore
