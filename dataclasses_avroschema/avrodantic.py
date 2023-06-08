@@ -44,7 +44,7 @@ class AvroBaseModel(BaseModel, AvroModel):  # type: ignore
         return validate(self.asdict(), schema)
 
     @classmethod
-    def fake(cls: Type[CT], **data: Dict[str, Any]) -> CT:
+    def fake(cls: Type[CT], **data: Any) -> CT:
         """
         Creates a fake instance of the model.
 
