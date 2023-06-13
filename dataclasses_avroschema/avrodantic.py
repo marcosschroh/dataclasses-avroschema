@@ -1,4 +1,4 @@
-from typing import Any, Callable, Dict, Optional, Type, TypeVar
+from typing import Any, Callable, Optional, Type, TypeVar
 
 from fastavro.validation import validate
 
@@ -44,7 +44,7 @@ class AvroBaseModel(BaseModel, AvroModel):  # type: ignore
         return validate(self.asdict(), schema)
 
     @classmethod
-    def fake(cls: Type[CT], **data: Dict[str, Any]) -> CT:
+    def fake(cls: Type[CT], **data: Any) -> CT:
         """
         Creates a fake instance of the model.
 
