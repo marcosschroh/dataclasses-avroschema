@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## 0.43.7 (2023-06-13)
+
+### Fix
+
+- Fix typo in kwargs typehint for AvroBaseModel.fake (#340)
+
 ## 0.43.6 (2023-05-30)
 
 ### Fix
