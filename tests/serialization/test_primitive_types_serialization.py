@@ -1,11 +1,15 @@
+import dataclasses
 import json
 import math
+
 import pytest
 
 from dataclasses_avroschema import AvroModel, types
 from dataclasses_avroschema.avrodantic import AvroBaseModel
 
-from tests.utils import conditional_dataclass
+parametrize_base_model = pytest.mark.parametrize(
+    "model_class, decorator", [(AvroModel, dataclasses.dataclass), (AvroBaseModel, lambda f: f)]
+)
 
 
 def test_primitive_types(user_dataclass):
@@ -27,9 +31,9 @@ def test_primitive_types(user_dataclass):
     assert user.to_json() == json.dumps(data_json)
 
 
-@pytest.mark.parametrize("model_class", [AvroModel, AvroBaseModel])
-def test_primitive_types_with_defaults(model_class):
-    @conditional_dataclass
+@parametrize_base_model
+def test_primitive_types_with_defaults(model_class, decorator):
+    @decorator
     class User(model_class):
         name: str = "marcos"
         age: int = 20
@@ -69,9 +73,9 @@ def test_primitive_types_with_defaults(model_class):
     assert user.to_json() == json.dumps(data_json)
 
 
-@pytest.mark.parametrize("model_class", [AvroModel, AvroBaseModel])
-def test_primitive_types_with_nulls(model_class):
-    @conditional_dataclass
+@parametrize_base_model
+def test_primitive_types_with_nulls(model_class, decorator):
+    @decorator
     class User(model_class):
         name: str = None
         age: int = 20
@@ -111,9 +115,9 @@ def test_primitive_types_with_nulls(model_class):
     assert user.to_json() == json.dumps(data)
 
 
-@pytest.mark.parametrize("model_class", [AvroModel, AvroBaseModel])
-def test_float32_primitive_type(model_class):
-    @conditional_dataclass
+@parametrize_base_model
+def test_float32_primitive_type(model_class, decorator):
+    @decorator
     class User(model_class):
         height: types.Float32 = None
 
