@@ -1,23 +1,26 @@
-import dataclasses
 import datetime
 import typing
+import pytest
 
 from dataclasses_avroschema import AvroModel
+from dataclasses_avroschema.avrodantic import AvroBaseModel
 
+from tests.utils import conditional_dataclass
 
-def test_one_to_one_relationship():
+@pytest.mark.parametrize("model_class", [AvroModel, AvroBaseModel])
+def test_one_to_one_relationship(model_class):
     """
     Test schema relationship one-to-one serialization
     """
 
-    @dataclasses.dataclass
-    class Address(AvroModel):
+    @conditional_dataclass
+    class Address(model_class):
         "An Address"
         street: str
         street_number: int
 
-    @dataclasses.dataclass
-    class User(AvroModel):
+    @conditional_dataclass
+    class User(model_class):
         "An User with Address"
         name: str
         age: int
@@ -54,20 +57,21 @@ def test_one_to_one_relationship():
     assert user.to_dict() == expected
 
 
-def test_one_to_many_relationship():
+@pytest.mark.parametrize("model_class", [AvroModel, AvroBaseModel])
+def test_one_to_many_relationship(model_class):
     """
     Test schema relationship one-to-many serialization
     """
 
-    @dataclasses.dataclass
-    class Address(AvroModel):
+    @conditional_dataclass
+    class Address(model_class):
         "An Address"
         street: str
         street_number: int
         created_at: datetime.datetime
 
-    @dataclasses.dataclass
-    class User(AvroModel):
+    @conditional_dataclass
+    class User(model_class):
         "User with multiple Address"
         name: str
         age: int
@@ -119,19 +123,20 @@ def test_one_to_many_relationship():
     assert user.to_json()
 
 
-def test_one_to_many_map_relationship():
+@pytest.mark.parametrize("model_class", [AvroModel, AvroBaseModel])
+def test_one_to_many_map_relationship(model_class):
     """
     Test schema relationship one-to-many using a map serialization
     """
 
-    @dataclasses.dataclass
-    class Address(AvroModel):
+    @conditional_dataclass
+    class Address(model_class):
         "An Address"
         street: str
         street_number: int
 
-    @dataclasses.dataclass
-    class User(AvroModel):
+    @conditional_dataclass
+    class User(model_class):
         "User with multiple Address"
         name: str
         age: int
@@ -171,23 +176,24 @@ def test_one_to_many_map_relationship():
     assert user.to_dict() == expected
 
 
-def test_nested_schemas_splitted() -> None:
+@pytest.mark.parametrize("model_class", [AvroModel, AvroBaseModel])
+def test_nested_schemas_splitted(model_class) -> None:
     """
     This test will cover the cases when nested schemas are
     used in a separate way.
     """
 
-    @dataclasses.dataclass
-    class A(AvroModel):
+    @conditional_dataclass
+    class A(model_class):
         class Meta:
             namespace = "namespace"
 
-    @dataclasses.dataclass
-    class B(AvroModel):
+    @conditional_dataclass
+    class B(model_class):
         a: A
 
-    @dataclasses.dataclass
-    class C(AvroModel):
+    @conditional_dataclass
+    class C(model_class):
         b: B
         a: A
 
@@ -198,33 +204,34 @@ def test_nested_schemas_splitted() -> None:
     assert c.serialize() == b""
 
 
-def test_nested_schemas_splitted_with_unions() -> None:
+@pytest.mark.parametrize("model_class", [AvroModel, AvroBaseModel])
+def test_nested_schemas_splitted_with_unions(model_class) -> None:
     """
     This test will cover the cases when nested schemas with Unions that are
     used in a separate way.
     """
 
-    @dataclasses.dataclass
-    class S1(AvroModel):
+    @conditional_dataclass
+    class S1(model_class):
         pass
 
-    @dataclasses.dataclass
-    class S2(AvroModel):
+    @conditional_dataclass
+    class S2(model_class):
         pass
 
-    @dataclasses.dataclass
-    class A(AvroModel):
+    @conditional_dataclass
+    class A(model_class):
         s: typing.Union[S1, S2]
 
         class Meta:
             namespace = "namespace"
 
-    @dataclasses.dataclass
-    class B(AvroModel):
+    @conditional_dataclass
+    class B(model_class):
         a: A
 
-    @dataclasses.dataclass
-    class C(AvroModel):
+    @conditional_dataclass
+    class C(model_class):
         b: B
         a: A
 
@@ -235,22 +242,24 @@ def test_nested_schemas_splitted_with_unions() -> None:
     assert c.serialize() == b"\x00\x00"
 
 
-def test_nested_scheamas_splitted_with_intermediates() -> None:
-    @dataclasses.dataclass
-    class A(AvroModel):
+@pytest.mark.parametrize("model_class", [AvroModel, AvroBaseModel])
+def test_nested_scheamas_splitted_with_intermediates(model_class) -> None:
+
+    @conditional_dataclass
+    class A(model_class):
         class Meta:
             namespace = "namespace"
 
-    @dataclasses.dataclass
-    class B(AvroModel):
+    @conditional_dataclass
+    class B(model_class):
         a: A
 
-    @dataclasses.dataclass
-    class C(AvroModel):
+    @conditional_dataclass
+    class C(model_class):
         a: A
 
-    @dataclasses.dataclass
-    class D(AvroModel):
+    @conditional_dataclass
+    class D(model_class):
         b: B
         c: C
 
@@ -263,14 +272,15 @@ def test_nested_scheamas_splitted_with_intermediates() -> None:
     assert c.serialize() == b""
 
 
-def test_nested_several_layers():
-    @dataclasses.dataclass
-    class Friend(AvroModel):
+@pytest.mark.parametrize("model_class", [AvroModel, AvroBaseModel])
+def test_nested_several_layers(model_class):
+    @conditional_dataclass
+    class Friend(model_class):
         name: str
         hobbies: typing.List[str]
 
-    @dataclasses.dataclass
-    class User(AvroModel):
+    @conditional_dataclass
+    class User(model_class):
         name: str
         friends: typing.List[Friend]
 
