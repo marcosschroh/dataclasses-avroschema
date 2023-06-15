@@ -1,5 +1,6 @@
 import dataclasses
 import typing
+
 import pytest
 
 from dataclasses_avroschema import AvroModel
@@ -61,7 +62,8 @@ def test_self_one_to_one_relationship(model_class: typing.Type[AvroModel], decor
     assert user.to_dict() == expected
 
 
-@parametrize_base_model
+# don't test AvroBaseModel due to typing incompatibilites with Pydantic
+@pytest.mark.parametrize("model_class, decorator", [(AvroModel, dataclasses.dataclass)])
 def test_self_one_to_many_relationship(model_class: typing.Type[AvroModel], decorator: typing.Callable):
     """
     Test self relationship one-to-many serialization
@@ -109,7 +111,8 @@ def test_self_one_to_many_relationship(model_class: typing.Type[AvroModel], deco
     assert user.to_dict() == expected
 
 
-@parametrize_base_model
+# don't test AvroBaseModel due to typing incompatibilites with Pydantic
+@pytest.mark.parametrize("model_class, decorator", [(AvroModel, dataclasses.dataclass)])
 def test_self_one_to_many_map_relationship(model_class: typing.Type[AvroModel], decorator: typing.Callable):
     """
     Test self relationship one-to-many Map serialization

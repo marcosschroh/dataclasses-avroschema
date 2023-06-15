@@ -11,6 +11,7 @@ from dataclasses_avroschema import AvroModel, types
 # set the faker loglevel to info to avoid noise during testing
 logging.getLogger("faker").setLevel(logging.INFO)
 
+
 @pytest.fixture
 def color_enum():
     class FavoriteColor(str, enum.Enum):

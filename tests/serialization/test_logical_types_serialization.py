@@ -1,10 +1,11 @@
 import datetime
 import decimal
 import json
-import pytest
 import typing
 import uuid
 from dataclasses import dataclass
+
+import pytest
 
 from dataclasses_avroschema import AvroModel, serialization, types
 from dataclasses_avroschema.avrodantic import AvroBaseModel
@@ -15,6 +16,7 @@ a_datetime = datetime.datetime(2019, 10, 12, 17, 57, 42, tzinfo=datetime.timezon
 parametrize_base_model = pytest.mark.parametrize(
     "model_class, decorator", [(AvroModel, dataclass), (AvroBaseModel, lambda f: f)]
 )
+
 
 @parametrize_base_model
 def test_logical_types(model_class: typing.Type[AvroModel], decorator: typing.Callable):
@@ -57,6 +59,7 @@ def test_logical_types(model_class: typing.Type[AvroModel], decorator: typing.Ca
     assert logical_types.deserialize(avro_json, serialization_type="avro-json") == logical_types
 
     assert logical_types.to_json() == json.dumps(data_json)
+
 
 @parametrize_base_model
 def test_logical_union(model_class: typing.Type[AvroModel], decorator: typing.Callable):

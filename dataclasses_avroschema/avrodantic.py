@@ -33,11 +33,8 @@ class AvroBaseModel(BaseModel, AvroModel):  # type: ignore
 
         # te standardize called can be replaced if we have a custom implementation of asdict
         # for now I think is better to use the native implementation
-        return {
-            key: standardize_method(value)
-            for key, value in data.items()
-        }
-
+        return standardize_method(data)
+    
     def validate_avro(self) -> bool:
         """
         Validate that instance matches the avro schema

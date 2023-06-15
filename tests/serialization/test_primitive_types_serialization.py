@@ -1,9 +1,9 @@
 import dataclasses
 import json
 import math
+import typing
 
 import pytest
-import typing
 
 from dataclasses_avroschema import AvroModel, types
 from dataclasses_avroschema.avrodantic import AvroBaseModel
