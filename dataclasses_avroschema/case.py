@@ -1,21 +1,21 @@
 import typing
 
-import stringcase
+import casefy
 
 from .field_utils import ENUM
 
-# Summary from https://github.com/okunishinishi/python-stringcase
-# stringcase.camelcase('foo_bar_baz') # => "fooBarBaz"
-# stringcase.capitalcase('foo_bar_baz') # => "Foo_bar_baz"
-# stringcase.constcase('FooBarBaz') # => "_FOO_BAR_BAZ"
-# stringcase.lowercase('FooBarBaz') # => "foobarbaz"
-# stringcase.pascalcase('FooBarBaz') # => "FooBarBaz"
-# stringcase.pathcase('foo_bar_baz') # => "foo/bar/baz"
-# stringcase.snakecase('FooBarBaz') # => "foo_bar_baz"
-# stringcase.spinalcase('FooBarBaz') # => "-foo-bar-baz"
-# stringcase.trimcase('FooBarBaz') # => "FooBarBaz"
-# stringcase.uppercase('FooBarBaz') # => "FOOBARBAZ"
-# stringcase.alphanumcase('Foo_123 Bar!') # =>'Foo123Bar'
+# casefy.camelcase('foo_bar_baz') # => "fooBarBaz"
+# casefy.capitalcase('foo_bar_baz') # => "Foo_bar_baz"
+# casefy.constcase('FooBarBaz') # => "_FOO_BAR_BAZ"
+# casefy.lowercase('FooBarBaz') # => "foobarbaz"
+# casefy.pascalcase('FooBarBaz') # => "FooBarBaz"
+# casefy.pathcase('foo_bar_baz') # => "foo/bar/baz"
+# casefy.snakecase('FooBarBaz') # => "foo_bar_baz"
+# casefy.kebabcase('FooBarBaz') # => "-foo-bar-baz"
+# casefy.upperkebabcase('FooBarBaz') # => "FOO-BAR"
+# casefy.trimcase('FooBarBaz') # => "FooBarBaz"
+# casefy.uppercase('FooBarBaz') # => "FOOBARBAZ"
+# casefy.alphanumcase('Foo_123 Bar!') # =>'Foo123Bar'
 
 CAMELCASE = "camelcase"
 CAPITALCASE = "capitalcase"
@@ -25,23 +25,25 @@ PASCALCASE = "pascalcase"
 PATHCASE = "PATHCASE"
 SNAKECASE = "snakecase"
 SPINALCASE = "spinalcase"
+UPPERSPINALCASE = "upperkebabcase"
 TRIMCASE = "trimcase"
 UPPERCASE = "uppercase"
 ALPHANUMCASE = "alphanumcase"
 
 
 CASE_TO_FUNC = {
-    CAMELCASE: stringcase.camelcase,
-    CAPITALCASE: stringcase.capitalcase,
-    CONSTCASE: stringcase.constcase,
-    LOWERCASE: stringcase.lowercase,
-    PASCALCASE: stringcase.pascalcase,
-    PATHCASE: stringcase.pathcase,
-    SNAKECASE: stringcase.snakecase,
-    SPINALCASE: stringcase.spinalcase,
-    TRIMCASE: stringcase.trimcase,
-    UPPERCASE: stringcase.uppercase,
-    ALPHANUMCASE: stringcase.alphanumcase,
+    CAMELCASE: casefy.camelcase,
+    CAPITALCASE: casefy.capitalcase,
+    CONSTCASE: casefy.constcase,
+    LOWERCASE: casefy.lowercase,
+    PASCALCASE: casefy.pascalcase,
+    PATHCASE: lambda value: casefy.separatorcase(value, separator="/"),
+    SNAKECASE: casefy.snakecase,
+    SPINALCASE: casefy.kebabcase,
+    UPPERSPINALCASE: casefy.upperkebabcase,
+    TRIMCASE: str.strip,
+    UPPERCASE: casefy.uppercase,
+    ALPHANUMCASE: casefy.alphanumcase,
 }
 
 
@@ -50,7 +52,7 @@ def case_item(item: typing.Dict, case_type: str) -> typing.Dict:
     new_field = {}
     for key, value in item.items():
         if key == "name":
-            case_name = case_func(value)
+            case_name = case_func(value)  # type: ignore
             new_field[key] = case_name
         elif isinstance(value, dict) and value.get("name"):
             # means that it is a complex type with a record
