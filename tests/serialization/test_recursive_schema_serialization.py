@@ -93,9 +93,6 @@ def test_self_one_to_many_relationship(model_class: typing.Type[AvroModel], deco
     avro_binary = b"\x08juan(\x02\x08john(\x00\x00"
     # avro_json = b'{"name": "juan", "age": 20, "friends": [{"name": "john", "age": 20, "friends": []}]}'
 
-    print(user.avro_schema())
-    assert False
-
     assert user.serialize() == avro_binary
 
     # TODO: Bug in fastavro
