@@ -1,20 +1,27 @@
 import dataclasses
 import typing
+import pytest
 
 from dataclasses_avroschema import AvroModel
+from dataclasses_avroschema.avrodantic import AvroBaseModel
+
+parametrize_base_model = pytest.mark.parametrize(
+    "model_class, decorator", [(AvroModel, dataclasses.dataclass), (AvroBaseModel, lambda f: f)]
+)
 
 
-def test_self_one_to_one_relationship():
+@parametrize_base_model
+def test_self_one_to_one_relationship(model_class: typing.Type[AvroModel], decorator: typing.Callable):
     """
     Test self relationship one-to-one serialization
     """
 
-    @dataclasses.dataclass
-    class User(AvroModel):
+    @decorator
+    class User(model_class):
         "User with self reference as friend"
         name: str
         age: int
-        friend: typing.Type["User"] = None
+        friend: typing.Optional["User"] = None
 
     data_friend = {
         "name": "john",
@@ -54,17 +61,18 @@ def test_self_one_to_one_relationship():
     assert user.to_dict() == expected
 
 
-def test_self_one_to_many_relationship():
+@parametrize_base_model
+def test_self_one_to_many_relationship(model_class: typing.Type[AvroModel], decorator: typing.Callable):
     """
     Test self relationship one-to-many serialization
     """
 
-    @dataclasses.dataclass
-    class User(AvroModel):
+    @decorator
+    class User(model_class):
         "User with self reference as friends"
         name: str
         age: int
-        friends: typing.List[typing.Type["User"]] = None
+        friends: typing.List[typing.Type["User"]]
 
     data_friend = {"name": "john", "age": 20, "friends": []}
     friend = User(**data_friend)
@@ -85,6 +93,9 @@ def test_self_one_to_many_relationship():
     avro_binary = b"\x08juan(\x02\x08john(\x00\x00"
     # avro_json = b'{"name": "juan", "age": 20, "friends": [{"name": "john", "age": 20, "friends": []}]}'
 
+    print(user.avro_schema())
+    assert False
+
     assert user.serialize() == avro_binary
 
     # TODO: Bug in fastavro
@@ -101,13 +112,14 @@ def test_self_one_to_many_relationship():
     assert user.to_dict() == expected
 
 
-def test_self_one_to_many_map_relationship():
+@parametrize_base_model
+def test_self_one_to_many_map_relationship(model_class: typing.Type[AvroModel], decorator: typing.Callable):
     """
     Test self relationship one-to-many Map serialization
     """
 
-    @dataclasses.dataclass
-    class User(AvroModel):
+    @decorator
+    class User(model_class):
         "User with self reference as friends"
         name: str
         age: int

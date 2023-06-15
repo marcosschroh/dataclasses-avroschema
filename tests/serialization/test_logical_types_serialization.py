@@ -1,25 +1,32 @@
 import datetime
 import decimal
 import json
+import pytest
 import typing
 import uuid
 from dataclasses import dataclass
 
 from dataclasses_avroschema import AvroModel, serialization, types
+from dataclasses_avroschema.avrodantic import AvroBaseModel
 
 a_datetime = datetime.datetime(2019, 10, 12, 17, 57, 42, tzinfo=datetime.timezone.utc)
 
 
-def test_logical_types():
-    @dataclass
-    class LogicalTypes(AvroModel):
+parametrize_base_model = pytest.mark.parametrize(
+    "model_class, decorator", [(AvroModel, dataclass), (AvroBaseModel, lambda f: f)]
+)
+
+@parametrize_base_model
+def test_logical_types(model_class: typing.Type[AvroModel], decorator: typing.Callable):
+    @decorator
+    class LogicalTypes(model_class):
         "Some logical types"
         birthday: datetime.date
         meeting_time: datetime.time
         meeting_time_micro: types.TimeMicro
         release_datetime: datetime.datetime
         release_datetime_micro: types.DateTimeMicro
-        event_uuid: uuid.uuid4
+        event_uuid: uuid.UUID
 
     data = {
         "birthday": a_datetime.date(),
@@ -51,12 +58,12 @@ def test_logical_types():
 
     assert logical_types.to_json() == json.dumps(data_json)
 
-
-def test_logical_union():
-    @dataclass
-    class UnionSchema(AvroModel):
+@parametrize_base_model
+def test_logical_union(model_class: typing.Type[AvroModel], decorator: typing.Callable):
+    @decorator
+    class UnionSchema(model_class):
         "Some Unions"
-        logical_union: typing.Union[datetime.datetime, datetime.date, uuid.uuid4]
+        logical_union: typing.Union[datetime.datetime, datetime.date, uuid.UUID]
 
     data = {
         "logical_union": a_datetime.date(),
@@ -79,9 +86,10 @@ def test_logical_union():
     assert logical_types.to_json() == json.dumps(data_json)
 
 
-def test_logical_types_with_defaults():
-    @dataclass
-    class LogicalTypes(AvroModel):
+@parametrize_base_model
+def test_logical_types_with_defaults(model_class: typing.Type[AvroModel], decorator: typing.Callable):
+    @decorator
+    class LogicalTypes(model_class):
         "Some logical types"
         implicit_decimal: types.condecimal(max_digits=3, decimal_places=2)
         birthday: datetime.date = a_datetime.date()
@@ -89,7 +97,7 @@ def test_logical_types_with_defaults():
         release_datetime: datetime.datetime = a_datetime
         meeting_time_micro: types.TimeMicro = a_datetime.time()
         release_datetime_micro: types.DateTimeMicro = a_datetime
-        event_uuid: uuid.uuid4 = "09f00184-7721-4266-a955-21048a5cc235"
+        event_uuid: uuid.UUID = uuid.UUID("09f00184-7721-4266-a955-21048a5cc235")
         decimal_with_default: types.condecimal(max_digits=6, decimal_places=5) = decimal.Decimal("3.14159")
 
     data = {
@@ -130,9 +138,10 @@ def test_logical_types_with_defaults():
 
 # A decimal.Decimal default is serialized into bytes by dataclasses-avroschema to be deserialized by fastavro
 # this test is to make sure that process works as expected
-def test_decimals_defaults():
-    @dataclass
-    class LogicalTypes(AvroModel):
+@parametrize_base_model
+def test_decimals_defaults(model_class: typing.Type[AvroModel], decorator: typing.Callable):
+    @decorator
+    class LogicalTypes(model_class):
         "Some logical types"
         explicit: types.condecimal(max_digits=3, decimal_places=2)
         explicit_decimal_with_default: types.condecimal(max_digits=6, decimal_places=5) = decimal.Decimal("3.14159")

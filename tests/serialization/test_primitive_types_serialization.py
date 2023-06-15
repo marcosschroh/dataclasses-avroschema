@@ -3,6 +3,7 @@ import json
 import math
 
 import pytest
+import typing
 
 from dataclasses_avroschema import AvroModel, types
 from dataclasses_avroschema.avrodantic import AvroBaseModel
@@ -32,7 +33,7 @@ def test_primitive_types(user_dataclass):
 
 
 @parametrize_base_model
-def test_primitive_types_with_defaults(model_class, decorator):
+def test_primitive_types_with_defaults(model_class: typing.Type[AvroModel], decorator: typing.Callable):
     @decorator
     class User(model_class):
         name: str = "marcos"
@@ -74,7 +75,7 @@ def test_primitive_types_with_defaults(model_class, decorator):
 
 
 @parametrize_base_model
-def test_primitive_types_with_nulls(model_class, decorator):
+def test_primitive_types_with_nulls(model_class: typing.Type[AvroModel], decorator: typing.Callable):
     @decorator
     class User(model_class):
         name: str = None
@@ -116,7 +117,7 @@ def test_primitive_types_with_nulls(model_class, decorator):
 
 
 @parametrize_base_model
-def test_float32_primitive_type(model_class, decorator):
+def test_float32_primitive_type(model_class: typing.Type[AvroModel], decorator: typing.Callable):
     @decorator
     class User(model_class):
         height: types.Float32 = None

@@ -34,7 +34,7 @@ class AvroBaseModel(BaseModel, AvroModel):  # type: ignore
         # te standardize called can be replaced if we have a custom implementation of asdict
         # for now I think is better to use the native implementation
         return {
-            key: value.asdict() if isinstance(value, AvroBaseModel) else standardize_method(value)
+            key: standardize_method(value)
             for key, value in data.items()
         }
 

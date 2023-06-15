@@ -1,6 +1,7 @@
 import dataclasses
 import enum
 import json
+import pytest
 
 from dataclasses_avroschema import AvroModel
 
