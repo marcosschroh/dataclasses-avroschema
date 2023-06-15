@@ -82,7 +82,8 @@ resulting in
 |pascalcase|'FooBarBaz' # => "FooBarBaz"|
 |pathcase|'foo_bar_baz' # => "foo/bar/baz"|
 |snakecase|'FooBarBaz' # => "foo_bar_baz"|
-|spinalcase|'FooBarBaz' # => "-foo-bar-baz"|
+|upperspinalcase|'FooBarBaz' # => "-foo-bar-baz"|
+|spinalcase|'FooBarBaz' # => "FOO-BAR"|
 |trimcase|'FooBarBaz' # => "FooBarBaz"|
 |uppercase|'FooBarBaz' # => "FOOBARBAZ|
 |alphanumcase|'Foo_123 Bar!' # =>'Foo123Bar'|

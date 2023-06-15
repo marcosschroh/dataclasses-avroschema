@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## 0.43.8 (2023-06-15)
+
+### Fix
+
+- stringcase replaced by casefy. Closes #341 (#347)
+
 ## 0.43.7 (2023-06-13)
 
 ### Fix

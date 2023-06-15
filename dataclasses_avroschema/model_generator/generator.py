@@ -3,8 +3,8 @@ import typing
 from dataclasses import dataclass, field
 from string import Template
 
+import casefy
 import fastavro
-import stringcase
 
 from dataclasses_avroschema import field_utils, serialization
 from dataclasses_avroschema.types import JsonDict
@@ -121,7 +121,7 @@ class ModelGenerator:
         """
         Render the class generated from the schema
         """
-        name: str = stringcase.pascalcase(schema["name"])
+        name: str = casefy.pascalcase(schema["name"])
         record_fields: typing.List[JsonDict] = schema["fields"]
 
         # Sort the fields according whether it has a default value
@@ -222,7 +222,7 @@ class ModelGenerator:
             record = f"\n{self.render_class(schema=field)}"
             is_complex_type = True
             self.extras.append(record)
-            language_type = stringcase.pascalcase(field["name"])
+            language_type = casefy.pascalcase(field["name"])
         else:
             # Native field or Logical type using a native
             language_type = self.get_language_type(type=type, model_name=model_name)
@@ -378,10 +378,10 @@ class ModelGenerator:
         self.imports.add("import enum")
 
         field_name: str = field["name"]
-        enum_name = stringcase.pascalcase(field_name)
+        enum_name = casefy.pascalcase(field_name)
         symbols = self.field_identation.join(
             [
-                templates.enum_symbol_template.safe_substitute(key=stringcase.uppercase(symbol), value=f'"{symbol}"')
+                templates.enum_symbol_template.safe_substitute(key=casefy.uppercase(symbol), value=f'"{symbol}"')
                 for symbol in field["symbols"]
             ]
         )
@@ -436,7 +436,7 @@ class ModelGenerator:
         elif field_type == field_utils.BYTES:
             return f'b"{default}"'
         elif isinstance(field_type, dict) and field_type.get("type") == field_utils.ENUM:
-            return f"{stringcase.pascalcase(field_type['name'])}.{stringcase.uppercase(default)}"
+            return f"{casefy.pascalcase(field_type['name'])}.{casefy.uppercase(default)}"
         elif isinstance(
             default,
             (
