@@ -80,6 +80,8 @@ def standardize_custom_type(value: typing.Any) -> typing.Any:
         return tuple(standardize_custom_type(v) for v in value)
     elif issubclass(type(value), enum.Enum):
         return value.value
+    elif is_pydantic_model(type(value)):
+        return standardize_custom_type(value.asdict())
     return value
 
 
