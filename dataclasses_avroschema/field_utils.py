@@ -1,10 +1,8 @@
 import datetime
-import decimal
 import enum
-import typing
 import uuid
 
-from . import types
+from dataclasses_avroschema import types
 
 __all__ = [
     "BOOLEAN",
@@ -34,12 +32,6 @@ __all__ = [
     "LOGICAL_DATETIME_MICROS",
     "LOGICAL_UUID",
     "PYTHON_TYPE_TO_AVRO",
-    "PYTHON_INMUTABLE_TYPES",
-    "PYTHON_PRIMITIVE_CONTAINERS",
-    "PYTHON_LOGICAL_TYPES",
-    "PYTHON_PRIMITIVE_TYPES",
-    "PRIMITIVE_AND_LOGICAL_TYPES",
-    "PythonImmutableTypes",
 ]
 
 TIME_MILLIS = "time-millis"
@@ -89,47 +81,3 @@ PYTHON_TYPE_TO_AVRO = {
     datetime.datetime: {"type": LONG, "logicalType": TIMESTAMP_MILLIS},
     uuid.uuid4: {"type": STRING, "logicalType": UUID},
 }
-
-# excluding tuple because is a container
-PYTHON_INMUTABLE_TYPES = (
-    str,
-    int,
-    types.Int32,
-    types.Float32,
-    bool,
-    float,
-    bytes,
-    type(None),
-)
-
-PYTHON_PRIMITIVE_CONTAINERS = (list, tuple, dict)
-
-PYTHON_LOGICAL_TYPES = (
-    datetime.date,
-    datetime.time,
-    types.TimeMicro,
-    datetime.datetime,
-    types.DateTimeMicro,
-    uuid.uuid4,
-    uuid.UUID,
-)
-
-PYTHON_PRIMITIVE_TYPES = PYTHON_INMUTABLE_TYPES + PYTHON_PRIMITIVE_CONTAINERS
-PRIMITIVE_AND_LOGICAL_TYPES = PYTHON_INMUTABLE_TYPES + PYTHON_LOGICAL_TYPES
-
-PythonImmutableTypes = typing.Union[
-    str,
-    int,
-    types.Int32,
-    bool,
-    float,
-    types.Float32,
-    list,
-    tuple,
-    dict,
-    datetime.date,
-    datetime.time,
-    datetime.datetime,
-    uuid.UUID,
-    decimal.Decimal,
-]

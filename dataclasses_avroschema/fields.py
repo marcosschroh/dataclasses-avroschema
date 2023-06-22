@@ -17,8 +17,10 @@ from faker import Faker
 from inflector import Inflector
 from typing_extensions import get_args, get_origin
 
-from . import field_utils, schema_generator, serialization, types, utils
-from .exceptions import InvalidMap
+from dataclasses_avroschema import schema_generator, serialization, types, utils
+from dataclasses_avroschema.exceptions import InvalidMap
+
+from . import field_utils
 
 PY_VER = sys.version_info
 
@@ -148,7 +150,7 @@ class Field:
 
 
 class ImmutableField(Field):
-    def get_avro_type(self) -> field_utils.PythonImmutableTypes:
+    def get_avro_type(self) -> typing.Union[str, typing.List, typing.Dict[str, typing.Any]]:
         if self.default is None:
             return [field_utils.NULL, self.avro_type]
         return self.avro_type
@@ -224,7 +226,7 @@ class BytesField(ImmutableField):
 @dataclasses.dataclass
 class NoneField(ImmutableField):
     @property
-    def avro_type(self) -> typing.Union[str, typing.Dict]:
+    def avro_type(self) -> str:
         return field_utils.NULL
 
 
@@ -236,7 +238,7 @@ class ContainerField(Field):
     def avro_type(self) -> typing.Dict:
         ...  # pragma: no cover
 
-    def get_avro_type(self) -> field_utils.PythonImmutableTypes:
+    def get_avro_type(self) -> types.JsonDict:
         avro_type = self.avro_type
         avro_type["name"] = self.get_singular_name(self.name)
 
@@ -872,7 +874,7 @@ def field_factory(
             # or a type Annotated with the end user
             native_type = a_type
 
-    if native_type in field_utils.PYTHON_INMUTABLE_TYPES:
+    if native_type in INMUTABLE_FIELDS_CLASSES:
         klass = INMUTABLE_FIELDS_CLASSES[native_type]
         return klass(
             name=name,
@@ -902,7 +904,7 @@ def field_factory(
             parent=parent,
             field_info=field_info,
         )
-    elif native_type in field_utils.PYTHON_LOGICAL_TYPES:
+    elif native_type in LOGICAL_TYPES_FIELDS_CLASSES:
         klass = LOGICAL_TYPES_FIELDS_CLASSES[native_type]  # type: ignore
 
         return klass(
