@@ -4,15 +4,11 @@ import enum
 import typing
 
 import pytest
-from faker import Faker
-from typing_extensions import get_args
 
-from dataclasses_avroschema import AvroField, AvroModel, exceptions, types, utils
+from dataclasses_avroschema import AvroField, AvroModel, exceptions, types
 from dataclasses_avroschema.fields import field_utils
 
 from . import consts
-
-faker = Faker()
 
 
 class Color(enum.Enum):
@@ -67,21 +63,19 @@ def test_sequence_type_with_default(sequence, primitive_type, python_type_str):
     name = "an_array_field"
     python_type = sequence[primitive_type]
     field = AvroField(name, python_type, default=dataclasses.MISSING)
+    field.avro_type
 
     if python_type_str == field_utils.BYTES:
         values = [b"hola", b"hi"]
         default = ["hola", "hi"]
     else:
-        if utils.is_annotated(primitive_type):
-            primitive_type, _ = get_args(primitive_type)
-        values = default = faker.pylist(2, True, primitive_type)
-
+        values = default = field.fake()
     field = AvroField(name, python_type, default=default, default_factory=lambda: values)
 
     expected = {
         "name": name,
         "type": {"type": "array", "name": name, "items": python_type_str},
-        "default": default,
+        "default": list(default),
     }
 
     assert expected == field.to_dict()
@@ -189,9 +183,7 @@ def test_mapping_type(mapping, primitive_type, python_type_str):
         value = {"hola": b"hi"}
         default = {"hola": "hi"}
     else:
-        if utils.is_annotated(primitive_type):
-            primitive_type, _ = get_args(primitive_type)
-        value = default = faker.pydict(2, True, primitive_type)
+        value = default = field.fake()
 
     field = AvroField(name, python_type, default=default, default_factory=lambda: value)
 

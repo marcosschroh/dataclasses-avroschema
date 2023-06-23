@@ -124,8 +124,8 @@ from dataclasses_avroschema.avrodantic import AvroBaseModel
 from pydantic import condecimal
 import datetime
 import decimal
-import pydantic
 import typing
+import uuid
 
 
 
@@ -133,7 +133,7 @@ class LogicalTypes(AvroBaseModel):
     birthday: datetime.date
     birthday_time: datetime.time
     birthday_datetime: datetime.datetime
-    uuid_1: pydantic.UUID4
+    uuid_1: uuid.UUID
     money: condecimal(max_digits=3, decimal_places=2)
     meeting_date: typing.Optional[datetime.date] = None
     release_date: datetime.date = datetime.date(2019, 10, 12)
@@ -143,11 +143,40 @@ class LogicalTypes(AvroBaseModel):
     meeting_datetime: typing.Optional[datetime.datetime] = None
     release_datetime: datetime.datetime = {release_datetime}
     release_datetime_micro: types.DateTimeMicro = {release_datetime_micro}
-    uuid_2: typing.Optional[pydantic.UUID4] = None
-    event_uuid: pydantic.UUID4 = "ad0677ab-bd1c-4383-9d45-e46c56bcc5c9"
+    uuid_2: typing.Optional[uuid.UUID] = None
+    event_uuid: uuid.UUID = "ad0677ab-bd1c-4383-9d45-e46c56bcc5c9"
     explicit_with_default: condecimal(max_digits=3, decimal_places=2) = decimal.Decimal('3.14')
 
 """
     model_generator = ModelGenerator(base_class=BaseClassEnum.AVRO_DANTIC_MODEL.value)
     result = model_generator.render(schema=schema_with_logical_types)
+    assert result.strip() == expected_result.strip()
+
+
+def test_schema_with_pydantic_fields(schema_with_pydantic_fields):
+    expected_result = """
+from dataclasses_avroschema.avrodantic import AvroBaseModel
+import pydantic
+import typing
+
+
+
+class Infrastructure(AvroBaseModel):
+    email: pydantic.EmailStr
+    postgres_dsn: pydantic.PostgresDsn
+    cockroach_dsn: pydantic.CockroachDsn
+    amqp_dsn: pydantic.AmqpDsn
+    redis_dsn: pydantic.RedisDsn
+    mongo_dsn: pydantic.MongoDsn
+    kafka_url: pydantic.KafkaDsn
+    total_nodes: pydantic.PositiveInt
+    event_id: pydantic.UUID3
+    landing_zone_nodes: typing.List[pydantic.PositiveInt]
+    total_nodes_in_aws: pydantic.PositiveInt = 10
+    optional_kafka_url: typing.Optional[pydantic.KafkaDsn] = None
+
+"""
+
+    model_generator = ModelGenerator(base_class=BaseClassEnum.AVRO_DANTIC_MODEL.value)
+    result = model_generator.render(schema=schema_with_pydantic_fields)
     assert result.strip() == expected_result.strip()

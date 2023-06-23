@@ -2,6 +2,7 @@ import datetime
 import decimal
 import uuid
 
+import pydantic
 import pytest
 
 from dataclasses_avroschema import AvroField, types
@@ -10,26 +11,26 @@ from dataclasses_avroschema.fields import field_utils
 from . import consts
 
 
-@pytest.mark.parametrize("python_type,avro_type,logical_type", consts.LOGICAL_TYPES_AND_DEFAULTS)
-def test_logical_types(python_type, avro_type, logical_type):
+@pytest.mark.parametrize("python_type,avro_type", consts.LOGICAL_TYPES_AND_DEFAULTS)
+def test_logical_types(python_type, avro_type):
     name = "a logical type"
     python_type = python_type
     field = AvroField(name, python_type)
 
-    expected = {"name": name, "type": {"type": avro_type, "logicalType": logical_type}}
+    expected = {"name": name, "type": avro_type}
 
     assert expected == field.to_dict()
 
 
-@pytest.mark.parametrize("python_type,avro_type,logical_type", consts.LOGICAL_TYPES_AND_DEFAULTS)
-def test_logical_types_with_null_as_default(python_type, avro_type, logical_type):
+@pytest.mark.parametrize("python_type,avro_type", consts.LOGICAL_TYPES_AND_DEFAULTS)
+def test_logical_types_with_null_as_default(python_type, avro_type):
     name = "a logical type"
     python_type = python_type
     field = AvroField(name, python_type, default=None)
 
     expected = {
         "name": name,
-        "type": ["null", {"type": avro_type, "logicalType": logical_type}],
+        "type": ["null", avro_type],
         "default": None,
     }
 
@@ -95,7 +96,6 @@ def test_logical_type_time_micros_with_default() -> None:
         "default": microseconds,
     }
 
-    print(field, "marcos;")
     assert expected == field.to_dict()
 
 
@@ -132,20 +132,26 @@ def test_logical_type_datetime_with_default() -> None:
 
 
 @pytest.mark.parametrize(
-    "python_type",
+    "python_type,avro_type",
     (
-        uuid.uuid4,
-        uuid.UUID,
+        (uuid.uuid4, {"type": field_utils.STRING, "logicalType": field_utils.UUID}),
+        (uuid.UUID, {"type": field_utils.STRING, "logicalType": field_utils.UUID}),
+        # pydantic fields
+        (pydantic.UUID1, {"type": field_utils.STRING, "logicalType": field_utils.UUID, "pydantic-class": "UUID1"}),
+        (pydantic.UUID3, {"type": field_utils.STRING, "logicalType": field_utils.UUID, "pydantic-class": "UUID3"}),
+        (pydantic.UUID4, {"type": field_utils.STRING, "logicalType": field_utils.UUID, "pydantic-class": "UUID4"}),
+        (pydantic.UUID5, {"type": field_utils.STRING, "logicalType": field_utils.UUID, "pydantic-class": "UUID5"}),
     ),
 )
-def test_logical_type_uuid_with_default(python_type) -> None:
+def test_logical_type_uuid_with_default(python_type, avro_type) -> None:
     name = "a uuid"
     default = uuid.UUID("d793fc4f-2eef-440a-af8b-a8e884d7b1a8")
     field = AvroField(name, python_type, default=default)
+    field.to_dict()
 
     expected = {
         "name": name,
-        "type": {"type": field_utils.STRING, "logicalType": field_utils.UUID},
+        "type": avro_type,
         "default": str(default),
     }
 

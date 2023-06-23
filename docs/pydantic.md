@@ -77,6 +77,174 @@ UserAdvance.json_schema()
 !!! note
     You must use pydantic.Field instead of dataclasses.field
 
+## Avro schemas with pydantic types
+
+Most of `pydantic` types are supported and from them it is possible to generate `avro fields`. Because `pydantic` types are not native `python types`
+the end result will contain extra metadata so the end users will have more context at the moment of using the schema. The extra `metadata` is specified
+using the key `pydantic-class`.
+
+### Supported fields
+
+| Avro Type    | Pydantic Type |
+|--------------|-------------|
+| string       | pydantic.FilePath |
+| string       | pydantic.DirectoryPath |
+| string       | pydantic.EmailStr |
+| string       | pydantic.NameEmail |
+| string       | pydantic.AnyUrl |
+| string       | pydantic.AnyHttpUrl |
+| string       | pydantic.HttpUrl |
+| string       | pydantic.FileUrl |
+| string       | pydantic.PostgresDsn |
+| string       | pydantic.CockroachDsn |
+| string       | pydantic.AmqpDsn |
+| string       | pydantic.RedisDsn |
+| string       | pydantic.MongoDsn |
+| string       | pydantic.KafkaDsn |
+| string       | pydantic.SecretStr |
+| string       | pydantic.IPvAnyAddress |
+| string       | pydantic.IPvAnyInterface |
+| string       | pydantic.IPvAnyNetwork |
+| double       | pydantic.NegativeFloat |
+| double       | pydantic.PositiveFloat |
+| long         | pydantic.NegativeInt |
+| long         | pydantic.PositiveIntstr |
+
+| Avro Type    | Logical type | Pydantic Type |
+|--------------|--------------|---------------|
+| string       | uuid         | pydantic.UUID1 |
+| string       | uuid         | pydantic.UUID3 |
+| string       | uuid         | pydantic.UUID4 |
+| string       | uuid         | pydantic.UUID5 |
+
+```python
+import pydantic
+from dataclasses_avroschema.avrodantic import AvroBaseModel
+
+
+class Infrastructure(AvroBaseModel):
+    email: pydantic.EmailStr
+    postgres_dsn: pydantic.PostgresDsn
+    cockroach_dsn: pydantic.CockroachDsn
+    amqp_dsn: pydantic.AmqpDsn
+    redis_dsn: pydantic.RedisDsn
+    mongo_dsn: pydantic.MongoDsn
+    kafka_url: pydantic.KafkaDsn
+    total_nodes: pydantic.PositiveInt
+
+
+Infrastructure.avro_schema()
+
+{
+    "type": "record",
+    "name": "Infrastructure",
+    "fields": [
+        {"name": "email", "type": {"type": "string", "pydantic-class": "EmailStr"}},
+        {"name": "postgres_dsn", "type": {"type": "string", "pydantic-class": "PostgresDsn"}},
+        {"name": "cockroach_dsn", "type": {"type": "string", "pydantic-class": "CockroachDsn"}},
+        {"name": "amqp_dsn", "type": {"type": "string", "pydantic-class": "AmqpDsn"}},
+        {"name": "redis_dsn", "type": {"type": "string", "pydantic-class": "RedisDsn"}},
+        {"name": "mongo_dsn", "type": {"type": "string", "pydantic-class": "MongoDsn"}},
+        {"name": "kafka_url", "type": {"type": "string", "pydantic-class": "KafkaDsn"}},
+        {"name": "total_nodes", "type": {"type": "long", "pydantic-class": "PositiveInt"}}
+    ]
+}
+```
+
+*(This script is complete, it should run "as is")*
+
+!!! note
+    The key `pydantic-class` has been added as `metadata` to have more context when using the schema
+
+## Model generation
+
+If is possible to generate [pydantic models](https://marcosschroh.github.io/dataclasses-avroschema/model_generator/#render-pydantic-models) when `pydantic types` have been used. If a field has the matadata key `pydantic-class`
+then the proper pydantic types will be used.
+
+Schema example:
+
+```python
+from dataclasses_avroschema import ModelGenerator, BaseClassEnum
+
+model_generator = ModelGenerator(base_class=BaseClassEnum.AVRO_DANTIC_MODEL.value)
+
+schema = {
+    "type": "record",
+    "name": "Infrastructure",
+    "fields": [
+        {"name": "email", "type": {"type": "string", "pydantic-class": "EmailStr"}},
+        {"name": "kafka_url", "type": {"type": "string", "pydantic-class": "KafkaDsn"}},
+        {"name": "total_nodes", "type": {"type": "long", "pydantic-class": "PositiveInt"}},
+        {"name": "event_id", "type": {"type": "string", "logicalType": "uuid", "pydantic-class": "UUID1"}},
+        {"name": "landing_zone_nodes", "type": {"type": "array", "items": {"type": "long", "pydantic-class": "PositiveInt"}, "name": "landing_zone_node"}},
+        {"name": "total_nodes_in_aws", "type": {"type": "long", "pydantic-class": "PositiveInt"}, "default": 10},
+        {"name": "optional_kafka_url", "type": ["null", {"type": "string", "pydantic-class": "KafkaDsn"}], "default": None}
+    ]
+}
+
+result = model_generator.render(schema=schema)
+
+with open("models.py", mode="+w") as f:
+    f.write(result)
+```
+
+and then render the result:
+
+```python
+from dataclasses_avroschema.avrodantic import AvroBaseModel
+import pydantic
+import typing
+
+
+class Infrastructure(AvroBaseModel):
+    email: pydantic.EmailStr
+    kafka_url: pydantic.KafkaDsn
+    total_nodes: pydantic.PositiveInt
+    event_id: pydantic.UUID1
+    landing_zone_nodes: typing.List[pydantic.PositiveInt]
+    total_nodes_in_aws: pydantic.PositiveInt = 10
+    optional_kafka_url: typing.Optional[pydantic.KafkaDsn] = None
+```
+
+*(This script is complete, it should run "as is")*
+
+!!! note
+    In order to render the pydantic types the base class must be `AVRO_BASE_MODEL` or `PYDANTIC_MODEL`
+
+### Mapping `avro fields` to `pydantic types`
+
+|Avro Type  | Metadata                           | Pydantic Type  |
+|-----------|------------------------------------|----------------|
+| string    | "pydantic-class": "DirectoryPath"  | pydantic.FilePath |
+| string    | "pydantic-class": "DirectoryPath"  | pydantic.DirectoryPath |
+| string    | "pydantic-class": "EmailStr"       | pydantic.EmailStr |
+| string    | "pydantic-class": "NameEmail"      | pydantic.NameEmail |
+| string    | "pydantic-class": "AnyUrl"         | pydantic.AnyUrl |
+| string    | "pydantic-class": "AnyHttpUrl"     | pydantic.AnyHttpUrl |
+| string    | "pydantic-class": "HttpUrl"        | pydantic.HttpUrl |
+| string    | "pydantic-class": "FileUrl"        | pydantic.FileUrl |
+| string    | "pydantic-class": "PostgresDsn"    | pydantic.PostgresDsn |
+| string    | "pydantic-class": "CockroachDsn    | pydantic.CockroachDsn |
+| string    | "pydantic-class": "AmqpDsn"        | pydantic.AmqpDsn |
+| string    | "pydantic-class": "RedisDsn"       | pydantic.RedisDsn |
+| string    | "pydantic-class": "MongoDsn"       | pydantic.MongoDsn |
+| string    | "pydantic-class": "KafkaDsn"       | pydantic.KafkaDsn |
+| string    | "pydantic-class": "SecretStr"      | pydantic.SecretStr |
+| string    | "pydantic-class": "IPvAnyAddress"  | pydantic.IPvAnyAddress |
+| string    | "pydantic-class": "IPvAnyInterface"| pydantic.IPvAnyInterface |
+| string    | "pydantic-class": "IPvAnyNetwork"  | pydantic.IPvAnyNetwork |
+| double    | "pydantic-class": "NegativeFloat"  | pydantic.NegativeFloat |
+| double    | "pydantic-class": "PositiveFloat"  | pydantic.PositiveFloat |
+| long      | "pydantic-class": "NegativeInt"    | pydantic.NegativeInt |
+| long      | "pydantic-class": "PositiveInt"    | pydantic.PositiveInt |
+
+|Avro Type  | Logical Type | Metadata | Pydantic Type                      |
+|-----------|--------------|----------|------------------------------------|
+| string    |  uuid        | "pydantic-class": "UUID1"    | pydantic.UUID1 |
+| string    |  uuid        | "pydantic-class": "UUID3"    | pydantic.UUID3 |
+| string    |  uuid        | "pydantic-class": "UUID4"    | pydantic.UUID4 |
+| string    |  uuid        | "pydantic-class": "UUID5"    | pydantic.UUID5 |
+
 ## Pydantic and dataclasses_avroschema batteries
 
 ### To dict, to json and serialization
@@ -182,6 +350,9 @@ print(User.fake())
 ```
 
 *(This script is complete, it should run "as is")*
+
+!!! note
+    All pydantic supported fields can be used with fake
 
 ### Excluding fields
 

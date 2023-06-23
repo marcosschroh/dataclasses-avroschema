@@ -28,10 +28,14 @@ marks = {
 avsc_files = [pytest.param(f, id=f.stem, marks=marks.get(f.stem, ())) for f in here.glob("avro/*.avsc")]
 
 
-@pytest.mark.parametrize("schema", list(BaseClassEnum))
 @pytest.mark.parametrize("filename", avsc_files)
-def test_roundtrip(filename: Path, schema: BaseClassEnum):
-    model_generator = ModelGenerator()
+def test_roundtrip(filename: Path):
+    base_class = BaseClassEnum.AVRO_MODEL.value
+
+    if "pydantic_fields.avsc" in str(filename):
+        base_class = BaseClassEnum.AVRO_DANTIC_MODEL.value
+
+    model_generator = ModelGenerator(base_class=base_class)
     schema = json.loads(filename.read_text())
     result = model_generator.render(schema=schema)
 
@@ -39,8 +43,6 @@ def test_roundtrip(filename: Path, schema: BaseClassEnum):
         code = compile(result, filename.with_suffix(".py").name, "exec")
     except Exception as e:
         raise RuntimeError(f"Failed to compile {filename}:\n" + result) from e
-
-    print(code)
 
     ns = {}
     try:
@@ -51,4 +53,10 @@ def test_roundtrip(filename: Path, schema: BaseClassEnum):
 
     obj = ns[schema["name"]]
     new_schema = obj.avro_schema_to_python()
+
+    # print(obj.__annotations__)
+
+    print(new_schema, "\n\n")
+    print(schema, "\n\n")
+
     assert new_schema == schema

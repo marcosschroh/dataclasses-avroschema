@@ -140,6 +140,11 @@ def decimal_types_schema():
 
 
 @pytest.fixture
+def pydantic_fields_schema():
+    return load_json("pydantic_fields.avsc")
+
+
+@pytest.fixture
 def AvroBaseModel_model():
     class Bus(AvroBaseModel):
         "A Bus"

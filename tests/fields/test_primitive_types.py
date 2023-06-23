@@ -3,12 +3,12 @@ import typing
 
 import pytest
 
-from dataclasses_avroschema import AvroField, field_mapper
-from dataclasses_avroschema.fields import field_utils
+from dataclasses_avroschema import AvroField
+from dataclasses_avroschema.fields import field_utils, mapper
 
 from . import consts
 
-PYTHON_INMUTABLE_TYPES = field_mapper.INMUTABLE_FIELDS_CLASSES.keys()
+PYTHON_INMUTABLE_TYPES = mapper.INMUTABLE_FIELDS_CLASSES.keys()
 
 
 @pytest.mark.parametrize("primitive_type", PYTHON_INMUTABLE_TYPES)

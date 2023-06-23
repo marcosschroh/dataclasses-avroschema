@@ -28,7 +28,7 @@ class Field:
     type: typing.Any  # store the python primitive type
     default: typing.Any
     parent: typing.Any
-    metadata: typing.Optional[typing.Mapping] = None
+    metadata: typing.Mapping = dataclasses.field(default_factory=dict)
     model_metadata: typing.Optional[utils.SchemaMetadata] = None
 
     def __post_init__(self) -> None:
@@ -49,15 +49,7 @@ class Field:
         return p.singularize(name)
 
     def get_metadata(self) -> typing.List[typing.Tuple[str, str]]:
-        meta_data_for_template = []
-
-        if self.metadata is not None:
-            try:
-                for name, value in self.metadata.items():
-                    meta_data_for_template.append((name, value))
-            except (ValueError, TypeError):  # pragma: no cover
-                logger.warn("Error during getting metadata")  # pragma: no cover
-        return meta_data_for_template
+        return [(name, value) for name, value in self.metadata.items()]
 
     def render(self) -> OrderedDict:
         """

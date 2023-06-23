@@ -169,6 +169,10 @@ class BaseListField(ContainerField):
         elif callable(self.default_factory):
             # expecting a callable
             default = self.default_factory()
+
+            if isinstance(default, tuple):
+                default = list(default)
+
             assert isinstance(default, list), f"List is required as default for field {self.name}"
 
             clean_items = []
@@ -747,7 +751,7 @@ class DecimalField(Field):
         return fake.pydecimal(right_digits=self.decimal_places, left_digits=self.max_digits - self.decimal_places)
 
 
-from ..field_mapper import (
+from .mapper import (
     CONTAINER_FIELDS_CLASSES,
     INMUTABLE_FIELDS_CLASSES,
     LOGICAL_TYPES_FIELDS_CLASSES,
@@ -773,8 +777,6 @@ def field_factory(
         metadata = {}
 
     field_info = None
-
-    print(INMUTABLE_FIELDS_CLASSES)
 
     if native_type not in types.CUSTOM_TYPES and utils.is_annotated(native_type):
         a_type, *extra_args = get_args(native_type)

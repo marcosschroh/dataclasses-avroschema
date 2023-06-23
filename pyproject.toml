@@ -26,7 +26,6 @@ fastavro = "^1.7.3"
 dacite = "^1.8.0"
 faker = "^18.3.1"
 inflector = "^3.1.0"
-pydantic = {version = "^1.10.7", optional = true}
 faust-streaming = {version = "^0.10.11", optional = true}
 casefy = "^0.1.7"
 
@@ -37,6 +36,7 @@ black = "^23"
 pytest = "^7"
 pytest-cov = "^4"
 types-pytz = "^2023"
+pydantic = {extras = ["email"], version = "^1.10.9"}
 
 [tool.poetry.group.docs.dependencies]
 mkdocs = "^1"
