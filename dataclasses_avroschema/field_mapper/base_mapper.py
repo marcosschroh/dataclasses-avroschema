@@ -4,7 +4,8 @@ import decimal
 import typing
 import uuid
 
-from dataclasses_avroschema import fields, types
+from dataclasses_avroschema import types
+from dataclasses_avroschema.fields import fields
 
 BASE_INMUTABLE_FIELDS_CLASSES = {
     bool: fields.BooleanField,

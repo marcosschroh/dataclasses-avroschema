@@ -1,7 +1,7 @@
 import datetime
 import typing
 
-from dataclasses_avroschema import field_utils
+from dataclasses_avroschema.fields import field_utils
 
 from . import templates
 from .base_class import BaseClassEnum

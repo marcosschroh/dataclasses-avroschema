@@ -1,4 +1,5 @@
-from dataclasses_avroschema import BaseClassEnum, ModelGenerator, field_utils, types
+from dataclasses_avroschema import BaseClassEnum, ModelGenerator, types
+from dataclasses_avroschema.fields import field_utils
 from dataclasses_avroschema.model_generator.avro_to_python_utils import render_datetime
 
 

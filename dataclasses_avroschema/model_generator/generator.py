@@ -6,7 +6,8 @@ from string import Template
 import casefy
 import fastavro
 
-from dataclasses_avroschema import field_utils, serialization
+from dataclasses_avroschema import serialization
+from dataclasses_avroschema.fields import field_utils
 from dataclasses_avroschema.types import JsonDict
 
 from . import avro_to_python_utils, templates

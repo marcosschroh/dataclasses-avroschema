@@ -6,7 +6,7 @@ import uuid
 import pytest
 from typing_extensions import Annotated
 
-from dataclasses_avroschema import field_utils
+from dataclasses_avroschema.fields import field_utils
 
 PY_VER = sys.version_info
 
@@ -23,7 +23,7 @@ PRIMITIVE_TYPES = (
     (Annotated[bool, "boolean"], field_utils.BOOLEAN),
     (Annotated[float, "float"], field_utils.DOUBLE),
     (Annotated[bytes, "bytes"], field_utils.BYTES),
-    #     (pydantic.FilePath, field_utils.STRING),
+    # (pydantic.FilePath, field_utils.STRING),
     #     (pydantic.DirectoryPath, field_utils.STRING),
     #     (pydantic.EmailStr, field_utils.STRING),
     #     (pydantic.NameEmail, field_utils.STRING),

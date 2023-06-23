@@ -2,7 +2,7 @@ import typing
 
 import casefy
 
-from dataclasses_avroschema import ENUM
+from .fields.field_utils import ENUM
 
 # casefy.camelcase('foo_bar_baz') # => "fooBarBaz"
 # casefy.capitalcase('foo_bar_baz') # => "Foo_bar_baz"

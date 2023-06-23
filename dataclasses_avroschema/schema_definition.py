@@ -4,8 +4,9 @@ import inspect
 import typing
 from collections import OrderedDict
 
-from dataclasses_avroschema import utils
-from dataclasses_avroschema.fields import AvroField, Field
+from . import utils
+from .fields.base import Field
+from .fields.fields import AvroField
 
 
 @dataclasses.dataclass  # type: ignore

@@ -7,7 +7,6 @@ import uuid
 
 import fastavro
 
-from .schema_generator import AvroModel
 from .types import JsonDict
 
 DATETIME_STR_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
@@ -128,6 +127,8 @@ def prepare_bytes_decimal(data: decimal.Decimal, precision: int, scale: int = 0)
 
 
 def serialize_value(*, value: typing.Any) -> typing.Any:
+    from .schema_generator import AvroModel
+
     if isinstance(value, bytes):
         value = value.decode()
     elif isinstance(value, datetime.datetime):
