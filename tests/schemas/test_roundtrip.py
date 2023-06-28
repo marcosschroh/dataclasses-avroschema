@@ -11,9 +11,6 @@ marks = {
     "union_type": [
         pytest.mark.xfail(raises=RuntimeError, reason="model generator borks on difficult union namespaces")
     ],
-    "user_with_field_metadata": [
-        pytest.mark.xfail(raises=AssertionError, reason="model generator does not support metadata yet")
-    ],
     "union_default_type": [
         pytest.mark.xfail(raises=AssertionError, reason="schema generator does not handle enum comments yet")
     ],
