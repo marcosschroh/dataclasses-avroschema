@@ -514,6 +514,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#adding-custom-field-level-attributes" class="md-nav__link">
+    Adding Custom Field-level Attributes
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -674,6 +681,13 @@
         <li class="md-nav__item">
   <a href="#model-config" class="md-nav__link">
     Model Config
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adding-custom-field-level-attributes" class="md-nav__link">
+    Adding Custom Field-level Attributes
   </a>
   
 </li>
@@ -927,6 +941,12 @@ for example:</p>
 </code></pre></div>
 </div>
 </div>
+</div>
+<h2 id="adding-custom-field-level-attributes">Adding Custom Field-level Attributes</h2>
+<p>To add <code>custom field attributes</code> the <code>metadata</code> attribute must be set in <code>pydantic.Field</code>. For more info check <a href="https://marcosschroh.github.io/dataclasses-avroschema/fields_specification/#adding-custom-field-level-attributes">adding-custom-field-level-attributes</a> section for <code>dataclasses</code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Make sure that <code>pydantic.Field</code> is used and <em>NOT</em> <code>dataclasses.field</code></p>
 </div>
 
 
