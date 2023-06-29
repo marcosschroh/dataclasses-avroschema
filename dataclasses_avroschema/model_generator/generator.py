@@ -13,6 +13,11 @@ from . import avro_to_python_utils, templates
 from .base_class import BaseClassEnum
 
 
+class FieldRepresentation(typing.NamedTuple):
+    string_representation: str
+    has_default: bool
+
+
 @dataclass
 class ModelGenerator:
     base_class: str = BaseClassEnum.AVRO_MODEL.value
@@ -125,18 +130,19 @@ class ModelGenerator:
         record_fields: typing.List[JsonDict] = schema["fields"]
 
         # Sort the fields according whether it has a default value
-        record_fields.sort(key=lambda field: 1 if "default" in field.keys() or field_utils.NULL in field["type"] else 0)
+        rendered_fields: typing.List[FieldRepresentation] = [
+            self.render_field(field=field, model_name=name) for field in record_fields
+        ]
+        rendered_fields.sort(key=lambda field: 1 if field.has_default else 0)
 
-        rendered_fields = self.field_identation.join(
-            [self.render_field(field=field, model_name=name) for field in record_fields]
-        )
+        rendered_fields_string = self.field_identation.join(field[0] for field in rendered_fields)
         docstring = self.render_docstring(docstring=schema.get("doc"))
 
         rendered_class = templates.class_template.safe_substitute(
             name=name,
             decorator=self.base_class_decotator,
             base_class=self.base_class,
-            fields=rendered_fields,
+            fields=rendered_fields_string,
             docstring=docstring,
         )
 
@@ -175,7 +181,7 @@ class ModelGenerator:
             extras=extras,
         ).lstrip("\n")
 
-    def render_field(self, field: JsonDict, model_name: str) -> str:
+    def render_field(self, field: JsonDict, model_name: str) -> FieldRepresentation:
         """
         Render an avro field.
 
@@ -197,13 +203,8 @@ class ModelGenerator:
             # override the type so it can be use to get the default value in case that is needed
             type = field.get("logicalType") or field["type"]["logicalType"]
             language_type = self.parse_logical_type(field=field)
-
-            if type == field_utils.DECIMAL:
-                # set default to None because all the decimal has a default by design
-                # and they are calculated in parse_decimal method
-                default = dataclasses.MISSING
         elif isinstance(type, dict):
-            language_type = self.render_field(field=type, model_name=model_name)
+            language_type, _ = self.render_field(field=type, model_name=model_name)
         elif isinstance(type, list):
             language_type = self.parse_union(field_types=type, model_name=model_name)
         elif type == field_utils.ARRAY:
@@ -235,12 +236,18 @@ class ModelGenerator:
         else:
             result = templates.field_template.safe_substitute(name=name, type=language_type)
 
-        if default is not dataclasses.MISSING:
-            # optional field attribute
-            default = self.get_field_default(field_type=type, default=default, name=name)
-            result += templates.field_default_template.safe_substitute(default=default)
+        field_metadata = self.get_field_metadata(field)
+        # optional field attribute
+        default = self.get_field_default(field_type=type, default=default, name=name, field_metadata=field_metadata)
 
-        return result
+        has_default = False
+        if default is not dataclasses.MISSING:
+            has_default = True
+
+            if type != field_utils.DECIMAL:
+                result += templates.field_default_template.safe_substitute(default=default)
+
+        return FieldRepresentation(string_representation=result, has_default=has_default)
 
     @staticmethod
     def is_logical_type(*, field: JsonDict) -> bool:
@@ -306,7 +313,8 @@ class ModelGenerator:
         # XXX: Maybe more useful in general
         def render_type(typ: str) -> str:
             if isinstance(typ, dict):
-                return self.render_field(field=typ, model_name=model_name)
+                rendered_field, _ = self.render_field(field=typ, model_name=model_name)
+                return rendered_field
             else:
                 return self.get_language_type(type=typ, model_name=model_name)
 
@@ -399,7 +407,7 @@ class ModelGenerator:
         self.imports.add("import typing")
 
         if isinstance(type, dict):
-            language_type = self.render_field(field=type, model_name=model_name)
+            language_type, _ = self.render_field(field=type, model_name=model_name)
         elif isinstance(type, list):
             language_type = self.parse_union(field_types=type, model_name=model_name)
         else:
@@ -421,22 +429,57 @@ class ModelGenerator:
             return str(self.avro_type_to_python.get(type, default))
         return str(self.avro_type_to_python.get(type, type))
 
-    def get_field_default(self, *, field_type: str, default: typing.Any, name: str) -> typing.Any:
+    def get_field_metadata(self, field: JsonDict) -> JsonDict:
+        keys_to_ignore = [
+            "name",
+            "type",
+            "default",
+        ]
+
+        type = field["type"]
+
+        if type == field_utils.ARRAY:
+            keys_to_ignore.append("items")
+        elif type == field_utils.MAP:
+            keys_to_ignore.append("values")
+        elif type == field_utils.FIXED:
+            keys_to_ignore.extend(["namespace", "aliases", "size"])
+        elif type == field_utils.ENUM:
+            keys_to_ignore.extend(["symbols", "namespace", "aliases", "doc"])
+        elif type == field_utils.RECORD:
+            keys_to_ignore.extend(["fields", "doc", "aliases", "namespace"])
+        elif self.is_logical_type(field=field):
+            keys_to_ignore.extend(
+                [
+                    "logicalType",
+                ]
+            )
+
+        return {name: value for name, value in field.items() if name not in keys_to_ignore}
+
+    def get_field_default(
+        self, *, field_type: str, default: typing.Any, name: str, field_metadata: typing.Optional[JsonDict] = None
+    ) -> typing.Any:
         """
         Returns the default value according to the field type
 
         TODO: docstrings
 
         Example:
-            If the default is "bond" the method should return '\n"bond\n"' so the double quotes
+            If the default is "bond" the method should return '"bond"' so the double quotes
             won't be scaped during the field render
         """
-        if field_type in (field_utils.STRING, field_utils.UUID):
-            return f'"{default}"'
+        dataclass_field_default_factory = dataclass_field_metadata = None
+        if field_metadata:
+            dataclass_field_metadata = f"metadata={field_metadata}"
+
+        if default is dataclasses.MISSING:
+            # we do not do anything, just check dataclasses.field properties
+            pass
+        elif field_type in (field_utils.STRING, field_utils.UUID):
+            default = f'"{default}"'
         elif field_type == field_utils.BYTES:
-            return f'b"{default}"'
-        elif isinstance(field_type, dict) and field_type.get("type") == field_utils.ENUM:
-            return f"{casefy.pascalcase(field_type['name'])}.{casefy.uppercase(default)}"
+            default = f'b"{default}"'
         elif isinstance(
             default,
             (
@@ -447,17 +490,39 @@ class ModelGenerator:
             if default:
                 # it is an array or maps with some defaults that we should
                 # express with a lambda function
-                properties = f"default_factory=lambda: {default}"
+                dataclass_field_default_factory = f"default_factory=lambda: {default}"
             else:
                 # it is an array or maps with `[]` or `{} ` as default
-                properties = f"default_factory={default.__class__.__name__}"
-            return self.render_dataclass_field(properties=properties)
+                dataclass_field_default_factory = f"default_factory={default.__class__.__name__}"
+        elif isinstance(field_type, dict):
+            inner_type = field_type["type"]
+            name = field_type.get("name", name)
+            default = self.get_field_default(field_type=inner_type, name=name, default=default)
+        elif field_type == field_utils.ENUM:
+            default = f"{casefy.pascalcase(name)}.{casefy.uppercase(default)}"
         elif isinstance(field_type, list):
-            return self.get_field_default(field_type=field_type[0], default=default, name=name)
+            default = self.get_field_default(field_type=field_type[0], default=default, name=name)
         elif field_type in avro_to_python_utils.LOGICAL_TYPES_TO_PYTHON:
             func = avro_to_python_utils.LOGICAL_TYPES_TO_PYTHON[field_type]
             python_type = func(default)
             template_func = avro_to_python_utils.LOGICAL_TYPE_TEMPLATES[field_type]
-            return template_func(python_type)
+            default = template_func(python_type)
         else:
-            return default
+            default = default
+
+        dataclass_field_properties = [
+            dataclass_field_default_factory,
+            dataclass_field_metadata,
+        ]
+
+        if any(dataclass_field_properties):
+            # If the default was not set or the default_factory was set
+            # then we not need a default in the field
+            if default is not dataclasses.MISSING and dataclass_field_default_factory is None:
+                dataclass_field_properties.append(f" default={default}")
+
+            default = self.render_dataclass_field(
+                properties=",".join([prop for prop in dataclass_field_properties if prop is not None])
+            )
+
+        return default

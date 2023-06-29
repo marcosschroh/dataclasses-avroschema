@@ -256,3 +256,10 @@ for example:
     print(bus.dict())
     # >>> {'driver': 'bond', 'color': 'RED'}
     ```
+
+## Adding Custom Field-level Attributes
+
+To add `custom field attributes` the `metadata` attribute must be set in `pydantic.Field`. For more info check [adding-custom-field-level-attributes](https://marcosschroh.github.io/dataclasses-avroschema/fields_specification/#adding-custom-field-level-attributes) section for `dataclasses`.
+
+!!! note
+    Make sure that `pydantic.Field` is used and *NOT* `dataclasses.field`

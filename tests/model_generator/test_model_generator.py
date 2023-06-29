@@ -15,11 +15,12 @@ class User(AvroModel):
     An User
     \"""
     age: types.Int32
-    weight: types.Int32
     money_available: float
     name: str = "marcos"
     pet_age: types.Int32 = 1
     height: types.Float32 = 10.1
+    weight: types.Int32 = dataclasses.field(metadata={'unit': 'kg'})
+    expirience: types.Int32 = dataclasses.field(metadata={'unit': 'years'}, default=10)
     is_student: bool = True
     encoded: bytes = b"Hi"
 
@@ -37,6 +38,7 @@ def test_model_generator_primitive_types_as_defined_types(
 ) -> None:
     expected_result = """
 from dataclasses_avroschema import AvroModel
+from dataclasses_avroschema import types
 import dataclasses
 import typing
 
@@ -45,6 +47,9 @@ import typing
 class Address(AvroModel):
     street: str
     name: typing.Optional[str]
+    weight: types.Int32 = dataclasses.field(metadata={'unit': 'kg'})
+    pet_age: types.Int32 = 1
+    expirience: types.Int32 = dataclasses.field(metadata={'unit': 'years'}) = 10
 
 """
     model_generator = ModelGenerator()
@@ -375,11 +380,12 @@ class User(AvroModel):
     An User
     \"""
     age: types.Int32
-    weight: types.Int32
     money_available: float
     name: str = "marcos"
     pet_age: types.Int32 = 1
     height: types.Float32 = 10.1
+    weight: types.Int32 = dataclasses.field(metadata={'unit': 'kg'})
+    expirience: types.Int32 = dataclasses.field(metadata={'unit': 'years'}, default=10)
     is_student: bool = True
     encoded: bytes = b"Hi"
 

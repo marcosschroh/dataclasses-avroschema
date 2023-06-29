@@ -15,7 +15,8 @@ def schema() -> Dict:
             {"name": "age", "type": "int"},
             {"name": "pet_age", "type": "int", "default": 1},
             {"name": "height", "type": "float", "default": 10.10},
-            {"name": "weight", "type": "int"},
+            {"name": "weight", "type": "int", "unit": "kg"},
+            {"name": "expirience", "type": "int", "unit": "years", "default": 10},
             {
                 "name": "is_student",
                 "type": "boolean",
@@ -51,6 +52,9 @@ def schema_primitive_types_as_defined_types() -> Dict:
         "fields": [
             {"name": "street", "type": {"type": "string"}},
             {"name": "name", "type": ["null", {"type": "string"}]},
+            {"name": "pet_age", "type": {"type": "int"}, "default": 1},
+            {"name": "weight", "type": {"type": "int", "unit": "kg"}},
+            {"name": "expirience", "type": {"type": "int", "unit": "years"}, "default": 10},
         ],
     }
 
