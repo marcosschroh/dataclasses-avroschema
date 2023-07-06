@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## 0.44.0 (2023-07-06)
+
+### Feat
+
+- pydantic fields added. Closes #328
+
 ## 0.43.10 (2023-06-29)
 
 ### Fix
