@@ -2,33 +2,35 @@ import datetime
 import decimal
 import uuid
 
+import pydantic
 import pytest
 
-from dataclasses_avroschema import field_utils, fields, types
+from dataclasses_avroschema import AvroField, types
+from dataclasses_avroschema.fields import field_utils
 
 from . import consts
 
 
-@pytest.mark.parametrize("python_type,avro_type,logical_type", consts.LOGICAL_TYPES_AND_DEFAULTS)
-def test_logical_types(python_type, avro_type, logical_type):
+@pytest.mark.parametrize("python_type,avro_type", consts.LOGICAL_TYPES_AND_DEFAULTS)
+def test_logical_types(python_type, avro_type):
     name = "a logical type"
     python_type = python_type
-    field = fields.AvroField(name, python_type)
+    field = AvroField(name, python_type)
 
-    expected = {"name": name, "type": {"type": avro_type, "logicalType": logical_type}}
+    expected = {"name": name, "type": avro_type}
 
     assert expected == field.to_dict()
 
 
-@pytest.mark.parametrize("python_type,avro_type,logical_type", consts.LOGICAL_TYPES_AND_DEFAULTS)
-def test_logical_types_with_null_as_default(python_type, avro_type, logical_type):
+@pytest.mark.parametrize("python_type,avro_type", consts.LOGICAL_TYPES_AND_DEFAULTS)
+def test_logical_types_with_null_as_default(python_type, avro_type):
     name = "a logical type"
     python_type = python_type
-    field = fields.AvroField(name, python_type, default=None)
+    field = AvroField(name, python_type, default=None)
 
     expected = {
         "name": name,
-        "type": ["null", {"type": avro_type, "logicalType": logical_type}],
+        "type": ["null", avro_type],
         "default": None,
     }
 
@@ -38,7 +40,7 @@ def test_logical_types_with_null_as_default(python_type, avro_type, logical_type
 def test_logical_type_date_with_default():
     name = "a date"
     python_type = datetime.date
-    field = fields.AvroField(name, python_type, default=consts.now.date())
+    field = AvroField(name, python_type, default=consts.now.date())
 
     date_time = datetime.datetime.combine(consts.now, datetime.datetime.min.time())
     ts = (date_time - datetime.datetime(1970, 1, 1)).total_seconds()
@@ -56,7 +58,7 @@ def test_logical_type_time_millis_with_default() -> None:
     name = "a time"
     python_type = datetime.time
     time = consts.now.time()
-    field = fields.AvroField(name, python_type, default=time)
+    field = AvroField(name, python_type, default=time)
 
     hour, minutes, seconds, microseconds = (
         time.hour,
@@ -78,7 +80,7 @@ def test_logical_type_time_micros_with_default() -> None:
     name = "a time"
     python_type = types.TimeMicro
     time = consts.now.time()
-    field = fields.AvroField(name, python_type, default=time)
+    field = AvroField(name, python_type, default=time)
 
     hour, minutes, seconds, microseconds = (
         time.hour,
@@ -94,14 +96,13 @@ def test_logical_type_time_micros_with_default() -> None:
         "default": microseconds,
     }
 
-    print(field, "marcos;")
     assert expected == field.to_dict()
 
 
 def test_logical_type_datetime_micros_with_default() -> None:
     name = "a datetime"
     python_type = types.DateTimeMicro
-    field = fields.AvroField(name, python_type, default=consts.now)
+    field = AvroField(name, python_type, default=consts.now)
 
     ts = consts.now.timestamp()
 
@@ -117,7 +118,7 @@ def test_logical_type_datetime_micros_with_default() -> None:
 def test_logical_type_datetime_with_default() -> None:
     name = "a datetime"
     python_type = datetime.datetime
-    field = fields.AvroField(name, python_type, default=consts.now)
+    field = AvroField(name, python_type, default=consts.now)
 
     ts = consts.now.timestamp()
 
@@ -131,20 +132,26 @@ def test_logical_type_datetime_with_default() -> None:
 
 
 @pytest.mark.parametrize(
-    "python_type",
+    "python_type,avro_type",
     (
-        uuid.uuid4,
-        uuid.UUID,
+        (uuid.uuid4, {"type": field_utils.STRING, "logicalType": field_utils.UUID}),
+        (uuid.UUID, {"type": field_utils.STRING, "logicalType": field_utils.UUID}),
+        # pydantic fields
+        (pydantic.UUID1, {"type": field_utils.STRING, "logicalType": field_utils.UUID, "pydantic-class": "UUID1"}),
+        (pydantic.UUID3, {"type": field_utils.STRING, "logicalType": field_utils.UUID, "pydantic-class": "UUID3"}),
+        (pydantic.UUID4, {"type": field_utils.STRING, "logicalType": field_utils.UUID, "pydantic-class": "UUID4"}),
+        (pydantic.UUID5, {"type": field_utils.STRING, "logicalType": field_utils.UUID, "pydantic-class": "UUID5"}),
     ),
 )
-def test_logical_type_uuid_with_default(python_type) -> None:
+def test_logical_type_uuid_with_default(python_type, avro_type) -> None:
     name = "a uuid"
     default = uuid.UUID("d793fc4f-2eef-440a-af8b-a8e884d7b1a8")
-    field = fields.AvroField(name, python_type, default=default)
+    field = AvroField(name, python_type, default=default)
+    field.to_dict()
 
     expected = {
         "name": name,
-        "type": {"type": field_utils.STRING, "logicalType": field_utils.UUID},
+        "type": avro_type,
         "default": str(default),
     }
 
@@ -154,7 +161,7 @@ def test_logical_type_uuid_with_default(python_type) -> None:
 @pytest.mark.parametrize("logical_type,invalid_default,msg", consts.LOGICAL_TYPES_AND_INVALID_DEFAULTS)
 def test_invalid_default_values(logical_type, invalid_default, msg):
     name = "a_field"
-    field = fields.AvroField(name, logical_type, default=invalid_default)
+    field = AvroField(name, logical_type, default=invalid_default)
 
     msg = msg or f"Invalid default type. Default should be {logical_type}"
     with pytest.raises(AssertionError, match=msg):
@@ -170,7 +177,7 @@ def test_decimal_type():
     # A default decimal.Decimal sets precision and scale implicitly
     default = decimal.Decimal("3.14")
     python_type = types.condecimal(max_digits=3, decimal_places=2)
-    field = fields.AvroField(name, python_type, default=default)
+    field = AvroField(name, python_type, default=default)
 
     expected = {
         "name": name,
@@ -187,7 +194,7 @@ def test_decimal_type():
 
     # Use types.Decimal to set explicitly
     python_type = types.condecimal(max_digits=7, decimal_places=5)
-    field = fields.AvroField(name, python_type)
+    field = AvroField(name, python_type)
 
     expected = {
         "name": name,
@@ -202,7 +209,7 @@ def test_decimal_type():
     assert expected == field.to_dict()
 
     python_type = types.condecimal(max_digits=7, decimal_places=5)
-    field = fields.AvroField(name, python_type, default=decimal.Decimal("3.14"))
+    field = AvroField(name, python_type, default=decimal.Decimal("3.14"))
 
     expected = {
         "name": name,
@@ -218,7 +225,7 @@ def test_decimal_type():
     assert expected == field.to_dict()
 
     python_type = types.condecimal(max_digits=7, decimal_places=5)
-    field = fields.AvroField(name, python_type, default=None)
+    field = AvroField(name, python_type, default=None)
 
     expected = {
         "name": name,
@@ -233,7 +240,7 @@ def test_decimal_type():
         ValueError, match="`decimal_places` must be zero or a positive integer less than or equal to the precision."
     ):
         python_type = types.condecimal(max_digits=1, decimal_places=-1)
-        field = fields.AvroField(name, python_type)
+        field = AvroField(name, python_type)
 
         field.to_dict()
 
@@ -242,41 +249,41 @@ def test_decimal_type():
         ValueError, match="`decimal_places` must be zero or a positive integer less than or equal to the precision."
     ):
         python_type = types.condecimal(max_digits=1, decimal_places=3)
-        field = fields.AvroField(name, python_type)
+        field = AvroField(name, python_type)
 
         field.to_dict()
 
     # Validate precision >= 0
     with pytest.raises(ValueError, match="`max_digits` must be a positive integer greater than zero"):
         python_type = types.condecimal(max_digits=-1, decimal_places=2)
-        field = fields.AvroField(name, python_type)
+        field = AvroField(name, python_type)
 
         field.to_dict()
 
     # Catch unexpected default value for decimal.Decimal
     with pytest.raises(ValueError):
         default = 7
-        field = fields.AvroField(name, python_type, default=default)
+        field = AvroField(name, python_type, default=default)
 
         field.to_dict()
 
     # Default decimal.Decimal has more digits than listed precision
     with pytest.raises(ValueError):
         python_type = types.condecimal(max_digits=3, decimal_places=2)
-        field = fields.AvroField(name, python_type, default=decimal.Decimal("3.14159"))
+        field = AvroField(name, python_type, default=decimal.Decimal("3.14159"))
 
         field.to_dict()
 
     # Default decimal.Decimal has more digits past decimal than scale
     with pytest.raises(ValueError):
         python_type = types.condecimal(max_digits=3, decimal_places=1)
-        field = fields.AvroField(name, python_type, default=decimal.Decimal("3.14"))
+        field = AvroField(name, python_type, default=decimal.Decimal("3.14"))
 
         field.to_dict()
 
     # Just for code coverage
     with pytest.raises(ValueError):
         python_type = types.condecimal(max_digits=3, decimal_places=1)
-        field = fields.AvroField(name, python_type, default=decimal.Decimal("3.14"))
+        field = AvroField(name, python_type, default=decimal.Decimal("3.14"))
 
         field.to_dict()

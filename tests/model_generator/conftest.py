@@ -386,3 +386,36 @@ def schema_with_logical_types() -> JsonDict:
             },
         ],
     }
+
+
+@pytest.fixture
+def schema_with_pydantic_fields() -> JsonDict:
+    return {
+        "type": "record",
+        "name": "Infrastructure",
+        "fields": [
+            {"pydantic-class": "EmailStr", "name": "email", "type": "string"},
+            {"pydantic-class": "PostgresDsn", "name": "postgres_dsn", "type": "string"},
+            {"pydantic-class": "CockroachDsn", "name": "cockroach_dsn", "type": "string"},
+            {"pydantic-class": "AmqpDsn", "name": "amqp_dsn", "type": "string"},
+            {"pydantic-class": "RedisDsn", "name": "redis_dsn", "type": "string"},
+            {"pydantic-class": "MongoDsn", "name": "mongo_dsn", "type": "string"},
+            {"pydantic-class": "KafkaDsn", "name": "kafka_url", "type": "string"},
+            {"pydantic-class": "PositiveInt", "name": "total_nodes", "type": "long"},
+            {"name": "event_id", "type": {"type": "string", "logicalType": "uuid", "pydantic-class": "UUID3"}},
+            {
+                "name": "landing_zone_nodes",
+                "type": {
+                    "type": "array",
+                    "items": {"type": "long", "pydantic-class": "PositiveInt"},
+                    "name": "landing_zone_node",
+                },
+            },
+            {"name": "total_nodes_in_aws", "type": {"type": "long", "pydantic-class": "PositiveInt"}, "default": 10},
+            {
+                "name": "optional_kafka_url",
+                "type": ["null", {"type": "string", "pydantic-class": "KafkaDsn"}],
+                "default": None,
+            },
+        ],
+    }

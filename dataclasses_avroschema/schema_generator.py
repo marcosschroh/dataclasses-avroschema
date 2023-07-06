@@ -8,7 +8,8 @@ from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Type, TypeVa
 from dacite import Config, from_dict
 from fastavro.validation import validate
 
-from . import case, fields, serialization
+from . import case, serialization
+from .fields.base import Field
 from .schema_definition import AvroSchemaDefinition
 from .types import JsonDict
 from .utils import SchemaMetadata, standardize_custom_type
@@ -95,7 +96,7 @@ class AvroModel:
         return json.loads(json.dumps(avro_schema))
 
     @classmethod
-    def get_fields(cls: Type[CT]) -> List[fields.FieldType]:
+    def get_fields(cls: Type[CT]) -> List[Field]:
         if cls.schema_def is None:
             cls.generate_schema()
         return cls.schema_def.fields  # type: ignore

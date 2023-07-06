@@ -1,8 +1,8 @@
-from dataclasses_avroschema import fields
+from dataclasses_avroschema import AvroField
 
 
 def test_render():
-    field = fields.AvroField("first_name", str, metadata={"desc": "English Language Name"})
+    field = AvroField("first_name", str, metadata={"desc": "English Language Name"})
 
     expected = {
         "name": "first_name",
@@ -12,7 +12,7 @@ def test_render():
 
     assert expected == field.render()
 
-    field = fields.AvroField("engine_name", str)
+    field = AvroField("engine_name", str)
 
     expected = {
         "name": "engine_name",
@@ -21,7 +21,7 @@ def test_render():
 
     assert expected == field.render()
 
-    field = fields.AvroField(
+    field = AvroField(
         "breed_name",
         str,
         default="test",
@@ -40,19 +40,19 @@ def test_render():
 
 
 def test_render_metadata():
-    field = fields.AvroField("first_name", str, metadata={"desc": "English Language Name"})
+    field = AvroField("first_name", str, metadata={"desc": "English Language Name"})
 
     expected = [("desc", "English Language Name")]
 
     assert expected == field.get_metadata()
 
-    field = fields.AvroField("engine_name", str)
+    field = AvroField("engine_name", str)
 
     expected = []
 
     assert expected == field.get_metadata()
 
-    field = fields.AvroField(
+    field = AvroField(
         "breed_name",
         str,
         metadata={"encoding": "some_exotic_encoding", "doc": "Official Breed Name"},

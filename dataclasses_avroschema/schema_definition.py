@@ -4,8 +4,9 @@ import inspect
 import typing
 from collections import OrderedDict
 
-from dataclasses_avroschema import utils
-from dataclasses_avroschema.fields import AvroField, FieldType
+from . import utils
+from .fields.base import Field
+from .fields.fields import AvroField
 
 
 @dataclasses.dataclass  # type: ignore
@@ -59,22 +60,22 @@ class BaseSchemaDefinition(abc.ABC):
 
 @dataclasses.dataclass
 class AvroSchemaDefinition(BaseSchemaDefinition):
-    fields: typing.List[FieldType] = dataclasses.field(default_factory=list)
-    # mapping of field_name: FieldType
-    fields_map: typing.Dict[str, FieldType] = dataclasses.field(default_factory=dict)
+    fields: typing.List[Field] = dataclasses.field(default_factory=list)
+    # mapping of field_name: Field
+    fields_map: typing.Dict[str, Field] = dataclasses.field(default_factory=dict)
 
     def __post_init__(self) -> None:
         self.fields = self.parse_dataclasses_fields()
         self.fields_map = {field.name: field for field in self.fields}
 
-    def parse_dataclasses_fields(self) -> typing.List[FieldType]:
+    def parse_dataclasses_fields(self) -> typing.List[Field]:
         if utils.is_faust_model(self.klass):
             return self.parse_faust_fields()
         elif utils.is_pydantic_model(self.klass):
             return self.parse_pydantic_fields()
         return self.parse_fields()
 
-    def parse_fields(self) -> typing.List[FieldType]:
+    def parse_fields(self) -> typing.List[Field]:
         return [
             AvroField(
                 dataclass_field.name,
@@ -88,7 +89,7 @@ class AvroSchemaDefinition(BaseSchemaDefinition):
             for dataclass_field in dataclasses.fields(self.klass)
         ]
 
-    def parse_faust_fields(self) -> typing.List[FieldType]:
+    def parse_faust_fields(self) -> typing.List[Field]:
         schema_fields = []
 
         for dataclass_field in dataclasses.fields(self.klass):
@@ -121,7 +122,7 @@ class AvroSchemaDefinition(BaseSchemaDefinition):
 
         return schema_fields
 
-    def parse_pydantic_fields(self) -> typing.List[FieldType]:
+    def parse_pydantic_fields(self) -> typing.List[Field]:
         return [
             AvroField(
                 model_field.name,

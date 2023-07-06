@@ -2,9 +2,9 @@ from typing import Any, Callable, Optional, Type, TypeVar
 
 from fastavro.validation import validate
 
-from .schema_generator import AvroModel
-from .types import JsonDict
-from .utils import standardize_custom_type
+from dataclasses_avroschema.schema_generator import AvroModel
+from dataclasses_avroschema.types import JsonDict
+from dataclasses_avroschema.utils import standardize_custom_type
 
 try:
     from pydantic import BaseModel  # pragma: no cover

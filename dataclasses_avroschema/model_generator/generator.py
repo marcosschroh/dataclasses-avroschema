@@ -6,7 +6,8 @@ from string import Template
 import casefy
 import fastavro
 
-from dataclasses_avroschema import field_utils, serialization
+from dataclasses_avroschema import serialization
+from dataclasses_avroschema.fields import field_utils
 from dataclasses_avroschema.types import JsonDict
 
 from . import avro_to_python_utils, templates
@@ -23,8 +24,11 @@ class ModelGenerator:
     base_class: str = BaseClassEnum.AVRO_MODEL.value
     field_identation: str = "\n    "
     imports: typing.Set[str] = field(default_factory=set)
+    imports_dict: typing.Dict[str, str] = field(default_factory=dict)
+
     # extras is used fot extra code that is generated, for example Enums
     extras: typing.List[str] = field(default_factory=list)
+
     class_template: Template = templates.class_template
     dataclass_field_template: Template = templates.dataclass_field_template
     metadata_fields_mapper: typing.Dict[str, str] = field(
@@ -41,28 +45,36 @@ class ModelGenerator:
             "aliases": templates.metaclass_alias_field_template,
         }
     )
-    base_class_to_imports: typing.Dict[str, str] = field(
-        default_factory=lambda: {
-            BaseClassEnum.AVRO_MODEL.value: "from dataclasses_avroschema import AvroModel",
-            BaseClassEnum.PYDANTIC_MODEL.value: "from pydantic import BaseModel",
-            BaseClassEnum.AVRO_DANTIC_MODEL.value: "from dataclasses_avroschema.avrodantic import AvroBaseModel",
-        }
-    )
     # represent the decorator to add in the base class
     base_class_decotator: str = ""
     avro_type_to_python: typing.Dict[str, str] = field(init=False)
     logical_types_imports: typing.Dict[str, str] = field(init=False)
 
     def __post_init__(self) -> None:
-        self.imports.add(self.base_class_to_imports[self.base_class])
-        self.avro_type_to_python = avro_to_python_utils.AVRO_TYPE_TO_PYTHON[self.base_class]
-        self.logical_types_imports = avro_to_python_utils.LOGICAL_TYPES_IMPORTS[self.base_class]
+        # add the base class import
+        base_class_to_imports = {
+            BaseClassEnum.AVRO_MODEL.value: "from dataclasses_avroschema import AvroModel",
+            BaseClassEnum.PYDANTIC_MODEL.value: "from pydantic import BaseModel",
+            BaseClassEnum.AVRO_DANTIC_MODEL.value: "from dataclasses_avroschema.avrodantic import AvroBaseModel",
+        }
+        self.imports.add(base_class_to_imports[self.base_class])
+
+        self.avro_type_to_python = avro_to_python_utils.AVRO_TYPE_TO_PYTHON
+        self.logical_types_imports = avro_to_python_utils.LOGICAL_TYPES_IMPORTS
 
         if self.base_class == BaseClassEnum.AVRO_MODEL.value:
             self.imports.add("import dataclasses")
             self.base_class_decotator = "@dataclasses.dataclass"
+            self.imports_dict = {
+                "dataclass_field": "import dataclasses",
+                "condecimal": "from dataclasses_avroschema.types import condecimal",
+            }
         else:
             self.dataclass_field_template = templates.pydantic_field_template
+            self.imports_dict = {
+                "dataclass_field": "from pydantic import Field",
+                "condecimal": "from pydantic import condecimal",
+            }
 
     @staticmethod
     def validate_schema(*, schema: JsonDict) -> None:
@@ -153,8 +165,7 @@ class ModelGenerator:
         return rendered_class
 
     def render_dataclass_field(self, properties: str) -> str:
-        if self.base_class != BaseClassEnum.AVRO_MODEL.value:
-            self.imports.add("from pydantic import Field")
+        self.imports.add(self.imports_dict["dataclass_field"])
 
         return self.dataclass_field_template.safe_substitute(properties=properties)
 
@@ -194,6 +205,7 @@ class ModelGenerator:
         name = field.get("name", "")
         type = field["type"]
         default = field.get("default", dataclasses.MISSING)
+        field_metadata = self.get_field_metadata(field)
 
         # This flag tells whether the field is array, map, fixed
         is_complex_type = False
@@ -225,8 +237,13 @@ class ModelGenerator:
             self.extras.append(record)
             language_type = casefy.pascalcase(field["name"])
         else:
-            # Native field or Logical type using a native
+            # Native field
             language_type = self.get_language_type(type=type, model_name=model_name)
+
+            # check if the language type must be replaced with some extra class
+            # specified in the field metadata only after the native type was resolved
+            type_from_metadata = self._resolve_type_from_metadata(field=field)
+            language_type = type_from_metadata or language_type
 
         if is_complex_type or not name:
             # If the field is a complext type or
@@ -236,7 +253,6 @@ class ModelGenerator:
         else:
             result = templates.field_template.safe_substitute(name=name, type=language_type)
 
-        field_metadata = self.get_field_metadata(field)
         # optional field attribute
         default = self.get_field_default(field_type=type, default=default, name=name, field_metadata=field_metadata)
 
@@ -263,7 +279,11 @@ class ModelGenerator:
         field = field if field_name is None else field["type"]
         logical_type = field["logicalType"]
 
-        if logical_type == field_utils.DECIMAL:
+        type_from_metadata = self._resolve_type_from_metadata(field=field)
+
+        if type_from_metadata is not None:
+            type = type_from_metadata
+        elif logical_type == field_utils.DECIMAL:
             # this is a special case for logical types
             type = self.parse_decimal(field=field, default=default)
         else:
@@ -273,19 +293,15 @@ class ModelGenerator:
 
         if field_name is not None:
             field_repr = templates.field_template.safe_substitute(name=field_name, type=type)
-
             return field_repr
+
         return type
 
     def parse_decimal(self, *, field: JsonDict, default: typing.Optional[str] = None) -> str:
         precision = field["precision"]
         scale = field["scale"]
 
-        if self.base_class == BaseClassEnum.AVRO_MODEL.value:
-            self.imports.add("from dataclasses_avroschema.types import condecimal")
-        else:
-            self.imports.add("from pydantic import condecimal")
-
+        self.imports.add(self.imports_dict["condecimal"])
         field_repr = templates.decimal_type_template.safe_substitute(precision=precision, scale=scale)
 
         if default is not None:
@@ -418,7 +434,7 @@ class ModelGenerator:
     def get_language_type(
         self, *, type: str, default: typing.Optional[str] = None, model_name: typing.Optional[str] = None
     ) -> str:
-        if type in (field_utils.FIXED, field_utils.INT, field_utils.FLOAT):
+        if type in (field_utils.INT, field_utils.FLOAT):
             self.imports.add("from dataclasses_avroschema import types")
 
         if type == model_name:
@@ -434,6 +450,7 @@ class ModelGenerator:
             "name",
             "type",
             "default",
+            "pydantic-class",
         ]
 
         type = field["type"]
@@ -456,6 +473,36 @@ class ModelGenerator:
             )
 
         return {name: value for name, value in field.items() if name not in keys_to_ignore}
+
+    def _resolve_type_from_metadata(self, *, field: JsonDict) -> typing.Optional[str]:
+        """
+        Check if the language type must be replaced with any extra class which
+        was specified in the field metadata. This method should be only called
+        after the native type was resolved properly.
+
+        An example of this if when a pydantic field was used in the model:
+
+        class MyModel(AvroBaseModel):
+            email: pydantic.EmailStr
+
+        then the email field is represented as:
+
+        {"name": "email", "type": {"type": "string", "pydantic-class": "EmailStr"}}
+
+        For now we only recognize the attribute `pydantic-class` but in the future
+        new way might be added, for example: `java-class`.
+
+        """
+        if self.base_class in (
+            BaseClassEnum.AVRO_DANTIC_MODEL.value,
+            BaseClassEnum.PYDANTIC_MODEL.value,
+        ):
+            pydantic_class = field.get("pydantic-class")
+
+            if pydantic_class is not None:
+                self.imports.add("import pydantic")
+                return f"pydantic.{pydantic_class}"
+        return None
 
     def get_field_default(
         self, *, field_type: str, default: typing.Any, name: str, field_metadata: typing.Optional[JsonDict] = None

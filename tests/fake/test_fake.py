@@ -4,7 +4,17 @@ import decimal
 import typing
 import uuid
 
+import pydantic
+import pytest
+
 from dataclasses_avroschema import AvroModel, types
+from dataclasses_avroschema.avrodantic import AvroBaseModel
+
+from .const import pydantic_fields
+
+parametrize_base_model = pytest.mark.parametrize(
+    "model_class, decorator", [(AvroModel, dataclasses.dataclass), (AvroBaseModel, lambda f: f)]
+)
 
 
 def test_fake_primitive_types(user_dataclass: typing.Type) -> None:
@@ -21,7 +31,7 @@ def test_fake_with_user_data(user_advance_dataclass: typing.Type) -> None:
 
     user_advance_dataclass is the following type:
 
-        @dataclasses.dataclass
+        @decorator
         class UserAdvance(AvroModel):
             name: str
             age: int
@@ -46,9 +56,10 @@ def test_fake_with_user_data(user_advance_dataclass: typing.Type) -> None:
     assert user_advance.pets == pets
 
 
-def test_fake_with_logical_types() -> None:
-    @dataclasses.dataclass
-    class LogicalTypes(AvroModel):
+@parametrize_base_model
+def test_fake_with_logical_types(model_class: typing.Type[AvroModel], decorator: typing.Callable) -> None:
+    @decorator
+    class LogicalTypes(model_class):
         birthday: datetime.date
         meeting_time: datetime.time
         meeting_time_micro: types.TimeMicro
@@ -59,39 +70,51 @@ def test_fake_with_logical_types() -> None:
     assert isinstance(LogicalTypes.fake(), LogicalTypes)
 
 
-def test_fake_union() -> None:
-    class Bus(AvroModel):
+@parametrize_base_model
+def test_fake_union(model_class: typing.Type[AvroModel], decorator: typing.Callable) -> None:
+    if model_class is AvroBaseModel:
+        field = pydantic.Field
+    else:
+        field = dataclasses.field
+
+    @decorator
+    class Bus(model_class):
         engine_name: str
 
         class Meta:
             namespace = "types.bus_type"
 
-    class Car(AvroModel):
+    @decorator
+    class Car(model_class):
         engine_name: str
 
         class Meta:
             namespace = "types.car_type"
 
-    class UnionSchema(AvroModel):
+    @decorator
+    class UnionSchema(model_class):
         first_union: typing.Union[str, int]
-        logical_union: typing.Union[datetime.datetime, datetime.date, uuid.uuid4]
+        logical_union: typing.Union[datetime.datetime, datetime.date, uuid.UUID]
         lake_trip: typing.Union[Bus, Car]
         river_trip: typing.Optional[typing.Union[Bus, Car]] = None
-        mountain_trip: typing.Union[Bus, Car] = dataclasses.field(default_factory=lambda: {"engine_name": "honda"})
+        mountain_trip: typing.Union[Bus, Car] = field(default_factory=lambda: {"engine_name": "honda"})
 
     assert isinstance(UnionSchema.fake(), UnionSchema)
 
 
-def test_fake_one_to_one_relationship() -> None:
+@parametrize_base_model
+def test_fake_one_to_one_relationship(model_class: typing.Type[AvroModel], decorator: typing.Callable) -> None:
     """
     Test schema relationship one-to-one
     """
 
-    class Address(AvroModel):
+    @decorator
+    class Address(model_class):
         street: str
         street_number: int
 
-    class User(AvroModel):
+    @decorator
+    class User(model_class):
         name: str
         age: int
         address: Address
@@ -99,16 +122,19 @@ def test_fake_one_to_one_relationship() -> None:
     assert isinstance(User.fake(), User)
 
 
-def test_fake_one_to_many_relationship() -> None:
+@parametrize_base_model
+def test_fake_one_to_many_relationship(model_class: typing.Type[AvroModel], decorator: typing.Callable) -> None:
     """
     Test schema relationship one-to-many
     """
 
-    class Address(AvroModel):
+    @decorator
+    class Address(model_class):
         street: str
         street_number: int
 
-    class User(AvroModel):
+    @decorator
+    class User(model_class):
         name: str
         age: int
         addresses: typing.List[Address]
@@ -118,16 +144,19 @@ def test_fake_one_to_many_relationship() -> None:
     assert User.avro_schema()
 
 
-def test_fake_one_to_many_with_tuples() -> None:
+@parametrize_base_model
+def test_fake_one_to_many_with_tuples(model_class: typing.Type[AvroModel], decorator: typing.Callable) -> None:
     """
     Test schema relationship one-to-many
     """
 
-    class Address(AvroModel):
+    @decorator
+    class Address(model_class):
         street: str
         street_number: int
 
-    class User(AvroModel):
+    @decorator
+    class User(model_class):
         addresses: typing.Tuple[Address, ...]
 
     user = User.fake()
@@ -136,16 +165,19 @@ def test_fake_one_to_many_with_tuples() -> None:
     assert isinstance(user.addresses, tuple)
 
 
-def test_fake_one_to_many_map_relationship() -> None:
+@parametrize_base_model
+def test_fake_one_to_many_map_relationship(model_class: typing.Type[AvroModel], decorator: typing.Callable) -> None:
     """
     Test schema relationship one-to-many using a map
     """
 
-    class Address(AvroModel):
+    @decorator
+    class Address(model_class):
         street: str
         street_number: int
 
-    class User(AvroModel):
+    @decorator
+    class User(model_class):
         name: str
         age: int
         addresses: typing.Dict[str, Address]
@@ -153,12 +185,14 @@ def test_fake_one_to_many_map_relationship() -> None:
     assert isinstance(User.fake(), User)
 
 
-def test_self_one_to_one_relationship() -> None:
+@parametrize_base_model
+def test_self_one_to_one_relationship(model_class: typing.Type[AvroModel], decorator: typing.Callable) -> None:
     """
     Test self relationship one-to-one
     """
 
-    class User(AvroModel):
+    @decorator
+    class User(model_class):
         name: str
         age: int
         teamates: typing.Optional[typing.Type["User"]] = None
@@ -166,11 +200,13 @@ def test_self_one_to_one_relationship() -> None:
     assert isinstance(User.fake(), User)
 
 
+# TODO: add pydantic test
 def test_self_one_to_many_relationship() -> None:
     """
     Test self relationship one-to-many
     """
 
+    @dataclasses.dataclass
     class User(AvroModel):
         name: str
         age: int
@@ -180,11 +216,13 @@ def test_self_one_to_many_relationship() -> None:
     assert isinstance(User.fake(), User)
 
 
+# TODO: add pydantic test
 def test_self_one_to_many_map_relationship() -> None:
     """
     Test self relationship one-to-many Map
     """
 
+    @dataclasses.dataclass
     class User(AvroModel):
         name: str
         age: int
@@ -194,12 +232,15 @@ def test_self_one_to_many_map_relationship() -> None:
     assert isinstance(User.fake(), User)
 
 
-def test_optional_relationship() -> None:
-    class Address(AvroModel):
+@parametrize_base_model
+def test_optional_relationship(model_class: typing.Type[AvroModel], decorator: typing.Callable) -> None:
+    @decorator
+    class Address(model_class):
         street: str
         street_number: int
 
-    class User(AvroModel):
+    @decorator
+    class User(model_class):
         name: str
         age: int
         address: typing.Optional[Address] = None
@@ -207,12 +248,14 @@ def test_optional_relationship() -> None:
     assert isinstance(User.fake(), User)
 
 
-def test_decimals() -> None:
+@parametrize_base_model
+def test_decimals(model_class: typing.Type[AvroModel], decorator: typing.Callable) -> None:
     """
     Test Decimal logical types
     """
 
-    class User(AvroModel):
+    @decorator
+    class User(model_class):
         name: str
         age: int
         test_score_1: types.condecimal(max_digits=11, decimal_places=5)
@@ -221,12 +264,14 @@ def test_decimals() -> None:
     assert isinstance(User.fake(), User)
 
 
-def test_int32() -> None:
+@parametrize_base_model
+def test_int32(model_class: typing.Type[AvroModel], decorator: typing.Callable) -> None:
     """
     Test Int32 type
     """
 
-    class User(AvroModel):
+    @decorator
+    class User(model_class):
         name: str
         age: int
         test_score_1: types.Int32 = 100
@@ -235,15 +280,25 @@ def test_int32() -> None:
     assert isinstance(User.fake(), User)
 
 
-def test_float32() -> None:
+@parametrize_base_model
+def test_float32(model_class: typing.Type[AvroModel], decorator: typing.Callable) -> None:
     """
     Test Float32 type
     """
 
-    class User(AvroModel):
+    @decorator
+    class User(model_class):
         name: str
         age: int
         test_score_1: types.Float32 = 100.0
         test_score_2: types.Float32 = types.Float32(12.4)
+
+    assert isinstance(User.fake(), User)
+
+
+@pytest.mark.parametrize("pydantic_field", pydantic_fields)
+def test_pydantic_field(pydantic_field) -> None:
+    class User(AvroBaseModel):
+        name: pydantic_field
 
     assert isinstance(User.fake(), User)

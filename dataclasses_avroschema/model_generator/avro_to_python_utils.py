@@ -1,12 +1,11 @@
 import datetime
 import typing
 
-from dataclasses_avroschema import field_utils
+from dataclasses_avroschema.fields import field_utils
 
 from . import templates
-from .base_class import BaseClassEnum
 
-_AVRO_TYPE_TO_PYTHON: typing.Dict[str, str] = {
+AVRO_TYPE_TO_PYTHON: typing.Dict[str, str] = {
     field_utils.NULL: "None",
     field_utils.BOOLEAN: "bool",
     field_utils.LONG: "int",
@@ -23,19 +22,7 @@ _AVRO_TYPE_TO_PYTHON: typing.Dict[str, str] = {
     field_utils.UUID: "uuid.UUID",
 }
 
-AVRO_TYPE_TO_PYTHON: typing.Dict[str, typing.Dict[str, str]] = {
-    BaseClassEnum.AVRO_MODEL.value: _AVRO_TYPE_TO_PYTHON,
-    BaseClassEnum.PYDANTIC_MODEL.value: {
-        **_AVRO_TYPE_TO_PYTHON,
-        field_utils.UUID: "pydantic.UUID4",
-    },
-    BaseClassEnum.AVRO_DANTIC_MODEL.value: {
-        **_AVRO_TYPE_TO_PYTHON,
-        field_utils.UUID: "pydantic.UUID4",
-    },
-}
-
-_LOGICAL_TYPES_IMPORTS: typing.Dict[str, str] = {
+LOGICAL_TYPES_IMPORTS: typing.Dict[str, str] = {
     field_utils.DECIMAL: "import decimal",
     field_utils.DATE: "import datetime",
     field_utils.TIME_MILLIS: "import datetime",
@@ -43,17 +30,6 @@ _LOGICAL_TYPES_IMPORTS: typing.Dict[str, str] = {
     field_utils.TIMESTAMP_MILLIS: "import datetime",
     field_utils.TIMESTAMP_MICROS: "from dataclasses_avroschema import types",
     field_utils.UUID: "import uuid",
-}
-LOGICAL_TYPES_IMPORTS: typing.Dict[str, typing.Dict[str, str]] = {
-    BaseClassEnum.AVRO_MODEL.value: _LOGICAL_TYPES_IMPORTS,
-    BaseClassEnum.PYDANTIC_MODEL.value: {
-        **_LOGICAL_TYPES_IMPORTS,
-        field_utils.UUID: "import pydantic",
-    },
-    BaseClassEnum.AVRO_DANTIC_MODEL.value: {
-        **_LOGICAL_TYPES_IMPORTS,
-        field_utils.UUID: "import pydantic",
-    },
 }
 
 # Avro types to python types

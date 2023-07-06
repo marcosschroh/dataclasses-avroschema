@@ -3,10 +3,11 @@ import sys
 import typing
 import uuid
 
+import pydantic
 import pytest
 from typing_extensions import Annotated
 
-from dataclasses_avroschema import field_utils
+from dataclasses_avroschema.fields import field_utils
 
 PY_VER = sys.version_info
 
@@ -23,6 +24,29 @@ PRIMITIVE_TYPES = (
     (Annotated[bool, "boolean"], field_utils.BOOLEAN),
     (Annotated[float, "float"], field_utils.DOUBLE),
     (Annotated[bytes, "bytes"], field_utils.BYTES),
+    # pydantic fields
+    (pydantic.FilePath, {"type": field_utils.STRING, "pydantic-class": "FilePat"}),
+    (pydantic.DirectoryPath, {"type": field_utils.STRING, "pydantic-class": "DirectoryPath"}),
+    (pydantic.EmailStr, {"type": field_utils.STRING, "pydantic-class": "EmailStr"}),
+    (pydantic.NameEmail, {"type": field_utils.STRING, "pydantic-class": "NameEmail"}),
+    (pydantic.AnyUrl, {"type": field_utils.STRING, "pydantic-class": "AnyUrl"}),
+    (pydantic.AnyHttpUrl, {"type": field_utils.STRING, "pydantic-class": "AnyHttpUrl"}),
+    (pydantic.HttpUrl, {"type": field_utils.STRING, "pydantic-class": "HttpUrl"}),
+    (pydantic.FileUrl, {"type": field_utils.STRING, "pydantic-class": "FileUrl"}),
+    (pydantic.PostgresDsn, {"type": field_utils.STRING, "pydantic-class": "PostgresDsn"}),
+    (pydantic.CockroachDsn, {"type": field_utils.STRING, "pydantic-class": "CockroachDsn"}),
+    (pydantic.AmqpDsn, {"type": field_utils.STRING, "pydantic-class": "AmqpDsn"}),
+    (pydantic.RedisDsn, {"type": field_utils.STRING, "pydantic-class": "RedisDsn"}),
+    (pydantic.MongoDsn, {"type": field_utils.STRING, "pydantic-class": "MongoDsn"}),
+    (pydantic.KafkaDsn, {"type": field_utils.STRING, "pydantic-class": "KafkaDsn"}),
+    (pydantic.SecretStr, {"type": field_utils.STRING, "pydantic-class": "SecretStr"}),
+    (pydantic.IPvAnyAddress, {"type": field_utils.STRING, "pydantic-class": "IPvAnyAddress"}),
+    (pydantic.IPvAnyInterface, {"type": field_utils.STRING, "pydantic-class": "IPvAnyInterface"}),
+    (pydantic.IPvAnyNetwork, {"type": field_utils.STRING, "pydantic-class": "IPvAnyNetwork"}),
+    (pydantic.NegativeFloat, {"type": field_utils.DOUBLE, "pydantic-class": "NegativeFloat"}),
+    (pydantic.PositiveFloat, {"type": field_utils.DOUBLE, "pydantic-class": "PositiveFloat"}),
+    (pydantic.NegativeInt, {"type": field_utils.LONG, "pydantic-class": "NegativeInt"}),
+    (pydantic.PositiveInt, {"type": field_utils.LONG, "pydantic-class": "PositiveInt"}),
 )
 
 PRIMITIVE_TYPES_AND_DEFAULTS = (
@@ -291,13 +315,18 @@ MAPPING_LOGICAL_TYPES = [
 ]
 
 # Represent the logical types
-# (python_type, avro_internal_type, logical_type)
+# (python_type, avro_type)
 LOGICAL_TYPES_AND_DEFAULTS = (
-    (datetime.date, field_utils.INT, field_utils.DATE),
-    (datetime.time, field_utils.INT, field_utils.TIME_MILLIS),
-    (datetime.datetime, field_utils.LONG, field_utils.TIMESTAMP_MILLIS),
-    (uuid.uuid4, field_utils.STRING, field_utils.UUID),
-    (uuid.UUID, field_utils.STRING, field_utils.UUID),
+    (datetime.date, {"type": field_utils.INT, "logicalType": field_utils.DATE}),
+    (datetime.time, {"type": field_utils.INT, "logicalType": field_utils.TIME_MILLIS}),
+    (datetime.datetime, {"type": field_utils.LONG, "logicalType": field_utils.TIMESTAMP_MILLIS}),
+    (uuid.uuid4, {"type": field_utils.STRING, "logicalType": field_utils.UUID}),
+    (uuid.UUID, {"type": field_utils.STRING, "logicalType": field_utils.UUID}),
+    # pydantic fields
+    (pydantic.UUID1, {"type": field_utils.STRING, "logicalType": field_utils.UUID, "pydantic-class": "UUID1"}),
+    (pydantic.UUID3, {"type": field_utils.STRING, "logicalType": field_utils.UUID, "pydantic-class": "UUID3"}),
+    (pydantic.UUID4, {"type": field_utils.STRING, "logicalType": field_utils.UUID, "pydantic-class": "UUID4"}),
+    (pydantic.UUID5, {"type": field_utils.STRING, "logicalType": field_utils.UUID, "pydantic-class": "UUID5"}),
 )
 
 LOGICAL_TYPES_AND_INVALID_DEFAULTS = (

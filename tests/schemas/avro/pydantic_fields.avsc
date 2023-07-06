@@ -1,0 +1,18 @@
+{
+    "type": "record",
+    "name": "Infrastructure",
+    "fields": [
+        {"name": "email", "type": {"type": "string", "pydantic-class": "EmailStr"}},
+        {"name": "postgres_dsn", "type": {"type": "string", "pydantic-class": "PostgresDsn"}},
+        {"name": "cockroach_dsn", "type": {"type": "string", "pydantic-class": "CockroachDsn"}},
+        {"name": "amqp_dsn", "type": {"type": "string", "pydantic-class": "AmqpDsn"}},
+        {"name": "redis_dsn", "type": {"type": "string", "pydantic-class": "RedisDsn"}},
+        {"name": "mongo_dsn", "type": {"type": "string", "pydantic-class": "MongoDsn"}},
+        {"name": "kafka_url", "type": {"type": "string", "pydantic-class": "KafkaDsn"}},
+        {"name": "total_nodes", "type": {"type": "long", "pydantic-class": "PositiveInt"}},
+        {"name": "event_id", "type": {"type": "string", "logicalType": "uuid", "pydantic-class": "UUID1"}},
+        {"name": "landing_zone_nodes", "type": {"type": "array", "items": {"type": "long", "pydantic-class": "PositiveInt"}, "name": "landing_zone_node"}},
+        {"name": "total_nodes_in_aws", "type": {"type": "long", "pydantic-class": "PositiveInt"}, "default": 10},
+        {"name": "optional_kafka_url", "type": ["null", {"type": "string", "pydantic-class": "KafkaDsn"}], "default": null}
+    ]
+}
