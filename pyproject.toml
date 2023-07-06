@@ -36,7 +36,7 @@ black = "^23"
 pytest = "^7"
 pytest-cov = "^4"
 types-pytz = "^2023"
-pydantic = {extras = ["email"], version = "^1.10.9"}
+pydantic = {extras = ["email"], version = ">=1.10.9,<3.0.0"}
 
 [tool.poetry.group.docs.dependencies]
 mkdocs = "^1"
