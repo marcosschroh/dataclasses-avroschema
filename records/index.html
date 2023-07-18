@@ -431,6 +431,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#field-order" class="md-nav__link">
+    Field order
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -692,6 +699,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#field-order" class="md-nav__link">
+    Field order
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -749,22 +763,24 @@
 </code></pre></div>
 <p><em>(This script is complete, it should run "as is")</em></p>
 <h2 id="class-meta">Class Meta</h2>
-<p>The <code>class Meta</code> is used to specify schema attributes that are not represented by the class fields like <code>namespace</code>, <code>aliases</code> and whether to include the <code>schema documentation</code>. Also custom schema name (the default is the class' name) via <code>schema_name</code> attribute and <code>alias_nested_items</code> when you have nested items and you want to use custom naming for them and <code>custom dacite</code> configuration can be provided.</p>
+<p>The <code>class Meta</code> is used to specify schema attributes that are not represented by the class fields like <code>namespace</code>, <code>aliases</code> and whether to include the <code>schema documentation</code>. Also custom schema name (the default is the class' name) via <code>schema_name</code> attribute, and <code>alias_nested_items</code> when you have nested items and you want to use custom naming for them, <code>custom dacite</code> configuration can be provided and <code>field_order</code></p>
 <div class="highlight"><span class="filename">Class Meta description</span><pre><span></span><code><span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
     <span class="n">schema_name</span> <span class="o">=</span> <span class="s2">&quot;Name other than the class name&quot;</span>
     <span class="n">schema_doc</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">namespace</span> <span class="o">=</span> <span class="s2">&quot;test.com.ar/user/v1&quot;</span>
     <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;User&quot;</span><span class="p">,</span> <span class="s2">&quot;My favorite User&quot;</span><span class="p">]</span>
     <span class="n">alias_nested_items</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;address&quot;</span><span class="p">:</span> <span class="s2">&quot;Address&quot;</span><span class="p">}</span>
+    <span class="n">field_order</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,]</span>
     <span class="n">dacite_config</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;strict_unions_match&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
         <span class="s2">&quot;strict&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">}</span>
 </code></pre></div>
-<p><code>schema_doc (Union[boolean, str])</code>: Whether include the <code>schema documentation</code> generated from <code>docstrings</code>. Default <code>True</code>. If the value is a <code>string</code> if will be used to generate the schema documentation.</p>
-<p><code>namespace (optional[str])</code>: Schema namespace. Default <code>None</code></p>
-<p><code>aliases (optional[List[str]])</code>: Schema aliases. Default <code>None</code></p>
-<p><code>alias_nested_items (optional[Dict[str, str]])</code>: Nested items names</p>
+<p><code>schema_doc Union[boolean, str]</code>: Whether include the <code>schema documentation</code> generated from <code>docstrings</code>. Default <code>True</code>. If the value is a <code>string</code> if will be used to generate the schema documentation.</p>
+<p><code>namespace Optional[str]</code>: Schema namespace. Default <code>None</code></p>
+<p><code>aliases Optional[List[str]]</code>: Schema aliases. Default <code>None</code></p>
+<p><code>alias_nested_items Optional[Dict[str, str]]</code>: Nested items names</p>
+<p><code>field_order Optiona[List[str]]</code>: List of field names to specify their order to the output schema </p>
 <h2 id="record-to-json-and-dict">Record to json and dict</h2>
 <p>You can get the <code>json</code> and <code>dict</code> representation of your instance using <code>to_json</code> and <code>to_dict</code> methods:</p>
 <div class="highlight"><span class="filename">Json and Dict example</span><pre><span></span><code><span class="kn">import</span> <span class="nn">dataclasses</span>
@@ -1026,6 +1042,69 @@ thus will be set at the end of the init, not causing an inheritance problem.</p>
 <span class="k">assert</span> <span class="n">child_schema</span><span class="p">[</span><span class="s2">&quot;fields&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">child_2_schema</span><span class="p">[</span><span class="s2">&quot;fields&quot;</span><span class="p">]</span>
 </code></pre></div>
 <p><em>(This script is complete, it should run "as is")</em></p>
+<h2 id="field-order">Field order</h2>
+<p>The schema generation uses the same order of the python dataclass attributes has, for <a href="https://marcosschroh.github.io/dataclasses-avroschema/records/#basic-usage">example</a>. But what if you want to change the field order
+and specify a field that has a default value before a required value? This with a python dataclass won't work because required field must be declared before optional fields. Another IMPORTANT use case is when a schema was generated
+by a third party (we do not have control of if) and fields with defaults values are declared before the required ones, so using the <code>field_order</code> property will help us.</p>
+<p>The previous example generate has the following class</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">dataclasses</span>
+
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
+
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
+    <span class="s2">&quot;My User Class&quot;</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">has_pets</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">money</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">100.3</span>
+</code></pre></div>
+<p>which represents the schame:</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;record&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;User&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;fields&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;name&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;age&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;long&quot;</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;has_pets&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;money&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;double&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">100.3</span><span class="p">}</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;doc&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;My User Class&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>We want that the field <code>has_pets</code> at the beginning of the schema, for this we need to use the <code>field_order</code> property in the <code>Meta class</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">dataclasses</span>
+
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
+
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
+    <span class="s2">&quot;My User Class&quot;</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">has_pets</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">money</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">100.3</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">field_order</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;has_pets&quot;</span><span class="p">,]</span>
+</code></pre></div>
+<p>and now it represents the schame</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;record&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;User&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;fields&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;has_pets&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;name&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;age&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;long&quot;</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;money&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;double&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">100.3</span><span class="p">}</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;doc&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;My User Class&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+</code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Schemas with the same fields but with different order are <em>NOT</em> the same schema. In avro the field order is important</p>
+</div>
 
 
 

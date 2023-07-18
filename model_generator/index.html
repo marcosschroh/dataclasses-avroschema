@@ -445,6 +445,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#mapping-avro-fields-to-python-fields-summary" class="md-nav__link">
+    Mapping avro fields to python fields summary
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#usage" class="md-nav__link">
     Usage
   </a>
@@ -473,8 +480,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#mapping-avro-fields-to-python-fields-summary" class="md-nav__link">
-    Mapping avro fields to python fields summary
+  <a href="#field-order" class="md-nav__link">
+    Field order
   </a>
   
 </li>
@@ -604,6 +611,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#mapping-avro-fields-to-python-fields-summary" class="md-nav__link">
+    Mapping avro fields to python fields summary
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#usage" class="md-nav__link">
     Usage
   </a>
@@ -632,8 +646,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#mapping-avro-fields-to-python-fields-summary" class="md-nav__link">
-    Mapping avro fields to python fields summary
+  <a href="#field-order" class="md-nav__link">
+    Field order
   </a>
   
 </li>
@@ -669,6 +683,101 @@ The rendered result is a string that contains the proper identation, so the resu
 <p class="admonition-title">Note</p>
 <p>You can also use <a href="https://github.com/marcosschroh/dc-avro">dc-avro</a> to generate the models from the command line</p>
 </div>
+<h2 id="mapping-avro-fields-to-python-fields-summary">Mapping <code>avro fields</code> to <code>python fields</code> summary</h2>
+<table>
+<thead>
+<tr>
+<th>Avro Type</th>
+<th>Python Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>string</td>
+<td>str</td>
+</tr>
+<tr>
+<td>int</td>
+<td>long</td>
+</tr>
+<tr>
+<td>boolean</td>
+<td>bool</td>
+</tr>
+<tr>
+<td>float</td>
+<td>double</td>
+</tr>
+<tr>
+<td>null</td>
+<td>None</td>
+</tr>
+<tr>
+<td>bytes</td>
+<td>bytes</td>
+</tr>
+<tr>
+<td>array</td>
+<td>typing.List</td>
+</tr>
+<tr>
+<td>map</td>
+<td>typing.Dict</td>
+</tr>
+<tr>
+<td>fixed</td>
+<td>types.confixed</td>
+</tr>
+<tr>
+<td>enum</td>
+<td>enum.Enum</td>
+</tr>
+<tr>
+<td>int</td>
+<td>types.Int32</td>
+</tr>
+<tr>
+<td>float</td>
+<td>types.Float32</td>
+</tr>
+<tr>
+<td>union</td>
+<td>typing.Union</td>
+</tr>
+<tr>
+<td>record</td>
+<td>Python class</td>
+</tr>
+<tr>
+<td>date</td>
+<td>datetime.date</td>
+</tr>
+<tr>
+<td>time-millis</td>
+<td>datetime.time</td>
+</tr>
+<tr>
+<td>time-micros</td>
+<td>types.TimeMicro</td>
+</tr>
+<tr>
+<td>timestamp-millis</td>
+<td>datetime.datetime</td>
+</tr>
+<tr>
+<td>timestamp-micros</td>
+<td>types.DateTimeMicro</td>
+</tr>
+<tr>
+<td>decimal</td>
+<td>types.condecimal</td>
+</tr>
+<tr>
+<td>uuid</td>
+<td>uuid.UUID</td>
+</tr>
+</tbody>
+</table>
 <h2 id="usage">Usage</h2>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">ModelGenerator</span>
 
@@ -957,101 +1066,51 @@ exactly the same name as the record <code>Address</code>.</p>
 <span class="nb">print</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">fake</span><span class="p">())</span>
 <span class="c1"># &gt;&gt;&gt; User(name=&#39;JBZdhEWdXwFLQitWCjkc&#39;, age=3406, address=Address(name=&#39;AhlQsvXnkpcPZJvRSXLr&#39;))</span>
 </code></pre></div>
-<h2 id="mapping-avro-fields-to-python-fields-summary">Mapping <code>avro fields</code> to <code>python fields</code> summary</h2>
-<table>
-<thead>
-<tr>
-<th>Avro Type</th>
-<th>Python Type</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>string</td>
-<td>str</td>
-</tr>
-<tr>
-<td>int</td>
-<td>long</td>
-</tr>
-<tr>
-<td>boolean</td>
-<td>bool</td>
-</tr>
-<tr>
-<td>float</td>
-<td>double</td>
-</tr>
-<tr>
-<td>null</td>
-<td>None</td>
-</tr>
-<tr>
-<td>bytes</td>
-<td>bytes</td>
-</tr>
-<tr>
-<td>array</td>
-<td>typing.List</td>
-</tr>
-<tr>
-<td>map</td>
-<td>typing.Dict</td>
-</tr>
-<tr>
-<td>fixed</td>
-<td>types.confixed</td>
-</tr>
-<tr>
-<td>enum</td>
-<td>enum.Enum</td>
-</tr>
-<tr>
-<td>int</td>
-<td>types.Int32</td>
-</tr>
-<tr>
-<td>float</td>
-<td>types.Float32</td>
-</tr>
-<tr>
-<td>union</td>
-<td>typing.Union</td>
-</tr>
-<tr>
-<td>record</td>
-<td>Python class</td>
-</tr>
-<tr>
-<td>date</td>
-<td>datetime.date</td>
-</tr>
-<tr>
-<td>time-millis</td>
-<td>datetime.time</td>
-</tr>
-<tr>
-<td>time-micros</td>
-<td>types.TimeMicro</td>
-</tr>
-<tr>
-<td>timestamp-millis</td>
-<td>datetime.datetime</td>
-</tr>
-<tr>
-<td>timestamp-micros</td>
-<td>types.DateTimeMicro</td>
-</tr>
-<tr>
-<td>decimal</td>
-<td>types.condecimal</td>
-</tr>
-<tr>
-<td>uuid</td>
-<td>uuid.UUID</td>
-</tr>
-</tbody>
-</table>
+<h2 id="field-order">Field order</h2>
+<p>Sometimes we have to work with schemas that were created by a third party and we do not have control over them. Those schemas can contain optional fields
+declared before required fields, which means that and invalid model will be generated. To avoid this problem the <code>field_order</code> property is used in the generation process.
+For example the following schema contains the field <code>has_pets</code> (optional) before required fields:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">ModelGenerator</span>
+
+
+<span class="n">schema</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;record&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;User&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;has_pets&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;boolean&quot;</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;age&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;long&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;money&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;double&quot;</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="mf">100.3</span><span class="p">}</span>
+  <span class="p">],</span>
+  <span class="s2">&quot;doc&quot;</span><span class="p">:</span> <span class="s2">&quot;My User Class&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">model_generator</span> <span class="o">=</span> <span class="n">ModelGenerator</span><span class="p">()</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">model_generator</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">)</span>
+
+<span class="c1"># save the result in a file</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;models.py&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;+w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</code></pre></div>
+<p>Then the result will be:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># models.py</span>
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
+<span class="kn">import</span> <span class="nn">dataclasses</span>
+
+
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    My User Class</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">has_pets</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">money</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">100.3</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">field_order</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;has_pets&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;age&#39;</span><span class="p">,</span> <span class="s1">&#39;money&#39;</span><span class="p">]</span>
+</code></pre></div>
 
 
 
