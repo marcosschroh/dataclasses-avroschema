@@ -145,6 +145,11 @@ def pydantic_fields_schema():
 
 
 @pytest.fixture
+def order_fields_schema():
+    return load_json("order_fields.avsc")
+
+
+@pytest.fixture
 def AvroBaseModel_model():
     class Bus(AvroBaseModel):
         "A Bus"

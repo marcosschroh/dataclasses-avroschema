@@ -1,3 +1,4 @@
+import copy
 import dataclasses
 import typing
 from dataclasses import dataclass, field
@@ -15,6 +16,7 @@ from .base_class import BaseClassEnum
 
 
 class FieldRepresentation(typing.NamedTuple):
+    name: str
     string_representation: str
     has_default: bool
 
@@ -97,21 +99,31 @@ class ModelGenerator:
     def render_extras(self) -> str:
         return "".join([extra for extra in self.extras])
 
-    def render_metaclass(self, *, schema: JsonDict) -> typing.Optional[str]:
+    def render_metaclass(
+        self, *, schema: JsonDict, field_order: typing.Optional[typing.List[str]] = None
+    ) -> typing.Optional[str]:
         """
         Render Class Meta that contains the schema matadata
         """
-        properties = self.field_identation.join(
-            [
-                self.matadata_field_templates[meta_avro_field].safe_substitute(
-                    name=meta_field, value=schema.get(meta_avro_field)
+        metadata = [
+            self.matadata_field_templates[meta_avro_field].safe_substitute(
+                name=meta_field, value=schema.get(meta_avro_field)
+            )
+            for meta_avro_field, meta_field in self.metadata_fields_mapper.items()
+            if schema.get(
+                meta_avro_field
+            )  # TODO: replace this line with if (value := schema.get(meta_avro_field)) after drop py3.7
+        ]
+
+        if field_order is not None:
+            metadata.append(
+                templates.metaclass_alias_field_template.safe_substitute(
+                    name="field_order",
+                    value=field_order,
                 )
-                for meta_avro_field, meta_field in self.metadata_fields_mapper.items()
-                if schema.get(
-                    meta_avro_field
-                )  # TODO: replace this line with if (value := schema.get(meta_avro_field)) after drop py3.7
-            ]
-        )
+            )
+
+        properties = self.field_identation.join(metadata)
 
         if properties:
             # some formating to remove identation at the end of the Class Meta to make it more compatible with black
@@ -142,12 +154,20 @@ class ModelGenerator:
         record_fields: typing.List[JsonDict] = schema["fields"]
 
         # Sort the fields according whether it has a default value
-        rendered_fields: typing.List[FieldRepresentation] = [
+        fields_representation: typing.List[FieldRepresentation] = [
             self.render_field(field=field, model_name=name) for field in record_fields
         ]
-        rendered_fields.sort(key=lambda field: 1 if field.has_default else 0)
 
-        rendered_fields_string = self.field_identation.join(field[0] for field in rendered_fields)
+        fields_representation_copy = copy.deepcopy(fields_representation)
+        fields_representation.sort(key=lambda field: 1 if field.has_default else 0)
+
+        field_order = None
+        if fields_representation_copy != fields_representation:
+            field_order = [field.name for field in fields_representation_copy]
+
+        rendered_fields_string = self.field_identation.join(
+            field.string_representation for field in fields_representation
+        )
         docstring = self.render_docstring(docstring=schema.get("doc"))
 
         rendered_class = templates.class_template.safe_substitute(
@@ -158,7 +178,7 @@ class ModelGenerator:
             docstring=docstring,
         )
 
-        class_metadata = self.render_metaclass(schema=schema)
+        class_metadata = self.render_metaclass(schema=schema, field_order=field_order)
         if class_metadata is not None:
             rendered_class += class_metadata
 
@@ -216,7 +236,8 @@ class ModelGenerator:
             type = field.get("logicalType") or field["type"]["logicalType"]
             language_type = self.parse_logical_type(field=field)
         elif isinstance(type, dict):
-            language_type, _ = self.render_field(field=type, model_name=model_name)
+            field_representation = self.render_field(field=type, model_name=model_name)
+            language_type = field_representation.string_representation
         elif isinstance(type, list):
             language_type = self.parse_union(field_types=type, model_name=model_name)
         elif type == field_utils.ARRAY:
@@ -263,7 +284,7 @@ class ModelGenerator:
             if type != field_utils.DECIMAL:
                 result += templates.field_default_template.safe_substitute(default=default)
 
-        return FieldRepresentation(string_representation=result, has_default=has_default)
+        return FieldRepresentation(name=name, string_representation=result, has_default=has_default)
 
     @staticmethod
     def is_logical_type(*, field: JsonDict) -> bool:
@@ -329,8 +350,8 @@ class ModelGenerator:
         # XXX: Maybe more useful in general
         def render_type(typ: str) -> str:
             if isinstance(typ, dict):
-                rendered_field, _ = self.render_field(field=typ, model_name=model_name)
-                return rendered_field
+                field_representation = self.render_field(field=typ, model_name=model_name)
+                return field_representation.string_representation
             else:
                 return self.get_language_type(type=typ, model_name=model_name)
 
@@ -423,7 +444,8 @@ class ModelGenerator:
         self.imports.add("import typing")
 
         if isinstance(type, dict):
-            language_type, _ = self.render_field(field=type, model_name=model_name)
+            field_representation = self.render_field(field=type, model_name=model_name)
+            language_type = field_representation.string_representation
         elif isinstance(type, list):
             language_type = self.parse_union(field_types=type, model_name=model_name)
         else:

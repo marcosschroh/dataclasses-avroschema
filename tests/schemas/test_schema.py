@@ -183,6 +183,46 @@ def test_alias_from_relationship():
         assert schema["fields"][i]["type"]["fields"] == [{"name": "name", "type": "string"}]
 
 
+def test_order_field(order_fields_schema):
+    @dataclass
+    class User(AvroModel):
+        name: str
+        age: int
+        money: float
+        encoded: bytes
+        has_pets: bool = False
+
+        class Meta:
+            field_order = [
+                "encoded",
+                "has_pets",
+                "money",
+                "name",
+                "age",
+            ]
+
+    assert User.avro_schema() == json.dumps(order_fields_schema)
+
+
+def test_order_field_not_specifing_all(order_fields_schema):
+    @dataclass
+    class User(AvroModel):
+        name: str
+        age: int
+        money: float
+        encoded: bytes
+        has_pets: bool = False
+
+        class Meta:
+            field_order = [
+                "encoded",
+                "has_pets",
+                "money",
+            ]
+
+    assert User.avro_schema() == json.dumps(order_fields_schema)
+
+
 def test_validate():
     @dataclass
     class User(AvroModel):

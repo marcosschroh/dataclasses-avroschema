@@ -13,6 +13,32 @@ The rendered result is a string that contains the proper identation, so the resu
 !!! note
     You can also use [dc-avro](https://github.com/marcosschroh/dc-avro) to generate the models from the command line
 
+## Mapping `avro fields` to `python fields` summary
+
+|Avro Type | Python Type  |
+|-----------|-------------|
+| string    | str         |
+| int       | long        |
+| boolean   | bool        |
+| float     | double      |
+| null      | None        |
+| bytes     | bytes       |
+| array     | typing.List |
+| map       | typing.Dict |
+| fixed     | types.confixed |
+| enum      | enum.Enum   |
+| int       | types.Int32 |
+| float     | types.Float32|
+| union     | typing.Union|
+| record    | Python class|
+| date      | datetime.date|
+| time-millis| datetime.time|
+| time-micros| types.TimeMicro|
+| timestamp-millis| datetime.datetime|
+| timestamp-micros| types.DateTimeMicro|
+| decimal | types.condecimal|
+| uuid | uuid.UUID    |
+
 ## Usage
 
 ```python
@@ -334,28 +360,54 @@ print(User.fake())
 # >>> User(name='JBZdhEWdXwFLQitWCjkc', age=3406, address=Address(name='AhlQsvXnkpcPZJvRSXLr'))
 ```
 
-## Mapping `avro fields` to `python fields` summary
+## Field order
 
-|Avro Type | Python Type  |
-|-----------|-------------|
-| string    | str         |
-| int       | long        |
-| boolean   | bool        |
-| float     | double      |
-| null      | None        |
-| bytes     | bytes       |
-| array     | typing.List |
-| map       | typing.Dict |
-| fixed     | types.confixed |
-| enum      | enum.Enum   |
-| int       | types.Int32 |
-| float     | types.Float32|
-| union     | typing.Union|
-| record    | Python class|
-| date      | datetime.date|
-| time-millis| datetime.time|
-| time-micros| types.TimeMicro|
-| timestamp-millis| datetime.datetime|
-| timestamp-micros| types.DateTimeMicro|
-| decimal | types.condecimal|
-| uuid | uuid.UUID    |
+Sometimes we have to work with schemas that were created by a third party and we do not have control over them. Those schemas can contain optional fields
+declared before required fields, which means that and invalid model will be generated. To avoid this problem the `field_order` property is used in the generation process.
+For example the following schema contains the field `has_pets` (optional) before required fields:
+
+```python
+from dataclasses_avroschema import ModelGenerator
+
+
+schema = {
+  "type": "record",
+  "name": "User",
+  "fields": [
+    {"name": "has_pets", "type": "boolean", "default": False},
+    {"name": "name", "type": "string"},
+    {"name": "age", "type": "long"},
+    {"name": "money", "type": "double", "default": 100.3}
+  ],
+  "doc": "My User Class",
+}
+
+model_generator = ModelGenerator()
+result = model_generator.render(schema=schema)
+
+# save the result in a file
+with open("models.py", mode="+w") as f:
+    f.write(result)
+```
+
+Then the result will be:
+
+```python
+# models.py
+from dataclasses_avroschema import AvroModel
+import dataclasses
+
+
+@dataclasses.dataclass
+class User(AvroModel):
+    """
+    My User Class
+    """
+    name: str
+    age: int
+    has_pets: bool = False
+    money: float = 100.3
+
+    class Meta:
+        field_order = ['has_pets', 'name', 'age', 'money']
+```
