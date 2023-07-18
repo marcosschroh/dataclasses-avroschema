@@ -45,7 +45,7 @@ User.avro_schema()
 
 ## Class Meta
 
-The `class Meta` is used to specify schema attributes that are not represented by the class fields like `namespace`, `aliases` and whether to include the `schema documentation`. Also custom schema name (the default is the class' name) via `schema_name` attribute and `alias_nested_items` when you have nested items and you want to use custom naming for them and `custom dacite` configuration can be provided.
+The `class Meta` is used to specify schema attributes that are not represented by the class fields like `namespace`, `aliases` and whether to include the `schema documentation`. Also custom schema name (the default is the class' name) via `schema_name` attribute, and `alias_nested_items` when you have nested items and you want to use custom naming for them, `custom dacite` configuration can be provided and `field_order`
 
 ```python title="Class Meta description"
 class Meta:
@@ -54,19 +54,22 @@ class Meta:
     namespace = "test.com.ar/user/v1"
     aliases = ["User", "My favorite User"]
     alias_nested_items = {"address": "Address"}
+    field_order = ["age", "name",]
     dacite_config = {
         "strict_unions_match": True,
         "strict": True,
     }
 ```
 
-`schema_doc (Union[boolean, str])`: Whether include the `schema documentation` generated from `docstrings`. Default `True`. If the value is a `string` if will be used to generate the schema documentation.
+`schema_doc Union[boolean, str]`: Whether include the `schema documentation` generated from `docstrings`. Default `True`. If the value is a `string` if will be used to generate the schema documentation.
 
-`namespace (optional[str])`: Schema namespace. Default `None`
+`namespace Optional[str]`: Schema namespace. Default `None`
 
-`aliases (optional[List[str]])`: Schema aliases. Default `None`
+`aliases Optional[List[str]]`: Schema aliases. Default `None`
 
-`alias_nested_items (optional[Dict[str, str]])`: Nested items names
+`alias_nested_items Optional[Dict[str, str]]`: Nested items names
+
+`field_order Optiona[List[str]]`: List of field names to specify their order to the output schema 
 
 ## Record to json and dict
 
@@ -360,3 +363,79 @@ assert child_schema["fields"] == child_2_schema["fields"]
 ```
 
 *(This script is complete, it should run "as is")*
+
+## Field order
+
+The schema generation uses the same order of the python dataclass attributes has, for [example](https://marcosschroh.github.io/dataclasses-avroschema/records/#basic-usage). But what if you want to change the field order
+and specify a field that has a default value before a required value? This with a python dataclass won't work because required field must be declared before optional fields. Another IMPORTANT use case is when a schema was generated
+by a third party (we do not have control of if) and fields with defaults values are declared before the required ones, so using the `field_order` property will help us.
+
+The previous example generate has the following class
+
+```python
+import dataclasses
+
+from dataclasses_avroschema import AvroModel
+
+@dataclasses.dataclass
+class User(AvroModel):
+    "My User Class"
+    name: str
+    age: int
+    has_pets: bool = False
+    money: float = 100.3
+```
+
+which represents the schame:
+
+```json
+{
+  "type": "record",
+  "name": "User",
+  "fields": [
+    {"name": "name", "type": "string"},
+    {"name": "age", "type": "long"},
+    {"name": "has_pets", "type": "boolean", "default": false},
+    {"name": "money", "type": "double", "default": 100.3}
+  ],
+  "doc": "My User Class",
+}
+```
+
+We want that the field `has_pets` at the beginning of the schema, for this we need to use the `field_order` property in the `Meta class`:
+
+```python
+import dataclasses
+
+from dataclasses_avroschema import AvroModel
+
+@dataclasses.dataclass
+class User(AvroModel):
+    "My User Class"
+    name: str
+    age: int
+    has_pets: bool = False
+    money: float = 100.3
+
+    class Meta:
+        field_order = ["has_pets",]
+```
+
+and now it represents the schame
+
+```json
+{
+  "type": "record",
+  "name": "User",
+  "fields": [
+    {"name": "has_pets", "type": "boolean", "default": false},
+    {"name": "name", "type": "string"},
+    {"name": "age", "type": "long"},
+    {"name": "money", "type": "double", "default": 100.3}
+  ],
+  "doc": "My User Class",
+}
+```
+
+!!! warning
+    Schemas with the same fields but with different order are *NOT* the same schema. In avro the field order is important

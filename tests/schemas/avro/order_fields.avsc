@@ -1,0 +1,12 @@
+{
+    "type": "record",
+    "name": "User",
+    "fields": [
+        {"name": "encoded", "type": "bytes"},
+        {"name": "has_pets", "type": "boolean", "default": false},
+        {"name": "money", "type": "double"},
+        {"name": "name", "type": "string"},
+        {"name": "age", "type": "long"}
+    ]
+}
+  

@@ -139,6 +139,14 @@ class AvroSchemaDefinition(BaseSchemaDefinition):
         ]
 
     def get_rendered_fields(self) -> typing.List[OrderedDict]:
+        field_order = self.metadata.field_order
+
+        if field_order is not None:
+            for field_name in self.fields_map.keys():
+                if field_name not in field_order:
+                    field_order.append(field_name)
+
+            return [self.fields_map[field_name].render() for field_name in field_order]
         return [field.render() for field in self.fields]
 
     def render(self) -> OrderedDict:

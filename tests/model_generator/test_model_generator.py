@@ -368,6 +368,48 @@ class LogicalTypes(AvroModel):
     assert result.strip() == expected_result.strip()
 
 
+def test_field_order(schema_with_logical_types_field_order: types.JsonDict) -> None:
+    release_datetime = render_datetime(value=1570903062000, format=field_utils.TIMESTAMP_MILLIS)
+    release_datetime_micro = render_datetime(value=1570903062000000, format=field_utils.TIMESTAMP_MICROS)
+
+    expected_result = f"""
+from dataclasses_avroschema import AvroModel
+from dataclasses_avroschema import types
+from dataclasses_avroschema.types import condecimal
+import dataclasses
+import datetime
+import decimal
+import typing
+import uuid
+
+
+@dataclasses.dataclass
+class LogicalTypes(AvroModel):
+    uuid_1: uuid.UUID
+    birthday: datetime.date
+    birthday_time: datetime.time
+    birthday_datetime: datetime.datetime
+    money: condecimal(max_digits=3, decimal_places=2)
+    meeting_date: typing.Optional[datetime.date] = None
+    release_date: datetime.date = datetime.date(2019, 10, 12)
+    meeting_time: typing.Optional[datetime.time] = None
+    release_time: datetime.time = datetime.time(17, 57, 42)
+    release_time_micro: types.TimeMicro = datetime.time(17, 57, 42, 0)
+    meeting_datetime: typing.Optional[datetime.datetime] = None
+    release_datetime: datetime.datetime = {release_datetime}
+    release_datetime_micro: types.DateTimeMicro = {release_datetime_micro}
+    uuid_2: typing.Optional[uuid.UUID] = None
+    event_uuid: uuid.UUID = "ad0677ab-bd1c-4383-9d45-e46c56bcc5c9"
+    explicit_with_default: condecimal(max_digits=3, decimal_places=2) = decimal.Decimal('3.14')
+
+    class Meta:
+        field_order = ['uuid_1', 'meeting_date', 'release_date', 'meeting_time', 'release_time', 'release_time_micro', 'meeting_datetime', 'birthday', 'birthday_time', 'birthday_datetime', 'release_datetime', 'release_datetime_micro', 'uuid_2', 'event_uuid', 'explicit_with_default', 'money']
+"""
+    model_generator = ModelGenerator()
+    result = model_generator.render(schema=schema_with_logical_types_field_order)
+    assert result.strip() == expected_result.strip()
+
+
 def test_model_generator_render_module_from_multiple_schemas(schema: types.JsonDict, schema_2: types.JsonDict) -> None:
     expected_result = """
 from dataclasses_avroschema import AvroModel
