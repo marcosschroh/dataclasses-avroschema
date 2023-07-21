@@ -5,7 +5,7 @@ from pathlib import Path
 from dataclasses_avroschema.faker import fake
 
 from . import fields
-from .field_utils import DOUBLE, LONG, STRING, UUID
+from .field_utils import DOUBLE, INT, LONG, STRING, UUID
 
 current_file = str(Path(__file__).absolute())
 current_dir = str(Path().absolute())
@@ -19,7 +19,7 @@ class PydanticField(fields.ImmutableField):
 
 
 class FilePathField(PydanticField):
-    avro_type: typing.ClassVar[typing.Dict[str, str]] = {"type": STRING, "pydantic-class": "FilePat"}
+    avro_type: typing.ClassVar[typing.Dict[str, str]] = {"type": STRING, "pydantic-class": "FilePath"}
 
     def fake(self) -> str:
         return current_file
@@ -209,3 +209,12 @@ class UUID5Field(fields.UUIDField):
 
     def fake(self) -> uuid.UUID:
         return uuid.uuid5(namespace=uuid.NAMESPACE_URL, name=fake.pystr())
+
+
+class ConstrainedIntField(PydanticField):
+    @property
+    def avro_type(self) -> typing.Dict:
+        return {"type": INT, "pydantic-class": "ConstrainedInt"}
+
+    def fake(self) -> int:
+        return 1

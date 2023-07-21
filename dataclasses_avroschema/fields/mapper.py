@@ -74,6 +74,10 @@ try:
         pydantic.PositiveFloat: pydantic_fields.PositiveFloatField,
         pydantic.NegativeInt: pydantic_fields.NegativeIntField,
         pydantic.PositiveInt: pydantic_fields.PositiveIntField,
+        pydantic.ConstrainedInt: pydantic_fields.ConstrainedIntField,
+        # ConstrainedIntValue is a dynamic type that needs to be referenced by qualified name
+        # and cannot be imported directly
+        "pydantic.types.ConstrainedIntValue": pydantic_fields.ConstrainedIntField,
     }
 
     PYDANTIC_LOGICAL_TYPES_FIELDS_CLASSES = {
@@ -108,6 +112,7 @@ try:
         pydantic.PositiveFloat,
         pydantic.NegativeInt,
         pydantic.PositiveInt,
+        pydantic.ConstrainedInt,
         pydantic.UUID1,
         pydantic.UUID3,
         pydantic.UUID4,
