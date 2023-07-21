@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import collections
 import datetime
 import decimal
@@ -8,7 +10,7 @@ from dataclasses_avroschema import types
 
 from . import fields, pydantic_fields
 
-INMUTABLE_FIELDS_CLASSES: dict[typing.Union[type, str], type] = {
+INMUTABLE_FIELDS_CLASSES: dict[type | str, type] = {
     bool: fields.BooleanField,
     int: fields.LongField,
     types.Int32: fields.IntField,
