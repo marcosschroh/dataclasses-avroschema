@@ -25,7 +25,7 @@ PRIMITIVE_TYPES = (
     (Annotated[float, "float"], field_utils.DOUBLE),
     (Annotated[bytes, "bytes"], field_utils.BYTES),
     # pydantic fields
-    (pydantic.FilePath, {"type": field_utils.STRING, "pydantic-class": "FilePat"}),
+    (pydantic.FilePath, {"type": field_utils.STRING, "pydantic-class": "FilePath"}),
     (pydantic.DirectoryPath, {"type": field_utils.STRING, "pydantic-class": "DirectoryPath"}),
     (pydantic.EmailStr, {"type": field_utils.STRING, "pydantic-class": "EmailStr"}),
     (pydantic.NameEmail, {"type": field_utils.STRING, "pydantic-class": "NameEmail"}),
