@@ -8,7 +8,7 @@ from dataclasses_avroschema import types
 
 from . import fields, pydantic_fields
 
-INMUTABLE_FIELDS_CLASSES = {
+INMUTABLE_FIELDS_CLASSES: dict[type | str, type] = {
     bool: fields.BooleanField,
     int: fields.LongField,
     types.Int32: fields.IntField,
@@ -77,7 +77,7 @@ try:
         pydantic.ConstrainedInt: pydantic_fields.ConstrainedIntField,
         # ConstrainedIntValue is a dynamic type that needs to be referenced by qualified name
         # and cannot be imported directly
-        "pydantic.types.ConstrainedIntValue": pydantic_fields.ConstrainedIntField,
+        "ConstrainedIntValue": pydantic_fields.ConstrainedIntField,
     }
 
     PYDANTIC_LOGICAL_TYPES_FIELDS_CLASSES = {
