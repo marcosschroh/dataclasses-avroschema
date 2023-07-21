@@ -750,9 +750,7 @@ def field_factory(
     # special case for some dynamic pydantic types (especially constraint types)
     # when a type cannot be imported and needs to be referenced by qualified string
     # see pydantic conint() implementation for more information
-    elif (
-        inspect.isclass(native_type) and f"{native_type.__name__}" in INMUTABLE_FIELDS_CLASSES
-    ):
+    elif inspect.isclass(native_type) and f"{native_type.__name__}" in INMUTABLE_FIELDS_CLASSES:
         klass = INMUTABLE_FIELDS_CLASSES[f"{native_type.__name__}"]
         return klass(
             name=name,
