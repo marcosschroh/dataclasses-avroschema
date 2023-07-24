@@ -11,28 +11,36 @@ current_file = str(Path(__file__).absolute())
 current_dir = str(Path().absolute())
 
 
-class FilePathField(fields.ImmutableField):
+class PydanticField(fields.ImmutableField):
+
+    def validate_default(self, default) -> bool:
+        # print(self.type(default))
+        # assert False
+        return True
+
+
+class FilePathField(PydanticField):
     avro_type: typing.ClassVar[typing.Dict[str, str]] = {"type": STRING, "pydantic-class": "FilePat"}
 
     def fake(self) -> str:
         return current_file
 
 
-class DirectoryPathField(fields.ImmutableField):
+class DirectoryPathField(PydanticField):
     avro_type: typing.ClassVar[typing.Dict[str, str]] = {"type": STRING, "pydantic-class": "DirectoryPath"}
 
     def fake(self) -> str:
         return current_dir
 
 
-class EmailStrField(fields.ImmutableField):
+class EmailStrField(PydanticField):
     avro_type: typing.ClassVar[typing.Dict[str, str]] = {"type": STRING, "pydantic-class": "EmailStr"}
 
     def fake(self) -> str:
         return fake.company_email()
 
 
-class NameEmailField(fields.ImmutableField):
+class NameEmailField(PydanticField):
     avro_type: typing.ClassVar[typing.Dict[str, str]] = {"type": STRING, "pydantic-class": "NameEmail"}
 
     def fake(self) -> str:
@@ -42,133 +50,130 @@ class NameEmailField(fields.ImmutableField):
         return f"{first_name} {last_name} <{first_name}.{last_name}@example.com>"
 
 
-class AnyUrlField(fields.ImmutableField):
+class AnyUrlField(PydanticField):
     avro_type: typing.ClassVar[typing.Dict[str, str]] = {"type": STRING, "pydantic-class": "AnyUrl"}
 
     def fake(self) -> str:
         return fake.url()
 
 
-class AnyHttpUrlField(fields.ImmutableField):
+class AnyHttpUrlField(PydanticField):
     avro_type: typing.ClassVar[typing.Dict[str, str]] = {"type": STRING, "pydantic-class": "AnyHttpUrl"}
 
     def fake(self) -> str:
         return fake.uri()
 
 
-class HttpUrlField(fields.ImmutableField):
+class HttpUrlField(PydanticField):
     avro_type: typing.ClassVar[typing.Dict[str, str]] = {"type": STRING, "pydantic-class": "HttpUrl"}
 
     def fake(self) -> str:
         return fake.uri()
 
 
-class FileUrlField(fields.ImmutableField):
+class FileUrlField(PydanticField):
     avro_type: typing.ClassVar[typing.Dict[str, str]] = {"type": STRING, "pydantic-class": "FileUrl"}
 
     def fake(self) -> str:
         return f"file://{current_file}"
 
 
-class PostgresDsnField(fields.ImmutableField):
+class PostgresDsnField(PydanticField):
     avro_type: typing.ClassVar[typing.Dict[str, str]] = {"type": STRING, "pydantic-class": "PostgresDsn"}
 
     def fake(self) -> str:
         return f"postgres://{fake.first_name()}:{fake.pystr()}@127.0.0.1:5432/dummy"
 
 
-class CockroachDsnField(fields.ImmutableField):
+class CockroachDsnField(PydanticField):
     avro_type: typing.ClassVar[typing.Dict[str, str]] = {"type": STRING, "pydantic-class": "CockroachDsn"}
 
     def fake(self) -> str:
         return f"cockroachdb://{fake.first_name()}@127.0.0.1:26257/keto?sslmode=disable"
 
 
-class AmqpDsnField(fields.ImmutableField):
+class AmqpDsnField(PydanticField):
     avro_type: typing.ClassVar[typing.Dict[str, str]] = {"type": STRING, "pydantic-class": "AmqpDsn"}
 
     def fake(self) -> str:
         return f"amqp://{fake.first_name()}:{fake.pystr()}@25@myrabbitserver:5672/filestream"
 
 
-class RedisDsnField(fields.ImmutableField):
+class RedisDsnField(PydanticField):
     avro_type: typing.ClassVar[typing.Dict[str, str]] = {"type": STRING, "pydantic-class": "RedisDsn"}
 
     def fake(self) -> str:
         return f"redis://{fake.first_name()}:{fake.pystr()}@localhost.com:6379"
 
 
-class MongoDsnField(fields.ImmutableField):
+class MongoDsnField(PydanticField):
     avro_type: typing.ClassVar[typing.Dict[str, str]] = {"type": STRING, "pydantic-class": "MongoDsn"}
 
     def fake(self) -> str:
         return f"mongodb://{fake.first_name()}:{fake.pystr()}@mongodb0.example.com:27017"
 
 
-class KafkaDsnField(fields.ImmutableField):
+class KafkaDsnField(PydanticField):
     avro_type: typing.ClassVar[typing.Dict[str, str]] = {"type": STRING, "pydantic-class": "KafkaDsn"}
 
     def fake(self) -> str:
         return "kafka://9092"
 
 
-class SecretStrField(fields.ImmutableField):
+class SecretStrField(PydanticField):
     avro_type: typing.ClassVar[typing.Dict[str, str]] = {"type": STRING, "pydantic-class": "SecretStr"}
 
     def fake(self) -> str:
         return "**********"
 
 
-class IPvAnyAddressField(fields.ImmutableField):
+class IPvAnyAddressField(PydanticField):
     avro_type: typing.ClassVar[typing.Dict[str, str]] = {"type": STRING, "pydantic-class": "IPvAnyAddress"}
 
     def fake(self) -> str:
         return fake.ipv4()
 
 
-class IPvAnyInterfaceField(fields.ImmutableField):
+class IPvAnyInterfaceField(PydanticField):
     avro_type: typing.ClassVar[typing.Dict[str, str]] = {"type": STRING, "pydantic-class": "IPvAnyInterface"}
 
     def fake(self) -> str:
         return fake.ipv4()
 
 
-class IPvAnyNetworkField(fields.ImmutableField):
+class IPvAnyNetworkField(PydanticField):
     avro_type: typing.ClassVar[typing.Dict[str, str]] = {"type": STRING, "pydantic-class": "IPvAnyNetwork"}
 
     def fake(self) -> str:
         return fake.ipv4()
 
 
-class NegativeFloatField(fields.ImmutableField):
+class NegativeFloatField(PydanticField):
     avro_type: typing.ClassVar[typing.Dict[str, str]] = {"type": DOUBLE, "pydantic-class": "NegativeFloat"}
 
     def fake(self) -> float:
         return fake.pyfloat(positive=False, max_value=0)
 
 
-class PositiveFloatField(fields.ImmutableField):
+class PositiveFloatField(PydanticField):
     avro_type: typing.ClassVar[typing.Dict[str, str]] = {"type": DOUBLE, "pydantic-class": "PositiveFloat"}
 
     def fake(self) -> float:
         return fake.pyfloat(positive=True)
 
 
-class NegativeIntField(fields.ImmutableField):
+class NegativeIntField(PydanticField):
     avro_type: typing.ClassVar[typing.Dict[str, str]] = {"type": LONG, "pydantic-class": "NegativeInt"}
 
     def fake(self) -> int:
         return fake.pyint(max_value=0, min_value=-100)
 
 
-class PositiveIntField(fields.ImmutableField):
+class PositiveIntField(PydanticField):
     avro_type: typing.ClassVar[typing.Dict[str, str]] = {"type": LONG, "pydantic-class": "PositiveInt"}
 
     def fake(self) -> int:
         return fake.pyint(min_value=0)
-
-    def validate_default(self) -> bool:
-        return True
 
 
 class UUID1Field(fields.UUIDField):

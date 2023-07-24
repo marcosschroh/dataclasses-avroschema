@@ -44,7 +44,6 @@ __ALL__ = [
     "FixedField",
     "EnumField",
     "SelfReferenceField",
-    "LogicalTypeField",
     "DateField",
     "DatetimeField",
     "DatetimeMicroField",
@@ -116,13 +115,6 @@ class FloatField(ImmutableField):
 class BytesField(ImmutableField):
     avro_type: typing.ClassVar[str] = field_utils.BYTES
 
-    def get_default_value(self) -> typing.Any:
-        if self.default in (dataclasses.MISSING, None):
-            return self.default
-        else:
-            self.validate_default()
-            return self.to_avro(self.default)
-
     @staticmethod
     def to_avro(item: bytes) -> str:
         return item.decode()
@@ -140,8 +132,6 @@ class NoneField(ImmutableField):
 
 @dataclasses.dataclass
 class ContainerField(Field):
-    default_factory: typing.Optional[typing.Callable] = None
-
     @property
     def avro_type(self) -> typing.Dict:
         ...  # pragma: no cover
@@ -156,7 +146,7 @@ class ContainerField(Field):
 @dataclasses.dataclass
 class BaseListField(ContainerField):
     items_type: typing.Any = None
-    internal_field: typing.Any = None
+    internal_field: typing.Optional["AvroField"] = None
 
     @property
     def avro_type(self) -> typing.Dict:
@@ -164,28 +154,36 @@ class BaseListField(ContainerField):
         return {"type": field_utils.ARRAY, "items": self.items_type}
 
     def get_default_value(self) -> typing.Union[typing.List, dataclasses._MISSING_TYPE]:
-        if self.default is None:
-            return []
-        elif callable(self.default_factory):
-            # expecting a callable
-            default = self.default_factory()
+        default = super().get_default_value()
 
-            if isinstance(default, tuple):
-                default = list(default)
+        if default is not dataclasses.MISSING:
+            if default is None:
+                return []
+            else:
+                assert isinstance(default, (list, tuple)), f"List is required as default for field {self.name}"
 
-            assert isinstance(default, list), f"List is required as default for field {self.name}"
+                if isinstance(default, tuple):
+                    default = list(default)
+        return default
 
-            clean_items = []
-            for item in default:
-                item_type = type(item)
-                if item_type in LOGICAL_CLASSES:
-                    clean_item = LOGICAL_TYPES_FIELDS_CLASSES[item_type].to_avro(item)  # type: ignore
-                else:
-                    clean_item = item
-                clean_items.append(clean_item)
+    def validate_default(self, default):
+        assert isinstance(default, list)
+        if not isinstance(self.internal_field, UnionField):
+            for element in default:
+                self.internal_field.validate_default(element)
 
-            return clean_items
-        return dataclasses.MISSING
+    @staticmethod
+    def to_avro(values):
+        clean_items = []
+        for item in values:
+            item_type = type(item)
+            if item_type in LOGICAL_CLASSES:
+                clean_item = LOGICAL_TYPES_FIELDS_CLASSES[item_type].to_avro(item)  # type: ignore
+            else:
+                clean_item = item
+            clean_items.append(clean_item)
+
+        return clean_items
 
     def generate_items_type(self) -> typing.Any:
         # because avro can have only one type, we take the first one
@@ -244,24 +242,33 @@ class DictField(ContainerField):
         return {"type": field_utils.MAP, "values": self.values_type}
 
     def get_default_value(self) -> typing.Union[types.JsonDict, dataclasses._MISSING_TYPE]:
-        if self.default is None:
-            return {}
-        elif callable(self.default_factory):
-            # expeting a callable
-            default = self.default_factory()
-            assert isinstance(default, dict), f"Dict is required as default for field {self.name}"
+        default = super().get_default_value()
 
-            clean_items = {}
-            for key, value in default.items():
-                value_type = type(value)
-                if value_type in LOGICAL_CLASSES:
-                    clean_item = LOGICAL_TYPES_FIELDS_CLASSES[value_type].to_avro(value)  # type: ignore
-                else:
-                    clean_item = value
-                clean_items[key] = clean_item
+        if default is not dataclasses.MISSING:
+            if default is None:
+                return {}
+            else:
+                assert isinstance(default, dict), f"Dict is required as default for field {self.name}"
+        return default
 
-            return clean_items
-        return dataclasses.MISSING
+    def validate_default(self, default):
+        assert isinstance(default, dict)
+        if not isinstance(self.internal_field, UnionField):
+            for element in default.values():
+                self.internal_field.validate_default(element)
+
+    @staticmethod
+    def to_avro(default):
+        clean_items = {}
+        for key, value in default.items():
+            value_type = type(value)
+            if value_type in LOGICAL_CLASSES:
+                clean_item = LOGICAL_TYPES_FIELDS_CLASSES[value_type].to_avro(value)  # type: ignore
+            else:
+                clean_item = value
+            clean_items[key] = clean_item
+
+        return clean_items
 
     def generate_values_type(self) -> typing.Any:
         """
@@ -279,9 +286,9 @@ class DictField(ContainerField):
 
 @dataclasses.dataclass
 class UnionField(Field):
-    default_factory: typing.Optional[typing.Callable] = None
     unions: typing.List = dataclasses.field(default_factory=list)
     internal_fields: typing.List = dataclasses.field(default_factory=list)
+    elements: typing.Tuple = dataclasses.field(default_factory=tuple)
 
     def generate_unions_type(self) -> typing.List:
         """
@@ -296,7 +303,7 @@ class UnionField(Field):
         Returns:
             typing.List: List of avro types
         """
-        elements = get_args(self.type)
+        self.elements = get_args(self.type)
         name = self.get_singular_name(self.name)
 
         unions: typing.List = []
@@ -311,7 +318,7 @@ class UnionField(Field):
             unions.append(default_field.get_avro_type())
             self.internal_fields.append(default_field)
 
-        for element in elements:
+        for element in self.elements:
             # create the field and get the avro type
             field = AvroField(name, element, model_metadata=self.model_metadata, parent=self.parent)
             avro_type = field.get_avro_type()
@@ -326,22 +333,17 @@ class UnionField(Field):
         self.unions = self.generate_unions_type()
         return self.unions
 
-    def get_default_value(self) -> typing.Any:
-        is_default_factory_callable = callable(self.default_factory)
+    @staticmethod
+    def to_avro(default):
+        if type(default) in LOGICAL_CLASSES:
+            return LOGICAL_TYPES_FIELDS_CLASSES[type(default)].to_avro(default)  # type: ignore
+        elif issubclass(type(default), enum.Enum):
+            return default.value
+        return default
 
-        if self.default in (dataclasses.MISSING, None) and not is_default_factory_callable:
-            return self.default
-        elif is_default_factory_callable:
-            # expecting a callable
-            default = self.default_factory()  # type: ignore
-            assert isinstance(default, (dict, list)), f"Dict or List is required as default for field {self.name}"
-
-            return default
-        elif type(self.default) in LOGICAL_CLASSES:
-            return LOGICAL_TYPES_FIELDS_CLASSES[type(self.default)].to_avro(self.default)  # type: ignore
-        elif issubclass(type(self.default), enum.Enum):
-            return self.default.value
-        return self.default
+    def validate_default(self, default):
+        first_type: AvroField = self.internal_fields[0]
+        first_type.validate_default(default)
 
     def fake(self) -> typing.Any:
         # get a random internal field and return a fake value
@@ -455,22 +457,8 @@ class SelfReferenceField(Field):
         return dataclasses.MISSING
 
 
-class LogicalTypeField(ImmutableField):
-    def get_default_value(self) -> typing.Union[None, str, int, float]:
-        if self.default in (dataclasses.MISSING, None):
-            return self.default
-        else:
-            self.validate_default()
-            # Convert to datetime and get the amount of days
-            return self.to_avro(self.default)
-
-    @staticmethod
-    def to_avro(value: typing.Any) -> typing.Union[int, float, str]:
-        ...  # type: ignore  # pragma: no cover
-
-
 @dataclasses.dataclass
-class DateField(LogicalTypeField):
+class DateField(ImmutableField):
     """
     The date logical type represents a date within the calendar,
     with no reference to a particular time zone or time of day.
@@ -506,7 +494,7 @@ class DateField(LogicalTypeField):
 
 
 @dataclasses.dataclass
-class TimeMilliField(LogicalTypeField):
+class TimeMilliField(ImmutableField):
     """
     The time-millis logical type represents a time of day,
     with no reference to a particular calendar,
@@ -546,7 +534,7 @@ class TimeMilliField(LogicalTypeField):
 
 
 @dataclasses.dataclass
-class TimeMicroField(LogicalTypeField):
+class TimeMicroField(ImmutableField):
     """
     The time-micros logical type represents a time of day,
     with no reference to a particular calendar,
@@ -588,7 +576,7 @@ class TimeMicroField(LogicalTypeField):
 
 
 @dataclasses.dataclass
-class DatetimeField(LogicalTypeField):
+class DatetimeField(ImmutableField):
     """
     The timestamp-millis logical type represents an instant on the global timeline,
     independent of a particular time zone or calendar, with a precision of one millisecond.
@@ -620,7 +608,7 @@ class DatetimeField(LogicalTypeField):
 
 
 @dataclasses.dataclass
-class DatetimeMicroField(LogicalTypeField):
+class DatetimeMicroField(ImmutableField):
     """
     The timestamp-millis logical type represents an instant on the global timeline,
     independent of a particular time zone or calendar, with a precision of one millisecond.
@@ -653,14 +641,14 @@ class DatetimeMicroField(LogicalTypeField):
 
 
 @dataclasses.dataclass
-class UUIDField(LogicalTypeField):
+class UUIDField(ImmutableField):
     @property
     def avro_type(self) -> typing.Dict:
         return field_utils.LOGICAL_UUID
 
-    def validate_default(self) -> bool:
+    def validate_default(self, default) -> bool:
         msg = f"Invalid default type. Default should be {str} or {uuid.UUID}"
-        assert isinstance(self.default, (str, uuid.UUID)), msg
+        assert isinstance(default, (str, uuid.UUID)), msg
 
         return True
 
@@ -701,6 +689,10 @@ class RecordField(Field):
         if self.default is None:
             return [field_utils.NULL, record_type]
         return record_type
+
+    @staticmethod
+    def to_avro(value: type) -> str:
+        return value.to_json()
 
     def fake(self) -> typing.Any:
         return self.type.fake()
@@ -794,6 +786,7 @@ def field_factory(
             name=name,
             type=native_type,
             default=default,
+            default_factory=default_factory,
             metadata=metadata,
             model_metadata=model_metadata,
             parent=parent,
@@ -803,6 +796,7 @@ def field_factory(
             name=name,
             type=native_type,
             default=default,
+            default_factory=default_factory,
             metadata=metadata,
             model_metadata=model_metadata,
             parent=parent,
@@ -813,6 +807,7 @@ def field_factory(
             name=name,
             type=native_type,
             default=default,
+            default_factory=default_factory,
             metadata=metadata,
             model_metadata=model_metadata,
             parent=parent,
@@ -825,6 +820,7 @@ def field_factory(
             name=name,
             type=native_type,
             default=default,
+            default_factory=default_factory,
             metadata=metadata,
             model_metadata=model_metadata,
             parent=parent,
@@ -854,8 +850,8 @@ def field_factory(
             name=name,
             type=native_type,
             default=default,
-            metadata=metadata,
             default_factory=default_factory,
+            metadata=metadata,
             model_metadata=model_metadata,
             parent=parent,
         )
@@ -864,6 +860,7 @@ def field_factory(
             name=name,
             type=native_type,
             default=default,
+            default_factory=default_factory,
             metadata=metadata,
             model_metadata=model_metadata,
             parent=parent,
@@ -877,8 +874,8 @@ def field_factory(
             name=name,
             type=native_type,
             default=default,
-            metadata=metadata,
             default_factory=default_factory,
+            metadata=metadata,
             model_metadata=model_metadata,
             parent=parent,
         )
@@ -887,6 +884,7 @@ def field_factory(
             name=name,
             type=native_type,
             default=default,
+            default_factory=default_factory,
             metadata=metadata,
             model_metadata=model_metadata,
             parent=parent,

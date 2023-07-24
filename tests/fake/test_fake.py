@@ -97,7 +97,7 @@ def test_fake_union(model_class: typing.Type[AvroModel], decorator: typing.Calla
         logical_union: typing.Union[datetime.datetime, datetime.date, uuid.UUID]
         lake_trip: typing.Union[Bus, Car]
         river_trip: typing.Optional[typing.Union[Bus, Car]] = None
-        mountain_trip: typing.Union[Bus, Car] = field(default_factory=lambda: {"engine_name": "honda"})
+        mountain_trip: typing.Union[Bus, Car] = field(default_factory=lambda: Bus(engine_name="honda"))
 
     assert isinstance(UnionSchema.fake(), UnionSchema)
 

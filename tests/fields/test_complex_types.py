@@ -32,7 +32,7 @@ def test_invalid_type_container_field():
 
 
 @pytest.mark.parametrize("sequence, python_primitive_type,python_type_str", consts.SEQUENCES_AND_TYPES)
-def test_sequence_type(sequence, python_primitive_type, python_type_str):
+def test_sequence_type_with_no_default(sequence, python_primitive_type, python_type_str):
     """
     When the type is List, the Avro field type should be array
     with the items attribute present.
@@ -48,6 +48,15 @@ def test_sequence_type(sequence, python_primitive_type, python_type_str):
 
     assert expected == field.to_dict()
 
+
+@pytest.mark.parametrize("sequence, python_primitive_type,python_type_str", consts.SEQUENCES_AND_TYPES)
+def test_sequence_type_with_null_default(sequence, python_primitive_type, python_type_str):
+    """
+    When the type is List, the Avro field type should be array
+    with the items attribute present.
+    """
+    name = "an_array_field"
+    python_type = sequence[python_primitive_type]
     field = AvroField(name, python_type, default=None)
     expected = {
         "name": name,
@@ -70,7 +79,10 @@ def test_sequence_type_with_default(sequence, primitive_type, python_type_str):
         default = ["hola", "hi"]
     else:
         values = default = field.fake()
-    field = AvroField(name, python_type, default=default, default_factory=lambda: values)
+
+    field = AvroField(name, python_type, default=values)
+
+    # field = AvroField(name, python_type, default=values, default_factory=lambda: values)
 
     expected = {
         "name": name,
@@ -85,7 +97,7 @@ def test_sequence_type_with_default(sequence, primitive_type, python_type_str):
     "sequence,primitive_type,python_type_str,value",
     consts.SEQUENCES_LOGICAL_TYPES,
 )
-def test_sequence_with_logical_type(sequence, primitive_type, python_type_str, value):
+def test_sequence_with_logical_type_missing_default(sequence, primitive_type, python_type_str, value):
     """
     When the type is List, the Avro field type should be array
     with the items attribute present.
@@ -101,6 +113,19 @@ def test_sequence_with_logical_type(sequence, primitive_type, python_type_str, v
 
     assert expected == field.to_dict()
 
+
+@pytest.mark.parametrize(
+    "sequence,primitive_type,python_type_str,value",
+    consts.SEQUENCES_LOGICAL_TYPES,
+)
+def test_sequence_with_logical_type_none_default(sequence, primitive_type, python_type_str, value):
+    """
+    When the type is List, the Avro field type should be array
+    with the items attribute present.
+    """
+    name = "an_array_field"
+    python_type = sequence[primitive_type]
+
     field = AvroField(name, python_type, default=None)
     expected = {
         "name": name,
@@ -110,21 +135,32 @@ def test_sequence_with_logical_type(sequence, primitive_type, python_type_str, v
 
     assert expected == field.to_dict()
 
-    values = [value]
 
+@pytest.mark.parametrize(
+    "sequence,primitive_type,python_type_str,value",
+    consts.SEQUENCES_LOGICAL_TYPES,
+)
+def test_sequence_with_logical_type_with_default(sequence, primitive_type, python_type_str, value):
+    """
+    When the type is List, the Avro field type should be array
+    with the items attribute present.
+    """
+    name = "an_array_field"
+    python_type = sequence[primitive_type]
+    values = [value]
     field = AvroField(name, python_type, default=values, default_factory=lambda: values)
 
     expected = {
         "name": name,
         "type": {"type": "array", "name": name, "items": python_type_str},
-        "default": field.get_default_value(),
+        "default": field.to_avro(values),
     }
 
     assert expected == field.to_dict()
 
 
 @pytest.mark.parametrize("union,items,default", consts.ARRAY_WITH_UNION_TYPES)
-def test_sequence_with_union_type(union, items, default):
+def test_sequence_with_union_type_missing_default(union, items, default):
     name = "an_array_field"
     python_type = typing.List[union]
 
@@ -133,7 +169,13 @@ def test_sequence_with_union_type(union, items, default):
 
     assert expected == field.to_dict()
 
+
+@pytest.mark.parametrize("union,items,default", consts.ARRAY_WITH_UNION_TYPES)
+def test_sequence_with_union_type_with_default(union, items, default):
+    name = "an_array_field"
+    python_type = typing.List[union]
     field = AvroField(name, python_type, default_factory=lambda: default)
+
     expected = {
         "name": name,
         "type": {"type": "array", "name": name, "items": items},
@@ -141,6 +183,12 @@ def test_sequence_with_union_type(union, items, default):
     }
 
     assert expected == field.to_dict()
+
+
+@pytest.mark.parametrize("union,items,default", consts.ARRAY_WITH_UNION_TYPES)
+def test_sequence_with_union_type_none_default(union, items, default):
+    name = "an_array_field"
+    python_type = typing.List[union]
 
     field = AvroField(name, python_type, default=None)
     items.insert(0, field_utils.NULL)
@@ -154,7 +202,7 @@ def test_sequence_with_union_type(union, items, default):
 
 
 @pytest.mark.parametrize("mapping,primitive_type,python_type_str", consts.MAPPING_AND_TYPES)
-def test_mapping_type(mapping, primitive_type, python_type_str):
+def test_mapping_type_missing_default(mapping, primitive_type, python_type_str):
     """
     When the type is Dict, the Avro field type should be map
     with the values attribute present. The keys are always string type.
@@ -170,6 +218,15 @@ def test_mapping_type(mapping, primitive_type, python_type_str):
 
     assert expected == field.to_dict()
 
+
+@pytest.mark.parametrize("mapping,primitive_type,python_type_str", consts.MAPPING_AND_TYPES)
+def test_mapping_type_none_default(mapping, primitive_type, python_type_str):
+    """
+    When the type is Dict, the Avro field type should be map
+    with the values attribute present. The keys are always string type.
+    """
+    name = "a_map_field"
+    python_type = mapping[str, primitive_type]
     field = AvroField(name, python_type, default=None)
     expected = {
         "name": name,
@@ -179,6 +236,18 @@ def test_mapping_type(mapping, primitive_type, python_type_str):
 
     assert expected == field.to_dict()
 
+
+@pytest.mark.parametrize("mapping,primitive_type,python_type_str", consts.MAPPING_AND_TYPES)
+def test_mapping_type_with_default(mapping, primitive_type, python_type_str):
+    """
+    When the type is Dict, the Avro field type should be map
+    with the values attribute present. The keys are always string type.
+    """
+    name = "a_map_field"
+    python_type = mapping[str, primitive_type]
+    field = AvroField(name, python_type, default=dataclasses.MISSING)
+    field.avro_type
+
     if python_type_str == field_utils.BYTES:
         value = {"hola": b"hi"}
         default = {"hola": "hi"}
@@ -186,7 +255,6 @@ def test_mapping_type(mapping, primitive_type, python_type_str):
         value = default = field.fake()
 
     field = AvroField(name, python_type, default=default, default_factory=lambda: value)
-
     expected = {
         "name": name,
         "type": {"type": "map", "name": name, "values": python_type_str},
@@ -239,7 +307,7 @@ def test_mapping_logical_type(mapping, primitive_type, python_type_str, value):
     expected = {
         "name": name,
         "type": {"type": "map", "name": name, "values": python_type_str},
-        "default": field.get_default_value(),
+        "default": field.to_avro(values),
     }
 
     assert expected == field.to_dict()
@@ -396,7 +464,7 @@ def test_union_type_with_record_default():
     assert expected == schema["fields"][0]
 
     class UnionRecordTwo(AvroModel):
-        an_union_field: typing.Union[User, Car] = dataclasses.field(default_factory=lambda: {"first_name": "a name"})
+        an_union_field: typing.Union[User, Car] = dataclasses.field(default_factory=lambda: User(first_name="a name"))
 
     schema = UnionRecordTwo.avro_schema_to_python()
     expected = {
