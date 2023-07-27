@@ -11,7 +11,7 @@ import uuid
 
 from typing_extensions import get_args, get_origin
 
-from dataclasses_avroschema import serialization, types, utils
+from dataclasses_avroschema import schema_generator, serialization, types, utils
 from dataclasses_avroschema.exceptions import InvalidMap
 from dataclasses_avroschema.faker import fake
 
@@ -44,7 +44,6 @@ __ALL__ = [
     "FixedField",
     "EnumField",
     "SelfReferenceField",
-    "LogicalTypeField",
     "DateField",
     "DatetimeField",
     "DatetimeMicroField",
@@ -116,15 +115,7 @@ class FloatField(ImmutableField):
 class BytesField(ImmutableField):
     avro_type: typing.ClassVar[str] = field_utils.BYTES
 
-    def get_default_value(self) -> typing.Any:
-        if self.default in (dataclasses.MISSING, None):
-            return self.default
-        else:
-            self.validate_default()
-            return self.to_avro(self.default)
-
-    @staticmethod
-    def to_avro(item: bytes) -> str:
+    def default_to_avro(self, item: bytes) -> str:
         return item.decode()
 
     def fake(self) -> bytes:
@@ -140,8 +131,6 @@ class NoneField(ImmutableField):
 
 @dataclasses.dataclass
 class ContainerField(Field):
-    default_factory: typing.Optional[typing.Callable] = None
-
     @property
     def avro_type(self) -> typing.Dict:
         ...  # pragma: no cover
@@ -156,7 +145,7 @@ class ContainerField(Field):
 @dataclasses.dataclass
 class BaseListField(ContainerField):
     items_type: typing.Any = None
-    internal_field: typing.Any = None
+    internal_field: Field = dataclasses.field(init=False)
 
     @property
     def avro_type(self) -> typing.Dict:
@@ -164,28 +153,24 @@ class BaseListField(ContainerField):
         return {"type": field_utils.ARRAY, "items": self.items_type}
 
     def get_default_value(self) -> typing.Union[typing.List, dataclasses._MISSING_TYPE]:
-        if self.default is None:
-            return []
-        elif callable(self.default_factory):
-            # expecting a callable
-            default = self.default_factory()
+        default = super().get_default_value()
 
-            if isinstance(default, tuple):
-                default = list(default)
+        if default is not dataclasses.MISSING:
+            if default is None:
+                return []
+            else:
+                if isinstance(default, tuple):
+                    default = list(default)
+        return default
 
-            assert isinstance(default, list), f"List is required as default for field {self.name}"
+    def validate_default(self, default):
+        assert isinstance(default, list), f"List is required as default for field {self.name}"
+        if not isinstance(self.internal_field, UnionField):
+            for element in default:
+                self.internal_field.validate_default(element)
 
-            clean_items = []
-            for item in default:
-                item_type = type(item)
-                if item_type in LOGICAL_CLASSES:
-                    clean_item = LOGICAL_TYPES_FIELDS_CLASSES[item_type].to_avro(item)  # type: ignore
-                else:
-                    clean_item = item
-                clean_items.append(clean_item)
-
-            return clean_items
-        return dataclasses.MISSING
+    def default_to_avro(self, values: typing.List):
+        return [self.internal_field.default_to_avro(item) for item in values]
 
     def generate_items_type(self) -> typing.Any:
         # because avro can have only one type, we take the first one
@@ -244,24 +229,23 @@ class DictField(ContainerField):
         return {"type": field_utils.MAP, "values": self.values_type}
 
     def get_default_value(self) -> typing.Union[types.JsonDict, dataclasses._MISSING_TYPE]:
-        if self.default is None:
-            return {}
-        elif callable(self.default_factory):
-            # expeting a callable
-            default = self.default_factory()
-            assert isinstance(default, dict), f"Dict is required as default for field {self.name}"
+        default = super().get_default_value()
 
-            clean_items = {}
-            for key, value in default.items():
-                value_type = type(value)
-                if value_type in LOGICAL_CLASSES:
-                    clean_item = LOGICAL_TYPES_FIELDS_CLASSES[value_type].to_avro(value)  # type: ignore
-                else:
-                    clean_item = value
-                clean_items[key] = clean_item
+        if default is not dataclasses.MISSING:
+            if default is None:
+                return {}
+            else:
+                assert isinstance(default, dict), f"Dict is required as default for field {self.name}"
+        return default
 
-            return clean_items
-        return dataclasses.MISSING
+    def validate_default(self, default):
+        assert isinstance(default, dict)
+        if not isinstance(self.internal_field, UnionField):
+            for element in default.values():
+                self.internal_field.validate_default(element)
+
+    def default_to_avro(self, default: typing.Dict):
+        return {key: self.internal_field.default_to_avro(value) for key, value in default.items()}
 
     def generate_values_type(self) -> typing.Any:
         """
@@ -279,9 +263,9 @@ class DictField(ContainerField):
 
 @dataclasses.dataclass
 class UnionField(Field):
-    default_factory: typing.Optional[typing.Callable] = None
     unions: typing.List = dataclasses.field(default_factory=list)
-    internal_fields: typing.List = dataclasses.field(default_factory=list)
+    internal_fields: typing.List[Field] = dataclasses.field(default_factory=list)
+    elements: typing.Tuple = dataclasses.field(default_factory=tuple)
 
     def generate_unions_type(self) -> typing.List:
         """
@@ -296,7 +280,7 @@ class UnionField(Field):
         Returns:
             typing.List: List of avro types
         """
-        elements = get_args(self.type)
+        self.elements = get_args(self.type)
         name = self.get_singular_name(self.name)
 
         unions: typing.List = []
@@ -311,7 +295,7 @@ class UnionField(Field):
             unions.append(default_field.get_avro_type())
             self.internal_fields.append(default_field)
 
-        for element in elements:
+        for element in self.elements:
             # create the field and get the avro type
             field = AvroField(name, element, model_metadata=self.model_metadata, parent=self.parent)
             avro_type = field.get_avro_type()
@@ -326,22 +310,13 @@ class UnionField(Field):
         self.unions = self.generate_unions_type()
         return self.unions
 
-    def get_default_value(self) -> typing.Any:
-        is_default_factory_callable = callable(self.default_factory)
+    def default_to_avro(self, default: typing.Any):
+        first_type = self.internal_fields[0]
+        return first_type.default_to_avro(default)
 
-        if self.default in (dataclasses.MISSING, None) and not is_default_factory_callable:
-            return self.default
-        elif is_default_factory_callable:
-            # expecting a callable
-            default = self.default_factory()  # type: ignore
-            assert isinstance(default, (dict, list)), f"Dict or List is required as default for field {self.name}"
-
-            return default
-        elif type(self.default) in LOGICAL_CLASSES:
-            return LOGICAL_TYPES_FIELDS_CLASSES[type(self.default)].to_avro(self.default)  # type: ignore
-        elif issubclass(type(self.default), enum.Enum):
-            return self.default.value
-        return self.default
+    def validate_default(self, default):
+        first_type = self.internal_fields[0]
+        first_type.validate_default(default)
 
     def fake(self) -> typing.Any:
         # get a random internal field and return a fake value
@@ -380,9 +355,9 @@ class FixedField(BytesField):
 
         return avro_type
 
-    def validate_default(self) -> bool:
+    def validate_default(self, default) -> bool:
         msg = "Invalid default type. Default should be bytes"
-        assert isinstance(self.default, bytes), msg
+        assert isinstance(default, bytes), msg
         return True
 
     def fake(self) -> bytes:
@@ -424,15 +399,8 @@ class EnumField(Field):
             else:
                 return f"{namespace}.{name}"
 
-    def get_default_value(self) -> typing.Union[str, dataclasses._MISSING_TYPE, None]:
-        if self.default in (dataclasses.MISSING, None):
-            return self.default
-        else:
-            # check that the default value is listed in symbols
-            assert (
-                self.default.value in self.get_symbols()
-            ), f"The default value should be one of {self.get_symbols()}. Current is {self.default}"
-            return self.default.value
+    def default_to_avro(self, default: typing.Any) -> typing.Any:
+        return default.value
 
     def fake(self) -> typing.Any:
         return random.choice(self.get_symbols())
@@ -455,22 +423,8 @@ class SelfReferenceField(Field):
         return dataclasses.MISSING
 
 
-class LogicalTypeField(ImmutableField):
-    def get_default_value(self) -> typing.Union[None, str, int, float]:
-        if self.default in (dataclasses.MISSING, None):
-            return self.default
-        else:
-            self.validate_default()
-            # Convert to datetime and get the amount of days
-            return self.to_avro(self.default)
-
-    @staticmethod
-    def to_avro(value: typing.Any) -> typing.Union[int, float, str]:
-        ...  # type: ignore  # pragma: no cover
-
-
 @dataclasses.dataclass
-class DateField(LogicalTypeField):
+class DateField(ImmutableField):
     """
     The date logical type represents a date within the calendar,
     with no reference to a particular time zone or time of day.
@@ -483,8 +437,7 @@ class DateField(LogicalTypeField):
     def avro_type(self) -> typing.Dict:
         return field_utils.LOGICAL_DATE
 
-    @staticmethod
-    def to_avro(date: datetime.date) -> int:
+    def default_to_avro(self, date: datetime.date) -> int:
         """
         Convert to datetime and get the amount of days
         from the unix epoch, 1 January 1970 (ISO calendar)
@@ -506,7 +459,7 @@ class DateField(LogicalTypeField):
 
 
 @dataclasses.dataclass
-class TimeMilliField(LogicalTypeField):
+class TimeMilliField(ImmutableField):
     """
     The time-millis logical type represents a time of day,
     with no reference to a particular calendar,
@@ -520,8 +473,7 @@ class TimeMilliField(LogicalTypeField):
     def avro_type(self) -> typing.Dict:
         return field_utils.LOGICAL_TIME_MILIS
 
-    @staticmethod
-    def to_avro(time: datetime.time) -> int:
+    def default_to_avro(self, time: datetime.time) -> int:
         """
         Returns the number of milliseconds after midnight, 00:00:00.000
         for a given time object
@@ -546,7 +498,7 @@ class TimeMilliField(LogicalTypeField):
 
 
 @dataclasses.dataclass
-class TimeMicroField(LogicalTypeField):
+class TimeMicroField(ImmutableField):
     """
     The time-micros logical type represents a time of day,
     with no reference to a particular calendar,
@@ -560,8 +512,7 @@ class TimeMicroField(LogicalTypeField):
     def avro_type(self) -> typing.Dict:
         return field_utils.LOGICAL_TIME_MICROS
 
-    @staticmethod
-    def to_avro(time: datetime.time) -> float:
+    def default_to_avro(self, time: datetime.time) -> float:
         """
         Returns the number of microseconds after midnight, 00:00:00.000000
         for a given time object
@@ -588,7 +539,7 @@ class TimeMicroField(LogicalTypeField):
 
 
 @dataclasses.dataclass
-class DatetimeField(LogicalTypeField):
+class DatetimeField(ImmutableField):
     """
     The timestamp-millis logical type represents an instant on the global timeline,
     independent of a particular time zone or calendar, with a precision of one millisecond.
@@ -602,8 +553,7 @@ class DatetimeField(LogicalTypeField):
     def avro_type(self) -> typing.Dict:
         return field_utils.LOGICAL_DATETIME_MILIS
 
-    @staticmethod
-    def to_avro(date_time: datetime.datetime) -> int:
+    def default_to_avro(self, date_time: datetime.datetime) -> int:
         """
         Returns the number of milliseconds from the unix epoch,
         1 January 1970 00:00:00.000 UTC for a given datetime
@@ -620,7 +570,7 @@ class DatetimeField(LogicalTypeField):
 
 
 @dataclasses.dataclass
-class DatetimeMicroField(LogicalTypeField):
+class DatetimeMicroField(ImmutableField):
     """
     The timestamp-millis logical type represents an instant on the global timeline,
     independent of a particular time zone or calendar, with a precision of one millisecond.
@@ -634,8 +584,7 @@ class DatetimeMicroField(LogicalTypeField):
     def avro_type(self) -> typing.Dict:
         return field_utils.LOGICAL_DATETIME_MICROS
 
-    @staticmethod
-    def to_avro(date_time: datetime.datetime) -> int:
+    def default_to_avro(self, date_time: datetime.datetime) -> int:
         """
         Returns the number of milliseconds from the unix epoch,
         1 January 1970 00:00:00.000000 UTC for a given datetime
@@ -653,57 +602,22 @@ class DatetimeMicroField(LogicalTypeField):
 
 
 @dataclasses.dataclass
-class UUIDField(LogicalTypeField):
+class UUIDField(ImmutableField):
     @property
     def avro_type(self) -> typing.Dict:
         return field_utils.LOGICAL_UUID
 
-    def validate_default(self) -> bool:
+    def validate_default(self, default) -> bool:
         msg = f"Invalid default type. Default should be {str} or {uuid.UUID}"
-        assert isinstance(self.default, (str, uuid.UUID)), msg
+        assert isinstance(default, (str, uuid.UUID)), msg
 
         return True
 
-    @staticmethod
-    def to_avro(uuid: uuid.UUID) -> str:
+    def default_to_avro(self, uuid: uuid.UUID) -> str:
         return str(uuid)
 
     def fake(self) -> uuid.UUID:
         return uuid.uuid4()
-
-
-@dataclasses.dataclass
-class RecordField(Field):
-    def get_avro_type(self) -> typing.Union[str, typing.List, typing.Dict]:
-        meta = getattr(self.type, "Meta", type)
-        metadata = utils.SchemaMetadata.create(meta)
-
-        alias = self.parent.metadata.get_alias_nested_items(self.name) or metadata.get_alias_nested_items(self.name)  # type: ignore  # noqa E501
-
-        # The priority for the schema name
-        # 1. Check if exists an alias_nested_items in parent class or Meta class of own model
-        # 2. Check if the schema_name is present in the Meta class of own model
-        # 3. Use the default class Name (self.type.__name__)
-        name = alias or metadata.schema_name or self.type.__name__
-
-        if not self.exist_type() or alias is not None:
-            user_defined_type = utils.UserDefinedType(name=name, type=self.type)
-            self.parent.user_defined_types.add(user_defined_type)
-
-            record_type = self.type.avro_schema_to_python(parent=self.parent)
-            record_type["name"] = name
-        else:
-            if metadata.namespace is None:
-                record_type = name
-            else:
-                record_type = f"{metadata.namespace}.{name}"
-
-        if self.default is None:
-            return [field_utils.NULL, record_type]
-        return record_type
-
-    def fake(self) -> typing.Any:
-        return self.type.fake()
 
 
 @dataclasses.dataclass
@@ -740,15 +654,48 @@ class DecimalField(Field):
 
         return avro_type
 
-    def get_default_value(self) -> typing.Union[str, dataclasses._MISSING_TYPE, None]:
-        default = super().get_default_value()
-
-        if default not in (dataclasses.MISSING, None):
-            return serialization.decimal_to_str(default, self.max_digits, self.decimal_places)
-        return default
+    def default_to_avro(self, default: decimal.Decimal) -> str:
+        return serialization.decimal_to_str(default, self.max_digits, self.decimal_places)
 
     def fake(self) -> decimal.Decimal:
         return fake.pydecimal(right_digits=self.decimal_places, left_digits=self.max_digits - self.decimal_places)
+
+
+@dataclasses.dataclass
+class RecordField(Field):
+    def get_avro_type(self) -> typing.Union[str, typing.List, typing.Dict]:
+        meta = getattr(self.type, "Meta", type)
+        metadata = utils.SchemaMetadata.create(meta)
+
+        alias = self.parent.metadata.get_alias_nested_items(self.name) or metadata.get_alias_nested_items(self.name)  # type: ignore  # noqa E501
+
+        # The priority for the schema name
+        # 1. Check if exists an alias_nested_items in parent class or Meta class of own model
+        # 2. Check if the schema_name is present in the Meta class of own model
+        # 3. Use the default class Name (self.type.__name__)
+        name = alias or metadata.schema_name or self.type.__name__
+
+        if not self.exist_type() or alias is not None:
+            user_defined_type = utils.UserDefinedType(name=name, type=self.type)
+            self.parent.user_defined_types.add(user_defined_type)
+
+            record_type = self.type.avro_schema_to_python(parent=self.parent)
+            record_type["name"] = name
+        else:
+            if metadata.namespace is None:
+                record_type = name
+            else:
+                record_type = f"{metadata.namespace}.{name}"
+
+        if self.default is None:
+            return [field_utils.NULL, record_type]
+        return record_type
+
+    def default_to_avro(self, value: "schema_generator.AvroModel") -> typing.Dict:
+        return value.to_dict()
+
+    def fake(self) -> typing.Any:
+        return self.type.fake()
 
 
 from .mapper import (
@@ -794,6 +741,7 @@ def field_factory(
             name=name,
             type=native_type,
             default=default,
+            default_factory=default_factory,
             metadata=metadata,
             model_metadata=model_metadata,
             parent=parent,
@@ -803,6 +751,7 @@ def field_factory(
             name=name,
             type=native_type,
             default=default,
+            default_factory=default_factory,
             metadata=metadata,
             model_metadata=model_metadata,
             parent=parent,
@@ -813,6 +762,7 @@ def field_factory(
             name=name,
             type=native_type,
             default=default,
+            default_factory=default_factory,
             metadata=metadata,
             model_metadata=model_metadata,
             parent=parent,
@@ -825,6 +775,7 @@ def field_factory(
             name=name,
             type=native_type,
             default=default,
+            default_factory=default_factory,
             metadata=metadata,
             model_metadata=model_metadata,
             parent=parent,
@@ -854,8 +805,8 @@ def field_factory(
             name=name,
             type=native_type,
             default=default,
-            metadata=metadata,
             default_factory=default_factory,
+            metadata=metadata,
             model_metadata=model_metadata,
             parent=parent,
         )
@@ -864,6 +815,7 @@ def field_factory(
             name=name,
             type=native_type,
             default=default,
+            default_factory=default_factory,
             metadata=metadata,
             model_metadata=model_metadata,
             parent=parent,
@@ -877,8 +829,8 @@ def field_factory(
             name=name,
             type=native_type,
             default=default,
-            metadata=metadata,
             default_factory=default_factory,
+            metadata=metadata,
             model_metadata=model_metadata,
             parent=parent,
         )
@@ -887,6 +839,7 @@ def field_factory(
             name=name,
             type=native_type,
             default=default,
+            default_factory=default_factory,
             metadata=metadata,
             model_metadata=model_metadata,
             parent=parent,

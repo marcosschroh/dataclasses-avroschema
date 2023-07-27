@@ -54,8 +54,6 @@ def test_roundtrip(filename: Path):
     obj = ns[schema["name"]]
     new_schema = obj.avro_schema_to_python()
 
-    # print(obj.__annotations__)
-
     print(new_schema, "\n\n")
     print(schema, "\n\n")
 

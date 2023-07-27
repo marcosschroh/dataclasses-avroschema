@@ -57,7 +57,7 @@ def test_schema_with_unions_type(union_type_schema: JsonDict) -> None:
         logical_union: typing.Union[datetime.datetime, datetime.date, uuid.uuid4]
         lake_trip: typing.Union[Bus, Car]
         river_trip: typing.Optional[typing.Union[Bus, Car]] = None
-        mountain_trip: typing.Union[Bus, Car] = dataclasses.field(default_factory=lambda: {"engine_name": "honda"})
+        mountain_trip: typing.Union[Bus, Car] = dataclasses.field(default_factory=lambda: Bus(engine_name="honda"))
         trip_distance: typing.Optional[typing.Union[int, TripDistance]] = None
         optional_distance: typing.Optional[TripDistance] = None
 
@@ -121,9 +121,7 @@ def test_schema_with_new_unions_type_syntax(union_type_schema: JsonDict) -> None
         logical_union: datetime.datetime | datetime.date | uuid.UUID
         lake_trip: Bus | Car
         river_trip: Bus | Car | None = None
-        mountain_trip: Bus | Car = dataclasses.field(  # type: ignore
-            default_factory=lambda: {"engine_name": "honda"}
-        )  # TODO: check this callable
+        mountain_trip: Bus | Car = dataclasses.field(default_factory=lambda: Bus(engine_name="honda"))  # type: ignore
         trip_distance: int | TripDistance | None = None
         optional_distance: TripDistance | None = None
 

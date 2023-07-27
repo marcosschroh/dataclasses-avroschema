@@ -114,7 +114,7 @@ UNION_PRIMITIVE_ELEMENTS = (
 
 UNION_PRIMITIVE_ELEMENTS_DEFAULTS = (
     (typing.Union[str, int], (field_utils.STRING, field_utils.LONG), "test"),
-    (typing.Union[str, bytes], (field_utils.BYTES, field_utils.STRING), b"test"),
+    (typing.Union[bytes, str], (field_utils.BYTES, field_utils.STRING), b"test"),
     (typing.Union[str, None], (field_utils.NULL, field_utils.STRING), None),
     (
         typing.Union[datetime.date, datetime.datetime],
@@ -126,7 +126,7 @@ UNION_PRIMITIVE_ELEMENTS_DEFAULTS = (
     ),
     (typing.Union[float, str, int], (field_utils.DOUBLE, field_utils.STRING, field_utils.LONG), 100.0),
     (
-        typing.Union[str, float, int, bool],
+        typing.Union[bool, str, float, int],
         (field_utils.BOOLEAN, field_utils.STRING, field_utils.DOUBLE, field_utils.LONG),
         False,
     ),

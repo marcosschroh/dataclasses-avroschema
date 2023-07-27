@@ -26,8 +26,9 @@ class Field:
 
     name: str
     type: typing.Any  # store the python primitive type
-    default: typing.Any
     parent: typing.Any
+    default: typing.Any
+    default_factory: typing.Any = dataclasses.MISSING
     metadata: typing.Mapping = dataclasses.field(default_factory=dict)
     model_metadata: typing.Optional[utils.SchemaMetadata] = None
 
@@ -75,25 +76,32 @@ class Field:
 
         default = self.get_default_value()
         if default is not dataclasses.MISSING:
+            if default is not None:
+                self.validate_default(default)
+                default = self.default_to_avro(default)
+
             template["default"] = default
 
         return template
 
     def get_default_value(self) -> typing.Any:
-        if self.default in (dataclasses.MISSING, None):
-            return self.default
-        else:
-            self.validate_default()
-            return self.default
+        is_default_factory_callable = callable(self.default_factory)
 
-    def validate_default(self) -> bool:
+        if is_default_factory_callable:
+            return self.default_factory()
+        return self.default
+
+    def validate_default(self, default: typing.Any) -> bool:
         a_type = self.type
         msg = f"Invalid default type. Default should be {self.type}"
         if utils.is_annotated(self.type):
             a_type, _ = get_args(self.type)
 
-        assert isinstance(self.default, a_type), msg
+        assert isinstance(default, a_type), msg
         return True
+
+    def default_to_avro(self, value: typing.Any) -> typing.Any:
+        return value
 
     def to_json(self) -> str:
         return json.dumps(self.render(), indent=2)

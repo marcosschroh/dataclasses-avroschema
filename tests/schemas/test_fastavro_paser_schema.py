@@ -366,7 +366,7 @@ def test_schema_with_union_record_types():
 
     class UnionSchema(AvroModel):
         "Some Unions"
-        mountain_trip: typing.Union[Bus, Car] = dataclasses.field(default_factory=lambda: {"engine_name": "honda"})
+        mountain_trip: typing.Union[Bus, Car] = dataclasses.field(default_factory=lambda: Bus(engine_name="honda"))
 
     assert parse_schema(UnionSchema.avro_schema_to_python())
 
