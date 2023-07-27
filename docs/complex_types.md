@@ -371,7 +371,7 @@ UnionSchema.avro_schema()
       lake_trip: typing.Union[Bus, Car]
       river_trip: typing.Union[Bus, Car] = None
       mountain_trip: typing.Union[Bus, Car] = dataclasses.field(
-          default_factory=lambda: {"engine_name": "honda"})
+          default_factory=lambda: Bus("engine_name": "honda"))
 
     UnionSchema.avro_schema()
     ```
@@ -407,7 +407,7 @@ UnionSchema.avro_schema()
       lake_trip: Bus | Car
       river_trip: Bus | Car | None = None
       mountain_trip: Bus | Car = dataclasses.field(
-          default_factory=lambda: {"engine_name": "honda"})
+          default_factory=lambda: Bus("engine_name": "honda"))
 
     UnionSchema.avro_schema()
     ```

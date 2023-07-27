@@ -1,4 +1,29 @@
 
+## Migration from previous versions to 0.45.1
+
+- Previously `Unions` that had `default_factory` where force to return a `callable` which the return type must be `list` or `dict`, now is not the case any more. If you use `default_factory` makes sure that it is a `callable`, that's it. This new fix also will be complain with type checkers.
+
+    ```python
+    @dataclasses.dataclass
+    class Bus(AvroModel):
+        engine_name: str
+
+    @dataclasses.dataclass
+    class Car(AvroModel):
+        engine_name: str
+
+    mountain_trip: typing.Union[Bus, Car] = dataclasses.field(default_factory=lambda: {"engine_name": "honda"})
+    ```
+
+    and migrate to:
+
+    ```python
+    mountain_trip: Bus | Car = dataclasses.field(default_factory=lambda: Bus(engine_name="honda"))  # now it returns a proper type
+    ```
+
+- `Field` internal api updated:
+    - `to_avro` was renamed to `default_to_avro` and is an instance method
+
 ## Migration from previous versions to 0.27.0
 
 - `types.Enum` was replaced with `enum.Enum`. You must create your custom enum, example:

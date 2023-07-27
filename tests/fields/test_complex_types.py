@@ -149,11 +149,12 @@ def test_sequence_with_logical_type_with_default(sequence, primitive_type, pytho
     python_type = sequence[primitive_type]
     values = [value]
     field = AvroField(name, python_type, default=values, default_factory=lambda: values)
+    field.avro_type
 
     expected = {
         "name": name,
         "type": {"type": "array", "name": name, "items": python_type_str},
-        "default": field.to_avro(values),
+        "default": field.default_to_avro(values),
     }
 
     assert expected == field.to_dict()
@@ -303,11 +304,12 @@ def test_mapping_logical_type(mapping, primitive_type, python_type_str, value):
 
     values = {"key": value}
     field = AvroField(name, python_type, default=dataclasses.MISSING, default_factory=lambda: values)
+    field.avro_type
 
     expected = {
         "name": name,
         "type": {"type": "map", "name": name, "values": python_type_str},
-        "default": field.to_avro(values),
+        "default": field.default_to_avro(values),
     }
 
     assert expected == field.to_dict()
@@ -427,7 +429,7 @@ def test_union_type_with_records():
     assert expected == schema["fields"][0]
 
 
-def test_union_type_with_record_default():
+def test_union_type_with_record_none_default():
     class User(AvroModel):
         "User"
         first_name: str
@@ -463,10 +465,20 @@ def test_union_type_with_record_default():
 
     assert expected == schema["fields"][0]
 
-    class UnionRecordTwo(AvroModel):
+
+def test_union_type_with_record_default():
+    class User(AvroModel):
+        "User"
+        first_name: str
+
+    class Car(AvroModel):
+        "Car"
+        engine_name: str
+
+    class UnionRecord(AvroModel):
         an_union_field: typing.Union[User, Car] = dataclasses.field(default_factory=lambda: User(first_name="a name"))
 
-    schema = UnionRecordTwo.avro_schema_to_python()
+    schema = UnionRecord.avro_schema_to_python()
     expected = {
         "name": "an_union_field",
         "type": [
@@ -669,7 +681,7 @@ def test_enum_field():
         "namespace": "some.name.space",
     }
 
-    assert enum_field.get_default_value() == "Blue"
+    assert enum_field.get_default_value() == Color.BLUE
 
 
 def test_enum_field_default():
@@ -681,4 +693,4 @@ def test_enum_field_default():
     assert enum_field1.get_default_value() == dataclasses.MISSING
     assert enum_field2.get_default_value() == dataclasses.MISSING
     assert enum_field3.get_default_value() is None
-    assert enum_field4.get_default_value() == "Green"
+    assert enum_field4.get_default_value() == Color.GREEN

@@ -244,7 +244,7 @@ def test_pydantic_record_schema_with_unions_type(union_type_schema):
         logical_union: typing.Union[datetime.datetime, datetime.date, uuid.UUID]
         lake_trip: typing.Union[Bus, Car]
         river_trip: typing.Union[Bus, Car] = None
-        mountain_trip: typing.Union[Bus, Car] = pydantic.Field(default_factory=lambda: {"engine_name": "honda"})
+        mountain_trip: typing.Union[Bus, Car] = pydantic.Field(default_factory=lambda: Bus(engine_name="honda"))
         trip_distance: typing.Union[int, TripDistance] = None
         optional_distance: typing.Optional[TripDistance] = None
 

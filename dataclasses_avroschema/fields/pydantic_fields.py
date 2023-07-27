@@ -12,10 +12,9 @@ current_dir = str(Path().absolute())
 
 
 class PydanticField(fields.ImmutableField):
-
     def validate_default(self, default) -> bool:
-        # print(self.type(default))
-        # assert False
+        # for pydantic special fields is unclear how to validate them
+        # before pydantic does it
         return True
 
 

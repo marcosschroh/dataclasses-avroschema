@@ -78,9 +78,8 @@ class Field:
         if default is not dataclasses.MISSING:
             if default is not None:
                 self.validate_default(default)
-                default = self.to_avro(default)
+                default = self.default_to_avro(default)
 
-            print(default, default is not None, type(default))
             template["default"] = default
 
         return template
@@ -88,15 +87,11 @@ class Field:
     def get_default_value(self) -> typing.Any:
         is_default_factory_callable = callable(self.default_factory)
 
-        if self.default in (dataclasses.MISSING, None) and not is_default_factory_callable:
-            return self.default
         if is_default_factory_callable:
-            self.default = self.default_factory()
-        # else:
-        # self.validate_default()
+            return self.default_factory()
         return self.default
 
-    def validate_default(self, default) -> bool:
+    def validate_default(self, default: typing.Any) -> bool:
         a_type = self.type
         msg = f"Invalid default type. Default should be {self.type}"
         if utils.is_annotated(self.type):
@@ -105,8 +100,7 @@ class Field:
         assert isinstance(default, a_type), msg
         return True
 
-    @staticmethod
-    def to_avro(value: typing.Any) -> typing.Any:
+    def default_to_avro(self, value: typing.Any) -> typing.Any:
         return value
 
     def to_json(self) -> str:
