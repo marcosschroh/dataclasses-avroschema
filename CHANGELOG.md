@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## 0.45.1 (2023-07-27)
+
+### Fix
+
+- default factory in order to get proper default values. Closes #365
+
 ## 0.45.0 (2023-07-18)
 
 ### Feat
