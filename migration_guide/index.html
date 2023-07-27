@@ -71,7 +71,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#migration-from-previous-versions-to-0270" class="md-skip">
+        <a href="#migration-from-previous-versions-to-0451" class="md-skip">
           Skip to content
         </a>
       
@@ -529,6 +529,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#migration-from-previous-versions-to-0451" class="md-nav__link">
+    Migration from previous versions to 0.45.1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#migration-from-previous-versions-to-0270" class="md-nav__link">
     Migration from previous versions to 0.27.0
   </a>
@@ -582,6 +589,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#migration-from-previous-versions-to-0451" class="md-nav__link">
+    Migration from previous versions to 0.45.1
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#migration-from-previous-versions-to-0270" class="md-nav__link">
     Migration from previous versions to 0.27.0
   </a>
@@ -622,6 +636,31 @@
 
   <h1>Migration Guide</h1>
 
+<h2 id="migration-from-previous-versions-to-0451">Migration from previous versions to 0.45.1</h2>
+<ul>
+<li>
+<p>Previously <code>Unions</code> that had <code>default_factory</code> where force to return a <code>callable</code> which the return type must be <code>list</code> or <code>dict</code>, now is not the case any more. If you use <code>default_factory</code> makes sure that it is a <code>callable</code>, that's it. This new fix also will be complain with type checkers.</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span> <span class="nc">Bus</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
+    <span class="n">engine_name</span><span class="p">:</span> <span class="nb">str</span>
+
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span> <span class="nc">Car</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
+    <span class="n">engine_name</span><span class="p">:</span> <span class="nb">str</span>
+
+<span class="n">mountain_trip</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">Bus</span><span class="p">,</span> <span class="n">Car</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;engine_name&quot;</span><span class="p">:</span> <span class="s2">&quot;honda&quot;</span><span class="p">})</span>
+</code></pre></div>
+<p>and migrate to:</p>
+<div class="highlight"><pre><span></span><code><span class="n">mountain_trip</span><span class="p">:</span> <span class="n">Bus</span> <span class="o">|</span> <span class="n">Car</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">Bus</span><span class="p">(</span><span class="n">engine_name</span><span class="o">=</span><span class="s2">&quot;honda&quot;</span><span class="p">))</span>  <span class="c1"># now it returns a proper type</span>
+</code></pre></div>
+</li>
+<li>
+<p><code>Field</code> internal api updated:</p>
+<ul>
+<li><code>to_avro</code> was renamed to <code>default_to_avro</code> and is an instance method</li>
+</ul>
+</li>
+</ul>
 <h2 id="migration-from-previous-versions-to-0270">Migration from previous versions to 0.27.0</h2>
 <ul>
 <li><code>types.Enum</code> was replaced with <code>enum.Enum</code>. You must create your custom enum, example:</li>

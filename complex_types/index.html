@@ -1122,7 +1122,7 @@ It is a good practice but <em>NOT</em> neccesary to a define the <code>namespace
   <span class="n">lake_trip</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">Bus</span><span class="p">,</span> <span class="n">Car</span><span class="p">]</span>
   <span class="n">river_trip</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">Bus</span><span class="p">,</span> <span class="n">Car</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
   <span class="n">mountain_trip</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">Bus</span><span class="p">,</span> <span class="n">Car</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">field</span><span class="p">(</span>
-      <span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;engine_name&quot;</span><span class="p">:</span> <span class="s2">&quot;honda&quot;</span><span class="p">})</span>
+      <span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">Bus</span><span class="p">(</span><span class="s2">&quot;engine_name&quot;</span><span class="p">:</span> <span class="s2">&quot;honda&quot;</span><span class="p">))</span>
 
 <span class="n">UnionSchema</span><span class="o">.</span><span class="n">avro_schema</span><span class="p">()</span>
 </code></pre></div>
@@ -1156,7 +1156,7 @@ It is a good practice but <em>NOT</em> neccesary to a define the <code>namespace
   <span class="n">lake_trip</span><span class="p">:</span> <span class="n">Bus</span> <span class="o">|</span> <span class="n">Car</span>
   <span class="n">river_trip</span><span class="p">:</span> <span class="n">Bus</span> <span class="o">|</span> <span class="n">Car</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
   <span class="n">mountain_trip</span><span class="p">:</span> <span class="n">Bus</span> <span class="o">|</span> <span class="n">Car</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">field</span><span class="p">(</span>
-      <span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;engine_name&quot;</span><span class="p">:</span> <span class="s2">&quot;honda&quot;</span><span class="p">})</span>
+      <span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">Bus</span><span class="p">(</span><span class="s2">&quot;engine_name&quot;</span><span class="p">:</span> <span class="s2">&quot;honda&quot;</span><span class="p">))</span>
 
 <span class="n">UnionSchema</span><span class="o">.</span><span class="n">avro_schema</span><span class="p">()</span>
 </code></pre></div>
