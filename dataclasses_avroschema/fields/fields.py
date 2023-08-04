@@ -300,7 +300,9 @@ class UnionField(Field):
             field = AvroField(name, element, model_metadata=self.model_metadata, parent=self.parent)
             avro_type = field.get_avro_type()
 
-            if avro_type not in unions and avro_type not in [e.get("name", None) for e in unions if isinstance(e, dict)]:
+            if avro_type not in unions and avro_type not in [
+                e.get("name", None) for e in unions if isinstance(e, dict)
+            ]:
                 unions.append(avro_type)
                 self.internal_fields.append(field)
 
