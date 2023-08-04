@@ -294,7 +294,7 @@ class UnionField(Field):
             default_field = AvroField(name, default_type, model_metadata=self.model_metadata, parent=self.parent)
             unions.append(default_field.get_avro_type())
             self.internal_fields.append(default_field)
-            
+
         for element in self.elements:
             # create the field and get the avro type
             field = AvroField(name, element, model_metadata=self.model_metadata, parent=self.parent)

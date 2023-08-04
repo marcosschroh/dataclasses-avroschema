@@ -128,9 +128,11 @@ def union_type_schema():
 def default_union_schema():
     return load_json("union_default_type.avsc")
 
+
 @pytest.fixture
 def optional_enum_with_default_schema():
     return load_json("optional_enum_with_default.avsc")
+
 
 @pytest.fixture
 def typing_optional_schema():
