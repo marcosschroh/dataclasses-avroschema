@@ -473,3 +473,14 @@ def schema_with_pydantic_fields() -> JsonDict:
             },
         ],
     }
+
+
+@pytest.fixture
+def schema_with_pydantic_constrained_fields() -> JsonDict:
+    return {
+        "type": "record",
+        "name": "ConstrainedValues",
+        "fields": [
+            {"pydantic-class": "conint(gt=10, lt=20)", "name": "constrained_int", "type": "int"},
+        ],
+    }

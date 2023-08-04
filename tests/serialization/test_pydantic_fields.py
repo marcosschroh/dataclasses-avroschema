@@ -1,29 +1,29 @@
 import pytest
-from pydantic import Field
+from pydantic import Field, conint
 from pydantic.error_wrappers import ValidationError
 
 from dataclasses_avroschema.avrodantic import AvroBaseModel
 
 
-def test_int_constraint_type_serialize():
-    class ConstraintType(AvroBaseModel):
-        value: int = Field(gt=0)
+def test_int_constrained_type_serialize():
+    class ConstrainedType(AvroBaseModel):
+        value: conint(gt=0)
 
-    c = ConstraintType(value=1)
+    c = ConstrainedType(value=1)
     serialized = c.serialize(serialization_type="avro-json")
     assert serialized == b'{"value": 1}'
 
 
-def test_int_constraint_type_deserialize():
-    class ConstraintType(AvroBaseModel):
-        value: int = Field(gt=0)
+def test_int_constrained_type_deserialize():
+    class ConstrainedType(AvroBaseModel):
+        value: conint(gt=0)
 
-    ConstraintType.deserialize(b'{"value": 1}', serialization_type="avro-json")
+    ConstrainedType.deserialize(b'{"value": 1}', serialization_type="avro-json")
 
 
-def test_int_constraint_type_deserialize_invalid():
-    class ConstraintType(AvroBaseModel):
+def test_int_constrained_type_deserialize_invalid():
+    class ConstrainedType(AvroBaseModel):
         value: int = Field(gt=0)
 
     with pytest.raises(ValidationError):
-        ConstraintType.deserialize(b'{"value": 0}', serialization_type="avro-json")
+        ConstrainedType.deserialize(b'{"value": 0}', serialization_type="avro-json")

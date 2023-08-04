@@ -214,7 +214,20 @@ class UUID5Field(fields.UUIDField):
 class ConstrainedIntField(PydanticField):
     @property
     def avro_type(self) -> typing.Dict:
-        return {"type": INT, "pydantic-class": "ConstrainedInt"}
+        attributes = ["gt", "lt", "ge", "le", "multiple_of"]
+        conint_args = ", ".join(
+            f"{key}={getattr(self.type, key)}" for key in attributes if getattr(self.type, key, None) is not None
+        )
+
+        return {"type": INT, "pydantic-class": f"conint({conint_args})"}
 
     def fake(self) -> int:
-        return 1
+        min_value = max(getattr(self.type, "ge") or 0, getattr(self.type, "gt") or 0) + 1
+        max_value = min(getattr(self.type, "le") or 9999, getattr(self.type, "gt") or 9999) - 1
+
+        if max_value < min_value:
+            max_value = min_value
+
+        multiple_of = getattr(self.type, "multiple_of") or 1
+
+        return fake.pyint(min_value=min_value, max_value=max_value, step=multiple_of)
