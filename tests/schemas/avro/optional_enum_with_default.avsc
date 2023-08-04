@@ -1,0 +1,22 @@
+{
+  "type": "record",
+  "name": "LimitTest",
+  "fields": [
+    {
+      "name": "limit_type",
+      "type": [
+        {
+          "type": "enum",
+          "name": "LimitTypes",
+          "symbols": [
+            "MIN_LIMIT",
+            "MAX_LIMIT",
+            "EXACT_LIMIT"
+          ]
+        },
+        "null"
+      ],
+      "default": "MIN_LIMIT"
+    }
+  ]
+}

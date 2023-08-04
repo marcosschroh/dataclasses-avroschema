@@ -87,6 +87,24 @@ def test_schema_with_unions_defaults(default_union_schema: JsonDict) -> None:
 
     assert User.avro_schema() == json.dumps(default_union_schema)
 
+# The following two tests were written for Issue 390 - Optional enum type
+# with default value of enum - generated duplicate field definitions
+# The problem is in the fact that first field occurrence for Enum is its full definition (dict)
+# while further occurences are just the type name - which can cause problems when comparing lists of fields.
+
+def test_schema_with_optional_enum_defaults(optional_enum_with_default_schema: JsonDict) -> None:
+    class LimitTypes(enum.Enum):
+        MIN_LIMIT = "MIN_LIMIT"
+        MAX_LIMIT = "MAX_LIMIT"
+        EXACT_LIMIT = "EXACT_LIMIT"
+
+    @dataclasses.dataclass
+    class LimitTest(AvroModel):
+        limit_type: typing.Optional[LimitTypes] = LimitTypes.MIN_LIMIT
+
+    assert LimitTest.avro_schema() == json.dumps(optional_enum_with_default_schema)
+
+
 
 @pytest.mark.skipif(condition=PY_VER < (3, 10), reason="Union with syntax | is only for python >= 3.10")
 def test_schema_with_new_unions_type_syntax(union_type_schema: JsonDict) -> None:
