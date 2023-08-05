@@ -4,6 +4,7 @@ import datetime
 import decimal
 import enum
 import inspect
+import json
 import random
 import sys
 import typing
@@ -692,7 +693,7 @@ class RecordField(Field):
         return record_type
 
     def default_to_avro(self, value: "schema_generator.AvroModel") -> typing.Dict:
-        return value.to_dict()
+        return json.loads(value.to_json())
 
     def fake(self) -> typing.Any:
         return self.type.fake()
