@@ -97,7 +97,7 @@ def test_render_complex_types():
                 }
             ],
         },
-        "default": {"timestamp": "2023-10-21T11:11:00"},
+        "default": {"timestamp": 1697886660000},
     }
 
     assert expected == dict(field.render())

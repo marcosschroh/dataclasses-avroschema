@@ -693,7 +693,7 @@ class RecordField(Field):
         return record_type
 
     def default_to_avro(self, value: "schema_generator.AvroModel") -> typing.Dict:
-        return json.loads(value.to_json())
+        return {field.name: field.default_to_avro(field.get_default_value()) for field in value.get_fields()}
 
     def fake(self) -> typing.Any:
         return self.type.fake()
