@@ -286,7 +286,7 @@ class UnionField(Field):
         unions: typing.List = []
 
         # Place default at front of list
-        default_type = None
+        default_type = default_field = None
         if self.default is None and self.default_factory is dataclasses.MISSING:
             unions.insert(0, field_utils.NULL)
         elif type(self.default) is not dataclasses._MISSING_TYPE:
@@ -300,9 +300,7 @@ class UnionField(Field):
             field = AvroField(name, element, model_metadata=self.model_metadata, parent=self.parent)
             avro_type = field.get_avro_type()
 
-            if avro_type not in unions and avro_type not in [
-                e.get("name", None) for e in unions if isinstance(e, dict)
-            ]:
+            if avro_type not in unions and field != default_field:
                 unions.append(avro_type)
                 self.internal_fields.append(field)
 
