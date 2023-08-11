@@ -109,6 +109,7 @@ using the key `pydantic-class`.
 | double       | pydantic.PositiveFloat |
 | long         | pydantic.NegativeInt |
 | long         | pydantic.PositiveIntstr |
+| long         | pydantic.ConstrainedInt (conint) |
 
 | Avro Type    | Logical type | Pydantic Type |
 |--------------|--------------|---------------|
@@ -237,6 +238,7 @@ class Infrastructure(AvroBaseModel):
 | double    | "pydantic-class": "PositiveFloat"  | pydantic.PositiveFloat |
 | long      | "pydantic-class": "NegativeInt"    | pydantic.NegativeInt |
 | long      | "pydantic-class": "PositiveInt"    | pydantic.PositiveInt |
+| long      | "pydantic-class": ConstrainedInt"  | pydantic.ConstrainedInt |
 
 |Avro Type  | Logical Type | Metadata | Pydantic Type                      |
 |-----------|--------------|----------|------------------------------------|
