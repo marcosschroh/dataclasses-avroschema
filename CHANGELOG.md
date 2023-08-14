@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## 0.46.1 (2023-08-14)
+
+### Fix
+
+- schema generation with optional Enum fields (#386)
+
+## 0.46.0 (2023-08-14)
+
+### Feat
+
+- support pydantic constrained int fields (#379)
+
 ## 0.45.1 (2023-07-27)
 
 ### Fix

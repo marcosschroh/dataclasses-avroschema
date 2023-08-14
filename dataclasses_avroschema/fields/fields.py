@@ -286,7 +286,7 @@ class UnionField(Field):
         unions: typing.List = []
 
         # Place default at front of list
-        default_type = None
+        default_type = default_field = None
         if self.default is None and self.default_factory is dataclasses.MISSING:
             unions.insert(0, field_utils.NULL)
         elif type(self.default) is not dataclasses._MISSING_TYPE:
@@ -300,7 +300,7 @@ class UnionField(Field):
             field = AvroField(name, element, model_metadata=self.model_metadata, parent=self.parent)
             avro_type = field.get_avro_type()
 
-            if avro_type not in unions:
+            if avro_type not in unions and field != default_field:
                 unions.append(avro_type)
                 self.internal_fields.append(field)
 
@@ -752,6 +752,22 @@ def field_factory(
             model_metadata=model_metadata,
             parent=parent,
         )
+
+    # special case for some dynamic pydantic types (especially constraint types)
+    # when a type cannot be imported and needs to be referenced by qualified string
+    # see pydantic conint() implementation for more information
+    elif inspect.isclass(native_type) and f"{native_type.__name__}" in INMUTABLE_FIELDS_CLASSES:
+        klass = INMUTABLE_FIELDS_CLASSES[f"{native_type.__name__}"]
+        return klass(
+            name=name,
+            type=native_type,
+            default=default,
+            default_factory=default_factory,
+            metadata=metadata,
+            model_metadata=model_metadata,
+            parent=parent,
+        )
+
     elif utils.is_self_referenced(native_type):
         return SelfReferenceField(
             name=name,
