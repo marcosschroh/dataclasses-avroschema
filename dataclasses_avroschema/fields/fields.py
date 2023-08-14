@@ -692,13 +692,11 @@ class RecordField(Field):
         return record_type
 
     def default_to_avro(self, value: "schema_generator.AvroModel") -> typing.Dict:
-        result = {}
-        fields = {field.name: field for field in value.get_fields()}
-        for fieldname in value.to_dict().keys():
-            field = fields[fieldname]
-            result[fieldname] = field.default_to_avro(getattr(value, fieldname))
-
-        return result
+        schema_def = value.schema_def or value._generate_avro_schema()
+        return {
+            fieldname: field.default_to_avro(getattr(value, fieldname))
+            for fieldname, field in schema_def.get_fields_map().items()
+        }
 
     def fake(self) -> typing.Any:
         return self.type.fake()

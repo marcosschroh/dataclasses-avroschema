@@ -170,3 +170,6 @@ class AvroSchemaDefinition(BaseSchemaDefinition):
             schema["aliases"] = self.metadata.aliases
 
         return schema
+
+    def get_fields_map(self) -> typing.Dict[str, Field]:
+        return self.fields_map
