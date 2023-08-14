@@ -180,3 +180,23 @@ class Infrastructure(AvroBaseModel):
     model_generator = ModelGenerator(base_class=BaseClassEnum.AVRO_DANTIC_MODEL.value)
     result = model_generator.render(schema=schema_with_pydantic_fields)
     assert result.strip() == expected_result.strip()
+
+
+def test_schema_with_pydantic_constrained_field(schema_with_pydantic_constrained_fields):
+    expected_result = """
+from dataclasses_avroschema import types
+from dataclasses_avroschema.avrodantic import AvroBaseModel
+import pydantic
+
+
+
+class ConstrainedValues(AvroBaseModel):
+    constrained_int: pydantic.conint(gt=10, lt=20)
+
+
+
+"""
+
+    model_generator = ModelGenerator(base_class=BaseClassEnum.AVRO_DANTIC_MODEL.value)
+    result = model_generator.render(schema=schema_with_pydantic_constrained_fields)
+    assert result.strip() == expected_result.strip()

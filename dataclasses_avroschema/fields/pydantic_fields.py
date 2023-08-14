@@ -5,7 +5,7 @@ from pathlib import Path
 from dataclasses_avroschema.faker import fake
 
 from . import fields
-from .field_utils import DOUBLE, LONG, STRING, UUID
+from .field_utils import DOUBLE, INT, LONG, STRING, UUID
 
 current_file = str(Path(__file__).absolute())
 current_dir = str(Path().absolute())
@@ -19,7 +19,7 @@ class PydanticField(fields.ImmutableField):
 
 
 class FilePathField(PydanticField):
-    avro_type: typing.ClassVar[typing.Dict[str, str]] = {"type": STRING, "pydantic-class": "FilePat"}
+    avro_type: typing.ClassVar[typing.Dict[str, str]] = {"type": STRING, "pydantic-class": "FilePath"}
 
     def fake(self) -> str:
         return current_file
@@ -209,3 +209,25 @@ class UUID5Field(fields.UUIDField):
 
     def fake(self) -> uuid.UUID:
         return uuid.uuid5(namespace=uuid.NAMESPACE_URL, name=fake.pystr())
+
+
+class ConstrainedIntField(PydanticField):
+    @property
+    def avro_type(self) -> typing.Dict:
+        attributes = ["gt", "lt", "ge", "le", "multiple_of"]
+        conint_args = ", ".join(
+            f"{key}={getattr(self.type, key)}" for key in attributes if getattr(self.type, key, None) is not None
+        )
+
+        return {"type": INT, "pydantic-class": f"conint({conint_args})"}
+
+    def fake(self) -> int:
+        min_value = max(getattr(self.type, "ge") or 0, getattr(self.type, "gt") or 0) + 1
+        max_value = min(getattr(self.type, "le") or 9999, getattr(self.type, "gt") or 9999) - 1
+
+        if max_value < min_value:
+            max_value = min_value
+
+        multiple_of = getattr(self.type, "multiple_of") or 1
+
+        return fake.pyint(min_value=min_value, max_value=max_value, step=multiple_of)
