@@ -23,6 +23,7 @@ pydantic_fields = (
     pydantic.PositiveFloat,
     pydantic.NegativeInt,
     pydantic.PositiveInt,
+    pydantic.ConstrainedInt,
     pydantic.UUID1,
     pydantic.UUID3,
     pydantic.UUID4,
