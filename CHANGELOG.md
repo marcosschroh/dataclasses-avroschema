@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## 0.46.2 (2023-08-15)
+
+### Fix
+
+- record fields avro schema creation (#382) (#383)
+
 ## 0.46.1 (2023-08-14)
 
 ### Fix
