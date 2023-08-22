@@ -24,7 +24,7 @@ classifiers = [
 python = "^3.7"
 fastavro = "^1.7.3"
 dacite = "^1.8.0"
-faker = "^18.3.1"
+faker = {version = "^18.3.1", optional = true}
 inflector = "^3.1.0"
 faust-streaming = {version = "^0.10.11", optional = true}
 casefy = "^0.1.7"
@@ -55,6 +55,9 @@ pydantic = [
 ]
 faust = [
     "faust-streaming",
+]
+faker = [
+    "faker"
 ]
 
 [build-system]
