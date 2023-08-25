@@ -21,8 +21,9 @@ with `pip` or `poetry`:
 
 - [pydantic](https://docs.pydantic.dev/): `pip install 'dataclasses-avroschema[pydantic]'` or `poetry install --extras "pydantic"`
 - [faust-streaming](https://github.com/faust-streaming/faust): `pip install 'dataclasses-avroschema[faust]'` or `poetry install --extras "faust"`
+- [faker](https://github.com/joke2k/faker): `pip install 'dataclasses-avroschema[faker]'` or `poetry install --extras "faker"`
 
-*Note*: You can install all extra dependencies with `pip install dataclasses-avroschema[faust, pydantic]` or `poetry install --extras "pydantic faust"`
+*Note*: You can install all extra dependencies with `pip install dataclasses-avroschema[faust, pydantic, faker]` or `poetry install --extras "pydantic faust faker"`
 
 ### CLI
 
@@ -315,7 +316,10 @@ Also, there are two `redis` examples using `redis streams` with [walrus](https:/
 
 ## Factory and fixtures
 
-[Dataclasses Avro Schema](https://github.com/marcosschroh/dataclasses-avroschema) also includes a `factory` feature, so you can generate `fast` python instances and use them, for example, to test your data streaming pipelines. Instances can be genrated using the `fake` method.
+[Dataclasses Avro Schema](https://github.com/marcosschroh/dataclasses-avroschema) also includes a `factory` feature, so you can generate `fast` python instances and use them, for example, to test your data streaming pipelines. Instances can be generated using the `fake` method.
+
+*Note*: This feature is not enabled by default and requires you have the `faker` extra installed. You may install it with `pip install 'dataclasses-avroschema[faker]'`
+
 
 ```python
 import typing
