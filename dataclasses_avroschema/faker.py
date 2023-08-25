@@ -23,7 +23,6 @@ except ImportError:
                 "Consider running `pip install dataclasses-avroschema[faker]`"
             )
 
-
     _FAKER_METHODS_TO_STUB = [
         "company_email",
         "date_object",
