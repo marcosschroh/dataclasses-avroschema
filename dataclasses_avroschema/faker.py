@@ -2,7 +2,7 @@ try:
     from faker import Faker
 
     fake = Faker()
-except ImportError:
+except ImportError:  # pragma: no cover
 
     class FakeStub:
         """A stub for Faker.fake() when the feature [faker] is not enabled.
