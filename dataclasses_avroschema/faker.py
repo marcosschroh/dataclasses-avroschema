@@ -40,7 +40,7 @@ except ImportError:  # pragma: no cover
         "url",
     ]
 
-    fake = FakeStub()
+    fake = FakeStub()  # type: ignore
 
     for method in _FAKER_METHODS_TO_STUB:
         setattr(fake, method, fake.raise_runtime_error)
