@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## 0.47.0 (2023-08-28)
+
+### Feat
+
+- Make Faker an optional dependency. (#391)
+
 ## 0.46.3 (2023-08-25)
 
 ### Fix
