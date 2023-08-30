@@ -213,6 +213,24 @@ def schema_with_enum_types() -> Dict:
 
 
 @pytest.fixture
+def schema_with_enum_types_case_sensitivity() -> Dict:
+    return {
+        "type": "record",
+        "name": "User",
+        "fields": [
+            {
+                "name": "unit_multi_player",
+                "type": {
+                    "type": "enum",
+                    "name": "unit_multi_player",
+                    "symbols": ["Q", "q"],
+                },
+            }
+        ],
+    }
+
+
+@pytest.fixture
 def schema_one_to_one_relationship() -> JsonDict:
     return {
         "type": "record",
