@@ -17,10 +17,10 @@ class User(AvroModel):
     \"""
     age: types.Int32
     money_available: float
+    weight: types.Int32 = dataclasses.field(metadata={'unit': 'kg'})
     name: str = "marcos"
     pet_age: types.Int32 = 1
     height: types.Float32 = 10.1
-    weight: types.Int32 = dataclasses.field(metadata={'unit': 'kg'})
     expirience: types.Int32 = dataclasses.field(metadata={'unit': 'years'}, default=10)
     is_student: bool = True
     encoded: bytes = b"Hi"
@@ -446,10 +446,10 @@ class User(AvroModel):
     \"""
     age: types.Int32
     money_available: float
+    weight: types.Int32 = dataclasses.field(metadata={'unit': 'kg'})
     name: str = "marcos"
     pet_age: types.Int32 = 1
     height: types.Float32 = 10.1
-    weight: types.Int32 = dataclasses.field(metadata={'unit': 'kg'})
     expirience: types.Int32 = dataclasses.field(metadata={'unit': 'years'}, default=10)
     is_student: bool = True
     encoded: bytes = b"Hi"
@@ -470,4 +470,24 @@ class Address(AvroModel):
 """
     model_generator = ModelGenerator()
     result = model_generator.render_module(schemas=[schema, schema_2])
+    assert result.strip() == expected_result.strip()
+
+
+def test_model_generator_with_fields_with_metadata(with_fields_with_metadata: types.JsonDict) -> None:
+    expected_result = """
+from dataclasses_avroschema import AvroModel
+import dataclasses
+
+
+@dataclasses.dataclass
+class Message(AvroModel):
+    someotherfield: int = dataclasses.field(metadata={'aliases': ['oldname'], 'doc': 'test'})
+    fieldwithdefault: str = "some default value"
+
+    class Meta:
+        field_order = ['fieldwithdefault', 'someotherfield']
+
+"""
+    model_generator = ModelGenerator()
+    result = model_generator.render(schema=with_fields_with_metadata)
     assert result.strip() == expected_result.strip()
