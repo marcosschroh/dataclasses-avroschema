@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## 0.47.1 (2023-08-30)
+
+### Fix
+
+- do not uppercase enums keys when the key already exist. Closes #399 (#402)
+
 ## 0.47.0 (2023-08-28)
 
 ### Feat
