@@ -204,6 +204,28 @@ class User(AvroModel):
     assert result.strip() == expected_result.strip()
 
 
+def test_schema_with_enum_types_case_sensitivity(schema_with_enum_types_case_sensitivity: types.JsonDict) -> None:
+    expected_result = """
+from dataclasses_avroschema import AvroModel
+import dataclasses
+import enum
+
+
+class UnitMultiPlayer(enum.Enum):
+    Q = "Q"
+    q = "q"
+
+
+@dataclasses.dataclass
+class User(AvroModel):
+    unit_multi_player: UnitMultiPlayer
+
+"""
+    model_generator = ModelGenerator()
+    result = model_generator.render(schema=schema_with_enum_types_case_sensitivity)
+    assert result.strip() == expected_result.strip()
+
+
 def test_schema_one_to_one_relationship(schema_one_to_one_relationship: types.JsonDict) -> None:
     expected_result = """
 from dataclasses_avroschema import AvroModel

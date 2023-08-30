@@ -411,3 +411,58 @@ class User(AvroModel):
     class Meta:
         field_order = ['has_pets', 'name', 'age', 'money']
 ```
+
+## Enums and case sensitivity
+
+Sometimes there are schemas that contains the `symbols` which are case sensivity, for example `"symbols": ["P", "p"]`.
+Having something like that is NOT reccomended at all because it is meaninless, really hard to undestand the intention of it. Avoid it!!!
+
+When the schema generator encounter this situation it can not generated the proper `enum` with `uppercases` key so it will use the `symbol` without any transformation
+
+```python
+from dataclasses_avroschema import ModelGenerator
+
+schema = {
+    "type": "record",
+    "name": "User",
+    "fields": [
+        {
+            "name": "unit_multi_player",
+            "type": {
+                "type": "enum",
+                "name": "unit_multi_player",
+                "symbols": ["Q", "q"],
+            },
+        }
+    ],
+}
+
+model_generator = ModelGenerator()
+result = model_generator.render(schema=schema)
+
+# save the result in a file
+with open("models.py", mode="+w") as f:
+    f.write(result)
+```
+
+Then the result will be:
+
+```python
+# models.py
+from dataclasses_avroschema import AvroModel
+import dataclasses
+import enum
+
+
+class UnitMultiPlayer(enum.Enum):
+    Q = "Q"
+    q = "q"
+
+
+@dataclasses.dataclass
+class User(AvroModel):
+    unit_multi_player: UnitMultiPlayer
+
+```
+
+As the example shows the second enum member `UnitMultiPlayer.p` is not in uppercase otherwise will collide with the first member `UnitMultiPlayer.P`
