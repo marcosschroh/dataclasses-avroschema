@@ -275,14 +275,16 @@ class ModelGenerator:
             result = templates.field_template.safe_substitute(name=name, type=language_type)
 
         # optional field attribute
-        default = self.get_field_default(field_type=type, default=default, name=name, field_metadata=field_metadata)
+        default_generated = self.get_field_default(
+            field_type=type, default=default, name=name, field_metadata=field_metadata
+        )
 
         has_default = False
-        if default is not dataclasses.MISSING:
-            has_default = True
-
+        if default_generated is not dataclasses.MISSING:
             if type != field_utils.DECIMAL:
-                result += templates.field_default_template.safe_substitute(default=default)
+                result += templates.field_default_template.safe_substitute(default=default_generated)
+            if default is not dataclasses.MISSING:
+                has_default = True
 
         return FieldRepresentation(name=name, string_representation=result, has_default=has_default)
 

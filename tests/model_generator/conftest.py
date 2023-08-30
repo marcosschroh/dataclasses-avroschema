@@ -13,10 +13,10 @@ def schema() -> Dict:
         "fields": [
             {"name": "age", "type": "int"},
             {"name": "money_available", "type": "double"},
+            {"name": "weight", "type": "int", "unit": "kg"},
             {"name": "name", "type": "string", "default": "marcos"},
             {"name": "pet_age", "type": "int", "default": 1},
             {"name": "height", "type": "float", "default": 10.10},
-            {"name": "weight", "type": "int", "unit": "kg"},
             {"name": "expirience", "type": "int", "unit": "years", "default": 10},
             {
                 "name": "is_student",
@@ -500,5 +500,17 @@ def schema_with_pydantic_constrained_fields() -> JsonDict:
         "name": "ConstrainedValues",
         "fields": [
             {"pydantic-class": "conint(gt=10, lt=20)", "name": "constrained_int", "type": "int"},
+        ],
+    }
+
+
+@pytest.fixture
+def with_fields_with_metadata() -> JsonDict:
+    return {
+        "type": "record",
+        "name": "Message",
+        "fields": [
+            {"name": "fieldwithdefault", "type": "string", "default": "some default value"},
+            {"name": "someotherfield", "type": "long", "aliases": ["oldname"], "doc": "test"},
         ],
     }
