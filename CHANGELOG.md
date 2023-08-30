@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## 0.47.2 (2023-08-30)
+
+### Fix
+
+- field ordering when field has metadata but not a default value. Closes #401 (#403)
+
 ## 0.47.1 (2023-08-30)
 
 ### Fix
