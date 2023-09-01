@@ -428,13 +428,15 @@ class ModelGenerator:
         enum_name = casefy.pascalcase(field_name)
 
         symbols_map = {}
-        for symbol in field["symbols"]:
+        symbols: typing.List[str] = copy.deepcopy(field["symbols"])
+        symbols.sort(key=lambda symbol: symbol.islower())
+        for symbol in symbols:
             key = casefy.uppercase(symbol)
             if key in symbols_map:
                 key = symbol
             symbols_map[key] = symbol
 
-        symbols = self.field_identation.join(
+        symbols_repr = self.field_identation.join(
             [
                 templates.enum_symbol_template.safe_substitute(key=key, value=f'"{value}"')
                 for key, value in symbols_map.items()
@@ -442,7 +444,7 @@ class ModelGenerator:
         )
         docstring = self.render_docstring(docstring=field.get("doc"))
 
-        enum_class = templates.enum_template.safe_substitute(name=enum_name, symbols=symbols, docstring=docstring)
+        enum_class = templates.enum_template.safe_substitute(name=enum_name, symbols=symbols_repr, docstring=docstring)
         self.extras.append(enum_class)
 
         return enum_name

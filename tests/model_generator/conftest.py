@@ -223,7 +223,7 @@ def schema_with_enum_types_case_sensitivity() -> Dict:
                 "type": {
                     "type": "enum",
                     "name": "unit_multi_player",
-                    "symbols": ["Q", "q"],
+                    "symbols": ["q", "Q"],
                 },
             }
         ],
