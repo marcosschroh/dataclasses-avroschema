@@ -8,12 +8,6 @@ from dataclasses_avroschema import BaseClassEnum, ModelGenerator
 here = Path(__file__).parent.absolute()
 
 marks = {
-    "union_type": [
-        pytest.mark.xfail(raises=RuntimeError, reason="model generator borks on difficult union namespaces")
-    ],
-    "union_default_type": [
-        pytest.mark.xfail(raises=AssertionError, reason="schema generator does not handle enum comments yet")
-    ],
     "user_self_reference_one_to_many": [
         pytest.mark.xfail(raises=AssertionError, reason="schema generator does not handle self references correctly")
     ],
@@ -53,8 +47,5 @@ def test_roundtrip(filename: Path):
 
     obj = ns[schema["name"]]
     new_schema = obj.avro_schema_to_python()
-
-    print(new_schema, "\n\n")
-    print(schema, "\n\n")
 
     assert new_schema == schema

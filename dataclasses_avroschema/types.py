@@ -16,6 +16,9 @@ else:
 T = typing.TypeVar("T")
 JsonDict = typing.Dict[str, typing.Any]
 
+# This represents how avro.type is represneted in json.
+AvroTypeRepr = typing.Union[JsonDict, typing.List, str]
+
 
 class FieldInfo:
     ...

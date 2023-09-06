@@ -9,7 +9,7 @@ import fastavro
 
 from dataclasses_avroschema import serialization
 from dataclasses_avroschema.fields import field_utils
-from dataclasses_avroschema.types import JsonDict
+from dataclasses_avroschema.types import AvroTypeRepr, JsonDict
 
 from . import avro_to_python_utils, templates
 from .base_class import BaseClassEnum
@@ -223,12 +223,12 @@ class ModelGenerator:
             the `name` property and the type is a `native` one
         """
         name = field.get("name", "")
-        type = field["type"]
+        type: AvroTypeRepr = field["type"]
         default = field.get("default", dataclasses.MISSING)
         field_metadata = self.get_field_metadata(field)
 
         # This flag tells whether the field is array, map, fixed
-        is_complex_type = False
+        is_complex_type = has_default = False
 
         if self.is_logical_type(field=field):
             is_complex_type = True
@@ -238,6 +238,7 @@ class ModelGenerator:
         elif isinstance(type, dict):
             field_representation = self.render_field(field=type, model_name=model_name)
             language_type = field_representation.string_representation
+            has_default = field_representation.has_default
         elif isinstance(type, list):
             language_type = self.parse_union(field_types=type, model_name=model_name)
         elif type == field_utils.ARRAY:
@@ -279,7 +280,6 @@ class ModelGenerator:
             field_type=type, default=default, name=name, field_metadata=field_metadata
         )
 
-        has_default = False
         if default_generated is not dataclasses.MISSING:
             if type != field_utils.DECIMAL:
                 result += templates.field_default_template.safe_substitute(default=default_generated)
@@ -442,9 +442,14 @@ class ModelGenerator:
                 for key, value in symbols_map.items()
             ]
         )
-        docstring = self.render_docstring(docstring=field.get("doc"))
 
+        docstring = self.render_docstring(docstring=field.get("doc"))
         enum_class = templates.enum_template.safe_substitute(name=enum_name, symbols=symbols_repr, docstring=docstring)
+        metaclass = self.render_metaclass(schema=field)
+
+        if metaclass:
+            enum_class += metaclass
+
         self.extras.append(enum_class)
 
         return enum_name
@@ -474,10 +479,15 @@ class ModelGenerator:
         if type == model_name:
             # it means that it is a one-to-self-relationship
             return templates.type_template.safe_substitute(type=type)
-
-        if default is not None:
+        elif type not in self.avro_type_to_python:
+            # it means the type points to the an already specified type so it contains the type name
+            # with optional namespaces, e.g. my_namespace.users.User
+            # In this case we should return the last part of the string
+            return type.split(".")[-1]
+        elif default is not None:
             return str(self.avro_type_to_python.get(type, default))
-        return str(self.avro_type_to_python.get(type, type))
+        else:
+            return str(self.avro_type_to_python.get(type, type))
 
     def get_field_metadata(self, field: JsonDict) -> JsonDict:
         keys_to_ignore = [
@@ -539,7 +549,12 @@ class ModelGenerator:
         return None
 
     def get_field_default(
-        self, *, field_type: str, default: typing.Any, name: str, field_metadata: typing.Optional[JsonDict] = None
+        self,
+        *,
+        field_type: AvroTypeRepr,
+        default: typing.Any,
+        name: str,
+        field_metadata: typing.Optional[JsonDict] = None,
     ) -> typing.Any:
         """
         Returns the default value according to the field type
@@ -561,20 +576,6 @@ class ModelGenerator:
             default = f'"{default}"'
         elif field_type == field_utils.BYTES:
             default = f'b"{default}"'
-        elif isinstance(
-            default,
-            (
-                list,
-                dict,
-            ),
-        ):
-            if default:
-                # it is an array or maps with some defaults that we should
-                # express with a lambda function
-                dataclass_field_default_factory = f"default_factory=lambda: {default}"
-            else:
-                # it is an array or maps with `[]` or `{} ` as default
-                dataclass_field_default_factory = f"default_factory={default.__class__.__name__}"
         elif isinstance(field_type, dict):
             inner_type = field_type["type"]
             name = field_type.get("name", name)
@@ -583,6 +584,29 @@ class ModelGenerator:
             default = f"{casefy.pascalcase(name)}.{casefy.uppercase(default)}"
         elif isinstance(field_type, list):
             default = self.get_field_default(field_type=field_type[0], default=default, name=name)
+        elif isinstance(default, dict):
+            # Then is can be a regular dict as default or a record
+            if default:
+                if field_type not in field_utils.AVRO_TYPES:
+                    # Try to get the last part in case that the type is namespaced `types.bus_type.Bus`
+                    field_type = field_type.split(".")[-1]
+                    default = templates.instance_template.safe_substitute(type=field_type, properties=f"**{default}")
+
+                # it is an array or maps with some defaults that we should
+                # express with a lambda function
+                dataclass_field_default_factory = f"default_factory=lambda: {default}"
+            else:
+                # it is an array or maps with `[]` or `{} ` as default
+                dataclass_field_default_factory = f"default_factory={default.__class__.__name__}"
+        elif isinstance(default, list):
+            if default:
+                # TODO: check the defaults with custom types
+                # it is an array or maps with some defaults that we should
+                # express with a lambda function
+                dataclass_field_default_factory = f"default_factory=lambda: {default}"
+            else:
+                # it is an array or maps with `[]` or `{} ` as default
+                dataclass_field_default_factory = f"default_factory={default.__class__.__name__}"
         elif field_type in avro_to_python_utils.LOGICAL_TYPES_TO_PYTHON:
             func = avro_to_python_utils.LOGICAL_TYPES_TO_PYTHON[field_type]
             python_type = func(default)

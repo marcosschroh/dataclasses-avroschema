@@ -62,6 +62,22 @@ LOGICAL_DATETIME_MILIS = {"type": LONG, "logicalType": TIMESTAMP_MILLIS}
 LOGICAL_DATETIME_MICROS = {"type": LONG, "logicalType": TIMESTAMP_MICROS}
 LOGICAL_UUID = {"type": STRING, "logicalType": UUID}
 
+AVRO_TYPES = (
+    "boolean",
+    "null",
+    "int",
+    "float",
+    "long",
+    "double",
+    "bytes",
+    "string",
+    "array",
+    "enum",
+    "map",
+    "fixed",
+    "record",
+)
+
 PYTHON_TYPE_TO_AVRO = {
     bool: BOOLEAN,
     type(None): NULL,

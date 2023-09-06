@@ -34,6 +34,8 @@ class $name($base_class):$docstring
     $fields
 """
 
+INSTANCE_TEMPLATE = "$type($properties)"
+
 METACLASS_TEMPLATE = """
 class Meta:
     $properties
@@ -68,6 +70,7 @@ enum_template = Template(ENUM_TEMPLATE)
 dataclass_field_template = Template(DATACLASS_FIELD)
 pydantic_field_template = Template(PYDANTIC_FIELD)
 class_template = Template(CLASS_TEMPLATE)
+instance_template = Template(INSTANCE_TEMPLATE)
 metaclass_template = Template(METACLASS_TEMPLATE)
 type_template = Template(TYPE_TEMPLATE)
 date_template = Template(DATE_TEMPLATE)
