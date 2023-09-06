@@ -18,9 +18,9 @@ from dataclasses_avroschema.faker import fake
 from . import field_utils
 from .base import Field
 
-PY_VER = sys.version_info
+PY_VERSION = sys.version_info
 
-if PY_VER >= (3, 9):  # pragma: no cover
+if PY_VERSION >= (3, 9):  # pragma: no cover
     GenericAlias = (typing.GenericAlias, typing._GenericAlias, typing._SpecialGenericAlias, typing._UnionGenericAlias)  # type: ignore # noqa: E501
 else:
     GenericAlias = typing._GenericAlias  # type: ignore  # pragma: no cover
@@ -370,11 +370,20 @@ class EnumField(Field):
         # get Enum members
         members = self.type.__members__
         meta = members.get("Meta")
+        doc: typing.Optional[str] = self.type.__doc__
 
-        if meta:
-            metadata = utils.FieldMetadata.create(meta.value)
-            return metadata.to_dict()
-        return {}
+        # On python < 3.11 Enums have a default documentation so we remove it
+        if PY_VERSION < (3, 11) and doc == "An enumeration.":
+            doc = None
+
+        if meta is not None:
+            meta = meta.value
+
+        metadata = utils.FieldMetadata.create(meta)
+        if doc is not None:
+            metadata.doc = doc.strip()
+
+        return metadata.to_dict()
 
     def get_symbols(self) -> typing.List[str]:
         return [member.value for member in self.type if member.name != "Meta"]
@@ -670,7 +679,7 @@ class RecordField(Field):
         alias = self.parent.metadata.get_alias_nested_items(self.name) or metadata.get_alias_nested_items(self.name)  # type: ignore  # noqa E501
 
         # The priority for the schema name
-        # 1. Check if exists an alias_nested_items in parent class or Meta class of own model
+        # 1. Check if exists an alias_nested_items in parent llass or Meta class of own model
         # 2. Check if the schema_name is present in the Meta class of own model
         # 3. Use the default class Name (self.type.__name__)
         name = alias or metadata.schema_name or self.type.__name__

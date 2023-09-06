@@ -180,7 +180,7 @@ def schema_with_enum_types() -> Dict:
                 "name": "favorite_color",
                 "type": {
                     "type": "enum",
-                    "name": "favorite_color",
+                    "name": "FavoriteColor",
                     "symbols": ["Blue", "Yellow", "Green"],
                     "doc": "A favorite color",
                     "namespace": "some.name.space",
@@ -188,10 +188,14 @@ def schema_with_enum_types() -> Dict:
                 },
             },
             {
+                "name": "primaty_color",
+                "type": "some.name.space.FavoriteColor",
+            },
+            {
                 "name": "superheros",
                 "type": {
                     "type": "enum",
-                    "name": "superheros",
+                    "name": "Superheros",
                     "symbols": ["batman", "superman", "spiderman"],
                 },
                 "default": "batman",

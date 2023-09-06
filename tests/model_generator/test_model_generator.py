@@ -180,6 +180,10 @@ class FavoriteColor(enum.Enum):
     YELLOW = "Yellow"
     GREEN = "Green"
 
+    class Meta:
+        namespace = "some.name.space"
+        aliases = ['Color', 'My favorite color']
+
 
 class Superheros(enum.Enum):
     BATMAN = "batman"
@@ -196,6 +200,7 @@ class Cars(enum.Enum):
 @dataclasses.dataclass
 class User(AvroModel):
     favorite_color: FavoriteColor
+    primaty_color: FavoriteColor
     superheros: Superheros = Superheros.BATMAN
     cars: typing.Optional[Cars] = None
 """
