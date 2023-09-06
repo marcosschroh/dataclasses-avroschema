@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## 0.47.3 (2023-09-06)
+
+### Fix
+
+- Model/code generator when enum has namespaces. Closes #406 (#410)
+
 ## 0.47.2 (2023-08-30)
 
 ### Fix
