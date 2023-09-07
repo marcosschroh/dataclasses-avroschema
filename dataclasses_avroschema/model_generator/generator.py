@@ -106,13 +106,9 @@ class ModelGenerator:
         Render Class Meta that contains the schema matadata
         """
         metadata = [
-            self.matadata_field_templates[meta_avro_field].safe_substitute(
-                name=meta_field, value=schema.get(meta_avro_field)
-            )
+            self.matadata_field_templates[meta_avro_field].safe_substitute(name=meta_field, value=value)
             for meta_avro_field, meta_field in self.metadata_fields_mapper.items()
-            if schema.get(
-                meta_avro_field
-            )  # TODO: replace this line with if (value := schema.get(meta_avro_field)) after drop py3.7
+            if (value := schema.get(meta_avro_field))
         ]
 
         if field_order is not None:
