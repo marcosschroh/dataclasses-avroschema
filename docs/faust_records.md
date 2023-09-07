@@ -10,18 +10,18 @@ Example:
 
 ```python title="Basic usage"
 import typing
-
+from faust.models import fields
 from dataclasses_avroschema.faust import AvroRecord
 
 
 class UserAdvance(AvroRecord):
     name: str
     age: int
-    pets: typing.List[str] = dataclasses.field(default_factory=lambda: ['dog', 'cat'])
-    accounts: typing.Dict[str, int] = dataclasses.field(default_factory=lambda: {"key": 1})
-    has_car: bool = False
-    favorite_colors: typing.Tuple[str] = ("BLUE", "YELLOW", "GREEN")
-    country: str = "Argentina"
+    pets: typing.List[str] = fields.StringField(required=False, default=['dog', 'cat'])
+    accounts: typing.Dict[str, int] = fields.IntegerField(required=False, default={"key": 1})
+    has_car: bool = fields.BooleanField(required=False, default=False)
+    favorite_colors: typing.Tuple[str] = fields.StringField(required=False, default=("BLUE", "YELLOW", "GREEN"))
+    country: str = fields.StringField(required=False, default="Argentina")
     address: typing.Optional[str] = None
 
     class Meta:
@@ -72,7 +72,8 @@ resulting in
     {
       "name": "favorite_colors", 
       "type": {
-        "type": "array", "items": "string", "name": "favorite_color"
+        "type": "array", "items": "string", "name": "favorite_color",
+        "default": ["BLUE", "YELLOW", "GREEN"]
       }
     },
     {
@@ -101,18 +102,18 @@ In order to validate the data `validation=True` must be used as is described in 
 
     ```python title="Data validation"
     import typing
-
+    from faust.models import fields
     from dataclasses_avroschema.faust import AvroRecord
 
 
     class UserAdvance(AvroRecord, validation=True):
         name: str
         age: int
-        pets: typing.List[str] = dataclasses.field(default_factory=lambda: ['dog', 'cat'])
-        accounts: typing.Dict[str, int] = dataclasses.field(default_factory=lambda: {"key": 1})
-        has_car: bool = False
-        favorite_colors: typing.Tuple[str] = ("BLUE", "YELLOW", "GREEN")
-        country: str = "Argentina"
+        pets: typing.List[str] = fields.StringField(required=False, default=['dog', 'cat'])
+        accounts: typing.Dict[str, int] = fields.IntegerField(required=False, default={"key": 1})
+        has_car: bool = fields.BooleanField(required=False, default=False)
+        favorite_colors: typing.Tuple[str] = fields.StringField(required=False, default=("BLUE", "YELLOW", "GREEN"))
+        country: str = fields.StringField(required=False, default="Argentina")
         address: typing.Optional[str] = None
 
         class Meta:
@@ -133,11 +134,11 @@ In order to validate the data `validation=True` must be used as is described in 
     class UserAdvance(AvroRecord):
         name: str
         age: int
-        pets: typing.List[str] = dataclasses.field(default_factory=lambda: ['dog', 'cat'])
-        accounts: typing.Dict[str, int] = dataclasses.field(default_factory=lambda: {"key": 1})
-        has_car: bool = False
-        favorite_colors: typing.Tuple[str] = ("BLUE", "YELLOW", "GREEN")
-        country: str = "Argentina"
+        pets: typing.List[str] = fields.StringField(required=False, default=['dog', 'cat'])
+        accounts: typing.Dict[str, int] = fields.IntegerField(required=False, default={"key": 1})
+        has_car: bool = fields.BooleanField(required=False, default=False)
+        favorite_colors: typing.Tuple[str] = fields.StringField(required=False, default=("BLUE", "YELLOW", "GREEN"))
+        country: str = fields.StringField(required=False, default="Argentina")
         address: typing.Optional[str] = None
 
         class Meta:
