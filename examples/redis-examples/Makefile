@@ -1,5 +1,5 @@
 # This Makefile requires the following commands to be available:
-# * python3.7
+# * python3.8
 # * docker
 
 # Docker Compse options

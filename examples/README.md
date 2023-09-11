@@ -4,11 +4,11 @@ You will find a series of example about how to use [dataclasses-avroschema](http
 
 ## Requirements
 
-`python 3.7+ docker docker-compose`
+`python 3.8+ docker docker-compose`
 
 ## Installation
 
-1. `python3.7 -m venv venv`
+1. `python3.8 -m venv venv`
 2. `source venv/bin/activate`
 3. For kafka examples: `pip install -r kafka-examples/requirements.txt`
 4. For redis examples: `pip install -r redis-examples/requirements.txt`
