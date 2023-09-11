@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## 0.48.0 (2023-09-11)
+
+### BREAKING CHANGE
+
+- drop python 3.7 support (#414)
+
 ## 0.47.3 (2023-09-06)
 
 ### Fix
