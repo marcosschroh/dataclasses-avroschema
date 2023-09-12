@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## 0.48.1 (2023-09-12)
+
+### Fix
+
+- respect enum symbols order when generating models from schemas. Related to #413 (#422)
+
 ## 0.48.0 (2023-09-11)
 
 ### BREAKING CHANGE
