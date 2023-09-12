@@ -424,11 +424,10 @@ class ModelGenerator:
         enum_name = casefy.pascalcase(field_name)
 
         symbols_map = {}
-        symbols: typing.List[str] = copy.deepcopy(field["symbols"])
-        symbols.sort(key=lambda symbol: symbol.islower())
+        symbols: typing.List[str] = field["symbols"]
         for symbol in symbols:
             key = casefy.uppercase(symbol)
-            if key in symbols_map:
+            if key in symbols:
                 key = symbol
             symbols_map[key] = symbol
 
