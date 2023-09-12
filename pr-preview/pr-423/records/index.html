@@ -482,6 +482,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#excluding-fields" class="md-nav__link">
+    Excluding fields
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -790,6 +797,13 @@
         <li class="md-nav__item">
   <a href="#field-order" class="md-nav__link">
     Field order
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#excluding-fields" class="md-nav__link">
+    Excluding fields
   </a>
   
 </li>
@@ -1178,7 +1192,7 @@ by a third party (we do not have control of if) and fields with defaults values 
     <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
         <span class="n">field_order</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;has_pets&quot;</span><span class="p">,]</span>
 </code></pre></div>
-<p>and now it represents the schame</p>
+<p>which represents the schema</p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;record&quot;</span><span class="p">,</span>
 <span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;User&quot;</span><span class="p">,</span>
@@ -1194,6 +1208,45 @@ by a third party (we do not have control of if) and fields with defaults values 
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>Schemas with the same fields but with different order are <em>NOT</em> the same schema. In avro the field order is important</p>
+</div>
+<h2 id="excluding-fields">Excluding fields</h2>
+<p>It is possible to exclude fields from the schema using the <code>Meta.exclude</code> attribute. This can be helpful when we have fields that are not serializable.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">dataclasses</span>
+
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
+
+
+<span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
+    <span class="s2">&quot;An User&quot;</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">last_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Bond&quot;</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">namespace</span> <span class="o">=</span> <span class="s2">&quot;test.com.ar/user/v1&quot;</span>
+        <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;User&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;My favorite User&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="n">exclude</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;last_name&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+</code></pre></div>
+<p>which represents the schema <em>whiout the field <code>last_name</code></em></p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;record&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;User&quot;</span><span class="p">,</span><span class="w"> </span>
+<span class="w">    </span><span class="nt">&quot;fields&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;name&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;age&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;long&quot;</span><span class="p">}</span>
+<span class="w">    </span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;doc&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;An User&quot;</span><span class="p">,</span><span class="w"> </span>
+<span class="w">    </span><span class="nt">&quot;namespace&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;test.com.ar/user/v1&quot;</span><span class="p">,</span><span class="w"> </span>
+<span class="w">    </span><span class="nt">&quot;aliases&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;User&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;My favorite User&quot;</span><span class="p">]</span>
+</code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If a <em>required</em> field is excluded from the schema then the deserialization will <em>FAIL</em> because a default value is not provided</p>
 </div>
 
 
