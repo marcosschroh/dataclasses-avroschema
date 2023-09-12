@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## 0.49.0 (2023-09-12)
+
+### Feat
+
+- option to exclude fields on the output schema added. (#423)
+
 ## 0.48.1 (2023-09-12)
 
 ### Fix

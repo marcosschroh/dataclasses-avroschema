@@ -45,7 +45,7 @@ User.avro_schema()
 
 ## Class Meta
 
-The `class Meta` is used to specify schema attributes that are not represented by the class fields like `namespace`, `aliases` and whether to include the `schema documentation`. Also custom schema name (the default is the class' name) via `schema_name` attribute, and `alias_nested_items` when you have nested items and you want to use custom naming for them, `custom dacite` configuration can be provided and `field_order`
+The `class Meta` is used to specify schema attributes that are not represented by the class fields like `namespace`, `aliases` and whether to include the `schema documentation`. Also custom schema name (the default is the class' name) via `schema_name` attribute, `alias_nested_items` when you have nested items and you want to use custom naming for them, `custom dacite` configuration can be provided, `field_order` and `exclude`.
 
 ```python title="Class Meta description"
 class Meta:
@@ -55,6 +55,7 @@ class Meta:
     aliases = ["User", "My favorite User"]
     alias_nested_items = {"address": "Address"}
     field_order = ["age", "name",]
+    exclude = ["last_name",]
     dacite_config = {
         "strict_unions_match": True,
         "strict": True,
@@ -69,7 +70,9 @@ class Meta:
 
 `alias_nested_items Optional[Dict[str, str]]`: Nested items names
 
-`field_order Optiona[List[str]]`: List of field names to specify their order to the output schema 
+`field_order Optiona[List[str]]`: List of field names to specify their order to the output schema
+
+`exclude Optiona[List[str]]`: List of field names to be excluded in the output schema
 
 ## Record to json and dict
 
@@ -421,7 +424,7 @@ class User(AvroModel):
         field_order = ["has_pets",]
 ```
 
-and now it represents the schame
+which represents the schema
 
 ```json
 {
@@ -439,3 +442,48 @@ and now it represents the schame
 
 !!! warning
     Schemas with the same fields but with different order are *NOT* the same schema. In avro the field order is important
+
+## Excluding fields
+
+It is possible to exclude fields from the schema using the `Meta.exclude` attribute. This can be helpful when we have fields that are not serializable.
+
+```python
+import dataclasses
+
+from dataclasses_avroschema import AvroModel
+
+
+class User(AvroModel):
+    "An User"
+    name: str
+    age: int
+    last_name: str = "Bond"
+
+    class Meta:
+        namespace = "test.com.ar/user/v1"
+        aliases = [
+            "User",
+            "My favorite User",
+        ]
+        exclude = [
+            "last_name",
+        ]
+```
+
+which represents the schema *whiout the field `last_name`*
+
+```json
+{
+    "type": "record",
+    "name": "User", 
+    "fields": [
+        {"name": "name", "type": "string"},
+        {"name": "age", "type": "long"}
+    ],
+    "doc": "An User", 
+    "namespace": "test.com.ar/user/v1", 
+    "aliases": ["User", "My favorite User"]
+```
+
+!!! warning
+    If a *required* field is excluded from the schema then the deserialization will *FAIL* because a default value is not provided
