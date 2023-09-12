@@ -69,13 +69,15 @@ class AvroSchemaDefinition(BaseSchemaDefinition):
         self.fields_map = {field.name: field for field in self.fields}
 
     def parse_dataclasses_fields(self) -> typing.List[Field]:
-        if utils.is_faust_model(self.klass):
-            return self.parse_faust_fields()
-        elif utils.is_pydantic_model(self.klass):
-            return self.parse_pydantic_fields()
-        return self.parse_fields()
+        exclude = self.metadata.exclude
 
-    def parse_fields(self) -> typing.List[Field]:
+        if utils.is_faust_model(self.klass):
+            return self.parse_faust_fields(exclude=exclude)
+        elif utils.is_pydantic_model(self.klass):
+            return self.parse_pydantic_fields(exclude=exclude)
+        return self.parse_fields(exclude=exclude)
+
+    def parse_fields(self, exclude: typing.List) -> typing.List[Field]:
         return [
             AvroField(
                 dataclass_field.name,
@@ -87,12 +89,16 @@ class AvroSchemaDefinition(BaseSchemaDefinition):
                 parent=self.parent,
             )
             for dataclass_field in dataclasses.fields(self.klass)
+            if dataclass_field.name not in exclude
         ]
 
-    def parse_faust_fields(self) -> typing.List[Field]:
+    def parse_faust_fields(self, exclude: typing.List) -> typing.List[Field]:
         schema_fields = []
 
         for dataclass_field in dataclasses.fields(self.klass):
+            if dataclass_field.name in exclude:
+                continue
+
             faust_field = dataclass_field.default
             metadata = dataclass_field.metadata
             default_factory = dataclasses.MISSING
@@ -122,7 +128,7 @@ class AvroSchemaDefinition(BaseSchemaDefinition):
 
         return schema_fields
 
-    def parse_pydantic_fields(self) -> typing.List[Field]:
+    def parse_pydantic_fields(self, exclude: typing.List) -> typing.List[Field]:
         return [
             AvroField(
                 model_field.name,
@@ -136,6 +142,7 @@ class AvroSchemaDefinition(BaseSchemaDefinition):
                 parent=self.parent,
             )
             for model_field in self.klass.__fields__.values()
+            if model_field.name not in exclude
         ]
 
     def get_rendered_fields(self) -> typing.List[OrderedDict]:

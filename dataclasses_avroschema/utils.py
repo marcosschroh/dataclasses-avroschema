@@ -94,6 +94,7 @@ class SchemaMetadata:
     alias_nested_items: typing.Dict[str, str] = dataclasses.field(default_factory=dict)
     dacite_config: typing.Optional[JsonDict] = None
     field_order: typing.Optional[typing.List[str]] = None
+    exclude: typing.List[str] = dataclasses.field(default_factory=list)
 
     @classmethod
     def create(cls: typing.Type["SchemaMetadata"], klass: type) -> typing.Any:
@@ -105,6 +106,7 @@ class SchemaMetadata:
             alias_nested_items=getattr(klass, "alias_nested_items", {}),
             dacite_config=getattr(klass, "dacite_config", None),
             field_order=getattr(klass, "field_order", None),
+            exclude=getattr(klass, "exclude", []),
         )
 
     def get_alias_nested_items(self, name: str) -> typing.Optional[str]:
