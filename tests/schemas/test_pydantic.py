@@ -459,3 +459,25 @@ def test_exclude_fields() -> None:
 
     assert Message.deserialize(event, serialization_type="avro-json") == message
     assert Message.deserialize(event, serialization_type="avro-json", create_instance=False) != message.dict()
+
+
+def test_exclude_field_from_schema(user_extra_avro_attributes):
+    class User(AvroBaseModel):
+        "An User"
+        name: str
+        age: int
+        last_name: str = "Bond"
+
+        class Meta:
+            namespace = "test.com.ar/user/v1"
+            aliases = [
+                "User",
+                "My favorite User",
+            ]
+            exclude = [
+                "last_name",
+            ]
+
+    user = User.fake()
+    assert User.avro_schema() == json.dumps(user_extra_avro_attributes)
+    assert User.deserialize(user.serialize()) == user

@@ -223,6 +223,28 @@ def test_order_field_not_specifing_all(order_fields_schema):
     assert User.avro_schema() == json.dumps(order_fields_schema)
 
 
+def test_exclude_field_from_schema(user_extra_avro_attributes):
+    class User(AvroModel):
+        "An User"
+        name: str
+        age: int
+        last_name: str = "Bond"
+
+        class Meta:
+            namespace = "test.com.ar/user/v1"
+            aliases = [
+                "User",
+                "My favorite User",
+            ]
+            exclude = [
+                "last_name",
+            ]
+
+    user = User.fake()
+    assert User.avro_schema() == json.dumps(user_extra_avro_attributes)
+    assert User.deserialize(user.serialize()) == user
+
+
 def test_validate():
     @dataclass
     class User(AvroModel):
