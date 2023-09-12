@@ -44,11 +44,14 @@ class AvroBaseModel(BaseModel, AvroModel):  # type: ignore
 
     def asdict(self, standardize_factory: Optional[Callable[..., Any]] = None) -> JsonDict:
         """
-        Document this. asdict vs dict
+        Returns this model in dictionary form. This method differs from
+        pydantic's dict by converting all values to their Avro representation.
+        It also doesn't provide the exclude, include, by_alias, etc.
+        parameters that dict provides.
         """
         data = dict(self)
 
-        standardize_method = standardize_factory or standardize_custom_type
+        standardize_method = standardize_factory or self.standardize_type
 
         # the standardize called can be replaced if we have a custom implementation of asdict
         # for now I think is better to use the native implementation

@@ -697,7 +697,7 @@ def test_enum_field_default():
     assert enum_field4.get_default_value() == Color.GREEN
 
 
-class PydanticGenericClass:
+class PydanticCustomClass:
     @classmethod
     def __get_validators__(cls):
         pass  # This is a stub method
@@ -707,58 +707,58 @@ class PydanticGenericClass:
         pass  # This is a stub method too
 
 
-class PydanticGenericClassParent(AvroBaseModel):
+class PydanticCustomClassParent(AvroBaseModel):
     class Config:
-        json_encoders = {PydanticGenericClass: str}
+        json_encoders = {PydanticCustomClass: str}
 
 
-def test_pydantic_generic_class_field():
-    field_name = "generic_class"
-    generic_class_field = AvroField(field_name, PydanticGenericClass, PydanticGenericClassParent)
+def test_pydantic_custom_class_field():
+    field_name = "custom_class"
+    custom_class_field = AvroField(field_name, PydanticCustomClass, PydanticCustomClassParent)
 
-    assert generic_class_field.to_dict() == {
+    assert custom_class_field.to_dict() == {
         "type": "string",
         "name": field_name,
     }
 
 
-def test_pydantic_generic_class_field_with_default():
-    field_name = "generic_class"
+def test_pydantic_custom_class_field_with_default():
+    field_name = "custom_class"
     default = "a default string"
-    generic_class_field = AvroField(
+    custom_class_field = AvroField(
         field_name,
-        PydanticGenericClass,
-        PydanticGenericClassParent,
+        PydanticCustomClass,
+        PydanticCustomClassParent,
         default=default,
     )
 
-    assert generic_class_field.to_dict() == {
+    assert custom_class_field.to_dict() == {
         "type": "string",
         "name": field_name,
         "default": default,
     }
 
 
-def test_pydantic_generic_class_field_with_default_factory():
+def test_pydantic_custom_class_field_with_default_factory():
     """
-    When the type is pydantic generic class, the default_factory should
+    When the type is pydantic custom class, the default_factory should
     be omitted
     """
-    field_name = "generic_class"
-    generic_class_field = AvroField(
+    field_name = "custom_class"
+    custom_class_field = AvroField(
         field_name,
-        PydanticGenericClass,
-        PydanticGenericClassParent,
+        PydanticCustomClass,
+        PydanticCustomClassParent,
         default_factory=int,
     )
 
-    assert generic_class_field.default_factory is dataclasses.MISSING
+    assert custom_class_field.default_factory is dataclasses.MISSING
 
 
-def test_pydantic_generic_class_field_with_misconfigured_parent():
+def test_pydantic_custom_class_field_with_misconfigured_parent():
     class MisconfiguredParent(AvroBaseModel):
         pass
 
-    field_name = "generic_class"
+    field_name = "custom_class"
     with pytest.raises(ValueError):
-        AvroField(field_name, PydanticGenericClass, MisconfiguredParent)
+        AvroField(field_name, PydanticCustomClass, MisconfiguredParent)

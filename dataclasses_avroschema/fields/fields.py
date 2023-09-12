@@ -719,7 +719,7 @@ from .mapper import (
 )
 
 LOGICAL_CLASSES = LOGICAL_TYPES_FIELDS_CLASSES.keys()
-PYDANTIC_GENERIC_CLASS_METHOD_NAMES = {"__get_validators__", "validate"}
+PYDANTIC_CUSTOM_CLASS_METHOD_NAMES = {"__get_validators__", "validate"}
 
 
 def field_factory(
@@ -874,9 +874,9 @@ def field_factory(
             model_metadata=model_metadata,
             parent=parent,
         )
-    # See if this is a pydantic "Generic Class"
+    # See if this is a pydantic "Custom Class"
     elif inspect.isclass(native_type) and all(
-        method_name in dir(native_type) for method_name in PYDANTIC_GENERIC_CLASS_METHOD_NAMES
+        method_name in dir(native_type) for method_name in PYDANTIC_CUSTOM_CLASS_METHOD_NAMES
     ):
         try:
             # Build a field for the encoded type since that's what will be serialized
@@ -887,7 +887,7 @@ def field_factory(
                 f" (or for one of the classes in its inheritance tree since pydantic configs are inherited)"
             )
 
-        # default_factory is not schema-friendly for Generic Classes since it could be returning
+        # default_factory is not schema-friendly for Custom Classes since it could be returning
         # dynamically constructed values that should not be treated as defaults. For example,
         # native_type could be a timestamp field with a default factory that returns the current
         # time, which would result in "generate_schema" producing a schema with a different default
