@@ -217,8 +217,8 @@ import enum
 
 
 class UnitMultiPlayer(enum.Enum):
-    Q = "Q"
     q = "q"
+    Q = "Q"
 
 
 @dataclasses.dataclass
