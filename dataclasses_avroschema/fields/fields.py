@@ -719,6 +719,7 @@ from .mapper import (
 )
 
 LOGICAL_CLASSES = LOGICAL_TYPES_FIELDS_CLASSES.keys()
+PYDANTIC_CUSTOM_CLASS_METHOD_NAMES = {"__get_validators__", "validate"}
 
 
 def field_factory(
@@ -872,6 +873,39 @@ def field_factory(
             metadata=metadata,
             model_metadata=model_metadata,
             parent=parent,
+        )
+    # See if this is a pydantic "Custom Class"
+    elif inspect.isclass(native_type) and all(
+        method_name in dir(native_type) for method_name in PYDANTIC_CUSTOM_CLASS_METHOD_NAMES
+    ):
+        try:
+            # Build a field for the encoded type since that's what will be serialized
+            encoded_type = parent.__config__.json_encoders[native_type]
+        except KeyError:
+            raise ValueError(
+                f"Type {native_type} must be listed in the pydantic 'json_encoders' config for {parent}"
+                f" (or for one of the classes in its inheritance tree since pydantic configs are inherited)"
+            )
+
+        # default_factory is not schema-friendly for Custom Classes since it could be returning
+        # dynamically constructed values that should not be treated as defaults. For example,
+        # native_type could be a timestamp field with a default factory that returns the current
+        # time, which would result in "generate_schema" producing a schema with a different default
+        # everytime that it's called from AvroModel.
+        default_factory = dataclasses.MISSING
+
+        # Encode the default value if it's an instance of native_type
+        default_value = encoded_type(default) if type(default) is native_type else default
+
+        # Build a field for the encoded type
+        return field_factory(
+            name,
+            native_type=encoded_type,
+            parent=parent,
+            default=default_value,
+            default_factory=default_factory,
+            metadata=metadata,
+            model_metadata=model_metadata,
         )
     else:
         msg = (
