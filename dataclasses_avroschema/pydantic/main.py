@@ -7,6 +7,8 @@ from dataclasses_avroschema.schema_generator import AVRO, AvroModel
 from dataclasses_avroschema.types import JsonDict
 from dataclasses_avroschema.utils import standardize_custom_type
 
+from .parser import PydanticParser
+
 try:
     from pydantic import BaseModel  # pragma: no cover
 except ImportError as ex:  # pragma: no cover
@@ -90,3 +92,8 @@ class AvroBaseModel(BaseModel, AvroModel):  # type: ignore
         payload.update(data)
 
         return cls.parse_obj(payload)
+
+    @classmethod
+    def _generate_parser(cls: Type[CT]) -> PydanticParser:
+        cls._metadata = cls.generate_metadata()
+        return PydanticParser(type=cls._klass, metadata=cls._metadata, parent=cls._parent or cls)

@@ -8,11 +8,6 @@ from typing_extensions import Annotated, get_origin
 from .types import JsonDict
 
 try:
-    import faust
-except ImportError:  # pragma: no cover
-    faust = None  # type: ignore # pragma: no cover
-
-try:
     import pydantic  # pragma: no cover
 except ImportError:  # type: ignore # pragma: no cover
     pydantic = None  # type: ignore # pragma: no cover
@@ -21,12 +16,6 @@ except ImportError:  # type: ignore # pragma: no cover
 def is_pydantic_model(klass: type) -> bool:
     if pydantic is not None:
         return issubclass(klass, pydantic.BaseModel)
-    return False
-
-
-def is_faust_model(klass: type) -> bool:
-    if faust is not None:
-        return issubclass(klass, faust.Record)
     return False
 
 

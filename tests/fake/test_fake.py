@@ -8,7 +8,7 @@ import pydantic
 import pytest
 
 from dataclasses_avroschema import AvroModel, types
-from dataclasses_avroschema.avrodantic import AvroBaseModel
+from dataclasses_avroschema.pydantic import AvroBaseModel
 
 from .const import pydantic_fields
 

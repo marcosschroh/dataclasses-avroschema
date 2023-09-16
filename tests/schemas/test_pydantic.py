@@ -9,7 +9,7 @@ import pydantic
 import pytest
 
 from dataclasses_avroschema import types, utils
-from dataclasses_avroschema.avrodantic import AvroBaseModel
+from dataclasses_avroschema.pydantic import AvroBaseModel
 
 encoded = "test".encode()
 

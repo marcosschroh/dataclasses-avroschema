@@ -204,7 +204,7 @@ and then render the result:
         f.write(result)
 
     # models.py
-    from dataclasses_avroschema.avrodantic import AvroBaseModel
+    from dataclasses_avroschema.pydantic import AvroBaseModel
     from pydantic import Field
     from pydantic import condecimal
     import typing

@@ -5,22 +5,19 @@ import decimal
 import enum
 import inspect
 import random
-import sys
 import typing
 import uuid
 
 from typing_extensions import get_args, get_origin
 
-from dataclasses_avroschema import schema_generator, serialization, types, utils
+from dataclasses_avroschema import schema_generator, serialization, types, utils, version
 from dataclasses_avroschema.exceptions import InvalidMap
 from dataclasses_avroschema.faker import fake
 
 from . import field_utils
 from .base import Field
 
-PY_VERSION = sys.version_info
-
-if PY_VERSION >= (3, 9):  # pragma: no cover
+if version.PY_VERSION >= (3, 9):  # pragma: no cover
     GenericAlias = (typing.GenericAlias, typing._GenericAlias, typing._SpecialGenericAlias, typing._UnionGenericAlias)  # type: ignore # noqa: E501
 else:
     GenericAlias = typing._GenericAlias  # type: ignore  # pragma: no cover
@@ -376,7 +373,7 @@ class EnumField(Field):
         doc: typing.Optional[str] = self.type.__doc__
 
         # On python < 3.11 Enums have a default documentation so we remove it
-        if PY_VERSION < (3, 11) and doc == "An enumeration.":
+        if version.PY_VERSION < (3, 11) and doc == "An enumeration.":
             doc = None
 
         if meta is not None:
@@ -397,7 +394,7 @@ class EnumField(Field):
 
         if not self.exist_type():
             user_defined_type = utils.UserDefinedType(name=name, type=self.type)
-            self.parent.user_defined_types.add(user_defined_type)
+            self.parent._user_defined_types.add(user_defined_type)
             return {
                 "type": field_utils.ENUM,
                 "name": name,
@@ -679,7 +676,7 @@ class RecordField(Field):
         meta = getattr(self.type, "Meta", type)
         metadata = utils.SchemaMetadata.create(meta)
 
-        alias = self.parent.metadata.get_alias_nested_items(self.name) or metadata.get_alias_nested_items(self.name)  # type: ignore  # noqa E501
+        alias = self.parent._metadata.get_alias_nested_items(self.name) or metadata.get_alias_nested_items(self.name)  # type: ignore  # noqa E501
 
         # The priority for the schema name
         # 1. Check if exists an alias_nested_items in parent llass or Meta class of own model
@@ -689,7 +686,7 @@ class RecordField(Field):
 
         if not self.exist_type() or alias is not None:
             user_defined_type = utils.UserDefinedType(name=name, type=self.type)
-            self.parent.user_defined_types.add(user_defined_type)
+            self.parent._user_defined_types.add(user_defined_type)
 
             record_type = self.type.avro_schema_to_python(parent=self.parent)
             record_type["name"] = name
@@ -704,10 +701,10 @@ class RecordField(Field):
         return record_type
 
     def default_to_avro(self, value: "schema_generator.AvroModel") -> typing.Dict:
-        schema_def = value.schema_def or value._generate_avro_schema()
+        parser = value._parser or value._generate_parser()
         return {
             fieldname: field.default_to_avro(getattr(value, fieldname))
-            for fieldname, field in schema_def.get_fields_map().items()
+            for fieldname, field in parser.get_fields_map().items()
         }
 
     def fake(self) -> typing.Any:
