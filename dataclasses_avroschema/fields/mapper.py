@@ -10,7 +10,7 @@ from dataclasses_avroschema import types
 
 from . import fields, pydantic_fields
 
-INMUTABLE_FIELDS_CLASSES: dict[type | str | None, type] = {
+INMUTABLE_FIELDS_CLASSES: dict[type | str, type] = {
     bool: fields.BooleanField,
     int: fields.LongField,
     types.Int32: fields.IntField,
@@ -18,7 +18,6 @@ INMUTABLE_FIELDS_CLASSES: dict[type | str | None, type] = {
     types.Float32: fields.FloatField,
     bytes: fields.BytesField,
     str: fields.StringField,
-    None: fields.NoneField,
     type(None): fields.NoneField,
 }
 

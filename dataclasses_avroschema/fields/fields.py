@@ -742,6 +742,9 @@ def field_factory(
 
     field_info = None
 
+    if native_type is None:
+        native_type = type(None)
+
     if native_type not in types.CUSTOM_TYPES and utils.is_annotated(native_type):
         a_type, *extra_args = get_args(native_type)
         field_info = next((arg for arg in extra_args if isinstance(arg, types.FieldInfo)), None)
