@@ -23,7 +23,11 @@ def test_primitive_types(primitive_type):
 def test_primitive_types_with_default_value_none(primitive_type):
     name = "a_field"
     field = AvroField(name, primitive_type, default=None)
-    avro_type = [field_utils.NULL, field.avro_type]
+
+    if field.avro_type == field_utils.NULL:
+        avro_type = field_utils.NULL
+    else:
+        avro_type = [field_utils.NULL, field.avro_type]
 
     assert {"name": name, "type": avro_type, "default": None} == field.to_dict()
 
@@ -56,6 +60,9 @@ def test_primitive_types_with_default_factory_value(primitive_type, default):
 def test_invalid_default_values(primitive_type, invalid_default):
     name = "a_field"
     field = AvroField(name, primitive_type, default=invalid_default)
+
+    if primitive_type is None:
+        primitive_type = type(None)
 
     msg = f"Invalid default type. Default should be {primitive_type}"
     with pytest.raises(AssertionError, match=msg):

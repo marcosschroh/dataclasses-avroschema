@@ -390,7 +390,10 @@ def test_union_as_optional_with_primitives(primitive_type, avro_type) -> None:
     python_type = typing.Optional[primitive_type]
     field = AvroField(name, python_type)
 
-    expected = {"name": name, "type": [avro_type, "null"]}
+    if python_type is type(None):
+        expected = {"name": name, "type": "null"}
+    else:
+        expected = {"name": name, "type": [avro_type, "null"]}
 
     assert expected == field.to_dict()
 
