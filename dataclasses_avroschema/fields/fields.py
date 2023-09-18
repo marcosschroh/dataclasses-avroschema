@@ -128,6 +128,9 @@ class NoneField(ImmutableField):
     def avro_type(self) -> str:
         return field_utils.NULL
 
+    def get_avro_type(self) -> str:
+        return self.avro_type
+
 
 @dataclasses.dataclass
 class ContainerField(Field):
