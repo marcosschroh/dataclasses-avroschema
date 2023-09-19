@@ -928,7 +928,7 @@
 <h2 id="avro-and-json-schemas">Avro and Json schemas</h2>
 <div class="highlight"><span class="filename">Basic usage</span><pre><span></span><code><span class="kn">import</span> <span class="nn">typing</span>
 <span class="kn">import</span> <span class="nn">enum</span>
-<span class="kn">from</span> <span class="nn">dataclasses_avroschema.avrodantic</span> <span class="kn">import</span> <span class="n">AvroBaseModel</span>
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema.pydantic</span> <span class="kn">import</span> <span class="n">AvroBaseModel</span>
 
 <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">Field</span>
 
@@ -1131,7 +1131,7 @@ using the key <code>pydantic-class</code>.</p>
 </tbody>
 </table>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">pydantic</span>
-<span class="kn">from</span> <span class="nn">dataclasses_avroschema.avrodantic</span> <span class="kn">import</span> <span class="n">AvroBaseModel</span>
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema.pydantic</span> <span class="kn">import</span> <span class="n">AvroBaseModel</span>
 
 
 <span class="k">class</span> <span class="nc">Infrastructure</span><span class="p">(</span><span class="n">AvroBaseModel</span><span class="p">):</span>
@@ -1195,7 +1195,7 @@ then the proper pydantic types will be used.</p>
     <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 </code></pre></div>
 <p>and then render the result:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">dataclasses_avroschema.avrodantic</span> <span class="kn">import</span> <span class="n">AvroBaseModel</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">dataclasses_avroschema.pydantic</span> <span class="kn">import</span> <span class="n">AvroBaseModel</span>
 <span class="kn">import</span> <span class="nn">pydantic</span>
 <span class="kn">import</span> <span class="nn">typing</span>
 
@@ -1397,7 +1397,7 @@ then the proper pydantic types will be used.</p>
 <h3 id="parsing-objects">Parsing Objects</h3>
 <div class="highlight"><span class="filename">parse_obj usage</span><pre><span></span><code><span class="kn">import</span> <span class="nn">typing</span>
 
-<span class="kn">from</span> <span class="nn">dataclasses_avroschema.avrodantic</span> <span class="kn">import</span> <span class="n">AvroBaseModel</span>
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema.pydantic</span> <span class="kn">import</span> <span class="n">AvroBaseModel</span>
 
 
 <span class="k">class</span> <span class="nc">Address</span><span class="p">(</span><span class="n">AvroBaseModel</span><span class="p">):</span>
@@ -1429,7 +1429,7 @@ then the proper pydantic types will be used.</p>
 
 <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">parse_obj_as</span>
 
-<span class="kn">from</span> <span class="nn">dataclasses_avroschema.avrodantic</span> <span class="kn">import</span> <span class="n">AvroBaseModel</span>
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema.pydantic</span> <span class="kn">import</span> <span class="n">AvroBaseModel</span>
 
 
 <span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">AvroBaseModel</span><span class="p">):</span>
@@ -1450,7 +1450,7 @@ then the proper pydantic types will be used.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">typing</span>
 <span class="kn">import</span> <span class="nn">datetime</span>
 <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">Field</span>
-<span class="kn">from</span> <span class="nn">dataclasses_avroschema.avrodantic</span> <span class="kn">import</span> <span class="n">AvroBaseModel</span>
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema.pydantic</span> <span class="kn">import</span> <span class="n">AvroBaseModel</span>
 
 
 <span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">AvroBaseModel</span><span class="p">):</span>
@@ -1473,7 +1473,7 @@ then the proper pydantic types will be used.</p>
 <p>Pydantic Fields can be excluded when <code>dict</code>, <code>json</code> or <code>copy</code> methods are called. This meaans that the exclusion is only for <a href="https://docs.pydantic.dev/latest/usage/exporting_models/">exporting models</a> but not excluded in the instance creations, then the <code>avro serialization</code> will include all the class attributes.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">typing</span>
 <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">Field</span>
-<span class="kn">from</span> <span class="nn">dataclasses_avroschema.avrodantic</span> <span class="kn">import</span> <span class="n">AvroBaseModel</span>
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema.pydantic</span> <span class="kn">import</span> <span class="n">AvroBaseModel</span>
 
 
 <span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">AvroBaseModel</span><span class="p">):</span>
@@ -1500,7 +1500,7 @@ for example:</p>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">enum</span>
-<span class="kn">from</span> <span class="nn">dataclasses_avroschema.avrodantic</span> <span class="kn">import</span> <span class="n">AvroBaseModel</span>
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema.pydantic</span> <span class="kn">import</span> <span class="n">AvroBaseModel</span>
 
 <span class="k">class</span> <span class="nc">Color</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
     <span class="n">BLUE</span> <span class="o">=</span> <span class="s2">&quot;BLUE&quot;</span>
@@ -1518,7 +1518,7 @@ for example:</p>
 </div>
 <div class="tabbed-block">
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">enum</span>
-<span class="kn">from</span> <span class="nn">dataclasses_avroschema.avrodantic</span> <span class="kn">import</span> <span class="n">AvroBaseModel</span>
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema.pydantic</span> <span class="kn">import</span> <span class="n">AvroBaseModel</span>
 
 <span class="k">class</span> <span class="nc">Color</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
     <span class="n">BLUE</span> <span class="o">=</span> <span class="s2">&quot;BLUE&quot;</span>
@@ -1555,7 +1555,7 @@ The conversion mapping of a custom class to its <a href="../fields_specification
 <p>[!WARNING]
 <a href="#Model-generation">Generating models</a> from avro schemas that were generated by classes containing Custom Class fields is not supported.</p>
 </blockquote>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">dataclasses_avroschema.avrodantic</span> <span class="kn">import</span> <span class="n">AvroBaseModel</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">dataclasses_avroschema.pydantic</span> <span class="kn">import</span> <span class="n">AvroBaseModel</span>
 
 
 <span class="k">class</span> <span class="nc">CustomClass</span><span class="p">:</span>
