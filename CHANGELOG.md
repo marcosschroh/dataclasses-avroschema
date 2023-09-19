@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## 0.50.2 (2023-09-19)
+
+### Fix
+
+- Add typing-extensions to python 3.8 (#432)
+
 ## 0.50.1 (2023-09-19)
 
 ### Fix
