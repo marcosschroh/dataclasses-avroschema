@@ -716,7 +716,7 @@ class RecordField(Field):
 
 from .mapper import (
     CONTAINER_FIELDS_CLASSES,
-    INMUTABLE_FIELDS_CLASSES,
+    IMMUTABLE_FIELDS_CLASSES,
     LOGICAL_TYPES_FIELDS_CLASSES,
     SPECIAL_ANNOTATED_TYPES,
 )
@@ -755,8 +755,8 @@ def field_factory(
             # or a type Annotated with the end user
             native_type = a_type
 
-    if native_type in INMUTABLE_FIELDS_CLASSES:
-        klass = INMUTABLE_FIELDS_CLASSES[native_type]
+    if native_type in IMMUTABLE_FIELDS_CLASSES:
+        klass = IMMUTABLE_FIELDS_CLASSES[native_type]
         return klass(
             name=name,
             type=native_type,
@@ -770,8 +770,8 @@ def field_factory(
     # special case for some dynamic pydantic types (especially constraint types)
     # when a type cannot be imported and needs to be referenced by qualified string
     # see pydantic conint() implementation for more information
-    elif inspect.isclass(native_type) and f"{native_type.__name__}" in INMUTABLE_FIELDS_CLASSES:
-        klass = INMUTABLE_FIELDS_CLASSES[f"{native_type.__name__}"]
+    elif inspect.isclass(native_type) and f"{native_type.__name__}" in IMMUTABLE_FIELDS_CLASSES:
+        klass = IMMUTABLE_FIELDS_CLASSES[f"{native_type.__name__}"]
         return klass(
             name=name,
             type=native_type,
