@@ -8,10 +8,10 @@ from dataclasses_avroschema.fields import field_utils, mapper
 
 from . import consts
 
-PYTHON_INMUTABLE_TYPES = mapper.INMUTABLE_FIELDS_CLASSES.keys()
+PYTHON_IMMUTABLE_TYPES = mapper.IMMUTABLE_FIELDS_CLASSES.keys()
 
 
-@pytest.mark.parametrize("primitive_type", PYTHON_INMUTABLE_TYPES)
+@pytest.mark.parametrize("primitive_type", PYTHON_IMMUTABLE_TYPES)
 def test_primitive_types(primitive_type):
     name = "a_field"
     field = AvroField(name, primitive_type, default=dataclasses.MISSING)
@@ -19,7 +19,7 @@ def test_primitive_types(primitive_type):
     assert {"name": name, "type": field.avro_type} == field.to_dict()
 
 
-@pytest.mark.parametrize("primitive_type", PYTHON_INMUTABLE_TYPES)
+@pytest.mark.parametrize("primitive_type", PYTHON_IMMUTABLE_TYPES)
 def test_primitive_types_with_default_value_none(primitive_type):
     name = "a_field"
     field = AvroField(name, primitive_type, default=None)

@@ -10,7 +10,7 @@ from dataclasses_avroschema import types
 
 from . import fields, pydantic_fields
 
-INMUTABLE_FIELDS_CLASSES: dict[type | str, type] = {
+IMMUTABLE_FIELDS_CLASSES: dict[type | str, type] = {
     bool: fields.BooleanField,
     int: fields.LongField,
     types.Int32: fields.IntField,
@@ -53,7 +53,7 @@ PYDANTIC_TYPES = None
 try:
     import pydantic  # pragma: no cover
 
-    PYDANTIC_INMUTABLE_FIELDS_CLASSES = {
+    PYDANTIC_IMMUTABLE_FIELDS_CLASSES = {
         pydantic.FilePath: pydantic_fields.FilePathField,
         pydantic.DirectoryPath: pydantic_fields.DirectoryPathField,
         pydantic.EmailStr: pydantic_fields.EmailStrField,
@@ -89,7 +89,7 @@ try:
         pydantic.UUID5: pydantic_fields.UUID5Field,
     }
 
-    INMUTABLE_FIELDS_CLASSES.update(PYDANTIC_INMUTABLE_FIELDS_CLASSES)
+    IMMUTABLE_FIELDS_CLASSES.update(PYDANTIC_IMMUTABLE_FIELDS_CLASSES)
     LOGICAL_TYPES_FIELDS_CLASSES.update(PYDANTIC_LOGICAL_TYPES_FIELDS_CLASSES)  # type: ignore
     PYDANTIC_TYPES = (
         pydantic.FilePath,
