@@ -61,7 +61,7 @@ PRIMITIVE_TYPES_AND_DEFAULTS = (
     (type(None), None),
     (Annotated[str, "string"], "test"),
     (Annotated[int, "int"], 1),
-    (Annotated[bool, "boolen"], True),
+    (Annotated[bool, "boolean"], True),
     (Annotated[float, "float"], 10.4),
     (Annotated[bytes, "bytes"], b"test"),
 )
