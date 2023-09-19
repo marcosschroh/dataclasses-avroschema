@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## 0.50.1 (2023-09-19)
+
+### Fix
+
+- Resolve issues with raw `None` annotation (#433). Closes #424
+
 ## 0.50.0 (2023-09-13)
 
 ### Feat

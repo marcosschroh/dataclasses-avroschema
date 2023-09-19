@@ -128,6 +128,9 @@ class NoneField(ImmutableField):
     def avro_type(self) -> str:
         return field_utils.NULL
 
+    def get_avro_type(self) -> str:
+        return self.avro_type
+
 
 @dataclasses.dataclass
 class ContainerField(Field):
@@ -738,6 +741,9 @@ def field_factory(
         metadata = {}
 
     field_info = None
+
+    if native_type is None:
+        native_type = type(None)
 
     if native_type not in types.CUSTOM_TYPES and utils.is_annotated(native_type):
         a_type, *extra_args = get_args(native_type)
