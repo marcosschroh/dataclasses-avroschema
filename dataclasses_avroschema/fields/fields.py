@@ -353,7 +353,7 @@ class LiteralField(Field):
     over other types.
     """
 
-    allowed_values: set[typing.Any] = dataclasses.field(default_factory=set)
+    allowed_values: typing.Set[typing.Any] = dataclasses.field(default_factory=set)
     # This isn't actually optional, but Field has optional fields, so we have to provide a default
     avro_field: typing.Optional[Field] = None
 

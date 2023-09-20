@@ -274,8 +274,8 @@ def test_mapping_type_with_default(mapping, primitive_type, python_type_str):
     assert expected == field.to_dict()
 
 
-@pytest.mark.parametrize("mapping", consts.MAPPING_TYPES)
-def test_mapping_type_with_strenum_key(mapping):
+@pytest.mark.parametrize("mapping,primitive_type,python_type_str", consts.MAPPING_AND_TYPES)
+def test_mapping_type_with_strenum_key(mapping, primitive_type, python_type_str):
     """
     When the type is Dict, the Avro field should accept keys whose type
     is derived from str since they are strings.
