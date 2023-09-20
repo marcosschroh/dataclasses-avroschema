@@ -926,12 +926,22 @@ def test_literal_field_with_no_parameters():
     AvroModel._user_defined_types.clear()
 
 
-@pytest.mark.parametrize("arg, value", [(Color.BLUE, Color.BLUE.value + "s"), (Color.YELLOW, Suit.SPADES)])
-def test_literal_field_dacite_typehook_transformer_invalid_enum_values(arg, value):
+@pytest.mark.parametrize(
+    "arg, value",
+    [
+        (Color.BLUE, Color.BLUE.value + "s"),
+        (Color.YELLOW, Suit.SPADES),
+        ("v1", "v2"),
+        (1, 2),
+        (True, False),
+        (b"one", b"onee"),
+    ],
+)
+def test_literal_field_dacite_typehook_transformer_invalid_values(arg, value):
     """
-    When the type is typing.Literal[<enum-member>], the dacite typehook
-    transformer should raise an exception for inputs that are the correct
-    member type, but incorrect value
+    When the type is typing.Literal, the dacite typehook transformer
+    should raise an exception for inputs that don't match the permitted
+    values
     """
     name = "test_field"
     python_type = typing.Literal[arg]  # type: ignore
