@@ -394,7 +394,7 @@ class LiteralField(Field):
         Validates values assigned to Literal fields
         """
         if value not in self.allowed_values:
-            raise FieldValueError(field_name=self.name, expected_type=self.type, value=value)
+            raise FieldValueError(field_name=self.name, field_type=self.type, field_value=value)
 
         return True
 
@@ -441,8 +441,8 @@ class LiteralField(Field):
 
             raise FieldValueError(
                 field_name=self.name,
-                expected_type=self.type,
-                value=value,
+                field_type=self.type,
+                field_value=value,
             )
 
         return transform_literal
