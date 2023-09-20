@@ -1,3 +1,10 @@
+## Migration from previous versions to 0.51.0
+
+- In this version was introduced the namespace `dataclasses_avroschema.pydantic` and the nanespace `dataclasses_avroschema.avrodantic` was removed. To make use of `AvroBaseModel` then
+replade the import `from dataclasses_avroschema.avrodantic import AvroBaseModel` by `from dataclasses_avroschema.pydantic import AvroBaseModel`
+
+- If you are using `AvroModel` field attributes like `klass`, `metadata`, etc then all of them now are private (`_klass`, `_metadata`, etc). By design was intended not used them, now
+it is explicit.
 
 ## Migration from previous versions to 0.45.1
 

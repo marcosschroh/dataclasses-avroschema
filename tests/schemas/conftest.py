@@ -8,7 +8,7 @@ import uuid
 import pytest
 from pydantic import Field
 
-from dataclasses_avroschema.avrodantic import AvroBaseModel
+from dataclasses_avroschema.pydantic import AvroBaseModel
 
 AVRO_SCHEMAS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "avro")
 

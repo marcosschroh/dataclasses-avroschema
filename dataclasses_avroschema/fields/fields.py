@@ -4,13 +4,12 @@ import decimal
 import enum
 import inspect
 import random
-import sys
 import typing
 import uuid
 
 from typing_extensions import get_args, get_origin
 
-from dataclasses_avroschema import schema_generator, serialization, types, utils
+from dataclasses_avroschema import schema_generator, serialization, types, utils, version
 from dataclasses_avroschema.exceptions import FieldValueError, InvalidMap
 from dataclasses_avroschema.faker import fake
 from dataclasses_avroschema.utils import is_pydantic_model
@@ -18,9 +17,7 @@ from dataclasses_avroschema.utils import is_pydantic_model
 from . import field_utils
 from .base import Field
 
-PY_VERSION = sys.version_info
-
-if PY_VERSION >= (3, 9):  # pragma: no cover
+if version.PY_VERSION >= (3, 9):  # pragma: no cover
     GenericAlias = (typing.GenericAlias, typing._GenericAlias, typing._SpecialGenericAlias, typing._UnionGenericAlias)  # type: ignore # noqa: E501
 else:
     GenericAlias = typing._GenericAlias  # type: ignore  # pragma: no cover
@@ -128,6 +125,9 @@ class NoneField(ImmutableField):
     @property
     def avro_type(self) -> str:
         return field_utils.NULL
+
+    def get_avro_type(self) -> str:
+        return self.avro_type
 
 
 @dataclasses.dataclass
@@ -511,7 +511,7 @@ class EnumField(Field):
         doc: typing.Optional[str] = self.type.__doc__
 
         # On python < 3.11 Enums have a default documentation so we remove it
-        if PY_VERSION < (3, 11) and doc == "An enumeration.":
+        if version.PY_VERSION < (3, 11) and doc == "An enumeration.":
             doc = None
 
         if meta is not None:
@@ -532,7 +532,7 @@ class EnumField(Field):
 
         if not self.exist_type():
             user_defined_type = utils.UserDefinedType(name=name, type=self.type)
-            self.parent.user_defined_types.add(user_defined_type)
+            self.parent._user_defined_types.add(user_defined_type)
             return {
                 "type": field_utils.ENUM,
                 "name": name,
@@ -814,7 +814,7 @@ class RecordField(Field):
         meta = getattr(self.type, "Meta", type)
         metadata = utils.SchemaMetadata.create(meta)
 
-        alias = self.parent.metadata.get_alias_nested_items(self.name) or metadata.get_alias_nested_items(self.name)  # type: ignore  # noqa E501
+        alias = self.parent._metadata.get_alias_nested_items(self.name) or metadata.get_alias_nested_items(self.name)  # type: ignore  # noqa E501
 
         # The priority for the schema name
         # 1. Check if exists an alias_nested_items in parent llass or Meta class of own model
@@ -824,7 +824,7 @@ class RecordField(Field):
 
         if not self.exist_type() or alias is not None:
             user_defined_type = utils.UserDefinedType(name=name, type=self.type)
-            self.parent.user_defined_types.add(user_defined_type)
+            self.parent._user_defined_types.add(user_defined_type)
 
             record_type = self.type.avro_schema_to_python(parent=self.parent)
             record_type["name"] = name
@@ -839,10 +839,10 @@ class RecordField(Field):
         return record_type
 
     def default_to_avro(self, value: "schema_generator.AvroModel") -> typing.Dict:
-        schema_def = value.schema_def or value._generate_avro_schema()
+        parser = value._parser or value._generate_parser()
         return {
             fieldname: field.default_to_avro(getattr(value, fieldname))
-            for fieldname, field in schema_def.get_fields_map().items()
+            for fieldname, field in parser.get_fields_map().items()
         }
 
     def fake(self) -> typing.Any:
@@ -851,7 +851,7 @@ class RecordField(Field):
 
 from .mapper import (
     CONTAINER_FIELDS_CLASSES,
-    INMUTABLE_FIELDS_CLASSES,
+    IMMUTABLE_FIELDS_CLASSES,
     LOGICAL_TYPES_FIELDS_CLASSES,
     SPECIAL_ANNOTATED_TYPES,
 )
@@ -877,6 +877,9 @@ def field_factory(
 
     field_info = None
 
+    if native_type is None:
+        native_type = type(None)
+
     if native_type not in types.CUSTOM_TYPES and utils.is_annotated(native_type):
         a_type, *extra_args = get_args(native_type)
         field_info = next((arg for arg in extra_args if isinstance(arg, types.FieldInfo)), None)
@@ -886,8 +889,8 @@ def field_factory(
             # or a type Annotated with the end user
             native_type = a_type
 
-    if native_type in INMUTABLE_FIELDS_CLASSES:
-        klass = INMUTABLE_FIELDS_CLASSES[native_type]
+    if native_type in IMMUTABLE_FIELDS_CLASSES:
+        klass = IMMUTABLE_FIELDS_CLASSES[native_type]
         return klass(
             name=name,
             type=native_type,
@@ -901,8 +904,8 @@ def field_factory(
     # special case for some dynamic pydantic types (especially constraint types)
     # when a type cannot be imported and needs to be referenced by qualified string
     # see pydantic conint() implementation for more information
-    elif inspect.isclass(native_type) and f"{native_type.__name__}" in INMUTABLE_FIELDS_CLASSES:
-        klass = INMUTABLE_FIELDS_CLASSES[f"{native_type.__name__}"]
+    elif inspect.isclass(native_type) and f"{native_type.__name__}" in IMMUTABLE_FIELDS_CLASSES:
+        klass = IMMUTABLE_FIELDS_CLASSES[f"{native_type.__name__}"]
         return klass(
             name=name,
             type=native_type,

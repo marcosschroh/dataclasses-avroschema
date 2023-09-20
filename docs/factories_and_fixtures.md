@@ -40,7 +40,7 @@ It is also possible to generate fixtures with the `pydantic integration` simply 
 import typing
 import dataclasses
 
-from dataclasses_avroschema.avrodantic import AvroBaseModel
+from dataclasses_avroschema.pydantic import AvroBaseModel
 
 
 class Address(AvroBaseModel):

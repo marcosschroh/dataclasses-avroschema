@@ -374,7 +374,7 @@ User.fake()
 
 [Poetry](https://python-poetry.org/docs/) is needed to install the dependencies and develope locally
 
-1. Install dependencies: `poetry install`
+1. Install dependencies: `poetry install --all-extras`
 2. Code linting: `./scripts/format`
 3. Run tests: `./scripts/test`
 

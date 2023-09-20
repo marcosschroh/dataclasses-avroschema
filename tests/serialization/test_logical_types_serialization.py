@@ -8,7 +8,7 @@ from dataclasses import dataclass
 import pytest
 
 from dataclasses_avroschema import AvroModel, serialization, types
-from dataclasses_avroschema.avrodantic import AvroBaseModel
+from dataclasses_avroschema.pydantic import AvroBaseModel
 
 a_datetime = datetime.datetime(2019, 10, 12, 17, 57, 42, tzinfo=datetime.timezone.utc)
 

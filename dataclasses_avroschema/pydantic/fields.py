@@ -3,9 +3,8 @@ import uuid
 from pathlib import Path
 
 from dataclasses_avroschema.faker import fake
-
-from . import fields
-from .field_utils import DOUBLE, INT, LONG, STRING, UUID
+from dataclasses_avroschema.fields import fields
+from dataclasses_avroschema.fields.field_utils import DOUBLE, INT, LONG, STRING, UUID
 
 current_file = str(Path(__file__).absolute())
 current_dir = str(Path().absolute())

@@ -7,8 +7,8 @@ import typing
 import pytest
 
 from dataclasses_avroschema import AvroField, AvroModel, exceptions, types
-from dataclasses_avroschema.avrodantic import AvroBaseModel
 from dataclasses_avroschema.fields import field_utils
+from dataclasses_avroschema.pydantic import AvroBaseModel
 
 from . import consts
 
@@ -43,7 +43,7 @@ def test_literal_field_with_single_parameter(value):
     python_type = typing.Literal[value]  # type: ignore
     # Required for enums
     parent = AvroModel()
-    parent.user_defined_types.clear()
+    parent._user_defined_types.clear()
 
     field = AvroField(name, python_type, parent)
     result = field.to_dict()
@@ -58,7 +58,7 @@ def test_literal_field_with_single_parameter(value):
         assert result["type"] == avro_type
 
     # Reset the class variable
-    parent.user_defined_types.clear()
+    parent._user_defined_types.clear()
 
 
 def test_literal_field_with_multiple_parameters():
@@ -77,7 +77,7 @@ def test_literal_field_with_multiple_parameters():
     python_type = typing.Literal[4, "4", True, b"four", Suit.SPADES]
     # Required for enums
     parent = AvroModel()
-    parent.user_defined_types.clear()
+    parent._user_defined_types.clear()
 
     field = AvroField(name, python_type, parent)
     result = field.get_avro_type()
@@ -93,7 +93,7 @@ def test_literal_field_with_multiple_parameters():
     assert result == expected_result
 
     # Reset the class variable
-    parent.user_defined_types.clear()
+    parent._user_defined_types.clear()
 
 
 @pytest.mark.parametrize(
@@ -118,7 +118,7 @@ def test_literal_field_with_single_parameter_invalid_value(arg, value):
         Model(test_field=value)  # type: ignore
 
     # Reset the class variable
-    AvroModel.user_defined_types.clear()
+    AvroModel._user_defined_types.clear()
 
 
 def test_literal_field_with_no_parameters():
@@ -138,10 +138,10 @@ def test_literal_field_with_no_parameters():
     # We need to escape all of the special characters in msg to do a regex match
     matchable_msg = re.escape(msg)
     with pytest.raises(ValueError, match=matchable_msg):
-        Model(test_field=1)
+        Model(test_field=1)  # type: ignore
 
     # Reset the class variable
-    AvroModel.user_defined_types.clear()
+    AvroModel._user_defined_types.clear()
 
 
 @pytest.mark.parametrize("sequence, python_primitive_type,python_type_str", consts.SEQUENCES_AND_TYPES)
@@ -533,7 +533,10 @@ def test_union_as_optional_with_primitives(primitive_type, avro_type) -> None:
     python_type = typing.Optional[primitive_type]
     field = AvroField(name, python_type)
 
-    expected = {"name": name, "type": [avro_type, "null"]}
+    if python_type is type(None):
+        expected = {"name": name, "type": "null"}
+    else:
+        expected = {"name": name, "type": [avro_type, "null"]}
 
     assert expected == field.to_dict()
 
@@ -773,7 +776,7 @@ def test_enum_type():
     assert expected == field.to_dict()
 
     python_type = typing.Optional[CardType]
-    parent.user_defined_types = set()
+    parent._user_defined_types = set()
     field = AvroField(name, python_type, default=None, parent=parent)
 
     expected = {
