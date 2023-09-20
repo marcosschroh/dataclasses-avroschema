@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## 0.51.0 (2023-09-20)
+
+### Feat
+
+- **pydantic-v2**: First steps to support pydantic v2. Namespace dataclasses_avroschame.pydantic added. All AvroModel fields now are private (#427)
+
 ## 0.50.2 (2023-09-19)
 
 ### Fix
