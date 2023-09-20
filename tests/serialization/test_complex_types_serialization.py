@@ -361,8 +361,6 @@ def test_literal_fields():
     avro_binary = example.serialize()
     avro_json = example.serialize(serialization_type="avro-json")
 
-    print(TestModel.deserialize(avro_binary))
-    print(TestModel.deserialize(avro_json, serialization_type="avro-json"))
     assert TestModel.deserialize(avro_binary, create_instance=False) == expected_data
     assert TestModel.deserialize(avro_json, serialization_type="avro-json", create_instance=False) == expected_data
 

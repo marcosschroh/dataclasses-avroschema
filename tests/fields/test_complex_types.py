@@ -24,6 +24,13 @@ class Color(enum.Enum):
         namespace = "some.name.space"
 
 
+class Suit(enum.Enum):
+    SPADES = "SPADES"
+    HEARTS = "HEARTS"
+    DIAMONDS = "DIAMONDS"
+    CLUBS = "CLUBS"
+
+
 def test_invalid_type_container_field():
     python_type = typing.Set
     name = "test_field"
@@ -31,117 +38,6 @@ def test_invalid_type_container_field():
 
     with pytest.raises(ValueError, match=msg):
         AvroField(name, python_type, default=dataclasses.MISSING)
-
-
-@pytest.mark.parametrize("value", [4, "4", True, b"four", Color.BLUE, None])
-def test_literal_field_with_single_parameter(value):
-    """
-    When the type is typing.Literal, the Avro field type should be the
-    encapsulated value type (i.e. int, string, etc.)
-    """
-    name = "test_field"
-    python_type = typing.Literal[value]  # type: ignore
-    # Required for enums
-    parent = AvroModel()
-    parent._user_defined_types.clear()
-
-    field = AvroField(name, python_type, parent)
-    result = field.to_dict()
-
-    # Verify the correct type conversion. Schema structure of resulting types
-    # is validated by tests in this file that are specific to those types
-    if isinstance(value, enum.Enum):
-        assert result["type"]["type"] == field_utils.ENUM
-    else:
-        builtin_type = type(value)
-        avro_type = field_utils.PYTHON_TYPE_TO_AVRO[builtin_type]
-        assert result["type"] == avro_type
-
-    # Reset the class variable
-    parent._user_defined_types.clear()
-
-
-def test_literal_field_with_multiple_parameters():
-    """
-    When the type is typing.Literal with multiple parameters, it should
-    be converted to a Union of Literals
-    """
-
-    class Suit(enum.Enum):
-        SPADES = "SPADES"
-        HEARTS = "HEARTS"
-        DIAMONDS = "DIAMONDS"
-        CLUBS = "CLUBS"
-
-    name = "test_field"
-    python_type = typing.Literal[4, "4", True, b"four", Suit.SPADES]
-    # Required for enums
-    parent = AvroModel()
-    parent._user_defined_types.clear()
-
-    field = AvroField(name, python_type, parent)
-    result = field.get_avro_type()
-
-    expected_result = [
-        field_utils.LONG,
-        field_utils.STRING,
-        field_utils.BOOLEAN,
-        field_utils.BYTES,
-        {"type": field_utils.ENUM, "name": "Suit", "symbols": [s.value for s in Suit]},
-    ]
-
-    assert result == expected_result
-
-    # Reset the class variable
-    parent._user_defined_types.clear()
-
-
-@pytest.mark.parametrize(
-    "arg, value", [(4, 3), ("4", "3"), (True, False), (b"four", "four"), (Color.BLUE, Color.GREEN)]
-)
-def test_literal_field_with_single_parameter_invalid_value(arg, value):
-    """
-    When the type is typing.Literal, FieldValueError should be raised if
-    the field is initialized with a value that does not match the
-    specified literal value
-    """
-    annotation = typing.Literal[arg]  # type: ignore
-
-    @dataclasses.dataclass
-    class Model(AvroModel):
-        test_field: annotation  # type: ignore
-
-    msg = f"Invalid value {value} assigned to field test_field of type {annotation}"
-    # We need to escape all of the special characters in msg to do a regex match
-    matchable_msg = re.escape(msg)
-    with pytest.raises(exceptions.FieldValueError, match=matchable_msg):
-        Model(test_field=value)  # type: ignore
-
-    # Reset the class variable
-    AvroModel._user_defined_types.clear()
-
-
-def test_literal_field_with_no_parameters():
-    """
-    When the type is typing.Literal, TypeError should be raised if
-    the field is annotated without any parameters
-    """
-
-    @dataclasses.dataclass
-    class Model(AvroModel):
-        test_field: typing.Literal
-
-    msg = (
-        f"Type {typing.Literal} for field test_field is unknown. Please check the valid types at "
-        "https://marcosschroh.github.io/dataclasses-avroschema/fields_specification/#avro-field-and-python-types-summary"  # noqa: E501
-    )
-    # We need to escape all of the special characters in msg to do a regex match
-    matchable_msg = re.escape(msg)
-    with pytest.raises(ValueError, match=matchable_msg):
-        Model(test_field=1)  # type: ignore
-
-    # Reset the class variable
-    AvroModel._user_defined_types.clear()
 
 
 @pytest.mark.parametrize("sequence, python_primitive_type,python_type_str", consts.SEQUENCES_AND_TYPES)
@@ -908,3 +804,146 @@ def test_pydantic_custom_class_field_with_misconfigured_parent():
     field_name = "custom_class"
     with pytest.raises(ValueError):
         AvroField(field_name, PydanticCustomClass, MisconfiguredParent)
+
+
+@pytest.mark.parametrize("value", [4, "4", True, b"four", Color.BLUE, None])
+def test_literal_field_with_single_parameter(value):
+    """
+    When the type is typing.Literal, the Avro field type should be the
+    encapsulated value type (i.e. int, string, etc.)
+    """
+    name = "test_field"
+    python_type = typing.Literal[value]  # type: ignore
+    # Required for enums
+    parent = AvroModel()
+    parent._user_defined_types.clear()
+
+    field = AvroField(name, python_type, parent)
+    result = field.to_dict()
+
+    # Verify the correct type conversion. Schema structure of resulting types
+    # is validated by tests in this file that are specific to those types
+    if isinstance(value, enum.Enum):
+        assert result["type"]["type"] == field_utils.ENUM
+    else:
+        builtin_type = type(value)
+        avro_type = field_utils.PYTHON_TYPE_TO_AVRO[builtin_type]
+        assert result["type"] == avro_type
+
+    # Reset the class variable
+    parent._user_defined_types.clear()
+
+
+def test_literal_field_with_multiple_parameters():
+    """
+    When the type is typing.Literal with multiple parameters, it should
+    be converted to a Union of Literals
+    """
+    name = "test_field"
+    python_type = typing.Literal[4, "4", True, b"four", Suit.SPADES]
+    # Required for enums
+    parent = AvroModel()
+    parent._user_defined_types.clear()
+
+    field = AvroField(name, python_type, parent)
+    result = field.get_avro_type()
+
+    assert result == [
+        field_utils.LONG,
+        field_utils.STRING,
+        field_utils.BOOLEAN,
+        field_utils.BYTES,
+        {"type": field_utils.ENUM, "name": "Suit", "symbols": [s.value for s in Suit]},
+    ]
+
+    # Reset the class variable
+    parent._user_defined_types.clear()
+
+
+@pytest.mark.parametrize("default", [4, "4", True, b"four", Color.BLUE, None])
+def test_literal_field_with_default(default):
+    """
+    When the type is typing.Literal, the Avro field type should be the
+    encapsulated value type (i.e. int, string, etc.)
+    """
+
+    @dataclasses.dataclass
+    class Model(AvroModel):
+        test_field: typing.Literal[default] = default  # type: ignore
+
+    assert Model().to_dict() == {"test_field": default}
+
+    # Reset the class variable
+    AvroModel._user_defined_types.clear()
+
+
+@pytest.mark.parametrize(
+    "arg, value",
+    [(4, 3), ("4", "3"), (True, False), (b"four", "four"), (Color.BLUE, Color.GREEN), (Color.YELLOW, Suit.SPADES)],
+)
+def test_literal_field_with_single_parameter_invalid_value(arg, value):
+    """
+    When the type is typing.Literal, FieldValueError should be raised if
+    the field is initialized with a value that does not match the
+    specified literal value
+    """
+    annotation = typing.Literal[arg]  # type: ignore
+
+    @dataclasses.dataclass
+    class Model(AvroModel):
+        test_field: annotation  # type: ignore
+
+    msg = f'Invalid value "{value}" assigned to field "test_field" of type {annotation}'
+    # We need to escape all of the special characters in msg to do a regex match
+    matchable_msg = re.escape(msg)
+    with pytest.raises(exceptions.FieldValueError, match=matchable_msg):
+        Model(test_field=value)  # type: ignore
+
+    # Reset the class variable
+    AvroModel._user_defined_types.clear()
+
+
+def test_literal_field_with_no_parameters():
+    """
+    When the type is typing.Literal, TypeError should be raised if
+    the field is annotated without any parameters
+    """
+
+    @dataclasses.dataclass
+    class Model(AvroModel):
+        test_field: typing.Literal
+
+    msg = (
+        f"Type {typing.Literal} for field test_field is unknown. Please check the valid types at "
+        "https://marcosschroh.github.io/dataclasses-avroschema/fields_specification/#avro-field-and-python-types-summary"  # noqa: E501
+    )
+    # We need to escape all of the special characters in msg to do a regex match
+    matchable_msg = re.escape(msg)
+    with pytest.raises(ValueError, match=matchable_msg):
+        Model(test_field=1)  # type: ignore
+
+    # Reset the class variable
+    AvroModel._user_defined_types.clear()
+
+
+@pytest.mark.parametrize("arg, value", [(Color.BLUE, Color.BLUE.value + "s"), (Color.YELLOW, Suit.SPADES)])
+def test_literal_field_dacite_typehook_transformer_invalid_values(arg, value):
+    """
+    When the type is typing.Literal[<enum-member>], the dacite typehook
+    transformer should raise an exception for inputs that are the correct
+    member type, but incorrect value
+    """
+    name = "test_field"
+    python_type = typing.Literal[arg]  # type: ignore
+    # Required for enums
+    parent = AvroModel()
+    parent._user_defined_types.clear()
+
+    field = AvroField(name, python_type)
+    transformer = field.get_dacite_typehook_transformer()  # type: ignore
+
+    msg = f'Invalid value "{value}" assigned to field "{name}" of type {python_type}'
+    # We need to escape all of the special characters in msg to do a regex match
+    matchable_msg = re.escape(msg)
+    with pytest.raises(exceptions.FieldValueError, match=matchable_msg):
+        transformer(value)

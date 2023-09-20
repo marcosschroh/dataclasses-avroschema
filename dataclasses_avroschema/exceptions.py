@@ -30,4 +30,4 @@ class FieldValueError(ValueError):
         return f"{class_name} {self.field_name}"  # pragma: no cover
 
     def __str__(self) -> str:
-        return f"Invalid value {self.value} assigned to field {self.field_name} of type {self.expected_type}"
+        return f'Invalid value "{self.value}" assigned to field "{self.field_name}" of type {self.expected_type}'

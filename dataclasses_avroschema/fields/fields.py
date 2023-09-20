@@ -353,8 +353,7 @@ class LiteralField(Field):
     over other types.
     """
 
-    enum_types: list[typing.Type[enum.Enum]] = dataclasses.field(default_factory=list)
-    allowed_values: list[typing.Any] = dataclasses.field(default_factory=list)
+    allowed_values: set[typing.Any] = dataclasses.field(default_factory=set)
     # This isn't actually optional, but Field has optional fields, so we have to provide a default
     avro_field: typing.Optional[Field] = None
 
@@ -369,9 +368,7 @@ class LiteralField(Field):
             native_type = typing.Union[*[typing.Literal[a] for a in args]]  # type: ignore
 
             for a in args:
-                self.allowed_values.append(a)
-                if isinstance(a, enum.Enum):
-                    self.enum_types.append(type(a))
+                self.allowed_values.add(a)
 
             self.avro_field = AvroField(
                 name=self.name,
@@ -382,10 +379,7 @@ class LiteralField(Field):
         else:
             arg = args[0]
             native_type = type(arg)
-
-            self.allowed_values = [arg]
-            if isinstance(arg, enum.Enum):
-                self.enum_types = [native_type]
+            self.allowed_values = {arg}
 
             self.avro_field = AvroField(
                 name=self.name,
@@ -402,15 +396,7 @@ class LiteralField(Field):
         Validates values assigned to Literal fields
         """
         if value not in self.allowed_values:
-            # See if this is a value in one of the parameterized enums
-            valid_enum_value = False
-            for enum_type in self.enum_types:
-                if value in enum_type._value2member_map_:
-                    valid_enum_value = True
-                    break
-
-            if not valid_enum_value:
-                raise FieldValueError(field_name=self.name, expected_type=self.type, value=value)
+            raise FieldValueError(field_name=self.name, expected_type=self.type, value=value)
 
         return True
 
@@ -437,13 +423,16 @@ class LiteralField(Field):
             for arg in sorted_args:
                 arg_type = type(arg)
                 enum_member_type = type(arg.value) if isinstance(arg, enum.Enum) else None
+
+                # Try to match value to this arg
                 if isinstance(value, arg_type):
                     transformed_value = value
                 elif enum_member_type and isinstance(value, enum_member_type):
+                    # arg is an enum member and value matches its type. See if we can reconstruct arg from value.
                     try:
                         transformed_value = arg_type(value)
                     except ValueError:
-                        # value is not a member of the enum class
+                        # value is not a member of arg's enum class
                         continue
                 else:
                     # value does not match the type of this arg. Skip to the next arg
@@ -452,7 +441,6 @@ class LiteralField(Field):
                 if transformed_value == arg:
                     return transformed_value
 
-            # raise ValueError(f'Invalid value "{value}" supplied for field of type {self.type}')
             raise FieldValueError(
                 field_name=self.name,
                 expected_type=self.type,
@@ -1014,9 +1002,6 @@ def field_factory(
     ):
         try:
             # Build a field for the encoded type since that's what will be serialized
-            print(
-                f"\nJSIKES ****** \nname={name}\nparent={parent}\njson_encoders={parent.__config__.json_encoders}\nbases={parent.__bases__}"
-            )
             encoded_type = parent.__config__.json_encoders[native_type]
         except KeyError:
             raise ValueError(
