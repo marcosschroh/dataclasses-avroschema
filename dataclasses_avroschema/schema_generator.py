@@ -35,7 +35,7 @@ class AvroModel:
         """
         Performs validation on field types that require it
         """
-        # Call generate_schema to populate schema_def, so that we can retrieve fields map
+        # Call generate_schema to populate _parser, so that we can retrieve fields map
         _ = self.generate_schema()
         fields_schema_map = self._parser.get_fields_map()  # type: ignore
 
@@ -195,7 +195,7 @@ class AvroModel:
                     if isinstance(field, LiteralField):
                         _field_type_hooks[field.type] = field.get_dacite_typehook_transformer()
                     elif inspect.isclass(field.type) and issubclass(field.type, AvroModel):
-                        # This field is a nested model, so recurse
+                        # This field is a nested AvroModel, so recurse
                         populate_hooks(field.type, _field_type_hooks)
 
             populate_hooks(cls, field_type_hooks)
