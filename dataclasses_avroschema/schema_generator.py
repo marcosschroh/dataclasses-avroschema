@@ -10,6 +10,7 @@ from fastavro.validation import validate
 
 from . import case, serialization
 from .fields.base import Field
+from .fields.fields import LiteralField
 from .schema_definition import AvroSchemaDefinition
 from .types import JsonDict
 from .utils import SchemaMetadata, standardize_custom_type
@@ -28,6 +29,22 @@ class AvroModel:
     user_defined_types: Set = set()
     parent: Any = None
     rendered_schema: OrderedDict = dataclasses.field(default_factory=OrderedDict)
+    field_type_hooks: Optional[Dict[Any, Callable[[Any], Any]]] = None
+
+    def __post_init__(self) -> None:
+        """
+        Performs validation on field types that require it
+        """
+        # Call generate_schema to populate schema_def, so that we can retrieve fields map
+        _ = self.generate_schema()
+        fields_schema_map = self.schema_def.get_fields_map()  # type: ignore
+
+        for key, value in self.asdict().items():
+            if self.metadata and key in self.metadata.exclude:
+                # Skip excluded fields
+                continue
+            field_schema_type = fields_schema_map[key]
+            field_schema_type.validate_value(value)
 
     @classmethod
     def generate_dataclass(cls: Type[CT]) -> Type[CT]:
@@ -164,6 +181,30 @@ class AvroModel:
         return json.dumps(data)
 
     @classmethod
+    def get_field_type_hooks(cls: Type[CT]) -> Dict[Any, Callable[[Any], Any]]:
+        """
+        Workaround until dacite.from_dict supports fields of type
+        Literal[enum.Enum]
+        """
+        if not cls.field_type_hooks:
+            field_type_hooks: Dict[Any, Callable[[Any], Any]] = {}
+
+            def populate_hooks(model: Type[AvroModel], field_type_hooks: dict) -> None:
+                fields_schema_map = model.schema_def.get_fields_map()  # type: ignore
+
+                for field in fields_schema_map.values():
+                    if isinstance(field, LiteralField):
+                        field_type_hooks[field.type] = field.get_dacite_typehook_transformer()
+                    elif inspect.isclass(field.type) and issubclass(field.type, AvroModel):
+                        # This field is a nested model, so recurse
+                        populate_hooks(field.type, field_type_hooks)
+
+            populate_hooks(cls, field_type_hooks)
+            cls.field_type_hooks = field_type_hooks
+
+        return cls.field_type_hooks
+
+    @classmethod
     def config(cls: Type[CT]) -> Config:
         """
         Get the default config for dacite and always include the self reference
@@ -179,6 +220,7 @@ class AvroModel:
             "forward_references": {
                 cls.klass.__name__: cls.klass,  # type: ignore
             },
+            "type_hooks": cls.get_field_type_hooks(),
         }
 
         if dacite_user_config is not None:

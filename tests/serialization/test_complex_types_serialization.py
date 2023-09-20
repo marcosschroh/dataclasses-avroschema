@@ -1,6 +1,7 @@
 import dataclasses
 import enum
 import json
+import typing
 
 from dataclasses_avroschema import AvroModel
 
@@ -281,3 +282,91 @@ def test_enum_fields_with_inner_schema():
 
     assert OuterSchema.deserialize(avro_binary) == example
     assert OuterSchema.deserialize(avro_json, serialization_type="avro-json") == example
+
+
+def test_literal_enum():
+    class TestEnum(enum.Enum):
+        ONE = "one"
+        TWO = "two"
+
+    @dataclasses.dataclass
+    class NestedTestModel(AvroModel):
+        literal: typing.Literal[TestEnum.TWO]
+
+    @dataclasses.dataclass
+    class TestModel(AvroModel):
+        literal: typing.Literal[TestEnum.ONE]
+        nested: NestedTestModel
+
+    example = TestModel(literal=TestEnum.ONE, nested=NestedTestModel(literal=TestEnum.TWO))
+    expected_data = {"literal": TestEnum.ONE, "nested": {"literal": TestEnum.TWO}}
+    expected_json = json.dumps({"literal": TestEnum.ONE.value, "nested": {"literal": TestEnum.TWO.value}})
+
+    avro_binary = example.serialize()
+    avro_json = example.serialize(serialization_type="avro-json")
+
+    assert TestModel.deserialize(avro_binary, create_instance=False) == expected_data
+    assert TestModel.deserialize(avro_json, serialization_type="avro-json", create_instance=False) == expected_data
+
+    assert example.to_json() == expected_json
+
+    assert TestModel.deserialize(avro_binary) == example
+    assert TestModel.deserialize(avro_json, serialization_type="avro-json") == example
+
+
+def test_literal_fields():
+    class TestEnum(enum.Enum):
+        ONE = "one"
+        TWO = "two"
+
+    @dataclasses.dataclass
+    class NestedTestModel(AvroModel):
+        single_literal_2: typing.Literal[TestEnum.TWO]
+        multi_literal_2: typing.Literal["2", 2, False, b"two", TestEnum.TWO]
+
+    @dataclasses.dataclass
+    class TestModel(AvroModel):
+        single_literal_1: typing.Literal["1st_literal"]
+        multi_literal_1: typing.Literal["1", 1, True, b"one", TestEnum.ONE]
+        nested_model: NestedTestModel
+
+    example = TestModel(
+        single_literal_1="1st_literal",
+        multi_literal_1=b"one",
+        nested_model=NestedTestModel(
+            single_literal_2=TestEnum.TWO,
+            multi_literal_2=2,
+        ),
+    )
+
+    expected_data = {
+        "single_literal_1": "1st_literal",
+        "multi_literal_1": b"one",
+        "nested_model": {
+            "single_literal_2": TestEnum.TWO,
+            "multi_literal_2": 2,
+        },
+    }
+    expected_json = json.dumps(
+        {
+            "single_literal_1": "1st_literal",
+            "multi_literal_1": "one",
+            "nested_model": {
+                "single_literal_2": TestEnum.TWO.value,
+                "multi_literal_2": 2,
+            },
+        }
+    )
+
+    avro_binary = example.serialize()
+    avro_json = example.serialize(serialization_type="avro-json")
+
+    print(TestModel.deserialize(avro_binary))
+    print(TestModel.deserialize(avro_json, serialization_type="avro-json"))
+    assert TestModel.deserialize(avro_binary, create_instance=False) == expected_data
+    assert TestModel.deserialize(avro_json, serialization_type="avro-json", create_instance=False) == expected_data
+
+    assert example.to_json() == expected_json, f"\nexpected:\n{expected_json}\nactual:\n{example.to_json()}\n"
+
+    assert TestModel.deserialize(avro_binary) == example
+    assert TestModel.deserialize(avro_json, serialization_type="avro-json") == example

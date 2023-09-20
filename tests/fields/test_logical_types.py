@@ -174,7 +174,7 @@ def test_invalid_default_values(logical_type, invalid_default, msg):
     name = "a_field"
     field = AvroField(name, logical_type, default=invalid_default)
 
-    msg = msg or f"Invalid default type. Default should be {logical_type}"
+    msg = msg or f"Invalid default type {type(invalid_default)} for field {name}. Default should be {logical_type}"
     with pytest.raises(AssertionError, match=msg):
         field.to_dict()
 

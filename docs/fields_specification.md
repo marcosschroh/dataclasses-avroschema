@@ -193,6 +193,94 @@ resulting in
 
 *(This script is complete, it should run "as is")*
 
+## typing.Literal
+
+Fields can be annotated with `typing.Literal` in accordance with [PEP 586](https://peps.python.org/pep-0586/) to restrict the field to a particular value or set of values. Note that a literal field with multiple arguments (i.e. of the form `typing.Literal[v1, v2, v3]`) is interpreted as a union of literals (i.e. `typing.Union[typing.Literal[v1], typing.Literal[v2], typing.Literal[v3]]`).
+
+```python
+import enum
+import typing
+from dataclasses import dataclass
+from dataclasses_avroschema import AvroModel, FieldValueError
+
+class E(enum.Enum):
+    ONE = "one"
+
+@dataclass
+class T(AvroModel):
+    f: typing.Literal[None, 1, "1", True, b"1", E.ONE]
+
+print(T.parse_obj({"f": None}))
+# >>> T(f=None)
+
+print(T.parse_obj({"f": 1}))
+# >>> T(f=1)
+
+print(T.parse_obj({"f": "1"}))
+# >>> T(f='1')
+
+print(T.parse_obj({"f": True}))
+# >>> T(f=True)
+
+print(T.parse_obj({"f": b"1"}))
+# >>> T(f=b'1')
+
+print(T.parse_obj({"f": "one"}))
+# >>> T(f=<E.ONE: 'one'>)
+
+try:
+    T.parse_obj({"f": 1.0})
+except FieldValueError as e:
+    print(e)
+    # >>> Invalid value 1.0 assigned to field f of type typing.Literal[None, 1, '1', True, b'1', <E.ONE: 'one'>]
+
+print(T.avro_schema())
+"""
+{
+  "type": "record",
+  "name": "T",
+  "fields": [
+    {
+      "name": "f",
+      "type": [
+        "null",
+        "long",
+        "string",
+        "boolean",
+        "bytes",
+        {
+          "type": "enum",
+          "name": "E",
+          "symbols": [
+            "one"
+          ]
+        }
+      ]
+    }
+  ]
+}
+"""
+```
+
+*(This script is complete, it should run "as is")*
+
+Note the following behavior when a builtin and enum member with the same value are both included in `Literal`:
+```python
+import enum
+from dataclasses_avroschema import AvroModel
+
+class MyEnum(enum.Enum):
+    ONE = "one"
+
+@dataclasses.dataclass
+class MyModel(AvroModel):
+    field: typing.Literal["one", MyEnum.ONE]
+
+print(MyModel.parse_obj({"field": "one"}))
+# >>> MyModel(field=<MyEnum.ONE: 'one'>)
+```
+This is because `typing.Literal["one", MyEnum.ONE]` is translated to `typing.Union[typing.Literal["one"], typing.Literal[MyEnum.ONE]]` and enums are prioritized over builtins when matching a value to a union of literals.
+
 ## Adding Custom Field-level Attributes
 
 You may want to add field-level attributes which are not automatically populated according to the typing semantics

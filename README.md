@@ -355,6 +355,7 @@ User.fake()
 * [x] Primitive types: int, long, double, float, boolean, string and null support
 * [x] Complex types: enum, array, map, fixed, unions and records support
 * [x] `typing.Annotated` supported
+* [x] `typing.Literal` supported
 * [x] Logical Types: date, time (millis and micro), datetime (millis and micro), uuid support
 * [X] Schema relations (oneToOne, oneToMany)
 * [X] Recursive Schemas

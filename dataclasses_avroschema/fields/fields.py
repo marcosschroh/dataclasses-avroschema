@@ -1,4 +1,3 @@
-import collections
 import dataclasses
 import datetime
 import decimal
@@ -12,8 +11,9 @@ import uuid
 from typing_extensions import get_args, get_origin
 
 from dataclasses_avroschema import schema_generator, serialization, types, utils
-from dataclasses_avroschema.exceptions import InvalidMap
+from dataclasses_avroschema.exceptions import FieldValueError, InvalidMap
 from dataclasses_avroschema.faker import fake
+from dataclasses_avroschema.utils import is_pydantic_model
 
 from . import field_utils
 from .base import Field
@@ -41,6 +41,7 @@ __ALL__ = [
     "TupleField",
     "DictField",
     "UnionField",
+    "LiteralField",
     "FixedField",
     "EnumField",
     "SelfReferenceField",
@@ -220,7 +221,7 @@ class DictField(ContainerField):
     def __post_init__(self) -> None:
         key_type = self.type.__args__[0]
 
-        if key_type is not str:
+        if not issubclass(key_type, str):
             raise InvalidMap(self.name, key_type)
 
     @property
@@ -322,6 +323,143 @@ class UnionField(Field):
         # get a random internal field and return a fake value
         field = random.choice(self.internal_fields)
         return field.fake()
+
+
+@dataclasses.dataclass
+class LiteralField(Field):
+    """
+    Supports typing.Literal. Note that typing.Literal[v1, v2, v3] is
+    Python's shorthand for typing.Union[typing.Literal[v1], typing.Literal[v2], typing.Literal[v3]]
+    and will be treated as such.
+
+    Note the following behavior when a string and matching enum are both
+    included in Literal:
+        class MyEnum(enum.Enum):
+            ONE = "one"
+
+        @dataclasses.dataclass
+        class MyModel(AvroModel):
+            field: typing.Literal["one", MyEnum.ONE]
+
+        MyModel.parse_obj({"field": "one"})
+
+    will always return:
+
+        # MyModel(field=<MyEnum.ONE: 'one'>)
+
+    This is because typing.Literal["one", MyEnum.ONE] is translated to
+    typing.Union[typing.Literal["one"], typing.Literal[MyEnum.ONE]]
+    and for matching a value to a union of literals, enums are prioritized
+    over other types.
+    """
+
+    enum_types: list[typing.Type[enum.Enum]] = dataclasses.field(default_factory=list)
+    allowed_values: list[typing.Any] = dataclasses.field(default_factory=list)
+    # This isn't actually optional, but Field has optional fields, so we have to provide a default
+    avro_field: typing.Optional[Field] = None
+
+    def __post_init__(self) -> None:
+        """
+        Derives Avro schema type[s] and validation requirements
+        """
+        args = get_args(self.type)
+        args_length = len(args)
+        if args_length > 1:
+            # This field is of the form typing.Literal[v1, v2, v3], which is a union of Literals
+            native_type = typing.Union[*[typing.Literal[a] for a in args]]  # type: ignore
+
+            for a in args:
+                self.allowed_values.append(a)
+                if isinstance(a, enum.Enum):
+                    self.enum_types.append(type(a))
+
+            self.avro_field = AvroField(
+                name=self.name,
+                native_type=native_type,
+                parent=self.parent,
+                model_metadata=self.model_metadata,
+            )
+        else:
+            arg = args[0]
+            native_type = type(arg)
+
+            self.allowed_values = [arg]
+            if isinstance(arg, enum.Enum):
+                self.enum_types = [native_type]
+
+            self.avro_field = AvroField(
+                name=self.name,
+                native_type=native_type,
+                parent=self.parent,
+                model_metadata=self.model_metadata,
+            )
+
+    def get_avro_type(self) -> typing.Any:
+        return self.avro_field.get_avro_type()  # type: ignore
+
+    def validate_value(self, value: typing.Any) -> bool:
+        """
+        Validates values assigned to Literal fields
+        """
+        if value not in self.allowed_values:
+            # See if this is a value in one of the parameterized enums
+            valid_enum_value = False
+            for enum_type in self.enum_types:
+                if value in enum_type._value2member_map_:
+                    valid_enum_value = True
+                    break
+
+            if not valid_enum_value:
+                raise FieldValueError(field_name=self.name, expected_type=self.type, value=value)
+
+        return True
+
+    def validate_default(self, default: typing.Any) -> bool:
+        return self.validate_value(default)
+
+    def get_dacite_typehook_transformer(self) -> typing.Callable[[typing.Any], typing.Any]:
+        """
+        Returns a type_hook transform function for this field as a
+        workaround to get dacite.from_dict to support Literals with Enums.
+
+        Note that enum parameters in the Literal type signature will be
+        prioritized over other types when matching a field value to a
+        parameter.
+        """
+
+        def transform_literal(value: typing.Any) -> typing.Any:
+            args = typing.get_args(self.type)
+            # Sort enums to the front of the argument list because enum members can be confused for builtins.
+            # Do the same for bools because they can be confused for int (e.g. isinstance(True, int) returns True),
+            # but int cannot be confused for bool (e.g. isinstance(1, bool) returns False).
+            sorted_args = sorted(args, key=lambda x: isinstance(x, (enum.Enum, bool)), reverse=True)
+
+            for arg in sorted_args:
+                arg_type = type(arg)
+                enum_member_type = type(arg.value) if isinstance(arg, enum.Enum) else None
+                if isinstance(value, arg_type):
+                    transformed_value = value
+                elif enum_member_type and isinstance(value, enum_member_type):
+                    try:
+                        transformed_value = arg_type(value)
+                    except ValueError:
+                        # value is not a member of the enum class
+                        continue
+                else:
+                    # value does not match the type of this arg. Skip to the next arg
+                    continue
+
+                if transformed_value == arg:
+                    return transformed_value
+
+            # raise ValueError(f'Invalid value "{value}" supplied for field of type {self.type}')
+            raise FieldValueError(
+                field_name=self.name,
+                expected_type=self.type,
+                value=value,
+            )
+
+        return transform_literal
 
 
 @dataclasses.dataclass
@@ -742,7 +880,6 @@ def field_factory(
     if native_type not in types.CUSTOM_TYPES and utils.is_annotated(native_type):
         a_type, *extra_args = get_args(native_type)
         field_info = next((arg for arg in extra_args if isinstance(arg, types.FieldInfo)), None)
-
         if field_info is None or a_type in (decimal.Decimal, types.Fixed):
             # it means that it is a custom type defined by us
             # `Int32`, `Float32`,`TimeMicro` or `DateTimeMicro`
@@ -813,23 +950,15 @@ def field_factory(
     elif isinstance(native_type, GenericAlias):  # type: ignore
         origin = get_origin(native_type)
 
-        if origin not in (
-            tuple,
-            list,
-            dict,
-            typing.Union,
-            collections.abc.Sequence,
-            collections.abc.MutableSequence,
-            collections.abc.Mapping,
-            collections.abc.MutableMapping,
-        ):
+        if origin in CONTAINER_FIELDS_CLASSES:
+            container_klass = CONTAINER_FIELDS_CLASSES[origin]
+        elif origin is typing.Literal:
+            container_klass = LiteralField
+        else:
             raise ValueError(
-                f"""
-                Invalid Type for field {name}. Accepted types are list, tuple, dict or typing.Union
-                """
+                f"Invalid Type {native_type} for field {name}. Accepted types are list, tuple, dict, typing.Union, or typing.Literal"
             )
 
-        container_klass = CONTAINER_FIELDS_CLASSES[origin]
         # check here
         return container_klass(  # type: ignore
             name=name,
@@ -875,16 +1004,21 @@ def field_factory(
             parent=parent,
         )
     # See if this is a pydantic "Custom Class"
-    elif inspect.isclass(native_type) and all(
-        method_name in dir(native_type) for method_name in PYDANTIC_CUSTOM_CLASS_METHOD_NAMES
+    elif (
+        inspect.isclass(native_type)
+        and not is_pydantic_model(native_type)
+        and all(method_name in dir(native_type) for method_name in PYDANTIC_CUSTOM_CLASS_METHOD_NAMES)
     ):
         try:
             # Build a field for the encoded type since that's what will be serialized
+            print(
+                f"\nJSIKES ****** \nname={name}\nparent={parent}\njson_encoders={parent.__config__.json_encoders}\nbases={parent.__bases__}"
+            )
             encoded_type = parent.__config__.json_encoders[native_type]
         except KeyError:
             raise ValueError(
-                f"Type {native_type} must be listed in the pydantic 'json_encoders' config for {parent}"
-                f" (or for one of the classes in its inheritance tree since pydantic configs are inherited)"
+                f"Type {native_type} for field {name} must be listed in the pydantic 'json_encoders' config for {parent}"
+                " (or for one of the classes in its inheritance tree since pydantic configs are inherited)"
             )
 
         # default_factory is not schema-friendly for Custom Classes since it could be returning
@@ -909,7 +1043,7 @@ def field_factory(
         )
     else:
         msg = (
-            f"Type {native_type} is unknown. Please check the valid types at "
+            f"Type {native_type} for field {name} is unknown. Please check the valid types at "
             "https://marcosschroh.github.io/dataclasses-avroschema/fields_specification/#avro-field-and-python-types-summary"  # noqa: E501
         )
 

@@ -182,8 +182,8 @@ def AvroBaseModel_model():
         first_union: typing.Union[str, int]
         logical_union: typing.Union[datetime.datetime, datetime.date, uuid.UUID]
         lake_trip: typing.Union[Bus, Car] = Field(default_factory=lambda: Bus(engine_name="honda"))
-        river_trip: typing.Union[Bus, Car] = None
-        mountain_trip: typing.Union[Bus, Car] = Field(default_factory=lambda: {"engine_name": "honda"})
-        trip_distance: typing.Union[int, TripDistance] = None
+        river_trip: typing.Optional[typing.Union[Bus, Car]] = None
+        mountain_trip: typing.Union[Bus, Car] = Field(default_factory=lambda: Bus.parse_obj({"engine_name": "honda"}))
+        trip_distance: typing.Union[int, TripDistance] = 123
 
     return UnionSchema

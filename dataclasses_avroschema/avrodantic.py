@@ -16,6 +16,17 @@ CT = TypeVar("CT", bound="AvroBaseModel")
 
 
 class AvroBaseModel(BaseModel, AvroModel):  # type: ignore
+    def __init__(__avrodantic_self__, **data) -> None:
+        """
+        Ensures AvroModel.__post_init__ is called after
+        BaseModel.__init__
+
+        See BaseModel.__init__ for why we're using __avrodantic_self__
+        in place of self (TLDR: it allows fields to be named "self")
+        """
+        BaseModel.__init__(__avrodantic_self__, **data)
+        AvroModel.__post_init__(__avrodantic_self__)
+
     @classmethod
     def generate_dataclass(cls: Type[CT]) -> Type[CT]:
         return cls
