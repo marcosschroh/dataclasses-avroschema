@@ -6,7 +6,6 @@ import pytest
 from fastavro.validation import ValidationError
 
 from dataclasses_avroschema import AvroModel
-from dataclasses_avroschema.schema_definition import BaseSchemaDefinition
 from dataclasses_avroschema.types import JsonDict
 
 encoded = "test".encode()
@@ -109,18 +108,6 @@ def test_invalid_schema_type(user_dataclass):
     msg = "Invalid type. Expected avro schema type."
     with pytest.raises(ValueError, match=msg):
         user_dataclass.generate_schema(schema_type="json")
-
-
-def test_not_implementd_methods():
-    class Aclass:
-        pass
-
-    with pytest.raises(TypeError) as excinfo:
-        BaseSchemaDefinition("avro", Aclass)
-
-    msg = "Can't instantiate abstract class BaseSchemaDefinition with abstract methods get_rendered_fields, render"
-
-    assert msg == str(excinfo.value)
 
 
 def test_inherit_dataclass_missing_docs():

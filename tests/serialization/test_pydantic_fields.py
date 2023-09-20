@@ -2,7 +2,7 @@ import pytest
 from pydantic import Field, conint
 from pydantic.error_wrappers import ValidationError
 
-from dataclasses_avroschema.avrodantic import AvroBaseModel
+from dataclasses_avroschema.pydantic import AvroBaseModel
 from dataclasses_avroschema.schema_generator import AVRO, AVRO_JSON
 
 

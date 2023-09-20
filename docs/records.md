@@ -272,7 +272,7 @@ assert json.loads(str(exc.value)) == ["User.name is <1> of type <class 'int'> ex
 ## Nested schema resolution directly from dictionaries
 
 Sometimes you have a `dictionary` and you want to create an instance without creating the nested objects. This library follows
-the same approach as `pydantic` with `parse_obj` method. This is also valid for `avrodantic.AvroBaseModel`.
+the same approach as `pydantic` with `parse_obj` method. This is also valid for `pydantic.AvroBaseModel`.
 
 ```python
 from dataclasses import dataclass

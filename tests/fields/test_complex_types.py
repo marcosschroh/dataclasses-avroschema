@@ -6,8 +6,8 @@ import typing
 import pytest
 
 from dataclasses_avroschema import AvroField, AvroModel, exceptions, types
-from dataclasses_avroschema.avrodantic import AvroBaseModel
 from dataclasses_avroschema.fields import field_utils
+from dataclasses_avroschema.pydantic import AvroBaseModel
 
 from . import consts
 
@@ -633,7 +633,7 @@ def test_enum_type():
     assert expected == field.to_dict()
 
     python_type = typing.Optional[CardType]
-    parent.user_defined_types = set()
+    parent._user_defined_types = set()
     field = AvroField(name, python_type, default=None, parent=parent)
 
     expected = {

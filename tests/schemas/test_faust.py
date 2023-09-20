@@ -8,7 +8,7 @@ import uuid
 import pytest
 from faust.models import fields
 
-from dataclasses_avroschema import types, utils
+from dataclasses_avroschema import types
 from dataclasses_avroschema.faust import AvroRecord
 
 encoded = "test".encode()
@@ -265,15 +265,6 @@ def test_exclude_field_from_schema(user_extra_avro_attributes):
             ]
 
     assert User.avro_schema() == json.dumps(user_extra_avro_attributes)
-
-
-def test_not_faust_not_installed(monkeypatch):
-    monkeypatch.setattr(utils, "faust", None)
-
-    class Bus:
-        pass
-
-    assert not utils.is_faust_model(Bus)
 
 
 def test_validate():

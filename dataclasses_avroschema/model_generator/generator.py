@@ -57,26 +57,26 @@ class ModelGenerator:
         base_class_to_imports = {
             BaseClassEnum.AVRO_MODEL.value: "from dataclasses_avroschema import AvroModel",
             BaseClassEnum.PYDANTIC_MODEL.value: "from pydantic import BaseModel",
-            BaseClassEnum.AVRO_DANTIC_MODEL.value: "from dataclasses_avroschema.avrodantic import AvroBaseModel",
+            BaseClassEnum.AVRO_DANTIC_MODEL.value: "from dataclasses_avroschema.pydantic import AvroBaseModel",
         }
         self.imports.add(base_class_to_imports[self.base_class])
 
         self.avro_type_to_python = avro_to_python_utils.AVRO_TYPE_TO_PYTHON
         self.logical_types_imports = avro_to_python_utils.LOGICAL_TYPES_IMPORTS
 
+        self.imports_dict = {
+            "condecimal": "from dataclasses_avroschema.types import condecimal",
+        }
+
         if self.base_class == BaseClassEnum.AVRO_MODEL.value:
             self.imports.add("import dataclasses")
             self.base_class_decotator = "@dataclasses.dataclass"
             self.imports_dict = {
                 "dataclass_field": "import dataclasses",
-                "condecimal": "from dataclasses_avroschema.types import condecimal",
             }
         else:
             self.dataclass_field_template = templates.pydantic_field_template
-            self.imports_dict = {
-                "dataclass_field": "from pydantic import Field",
-                "condecimal": "from pydantic import condecimal",
-            }
+            self.imports_dict = {"dataclass_field": "from pydantic import Field"}
 
     @staticmethod
     def validate_schema(*, schema: JsonDict) -> None:
@@ -320,7 +320,7 @@ class ModelGenerator:
         precision = field["precision"]
         scale = field["scale"]
 
-        self.imports.add(self.imports_dict["condecimal"])
+        self.imports.add("from dataclasses_avroschema import types")
         field_repr = templates.decimal_type_template.safe_substitute(precision=precision, scale=scale)
 
         if default is not None:
