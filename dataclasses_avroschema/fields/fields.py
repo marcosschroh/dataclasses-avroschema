@@ -365,7 +365,7 @@ class LiteralField(Field):
         args_length = len(args)
         if args_length > 1:
             # This field is of the form typing.Literal[v1, v2, v3], which is a union of Literals
-            native_type = typing.Union[*[typing.Literal[a] for a in args]]  # type: ignore
+            native_type = typing.Union[tuple(typing.Literal[a] for a in args)]  # type: ignore
 
             self.allowed_values = set(args)
             self.avro_field = AvroField(

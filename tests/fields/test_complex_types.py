@@ -296,7 +296,7 @@ def test_mapping_type_with_strenum_key(mapping):
     assert expected == field.avro_type
 
     # StrEnums should also be accepted
-    class TheStrEnum(enum.StrEnum):
+    class TheStrEnum(str, enum.Enum):
         pass
 
     python_type = mapping[TheStrEnum, str]
