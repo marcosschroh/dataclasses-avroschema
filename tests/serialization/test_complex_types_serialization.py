@@ -364,7 +364,33 @@ def test_literal_fields():
     assert TestModel.deserialize(avro_binary, create_instance=False) == expected_data
     assert TestModel.deserialize(avro_json, serialization_type="avro-json", create_instance=False) == expected_data
 
-    assert example.to_json() == expected_json, f"\nexpected:\n{expected_json}\nactual:\n{example.to_json()}\n"
+    assert example.to_json() == expected_json
+
+    assert TestModel.deserialize(avro_binary) == example
+    assert TestModel.deserialize(avro_json, serialization_type="avro-json") == example
+
+
+def test_dict_with_strenum_keys():
+    class StrEnum(str, enum.Enum):
+        ONE = "one"
+        TWO = "two"
+
+    @dataclasses.dataclass
+    class TestModel(AvroModel):
+        field: typing.Dict[StrEnum, int]
+
+    example = TestModel(field={StrEnum.ONE: 1, StrEnum.TWO: 2})
+
+    expected_data = {"field": {"one": 1, "two": 2}}
+    expected_json = json.dumps(expected_data)
+
+    avro_binary = example.serialize()
+    avro_json = example.serialize(serialization_type="avro-json")
+
+    assert TestModel.deserialize(avro_binary, create_instance=False) == expected_data
+    assert TestModel.deserialize(avro_json, serialization_type="avro-json", create_instance=False) == expected_data
+
+    assert example.to_json() == expected_json
 
     assert TestModel.deserialize(avro_binary) == example
     assert TestModel.deserialize(avro_json, serialization_type="avro-json") == example

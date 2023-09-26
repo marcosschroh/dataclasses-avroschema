@@ -846,58 +846,107 @@ def test_literal_field_with_multiple_parameters():
     parent._user_defined_types.clear()
 
     field = AvroField(name, python_type, parent)
-    result = field.get_avro_type()
 
-    assert result == [
-        field_utils.LONG,
-        field_utils.STRING,
-        field_utils.BOOLEAN,
-        field_utils.BYTES,
-        {"type": field_utils.ENUM, "name": "Suit", "symbols": [s.value for s in Suit]},
-    ]
+    assert field.to_dict() == {
+        "name": name,
+        "type": [
+            field_utils.LONG,
+            field_utils.STRING,
+            field_utils.BOOLEAN,
+            field_utils.BYTES,
+            {"type": field_utils.ENUM, "name": "Suit", "symbols": [s.value for s in Suit]},
+        ],
+    }
 
     # Reset the class variable
     parent._user_defined_types.clear()
 
 
-@pytest.mark.parametrize("default", [4, "4", True, b"four", Color.BLUE, None])
-def test_literal_field_with_default(default):
-    """
-    When the type is typing.Literal, the Avro field type should be the
-    encapsulated value type (i.e. int, string, etc.)
-    """
+@pytest.mark.parametrize(
+    "default, avro_type, avro_default",
+    [
+        (4, field_utils.LONG, 4),
+        ("4", field_utils.STRING, "4"),
+        (True, field_utils.BOOLEAN, True),
+        (b"four", field_utils.BYTES, "four"),
+        (
+            Suit.DIAMONDS,
+            {"type": field_utils.ENUM, "name": "Suit", "symbols": [s.value for s in Suit]},
+            Suit.DIAMONDS.value,
+        ),
+        (None, field_utils.NULL, None),
+    ],
+)
+def test_literal_field_with_single_parameter_with_default(default, avro_type, avro_default):
+    name = "test_field"
+    python_type = typing.Literal[default]  # type: ignore
+    parent = AvroModel()
+    parent._user_defined_types.clear()
 
-    @dataclasses.dataclass
-    class Model(AvroModel):
-        test_field: typing.Literal[default] = default  # type: ignore
+    field = AvroField(name, python_type, parent, default=default)
 
-    assert Model().to_dict() == {"test_field": default}
+    assert field.to_dict() == {
+        "name": name,
+        "type": avro_type,
+        "default": avro_default,
+    }
 
     # Reset the class variable
     AvroModel._user_defined_types.clear()
 
 
+def test_literal_field_with_multiple_parameters_with_default():
+    """
+    When the type is typing.Literal, type order behave like a UnionField
+    when a default is present
+    """
+    name = "test_field"
+    python_type = typing.Literal["one", b"two", True, 2, Suit.CLUBS, None]
+    parent = AvroModel()
+    parent._user_defined_types.clear()
+    default = 2
+
+    field = AvroField(name, python_type, parent, default=default)
+
+    assert field.to_dict() == {
+        "name": name,
+        "type": [
+            # Literal with multiple parameters is treated as a union, so the default's
+            # type should be listed first
+            field_utils.LONG,
+            field_utils.STRING,
+            field_utils.BYTES,
+            field_utils.BOOLEAN,
+            {"type": field_utils.ENUM, "name": "Suit", "symbols": [s.value for s in Suit]},
+            field_utils.NULL,
+        ],
+        "default": default,
+    }
+
+    # Reset the class variable
+    parent._user_defined_types.clear()
+
+
 @pytest.mark.parametrize(
-    "arg, value",
-    [(4, 3), ("4", "3"), (True, False), (b"four", "four"), (Color.BLUE, Color.GREEN), (Color.YELLOW, Suit.SPADES)],
+    "arg, default",
+    [(4, "3"), ("4", 3), (b"four", "four"), (Color.YELLOW, Suit.SPADES)],
 )
-def test_literal_field_with_single_parameter_invalid_value(arg, value):
+def test_literal_field_with_invalid_default(arg, default):
     """
     When the type is typing.Literal, FieldValueError should be raised if
-    the field is initialized with a value that does not match the
-    specified literal value
+    the field is supplied a default of a type that does not match the
+    specified literal value type
     """
-    annotation = typing.Literal[arg]  # type: ignore
 
     @dataclasses.dataclass
     class Model(AvroModel):
-        test_field: annotation  # type: ignore
+        test_field: typing.Literal[arg] = default  # type: ignore
 
-    msg = f'Invalid value "{value}" assigned to field "test_field" of type {annotation}'
+    msg = f'Invalid default type {type(default)} for field "test_field". Default should be {type(arg)}'
     # We need to escape all of the special characters in msg to do a regex match
     matchable_msg = re.escape(msg)
-    with pytest.raises(exceptions.FieldValueError, match=matchable_msg):
-        Model(test_field=value)  # type: ignore
+    with pytest.raises(AssertionError, match=matchable_msg):
+        Model.avro_schema()
 
     # Reset the class variable
     AvroModel._user_defined_types.clear()
@@ -917,10 +966,9 @@ def test_literal_field_with_no_parameters():
         f"Type {typing.Literal} for field test_field is unknown. Please check the valid types at "
         "https://marcosschroh.github.io/dataclasses-avroschema/fields_specification/#avro-field-and-python-types-summary"  # noqa: E501
     )
-    # We need to escape all of the special characters in msg to do a regex match
     matchable_msg = re.escape(msg)
     with pytest.raises(ValueError, match=matchable_msg):
-        Model(test_field=1)  # type: ignore
+        Model.avro_schema()
 
     # Reset the class variable
     AvroModel._user_defined_types.clear()
@@ -953,7 +1001,6 @@ def test_literal_field_dacite_typehook_transformer_invalid_values(arg, value):
     transformer = field.get_dacite_typehook_transformer()  # type: ignore
 
     msg = f'Invalid value "{value}" assigned to field "{name}" of type {python_type}'
-    # We need to escape all of the special characters in msg to do a regex match
     matchable_msg = re.escape(msg)
     with pytest.raises(exceptions.FieldValueError, match=matchable_msg):
         transformer(value)

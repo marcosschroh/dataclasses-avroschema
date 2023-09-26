@@ -64,7 +64,7 @@ def test_invalid_default_values(primitive_type, invalid_default):
     if primitive_type is None:
         primitive_type = type(None)
 
-    msg = f"Invalid default type {type(invalid_default)} for field {name}. Default should be {primitive_type}"
+    msg = f'Invalid default type {type(invalid_default)} for field "{name}". Default should be {primitive_type}'
     with pytest.raises(AssertionError, match=msg):
         field.to_dict()
 

@@ -31,21 +31,6 @@ class AvroModel:
     _rendered_schema: OrderedDict = dataclasses.field(default_factory=OrderedDict)
     _field_type_hooks: Optional[Dict[Any, Callable[[Any], Any]]] = None
 
-    def __post_init__(self) -> None:
-        """
-        Performs validation on field types that require it
-        """
-        # Call generate_schema to populate _parser, so that we can retrieve fields map
-        _ = self.generate_schema()
-        fields_schema_map = self._parser.get_fields_map()  # type: ignore
-
-        for key, value in self.asdict().items():
-            if self._metadata and key in self._metadata.exclude:
-                # Skip excluded fields
-                continue
-            field_schema_type = fields_schema_map[key]
-            field_schema_type.validate_value(value)
-
     @classmethod
     def generate_dataclass(cls: Type[CT]) -> Type[CT]:
         if dataclasses.is_dataclass(cls):

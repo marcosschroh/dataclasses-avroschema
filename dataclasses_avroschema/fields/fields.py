@@ -353,8 +353,6 @@ class LiteralField(Field):
     over other types.
     """
 
-    allowed_values: typing.Set[typing.Any] = dataclasses.field(default_factory=set)
-    # This isn't actually optional, but Field has optional fields, so we have to provide a default
     avro_field: typing.Optional[Field] = None
 
     def __post_init__(self) -> None:
@@ -369,28 +367,23 @@ class LiteralField(Field):
         else:
             native_type = type(args[0])
 
-        self.allowed_values = set(args)
         self.avro_field = AvroField(
             name=self.name,
             native_type=native_type,
             parent=self.parent,
+            default=self.default,
+            default_factory=self.default_factory,
             model_metadata=self.model_metadata,
         )
 
     def get_avro_type(self) -> typing.Any:
         return self.avro_field.get_avro_type()  # type: ignore
 
-    def validate_value(self, value: typing.Any) -> bool:
-        """
-        Validates values assigned to Literal fields
-        """
-        if value not in self.allowed_values:
-            raise FieldValueError(field_name=self.name, field_type=self.type, field_value=value)
-
-        return True
+    def default_to_avro(self, default: typing.Any):
+        return self.avro_field.default_to_avro(default)
 
     def validate_default(self, default: typing.Any) -> bool:
-        return self.validate_value(default)
+        return self.avro_field.validate_default(default)
 
     def get_dacite_typehook_transformer(self) -> typing.Callable[[typing.Any], typing.Any]:
         """

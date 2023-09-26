@@ -93,17 +93,11 @@ class Field:
 
     def validate_default(self, default: typing.Any) -> bool:
         a_type = self.type
-        msg = f"Invalid default type {type(default)} for field {self.name}. Default should be {self.type}"
+        msg = f'Invalid default type {type(default)} for field "{self.name}". Default should be {self.type}'
         if utils.is_annotated(self.type):
             a_type, _ = get_args(self.type)
 
         assert isinstance(default, a_type), msg
-        return True
-
-    def validate_value(self, value: typing.Any) -> bool:
-        """
-        Allows derived fields to define validation for input values
-        """
         return True
 
     def default_to_avro(self, value: typing.Any) -> typing.Any:
