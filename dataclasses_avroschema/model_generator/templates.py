@@ -19,7 +19,7 @@ DATETIME_MICROS_TEMPLATE = (
     "datetime.datetime($year, $month, $day, $hour, $minute, $second, $microsecond, tzinfo=datetime.timezone.utc)"
 )
 DECIMAL_TEMPLATE = "decimal.Decimal('$value')"
-DECIMAL_TYPE_TEMPLATE = "condecimal(max_digits=$precision, decimal_places=$scale)"
+DECIMAL_TYPE_TEMPLATE = "types.condecimal(max_digits=$precision, decimal_places=$scale)"
 
 ENUM_SYMBOL_TEMPLATE = "$key = $value"
 ENUM_TEMPLATE = """

@@ -6,7 +6,6 @@ import pytest
 from fastavro.validation import ValidationError
 
 from dataclasses_avroschema import AvroModel
-from dataclasses_avroschema.schema_definition import BaseSchemaDefinition
 from dataclasses_avroschema.types import JsonDict
 
 encoded = "test".encode()
@@ -111,18 +110,6 @@ def test_invalid_schema_type(user_dataclass):
         user_dataclass.generate_schema(schema_type="json")
 
 
-def test_not_implementd_methods():
-    class Aclass:
-        pass
-
-    with pytest.raises(TypeError) as excinfo:
-        BaseSchemaDefinition("avro", Aclass)
-
-    msg = "Can't instantiate abstract class BaseSchemaDefinition with abstract methods get_rendered_fields, render"
-
-    assert msg == str(excinfo.value)
-
-
 def test_inherit_dataclass_missing_docs():
     @dataclass
     class BaseUser:
@@ -221,6 +208,28 @@ def test_order_field_not_specifing_all(order_fields_schema):
             ]
 
     assert User.avro_schema() == json.dumps(order_fields_schema)
+
+
+def test_exclude_field_from_schema(user_extra_avro_attributes):
+    class User(AvroModel):
+        "An User"
+        name: str
+        age: int
+        last_name: str = "Bond"
+
+        class Meta:
+            namespace = "test.com.ar/user/v1"
+            aliases = [
+                "User",
+                "My favorite User",
+            ]
+            exclude = [
+                "last_name",
+            ]
+
+    user = User.fake()
+    assert User.avro_schema() == json.dumps(user_extra_avro_attributes)
+    assert User.deserialize(user.serialize()) == user
 
 
 def test_validate():

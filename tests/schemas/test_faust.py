@@ -6,8 +6,9 @@ import typing
 import uuid
 
 import pytest
+from faust.models import fields
 
-from dataclasses_avroschema import types, utils
+from dataclasses_avroschema import types
 from dataclasses_avroschema.faust import AvroRecord
 
 encoded = "test".encode()
@@ -49,8 +50,8 @@ def test_faust_record_schema_complex_types_with_defaults(user_advance_with_defau
     class UserAdvance(AvroRecord):
         name: str
         age: int
-        pets: typing.List[str] = dataclasses.field(default_factory=lambda: ["dog", "cat"])
-        accounts: typing.Dict[str, int] = dataclasses.field(default_factory=lambda: {"key": 1})
+        pets: typing.List[str] = fields.StringField(required=False, default=["dog", "cat"])
+        accounts: typing.Dict[str, int] = fields.IntegerField(required=False, default={"key": 1})
         has_car: bool = False
         favorite_colors: color_enum = color_enum.BLUE
         country: str = "Argentina"
@@ -238,7 +239,6 @@ def test_faust_record_schema_with_unions_type(union_type_schema):
 def test_field_metadata() -> None:
     field_matadata = {"aliases": ["username"]}
 
-    @dataclasses.dataclass
     class UserRecord(AvroRecord):
         name: str = dataclasses.field(metadata=field_matadata)
 
@@ -247,13 +247,24 @@ def test_field_metadata() -> None:
     assert schema["fields"][0]["aliases"] == field_matadata["aliases"]
 
 
-def test_not_faust_not_installed(monkeypatch):
-    monkeypatch.setattr(utils, "faust", None)
+def test_exclude_field_from_schema(user_extra_avro_attributes):
+    class User(AvroRecord):
+        "An User"
+        name: str
+        age: int
+        last_name: fields.StringField = fields.StringField(required=False, defualt="Bond")
 
-    class Bus:
-        pass
+        class Meta:
+            namespace = "test.com.ar/user/v1"
+            aliases = [
+                "User",
+                "My favorite User",
+            ]
+            exclude = [
+                "last_name",
+            ]
 
-    assert not utils.is_faust_model(Bus)
+    assert User.avro_schema() == json.dumps(user_extra_avro_attributes)
 
 
 def test_validate():

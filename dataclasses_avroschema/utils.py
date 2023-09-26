@@ -8,11 +8,6 @@ from typing_extensions import Annotated, get_origin
 from .types import JsonDict
 
 try:
-    import faust
-except ImportError:  # pragma: no cover
-    faust = None  # type: ignore # pragma: no cover
-
-try:
     import pydantic  # pragma: no cover
 except ImportError:  # type: ignore # pragma: no cover
     pydantic = None  # type: ignore # pragma: no cover
@@ -21,12 +16,6 @@ except ImportError:  # type: ignore # pragma: no cover
 def is_pydantic_model(klass: type) -> bool:
     if pydantic is not None:
         return issubclass(klass, pydantic.BaseModel)
-    return False
-
-
-def is_faust_model(klass: type) -> bool:
-    if faust is not None:
-        return issubclass(klass, faust.Record)
     return False
 
 
@@ -94,6 +83,7 @@ class SchemaMetadata:
     alias_nested_items: typing.Dict[str, str] = dataclasses.field(default_factory=dict)
     dacite_config: typing.Optional[JsonDict] = None
     field_order: typing.Optional[typing.List[str]] = None
+    exclude: typing.List[str] = dataclasses.field(default_factory=list)
 
     @classmethod
     def create(cls: typing.Type["SchemaMetadata"], klass: type) -> typing.Any:
@@ -105,6 +95,7 @@ class SchemaMetadata:
             alias_nested_items=getattr(klass, "alias_nested_items", {}),
             dacite_config=getattr(klass, "dacite_config", None),
             field_order=getattr(klass, "field_order", None),
+            exclude=getattr(klass, "exclude", []),
         )
 
     def get_alias_nested_items(self, name: str) -> typing.Optional[str]:

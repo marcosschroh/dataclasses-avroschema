@@ -120,7 +120,7 @@ class Field:
         # filter by the same field types
         same_types = [
             field.type
-            for field in self.parent.user_defined_types
+            for field in self.parent._user_defined_types
             if field.type == self.type and field.name != self.name
         ]
 

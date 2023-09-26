@@ -10,7 +10,7 @@ from fastavro.validation import validate
 
 from . import case, serialization
 from .fields.base import Field
-from .schema_definition import AvroSchemaDefinition
+from .parser import Parser
 from .types import JsonDict
 from .utils import SchemaMetadata, standardize_custom_type
 
@@ -22,12 +22,12 @@ CT = TypeVar("CT", bound="AvroModel")
 
 
 class AvroModel:
-    schema_def: Optional[AvroSchemaDefinition] = None
-    klass: Optional[Type] = None
-    metadata: Optional[SchemaMetadata] = None
-    user_defined_types: Set = set()
-    parent: Any = None
-    rendered_schema: OrderedDict = dataclasses.field(default_factory=OrderedDict)
+    _parser: Optional[Parser] = None
+    _klass: Optional[Type] = None
+    _metadata: Optional[SchemaMetadata] = None
+    _user_defined_types: Set = set()
+    _parent: Any = None
+    _rendered_schema: OrderedDict = dataclasses.field(default_factory=OrderedDict)
 
     @classmethod
     def generate_dataclass(cls: Type[CT]) -> Type[CT]:
@@ -37,32 +37,31 @@ class AvroModel:
 
     @classmethod
     def generate_metadata(cls: Type[CT]) -> SchemaMetadata:
-        meta = getattr(cls.klass, "Meta", type)
+        meta = getattr(cls._klass, "Meta", type)
 
         return SchemaMetadata.create(meta)
 
     @classmethod
     def generate_schema(cls: Type[CT], schema_type: str = "avro") -> Optional[OrderedDict]:
-        if cls.schema_def is None or cls.__mro__[1] != AvroModel:
+        if cls._parser is None or cls.__mro__[1] != AvroModel:
             # Generate dataclass and metadata
-            cls.klass = cls.generate_dataclass()
+            cls._klass = cls.generate_dataclass()
 
             # let's live open the possibility to define different
             # schema definitions like json
             if schema_type == "avro":
                 # cache the schema
-                cls.schema_def = cls._generate_avro_schema()
-                cls.rendered_schema = cls.schema_def.render()
+                cls._parser = cls._generate_parser()
+                cls._rendered_schema = cls._parser.render()
             else:
                 raise ValueError("Invalid type. Expected avro schema type.")
 
-        return cls.rendered_schema
+        return cls._rendered_schema
 
     @classmethod
-    def _generate_avro_schema(cls: Type[CT]) -> AvroSchemaDefinition:
-        metadata = cls.generate_metadata()
-        cls.metadata = metadata
-        return AvroSchemaDefinition("record", cls.klass, metadata=metadata, parent=cls.parent or cls)
+    def _generate_parser(cls: Type[CT]) -> Parser:
+        cls._metadata = cls.generate_metadata()
+        return Parser(type=cls._klass, metadata=cls._metadata, parent=cls._parent or cls)
 
     @classmethod
     def avro_schema(cls: Type[CT], case_type: Optional[str] = None) -> str:
@@ -75,8 +74,8 @@ class AvroModel:
         if parent is not None:
             # in this case the current class is a child with a parent
             # we recalculate the schema definition to prevent re usages
-            cls.parent = parent
-            cls.schema_def = None
+            cls._parent = parent
+            cls._parser = None
         else:
             # This happens when an AvroModel is the root of the tree (first class in the hierarchy)
             # Because intermediate schemas can be reused as a root later, we need to reset them
@@ -86,29 +85,29 @@ class AvroModel:
             # After generating the A.avro_schema the parent of B is A,
             # if we want to do B.avro_schema (now B is the root)
             # B should clean the data that was only valid when it was the child
-            cls._reset_schema_definition()
+            cls._reset_parser()
 
         avro_schema = cls.generate_schema(schema_type=AVRO)
 
         if case_type is not None:
-            avro_schema = case.case_record(cls.rendered_schema, case_type)  # type: ignore
+            avro_schema = case.case_record(cls._rendered_schema, case_type)  # type: ignore
 
         return json.loads(json.dumps(avro_schema))
 
     @classmethod
     def get_fields(cls: Type[CT]) -> List[Field]:
-        if cls.schema_def is None:
+        if cls._parser is None:
             cls.generate_schema()
-        return cls.schema_def.fields  # type: ignore
+        return cls._parser.fields  # type: ignore
 
     @classmethod
-    def _reset_schema_definition(cls: Type[CT]) -> None:
+    def _reset_parser(cls: Type[CT]) -> None:
         """
         Reset all the values to original state.
         """
-        cls.user_defined_types = set()
-        cls.schema_def = None
-        cls.parent = None
+        cls._user_defined_types = set()
+        cls._parser = None
+        cls._parent = None
 
     def asdict(self, standardize_factory: Optional[Callable[..., Any]] = None) -> JsonDict:
         if standardize_factory is not None:
@@ -168,16 +167,16 @@ class AvroModel:
         """
         Get the default config for dacite and always include the self reference
         """
-        # We need to make sure that the `avro schemas` has been generated, otherwise cls.klass is empty
-        # It won't affect the performance because the rendered schema will be store in cls.rendered_schema
+        # We need to make sure that the `avro schemas` has been generated, otherwise cls._klass is empty
+        # It won't affect the performance because the rendered schema will be store in cls._rendered_schema
         cls.generate_schema()
-        dacite_user_config = cls.metadata.dacite_config  # type: ignore
+        dacite_user_config = cls._metadata.dacite_config  # type: ignore
 
         dacite_config = {
             "check_types": False,
             "cast": [],
             "forward_references": {
-                cls.klass.__name__: cls.klass,  # type: ignore
+                cls._klass.__name__: cls._klass,  # type: ignore
             },
         }
 

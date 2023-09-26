@@ -17,7 +17,7 @@ from dataclasses_avroschema.faust import AvroRecord
 class UserAdvance(AvroRecord):
     name: str
     age: int
-    pets: typing.List[str] = fields.StringField(required=False, default=['dog', 'cat'])
+    pets: typing.List[str] = fields.StringField(required=False, default=["dog", "cat"])
     accounts: typing.Dict[str, int] = fields.IntegerField(required=False, default={"key": 1})
     has_car: bool = fields.BooleanField(required=False, default=False)
     favorite_colors: typing.Tuple[str] = fields.StringField(required=False, default=("BLUE", "YELLOW", "GREEN"))

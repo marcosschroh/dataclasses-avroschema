@@ -53,7 +53,7 @@ class User(BaseModel):
 
 def test_avro_pydantic_model(schema_one_to_many_map_relationship: types.JsonDict) -> None:
     expected_result = """
-from dataclasses_avroschema.avrodantic import AvroBaseModel
+from dataclasses_avroschema.pydantic import AvroBaseModel
 import typing
 
 
@@ -81,7 +81,7 @@ class User(AvroBaseModel):
 
 def test_avro_pydantic_model_with_meta_fields(schema_one_to_self_relationship: types.JsonDict) -> None:
     expected_result = """
-from dataclasses_avroschema.avrodantic import AvroBaseModel
+from dataclasses_avroschema.pydantic import AvroBaseModel
 from pydantic import Field
 import typing
 
@@ -101,13 +101,13 @@ class User(AvroBaseModel):
 
 def test_decimal_field(schema_with_decimal_field: types.JsonDict) -> None:
     expected_result = """
-from dataclasses_avroschema.avrodantic import AvroBaseModel
-from pydantic import condecimal
+from dataclasses_avroschema import types
+from dataclasses_avroschema.pydantic import AvroBaseModel
 
 
 
 class Demo(AvroBaseModel):
-    foo: condecimal(max_digits=10, decimal_places=3)
+    foo: types.condecimal(max_digits=10, decimal_places=3)
 """
     model_generator = ModelGenerator(base_class=BaseClassEnum.AVRO_DANTIC_MODEL.value)
     result = model_generator.render(schema=schema_with_decimal_field)
@@ -120,8 +120,7 @@ def test_schema_logical_types(schema_with_logical_types: types.JsonDict) -> None
 
     expected_result = f"""
 from dataclasses_avroschema import types
-from dataclasses_avroschema.avrodantic import AvroBaseModel
-from pydantic import condecimal
+from dataclasses_avroschema.pydantic import AvroBaseModel
 import datetime
 import decimal
 import typing
@@ -134,7 +133,7 @@ class LogicalTypes(AvroBaseModel):
     birthday_time: datetime.time
     birthday_datetime: datetime.datetime
     uuid_1: uuid.UUID
-    money: condecimal(max_digits=3, decimal_places=2)
+    money: types.condecimal(max_digits=3, decimal_places=2)
     meeting_date: typing.Optional[datetime.date] = None
     release_date: datetime.date = datetime.date(2019, 10, 12)
     meeting_time: typing.Optional[datetime.time] = None
@@ -145,7 +144,7 @@ class LogicalTypes(AvroBaseModel):
     release_datetime_micro: types.DateTimeMicro = {release_datetime_micro}
     uuid_2: typing.Optional[uuid.UUID] = None
     event_uuid: uuid.UUID = "ad0677ab-bd1c-4383-9d45-e46c56bcc5c9"
-    explicit_with_default: condecimal(max_digits=3, decimal_places=2) = decimal.Decimal('3.14')
+    explicit_with_default: types.condecimal(max_digits=3, decimal_places=2) = decimal.Decimal('3.14')
 
 """
     model_generator = ModelGenerator(base_class=BaseClassEnum.AVRO_DANTIC_MODEL.value)
@@ -155,7 +154,7 @@ class LogicalTypes(AvroBaseModel):
 
 def test_schema_with_pydantic_fields(schema_with_pydantic_fields):
     expected_result = """
-from dataclasses_avroschema.avrodantic import AvroBaseModel
+from dataclasses_avroschema.pydantic import AvroBaseModel
 import pydantic
 import typing
 
@@ -185,7 +184,7 @@ class Infrastructure(AvroBaseModel):
 def test_schema_with_pydantic_constrained_field(schema_with_pydantic_constrained_fields):
     expected_result = """
 from dataclasses_avroschema import types
-from dataclasses_avroschema.avrodantic import AvroBaseModel
+from dataclasses_avroschema.pydantic import AvroBaseModel
 import pydantic
 
 

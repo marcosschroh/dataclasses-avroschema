@@ -74,7 +74,7 @@ def test_render_complex_types():
         )
 
     parent = AvroModel()
-    parent.metadata = utils.SchemaMetadata.create(type)
+    parent._metadata = utils.SchemaMetadata.create(type)
     field = AvroField(
         "metadata",
         Metadata,

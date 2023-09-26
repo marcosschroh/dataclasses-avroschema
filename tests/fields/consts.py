@@ -19,6 +19,8 @@ PRIMITIVE_TYPES = (
     (bool, field_utils.BOOLEAN),
     (float, field_utils.DOUBLE),
     (bytes, field_utils.BYTES),
+    (None, field_utils.NULL),
+    (type(None), field_utils.NULL),
     (Annotated[str, "string"], field_utils.STRING),
     (Annotated[int, "integer"], field_utils.LONG),
     (Annotated[bool, "boolean"], field_utils.BOOLEAN),
@@ -55,9 +57,11 @@ PRIMITIVE_TYPES_AND_DEFAULTS = (
     (bool, True),
     (float, 10.4),
     (bytes, b"test"),
+    (None, None),
+    (type(None), None),
     (Annotated[str, "string"], "test"),
     (Annotated[int, "int"], 1),
-    (Annotated[bool, "boolen"], True),
+    (Annotated[bool, "boolean"], True),
     (Annotated[float, "float"], 10.4),
     (Annotated[bytes, "bytes"], b"test"),
 )
@@ -68,6 +72,8 @@ PRIMITIVE_TYPES_AND_INVALID_DEFAULTS = (
     (bool, 10),
     (float, False),
     (bytes, "test"),
+    (None, 1),
+    (type(None), "test"),
 )
 
 LOGICAL_TYPES = (

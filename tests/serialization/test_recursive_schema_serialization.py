@@ -4,7 +4,7 @@ import typing
 import pytest
 
 from dataclasses_avroschema import AvroModel
-from dataclasses_avroschema.avrodantic import AvroBaseModel
+from dataclasses_avroschema.pydantic import AvroBaseModel
 
 parametrize_base_model = pytest.mark.parametrize(
     "model_class, decorator", [(AvroModel, dataclasses.dataclass), (AvroBaseModel, lambda f: f)]
