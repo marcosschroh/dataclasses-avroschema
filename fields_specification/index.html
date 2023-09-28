@@ -375,6 +375,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#typingliteral" class="md-nav__link">
+    typing.Literal
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#adding-custom-field-level-attributes" class="md-nav__link">
     Adding Custom Field-level Attributes
   </a>
@@ -735,6 +742,13 @@
         <li class="md-nav__item">
   <a href="#typingannotated" class="md-nav__link">
     typing.Annotated
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#typingliteral" class="md-nav__link">
+    typing.Literal
   </a>
   
 </li>
@@ -1174,6 +1188,48 @@ Dataclasses-avroschema will automatically generate the appropriate array if a de
 <span class="w">    </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;country&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Argentina&quot;</span><span class="p">},</span>
 <span class="w">    </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;address&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;null&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">],</span><span class="w"> </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">}]</span>
 <span class="p">}</span><span class="err">&#39;</span>
+</code></pre></div>
+<p><em>(This script is complete, it should run "as is")</em></p>
+<h2 id="typingliteral">typing.Literal</h2>
+<p>Fields can be annotated with <code>typing.Literal</code> in accordance with <a href="https://peps.python.org/pep-0586/">PEP 586</a>. Note that a literal field with multiple arguments (i.e. of the form <code>typing.Literal[v1, v2, v3]</code>) is interpreted as a union of literals (i.e. <code>typing.Union[typing.Literal[v1], typing.Literal[v2], typing.Literal[v3]]</code>) in line with the PEP.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">enum</span>
+<span class="kn">import</span> <span class="nn">typing</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
+
+<span class="k">class</span> <span class="nc">E</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="n">ONE</span> <span class="o">=</span> <span class="s2">&quot;one&quot;</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">T</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
+    <span class="n">f</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Literal</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="n">E</span><span class="o">.</span><span class="n">ONE</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">T</span><span class="o">.</span><span class="n">avro_schema</span><span class="p">())</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">{</span>
+<span class="sd">  &quot;type&quot;: &quot;record&quot;,</span>
+<span class="sd">  &quot;name&quot;: &quot;T&quot;,</span>
+<span class="sd">  &quot;fields&quot;: [</span>
+<span class="sd">    {</span>
+<span class="sd">      &quot;name&quot;: &quot;f&quot;,</span>
+<span class="sd">      &quot;type&quot;: [</span>
+<span class="sd">        &quot;null&quot;,</span>
+<span class="sd">        &quot;long&quot;,</span>
+<span class="sd">        &quot;string&quot;,</span>
+<span class="sd">        &quot;boolean&quot;,</span>
+<span class="sd">        &quot;bytes&quot;,</span>
+<span class="sd">        {</span>
+<span class="sd">          &quot;type&quot;: &quot;enum&quot;,</span>
+<span class="sd">          &quot;name&quot;: &quot;E&quot;,</span>
+<span class="sd">          &quot;symbols&quot;: [</span>
+<span class="sd">            &quot;one&quot;</span>
+<span class="sd">          ]</span>
+<span class="sd">        }</span>
+<span class="sd">      ]</span>
+<span class="sd">    }</span>
+<span class="sd">  ]</span>
+<span class="sd">}</span>
+<span class="sd">&quot;&quot;&quot;</span>
 </code></pre></div>
 <p><em>(This script is complete, it should run "as is")</em></p>
 <h2 id="adding-custom-field-level-attributes">Adding Custom Field-level Attributes</h2>
