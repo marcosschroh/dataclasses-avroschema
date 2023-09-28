@@ -240,23 +240,6 @@ print(T.avro_schema())
 
 *(This script is complete, it should run "as is")*
 
-Note the following behavior when a builtin and enum member with the same value are both included in `Literal`:
-```python
-import enum
-from dataclasses_avroschema import AvroModel
-
-class MyEnum(enum.Enum):
-    ONE = "one"
-
-@dataclasses.dataclass
-class MyModel(AvroModel):
-    field: typing.Literal["one", MyEnum.ONE]
-
-print(MyModel.parse_obj({"field": "one"}))
-# >>> MyModel(field=<MyEnum.ONE: 'one'>)
-```
-This is because `typing.Literal["one", MyEnum.ONE]` is translated to `typing.Union[typing.Literal["one"], typing.Literal[MyEnum.ONE]]` and enums are prioritized over builtins when matching a value to a union of literals.
-
 ## Adding Custom Field-level Attributes
 
 You may want to add field-level attributes which are not automatically populated according to the typing semantics
