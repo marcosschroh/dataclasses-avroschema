@@ -2,6 +2,7 @@ import dataclasses
 import enum
 import json
 import typing
+from copy import deepcopy
 
 from dataclasses_avroschema import AvroModel
 
@@ -299,7 +300,7 @@ def test_literal_enum():
         nested: NestedTestModel
 
     example = TestModel(literal=TestEnum.ONE, nested=NestedTestModel(literal=TestEnum.TWO))
-    expected_data = {"literal": TestEnum.ONE, "nested": {"literal": TestEnum.TWO}}
+    expected_data = {"literal": TestEnum.ONE.value, "nested": {"literal": TestEnum.TWO.value}}
     expected_json = json.dumps({"literal": TestEnum.ONE.value, "nested": {"literal": TestEnum.TWO.value}})
 
     avro_binary = example.serialize()
@@ -310,8 +311,10 @@ def test_literal_enum():
 
     assert example.to_json() == expected_json
 
-    assert TestModel.deserialize(avro_binary) == example
-    assert TestModel.deserialize(avro_json, serialization_type="avro-json") == example
+    # Enum types are not preserved through serialization for typing.Literal
+    expected_deser = TestModel(literal=TestEnum.ONE.value, nested=NestedTestModel(literal=TestEnum.TWO.value))
+    assert TestModel.deserialize(avro_binary) == expected_deser
+    assert TestModel.deserialize(avro_json, serialization_type="avro-json") == expected_deser
 
 
 def test_literal_fields():
@@ -343,7 +346,7 @@ def test_literal_fields():
         "single_literal_1": "1st_literal",
         "multi_literal_1": b"one",
         "nested_model": {
-            "single_literal_2": TestEnum.TWO,
+            "single_literal_2": TestEnum.TWO.value,
             "multi_literal_2": 2,
         },
     }
@@ -366,8 +369,11 @@ def test_literal_fields():
 
     assert example.to_json() == expected_json
 
-    assert TestModel.deserialize(avro_binary) == example
-    assert TestModel.deserialize(avro_json, serialization_type="avro-json") == example
+    expected_deser = deepcopy(example)
+    # Enum types are not preserved through serialization for typing.Literal
+    expected_deser.nested_model.single_literal_2 = TestEnum.TWO.value
+    assert TestModel.deserialize(avro_binary) == expected_deser
+    assert TestModel.deserialize(avro_json, serialization_type="avro-json") == expected_deser
 
 
 def test_dict_with_strenum_keys():

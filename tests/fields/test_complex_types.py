@@ -933,9 +933,9 @@ def test_literal_field_with_multiple_parameters_with_default():
 )
 def test_literal_field_with_invalid_default(arg, default):
     """
-    When the type is typing.Literal, FieldValueError should be raised if
+    When the type is typing.Literal, AssertionError should be raised if
     the field is supplied a default of a type that does not match the
-    specified literal value type
+    type of the specified literal value
     """
 
     @dataclasses.dataclass
@@ -972,35 +972,3 @@ def test_literal_field_with_no_parameters():
 
     # Reset the class variable
     AvroModel._user_defined_types.clear()
-
-
-@pytest.mark.parametrize(
-    "arg, value",
-    [
-        (Color.BLUE, Color.BLUE.value + "s"),
-        (Color.YELLOW, Suit.SPADES),
-        ("v1", "v2"),
-        (1, 2),
-        (True, False),
-        (b"one", b"onee"),
-    ],
-)
-def test_literal_field_dacite_typehook_transformer_invalid_values(arg, value):
-    """
-    When the type is typing.Literal, the dacite typehook transformer
-    should raise an exception for inputs that don't match the permitted
-    values
-    """
-    name = "test_field"
-    python_type = typing.Literal[arg]  # type: ignore
-    # Required for enums
-    parent = AvroModel()
-    parent._user_defined_types.clear()
-
-    field = AvroField(name, python_type)
-    transformer = field.get_dacite_typehook_transformer()  # type: ignore
-
-    msg = f'Invalid value "{value}" assigned to field "{name}" of type {python_type}'
-    matchable_msg = re.escape(msg)
-    with pytest.raises(exceptions.FieldValueError, match=matchable_msg):
-        transformer(value)

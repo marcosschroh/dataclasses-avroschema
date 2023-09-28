@@ -10,7 +10,7 @@ import uuid
 from typing_extensions import get_args, get_origin
 
 from dataclasses_avroschema import schema_generator, serialization, types, utils, version
-from dataclasses_avroschema.exceptions import FieldValueError, InvalidMap
+from dataclasses_avroschema.exceptions import InvalidMap
 from dataclasses_avroschema.faker import fake
 from dataclasses_avroschema.utils import is_pydantic_model
 
@@ -331,26 +331,6 @@ class LiteralField(Field):
     Supports typing.Literal. Note that typing.Literal[v1, v2, v3] is
     Python's shorthand for typing.Union[typing.Literal[v1], typing.Literal[v2], typing.Literal[v3]]
     and will be treated as such.
-
-    Note the following behavior when a string and matching enum are both
-    included in Literal:
-        class MyEnum(enum.Enum):
-            ONE = "one"
-
-        @dataclasses.dataclass
-        class MyModel(AvroModel):
-            field: typing.Literal["one", MyEnum.ONE]
-
-        MyModel.parse_obj({"field": "one"})
-
-    will always return:
-
-        # MyModel(field=<MyEnum.ONE: 'one'>)
-
-    This is because typing.Literal["one", MyEnum.ONE] is translated to
-    typing.Union[typing.Literal["one"], typing.Literal[MyEnum.ONE]]
-    and for matching a value to a union of literals, enums are prioritized
-    over other types.
     """
 
     avro_field: typing.Optional[Field] = None
@@ -380,52 +360,10 @@ class LiteralField(Field):
         return self.avro_field.get_avro_type()  # type: ignore
 
     def default_to_avro(self, default: typing.Any):
-        return self.avro_field.default_to_avro(default)
+        return self.avro_field.default_to_avro(default)  # type: ignore
 
     def validate_default(self, default: typing.Any) -> bool:
-        return self.avro_field.validate_default(default)
-
-    def get_dacite_typehook_transformer(self) -> typing.Callable[[typing.Any], typing.Any]:
-        """
-        Returns a type_hook transform function for this field as a
-        workaround to get dacite.from_dict to support Literals with Enums.
-
-        Note that enum parameters in the Literal type signature will be
-        prioritized over other types when matching a field value to a
-        parameter.
-        """
-
-        def transform_literal(value: typing.Any) -> typing.Any:
-            args = typing.get_args(self.type)
-            # Sort enums to the front of the argument list because enum members can be confused for builtins.
-            # Do the same for bools because they can be confused for int (e.g. isinstance(True, int) returns True),
-            # but int cannot be confused for bool (e.g. isinstance(1, bool) returns False).
-            sorted_args = sorted(args, key=lambda x: isinstance(x, (enum.Enum, bool)), reverse=True)
-
-            for arg in sorted_args:
-                arg_type = type(arg)
-                enum_member_type = type(arg.value) if isinstance(arg, enum.Enum) else None
-
-                # Try to match value to this arg
-                if isinstance(value, arg_type):
-                    transformed_value = value
-                elif enum_member_type and isinstance(value, enum_member_type):
-                    # arg is an enum member and value matches its type. See if we can reconstruct arg from value.
-                    try:
-                        transformed_value = arg_type(value)
-                    except ValueError:
-                        # value is not a member of arg's enum class
-                        continue
-                else:
-                    # value does not match the type of this arg. Skip to the next arg
-                    continue
-
-                if transformed_value == arg:
-                    return transformed_value
-
-            raise FieldValueError(field_name=self.name, field_type=self.type, field_value=value)
-
-        return transform_literal
+        return self.avro_field.validate_default(default)  # type: ignore
 
 
 @dataclasses.dataclass

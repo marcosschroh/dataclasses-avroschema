@@ -195,13 +195,13 @@ resulting in
 
 ## typing.Literal
 
-Fields can be annotated with `typing.Literal` in accordance with [PEP 586](https://peps.python.org/pep-0586/) to restrict the field to a particular value or set of values. Note that a literal field with multiple arguments (i.e. of the form `typing.Literal[v1, v2, v3]`) is interpreted as a union of literals (i.e. `typing.Union[typing.Literal[v1], typing.Literal[v2], typing.Literal[v3]]`).
+Fields can be annotated with `typing.Literal` in accordance with [PEP 586](https://peps.python.org/pep-0586/). Note that a literal field with multiple arguments (i.e. of the form `typing.Literal[v1, v2, v3]`) is interpreted as a union of literals (i.e. `typing.Union[typing.Literal[v1], typing.Literal[v2], typing.Literal[v3]]`) in line with the PEP.
 
 ```python
 import enum
 import typing
 from dataclasses import dataclass
-from dataclasses_avroschema import AvroModel, FieldValueError
+from dataclasses_avroschema import AvroModel
 
 class E(enum.Enum):
     ONE = "one"
@@ -209,30 +209,6 @@ class E(enum.Enum):
 @dataclass
 class T(AvroModel):
     f: typing.Literal[None, 1, "1", True, b"1", E.ONE]
-
-print(T.parse_obj({"f": None}))
-# >>> T(f=None)
-
-print(T.parse_obj({"f": 1}))
-# >>> T(f=1)
-
-print(T.parse_obj({"f": "1"}))
-# >>> T(f='1')
-
-print(T.parse_obj({"f": True}))
-# >>> T(f=True)
-
-print(T.parse_obj({"f": b"1"}))
-# >>> T(f=b'1')
-
-print(T.parse_obj({"f": "one"}))
-# >>> T(f=<E.ONE: 'one'>)
-
-try:
-    T.parse_obj({"f": 1.0})
-except FieldValueError as e:
-    print(e)
-    # >>> Invalid value 1.0 assigned to field f of type typing.Literal[None, 1, '1', True, b'1', <E.ONE: 'one'>]
 
 print(T.avro_schema())
 """
