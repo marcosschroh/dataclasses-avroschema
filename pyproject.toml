@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dataclasses-avroschema"
-version = "0.51.0"
+version = "0.52.0"
 description = "Generate Avro Schemas from Python classes. Serialize/Deserialize python instances with avro schemas"
 authors = ["Marcos Schroh <schrohm@gmail.com>"]
 license = "MIT"
@@ -113,7 +113,7 @@ exclude = [
 convention = "google"
 
 [tool.commitizen]
-version = "0.51.0"
+version = "0.52.0"
 tag_format = "$version"
 version_files = [
     "pyproject.toml:version",
