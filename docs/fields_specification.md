@@ -193,6 +193,53 @@ resulting in
 
 *(This script is complete, it should run "as is")*
 
+## typing.Literal
+
+Fields can be annotated with `typing.Literal` in accordance with [PEP 586](https://peps.python.org/pep-0586/). Note that a literal field with multiple arguments (i.e. of the form `typing.Literal[v1, v2, v3]`) is interpreted as a union of literals (i.e. `typing.Union[typing.Literal[v1], typing.Literal[v2], typing.Literal[v3]]`) in line with the PEP.
+
+```python
+import enum
+import typing
+from dataclasses import dataclass
+from dataclasses_avroschema import AvroModel
+
+class E(enum.Enum):
+    ONE = "one"
+
+@dataclass
+class T(AvroModel):
+    f: typing.Literal[None, 1, "1", True, b"1", E.ONE]
+
+print(T.avro_schema())
+"""
+{
+  "type": "record",
+  "name": "T",
+  "fields": [
+    {
+      "name": "f",
+      "type": [
+        "null",
+        "long",
+        "string",
+        "boolean",
+        "bytes",
+        {
+          "type": "enum",
+          "name": "E",
+          "symbols": [
+            "one"
+          ]
+        }
+      ]
+    }
+  ]
+}
+"""
+```
+
+*(This script is complete, it should run "as is")*
+
 ## Adding Custom Field-level Attributes
 
 You may want to add field-level attributes which are not automatically populated according to the typing semantics

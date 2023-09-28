@@ -164,7 +164,7 @@ class NegativeIntField(PydanticField):
     avro_type: typing.ClassVar[typing.Dict[str, str]] = {"type": LONG, "pydantic-class": "NegativeInt"}
 
     def fake(self) -> int:
-        return fake.pyint(max_value=0, min_value=-100)
+        return fake.pyint(max_value=-1, min_value=-100)
 
 
 class PositiveIntField(PydanticField):

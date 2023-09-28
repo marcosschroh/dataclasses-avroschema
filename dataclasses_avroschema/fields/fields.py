@@ -1,4 +1,3 @@
-import collections
 import dataclasses
 import datetime
 import decimal
@@ -13,6 +12,7 @@ from typing_extensions import get_args, get_origin
 from dataclasses_avroschema import schema_generator, serialization, types, utils, version
 from dataclasses_avroschema.exceptions import InvalidMap
 from dataclasses_avroschema.faker import fake
+from dataclasses_avroschema.utils import is_pydantic_model
 
 from . import field_utils
 from .base import Field
@@ -38,6 +38,7 @@ __ALL__ = [
     "TupleField",
     "DictField",
     "UnionField",
+    "LiteralField",
     "FixedField",
     "EnumField",
     "SelfReferenceField",
@@ -220,7 +221,7 @@ class DictField(ContainerField):
     def __post_init__(self) -> None:
         key_type = self.type.__args__[0]
 
-        if key_type is not str:
+        if not issubclass(key_type, str):
             raise InvalidMap(self.name, key_type)
 
     @property
@@ -322,6 +323,47 @@ class UnionField(Field):
         # get a random internal field and return a fake value
         field = random.choice(self.internal_fields)
         return field.fake()
+
+
+@dataclasses.dataclass
+class LiteralField(Field):
+    """
+    Supports typing.Literal. Note that typing.Literal[v1, v2, v3] is
+    Python's shorthand for typing.Union[typing.Literal[v1], typing.Literal[v2], typing.Literal[v3]]
+    and will be treated as such.
+    """
+
+    avro_field: typing.Optional[Field] = None
+
+    def __post_init__(self) -> None:
+        """
+        Derives Avro schema type[s] and validation requirements
+        """
+        args = get_args(self.type)
+        args_length = len(args)
+        if args_length > 1:
+            # This field is of the form typing.Literal[v1, v2, v3], which is a union of Literals
+            native_type = typing.Union[tuple(typing.Literal[a] for a in args)]  # type: ignore
+        else:
+            native_type = type(args[0])
+
+        self.avro_field = AvroField(
+            name=self.name,
+            native_type=native_type,
+            parent=self.parent,
+            default=self.default,
+            default_factory=self.default_factory,
+            model_metadata=self.model_metadata,
+        )
+
+    def get_avro_type(self) -> typing.Any:
+        return self.avro_field.get_avro_type()  # type: ignore
+
+    def default_to_avro(self, default: typing.Any):
+        return self.avro_field.default_to_avro(default)  # type: ignore
+
+    def validate_default(self, default: typing.Any) -> bool:
+        return self.avro_field.validate_default(default)  # type: ignore
 
 
 @dataclasses.dataclass
@@ -745,7 +787,6 @@ def field_factory(
     if native_type not in types.CUSTOM_TYPES and utils.is_annotated(native_type):
         a_type, *extra_args = get_args(native_type)
         field_info = next((arg for arg in extra_args if isinstance(arg, types.FieldInfo)), None)
-
         if field_info is None or a_type in (decimal.Decimal, types.Fixed):
             # it means that it is a custom type defined by us
             # `Int32`, `Float32`,`TimeMicro` or `DateTimeMicro`
@@ -816,23 +857,15 @@ def field_factory(
     elif isinstance(native_type, GenericAlias):  # type: ignore
         origin = get_origin(native_type)
 
-        if origin not in (
-            tuple,
-            list,
-            dict,
-            typing.Union,
-            collections.abc.Sequence,
-            collections.abc.MutableSequence,
-            collections.abc.Mapping,
-            collections.abc.MutableMapping,
-        ):
+        if origin in CONTAINER_FIELDS_CLASSES:
+            container_klass = CONTAINER_FIELDS_CLASSES[origin]
+        elif origin is typing.Literal:
+            container_klass = LiteralField
+        else:
             raise ValueError(
-                f"""
-                Invalid Type for field {name}. Accepted types are list, tuple, dict or typing.Union
-                """
+                f"Invalid Type {native_type} for field {name}. Accepted types are list, tuple, dict, typing.Union, or typing.Literal"
             )
 
-        container_klass = CONTAINER_FIELDS_CLASSES[origin]
         # check here
         return container_klass(  # type: ignore
             name=name,
@@ -878,16 +911,18 @@ def field_factory(
             parent=parent,
         )
     # See if this is a pydantic "Custom Class"
-    elif inspect.isclass(native_type) and all(
-        method_name in dir(native_type) for method_name in PYDANTIC_CUSTOM_CLASS_METHOD_NAMES
+    elif (
+        inspect.isclass(native_type)
+        and not is_pydantic_model(native_type)
+        and all(method_name in dir(native_type) for method_name in PYDANTIC_CUSTOM_CLASS_METHOD_NAMES)
     ):
         try:
             # Build a field for the encoded type since that's what will be serialized
             encoded_type = parent.__config__.json_encoders[native_type]
         except KeyError:
             raise ValueError(
-                f"Type {native_type} must be listed in the pydantic 'json_encoders' config for {parent}"
-                f" (or for one of the classes in its inheritance tree since pydantic configs are inherited)"
+                f"Type {native_type} for field {name} must be listed in the pydantic 'json_encoders' config for {parent}"
+                " (or for one of the classes in its inheritance tree since pydantic configs are inherited)"
             )
 
         # default_factory is not schema-friendly for Custom Classes since it could be returning
@@ -912,7 +947,7 @@ def field_factory(
         )
     else:
         msg = (
-            f"Type {native_type} is unknown. Please check the valid types at "
+            f"Type {native_type} for field {name} is unknown. Please check the valid types at "
             "https://marcosschroh.github.io/dataclasses-avroschema/fields_specification/#avro-field-and-python-types-summary"  # noqa: E501
         )
 
