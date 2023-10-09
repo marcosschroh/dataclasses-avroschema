@@ -365,6 +365,9 @@ class LiteralField(Field):
     def validate_default(self, default: typing.Any) -> bool:
         return self.avro_field.validate_default(default)  # type: ignore
 
+    def fake(self) -> typing.Any:
+        return random.choice(get_args(self.type))
+
 
 @dataclasses.dataclass
 class FixedField(BytesField):
