@@ -439,6 +439,7 @@ def test_fake(color_enum) -> None:
         favorite_colors: color_enum = color_enum.BLUE
         country: str = "Argentina"
         address: typing.Optional[Address] = None
+        role: typing.Literal["admin", "user"] = "user"
 
     # just calling fake is enougt to know that a proper instance was created,
     # otherwise a pydantic validation should have been raised
