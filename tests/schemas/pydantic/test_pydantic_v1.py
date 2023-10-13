@@ -5,11 +5,23 @@ import json
 import typing
 import uuid
 
-import pydantic
 import pytest
+from pydantic.v1 import (
+    UUID1,
+    AmqpDsn,
+    CockroachDsn,
+    EmailStr,
+    Field,
+    KafkaDsn,
+    MongoDsn,
+    PositiveInt,
+    PostgresDsn,
+    RedisDsn,
+    ValidationError,
+)
 
 from dataclasses_avroschema import types, utils
-from dataclasses_avroschema.pydantic import AvroBaseModel
+from dataclasses_avroschema.pydantic.v1 import AvroBaseModel
 
 encoded = "test".encode()
 
@@ -30,7 +42,7 @@ def test_pydantic_record_schema_primitive_types(user_avro_json):
 
 def test_pydantic_record_schema_with_metadata():
     class User(AvroBaseModel):
-        name: str = pydantic.Field(metadata={"doc": "bar"})
+        name: str = Field(metadata={"doc": "bar"})
 
         class Meta:
             schema_doc = False
@@ -49,7 +61,7 @@ def test_pydantic_record_schema_complex_types(user_advance_avro_json, color_enum
         md5: types.confixed(size=16)
         has_car: bool = False
         country: str = "Argentina"
-        address: str = None
+        address: typing.Optional[str] = None
 
         class Meta:
             schema_doc = False
@@ -64,8 +76,8 @@ def test_pydantic_record_schema_complex_types_with_defaults(user_advance_with_de
     class UserAdvance(AvroBaseModel):
         name: str
         age: int
-        pets: typing.List[str] = pydantic.Field(default_factory=lambda: ["dog", "cat"])
-        accounts: typing.Dict[str, int] = pydantic.Field(default_factory=lambda: {"key": 1})
+        pets: typing.List[str] = Field(default_factory=lambda: ["dog", "cat"])
+        accounts: typing.Dict[str, int] = Field(default_factory=lambda: {"key": 1})
         has_car: bool = False
         favorite_colors: color_enum = color_enum.BLUE
         country: str = "Argentina"
@@ -244,7 +256,7 @@ def test_pydantic_record_schema_with_unions_type(union_type_schema):
         logical_union: typing.Union[datetime.datetime, datetime.date, uuid.UUID]
         lake_trip: typing.Union[Bus, Car]
         river_trip: typing.Union[Bus, Car] = None
-        mountain_trip: typing.Union[Bus, Car] = pydantic.Field(default_factory=lambda: Bus(engine_name="honda"))
+        mountain_trip: typing.Union[Bus, Car] = Field(default_factory=lambda: Bus(engine_name="honda"))
         trip_distance: typing.Union[int, TripDistance] = None
         optional_distance: typing.Optional[TripDistance] = None
 
@@ -253,18 +265,18 @@ def test_pydantic_record_schema_with_unions_type(union_type_schema):
 
 def test_pydantic_fields(pydantic_fields_schema):
     class Infrastructure(AvroBaseModel):
-        email: pydantic.EmailStr
-        postgres_dsn: pydantic.PostgresDsn
-        cockroach_dsn: pydantic.CockroachDsn
-        amqp_dsn: pydantic.AmqpDsn
-        redis_dsn: pydantic.RedisDsn
-        mongo_dsn: pydantic.MongoDsn
-        kafka_url: pydantic.KafkaDsn
-        total_nodes: pydantic.PositiveInt
-        event_id: pydantic.UUID1
-        landing_zone_nodes: typing.List[pydantic.PositiveInt]
-        total_nodes_in_aws: pydantic.PositiveInt = 10
-        optional_kafka_url: typing.Optional[pydantic.KafkaDsn] = None
+        email: EmailStr
+        postgres_dsn: PostgresDsn
+        cockroach_dsn: CockroachDsn
+        amqp_dsn: AmqpDsn
+        redis_dsn: RedisDsn
+        mongo_dsn: MongoDsn
+        kafka_url: KafkaDsn
+        total_nodes: PositiveInt
+        event_id: UUID1
+        landing_zone_nodes: typing.List[PositiveInt]
+        total_nodes_in_aws: PositiveInt = 10
+        optional_kafka_url: typing.Optional[KafkaDsn] = None
 
     assert Infrastructure.avro_schema() == json.dumps(pydantic_fields_schema)
 
@@ -290,7 +302,7 @@ def test_validate():
         age: int
         has_pets: bool = True
 
-    with pytest.raises(pydantic.error_wrappers.ValidationError):
+    with pytest.raises(ValidationError):
         User.validate({"name": "a name"})
 
     user = User.validate(
@@ -303,18 +315,18 @@ def test_validate():
     assert user.validate_avro()
 
 
-def test_json_schema(AvroBaseModel_model):
-    assert AvroBaseModel_model.json_schema()
+def test_json_schema(AvroBaseModelV1):
+    assert AvroBaseModelV1.json_schema()
 
 
-def test_to_dict(AvroBaseModel_model):
-    instance = AvroBaseModel_model(first_union="hi!", logical_union=uuid.uuid4())
+def test_to_dict(AvroBaseModelV1):
+    instance = AvroBaseModelV1(first_union="hi!", logical_union=uuid.uuid4())
     assert instance.to_dict() == instance.dict()
 
 
 def test_asdict():
-    class MyEnum(enum.IntEnum):
-        x = 1
+    class MyEnum(str, enum.Enum):
+        x = "test"
 
     class ModelA(AvroBaseModel):
         a: int = 1
@@ -324,14 +336,15 @@ def test_asdict():
         b: ModelA
         d: MyEnum = MyEnum.x
 
-    target = repr({"b": {"a": 1, "d": 1}, "d": 1})
+    target = repr({"b": {"a": 1, "d": "test"}, "d": "test"})
     model_b = ModelB(b=ModelA())
     res_asdict = repr(model_b.asdict())
     assert res_asdict == target, res_asdict
+    assert model_b.serialize()
 
 
-def test_to_json(AvroBaseModel_model):
-    instance = AvroBaseModel_model(first_union="hi!", logical_union=uuid.uuid4())
+def test_to_json(AvroBaseModelV1):
+    instance = AvroBaseModelV1(first_union="hi!", logical_union=uuid.uuid4())
     assert instance.to_json() == instance.json()
 
 
@@ -367,8 +380,8 @@ def test_serialization(color_enum):
         explicit: types.condecimal(max_digits=3, decimal_places=2)
         explicit_with_default: typing.Optional[types.condecimal(max_digits=3, decimal_places=2)] = None
         implicit: types.condecimal(max_digits=3, decimal_places=2) = decimal.Decimal("3.14")
-        pets: typing.List[str] = pydantic.Field(default_factory=lambda: ["dog", "cat"])
-        accounts: typing.Dict[str, int] = pydantic.Field(default_factory=lambda: {"key": 1})
+        pets: typing.List[str] = Field(default_factory=lambda: ["dog", "cat"])
+        accounts: typing.Dict[str, int] = Field(default_factory=lambda: {"key": 1})
         has_car: bool = False
         favorite_colors: color_enum = color_enum.BLUE
         country: str = "Argentina"
@@ -433,8 +446,8 @@ def test_fake(color_enum) -> None:
         name: str
         age: int
         birthday: datetime.date
-        pets: typing.List[str] = pydantic.Field(default_factory=lambda: ["dog", "cat"])
-        accounts: typing.Dict[str, int] = pydantic.Field(default_factory=lambda: {"key": 1})
+        pets: typing.List[str] = Field(default_factory=lambda: ["dog", "cat"])
+        accounts: typing.Dict[str, int] = Field(default_factory=lambda: {"key": 1})
         has_car: bool = False
         favorite_colors: color_enum = color_enum.BLUE
         country: str = "Argentina"
@@ -448,13 +461,13 @@ def test_fake(color_enum) -> None:
 
 def test_exclude_fields() -> None:
     class Message(AvroBaseModel):
-        internal_field: str = pydantic.Field(exclude=True)
+        internal_field: str = Field(exclude=True)
         public_field: str
 
     assert Message.avro_schema()
 
     message = Message(internal_field="internal", public_field="public")
-    assert not "internal_field" in message.dict()
+    assert "internal_field" not in message.dict()
 
     event = message.serialize(serialization_type="avro-json")
 

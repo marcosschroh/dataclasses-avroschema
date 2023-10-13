@@ -38,6 +38,7 @@ nav:
   - Case Schemas: 'case.md'
   - Factory and fixtures: 'factories_and_fixtures.md'
   - Model Generator: 'model_generator.md'
+  - Pydantic V1: 'pydantic_v1.md'
   - Pydantic: 'pydantic.md'
   - Faust: 'faust_records.md'
   - Kafka examples: 'kafka_examples.md'

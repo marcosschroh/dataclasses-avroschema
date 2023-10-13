@@ -1,4 +1,5 @@
 import pydantic
+from pydantic import v1
 
 pydantic_fields = (
     pydantic.FilePath,
@@ -23,9 +24,38 @@ pydantic_fields = (
     pydantic.PositiveFloat,
     pydantic.NegativeInt,
     pydantic.PositiveInt,
-    pydantic.ConstrainedInt,
-    pydantic.UUID1,
-    pydantic.UUID3,
+    # pydantic.UUID1,
+    # pydantic.UUID3,
     pydantic.UUID4,
-    pydantic.UUID5,
+    # pydantic.UUID5,
+)
+
+pydantic_v1_fields = (
+    v1.FilePath,
+    v1.DirectoryPath,
+    v1.EmailStr,
+    v1.NameEmail,
+    v1.AnyUrl,
+    v1.AnyHttpUrl,
+    v1.HttpUrl,
+    v1.FileUrl,
+    v1.PostgresDsn,
+    v1.CockroachDsn,
+    v1.AmqpDsn,
+    v1.RedisDsn,
+    v1.MongoDsn,
+    v1.KafkaDsn,
+    v1.SecretStr,
+    v1.IPvAnyAddress,
+    v1.IPvAnyInterface,
+    v1.IPvAnyNetwork,
+    v1.NegativeFloat,
+    v1.PositiveFloat,
+    v1.NegativeInt,
+    v1.PositiveInt,
+    v1.ConstrainedInt,
+    v1.UUID1,
+    v1.UUID3,
+    v1.UUID4,
+    v1.UUID5,
 )

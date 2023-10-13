@@ -47,3 +47,10 @@ SPECIAL_ANNOTATED_TYPES = {
     decimal.Decimal: fields.DecimalField,
     types.Fixed: fields.FixedField,
 }
+
+ALL_TYPES_FIELD_CLASSES = {  # type: ignore
+    **IMMUTABLE_FIELDS_CLASSES,
+    **CONTAINER_FIELDS_CLASSES,
+    **LOGICAL_TYPES_FIELDS_CLASSES,
+    **SPECIAL_ANNOTATED_TYPES,
+}

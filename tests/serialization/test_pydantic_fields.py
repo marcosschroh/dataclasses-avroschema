@@ -1,7 +1,12 @@
-import pytest
-from pydantic import Field, conint
-from pydantic.error_wrappers import ValidationError
+import json
+import math
+from typing import Any, Optional
 
+import pytest
+from pydantic import ConfigDict, Field, GetCoreSchemaHandler, ValidationError, conint, field_serializer
+from pydantic_core import core_schema
+
+from dataclasses_avroschema import types
 from dataclasses_avroschema.pydantic import AvroBaseModel
 from dataclasses_avroschema.schema_generator import AVRO, AVRO_JSON
 
@@ -11,17 +16,33 @@ class CustomClass:
         self.value = value
 
     @classmethod
-    def __get_validators__(cls):
-        yield cls.validate
+    def __get_pydantic_core_schema__(cls, source_type: Any, handler: GetCoreSchemaHandler):
+        def validate(value):
+            if isinstance(value, CustomClass):
+                return value
+            elif not isinstance(value, str):
+                raise ValueError(f"Value must be a string or CustomClass - not {type(value)}")
 
-    @classmethod
-    def validate(cls, value):
-        if isinstance(value, CustomClass):
-            return value
-        elif not isinstance(value, str):
-            raise ValueError(f"Value must be a string or CustomClass - not {type(value)}")
+            return cls(value)
 
-        return cls(value)
+        from_str_schema = core_schema.chain_schema(
+            [
+                core_schema.str_schema(),
+                core_schema.no_info_plain_validator_function(validate),
+            ]
+        )
+
+        return core_schema.json_or_python_schema(
+            json_schema=from_str_schema,
+            python_schema=core_schema.union_schema(
+                [
+                    # check if it's an instance first before doing any further work
+                    core_schema.is_instance_schema(CustomClass),
+                    from_str_schema,
+                ]
+            ),
+            serialization=core_schema.plain_serializer_function_ser_schema(lambda instance: instance.x),
+        )
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, CustomClass):
@@ -34,10 +55,12 @@ class CustomClass:
 
 
 class Parent(AvroBaseModel):
+    model_config = ConfigDict(json_encoders={CustomClass: str}, arbitrary_types_allowed=True)
     custom_class: CustomClass
 
-    class Config:
-        json_encoders = {CustomClass: str}
+    @field_serializer("custom_class")
+    def serialize_custom_class(self, custom_class: CustomClass, _info):
+        return str(custom_class)
 
 
 parent_under_test = Parent(custom_class=CustomClass("custom class value"))
@@ -88,3 +111,126 @@ def test_custom_class_type_deserialize(serialization_type: str, data: bytes):
 def test_custom_class_deserialize_invalid():
     with pytest.raises(ValidationError):
         Parent.deserialize(b'{"custom_class": 1}', serialization_type="avro-json")
+
+
+def test_primitive_types_with_defaults():
+    class User(AvroBaseModel):
+        name: str = "marcos"
+        age: int = 20
+        has_pets: bool = False
+        money: float = 100.0
+        encoded: bytes = b"hola"
+        height: types.Int32 = 184
+
+    data = {"name": "marcos", "age": 20, "has_pets": False, "money": 100.0, "encoded": b"hola", "height": 184}
+    data_json = {"name": "marcos", "age": 20, "has_pets": False, "money": 100.0, "encoded": "hola", "height": 184}
+
+    user = User()
+    avro_binary = user.serialize()
+    avro_json = user.serialize(serialization_type="avro-json")
+
+    assert user.deserialize(avro_binary, create_instance=False) == data
+    assert user.deserialize(avro_json, serialization_type="avro-json", create_instance=False) == data
+    assert user.deserialize(avro_binary) == user
+    assert user.deserialize(avro_json, serialization_type="avro-json") == user
+
+    assert user.to_dict() == data
+    assert user.to_json() == json.dumps(data_json)
+
+    # check that works with schema evolution
+    user = User(name="Juan", age=30)
+    avro_json = user.serialize(serialization_type="avro-json")
+
+    data = {"name": "Juan", "age": 30, "has_pets": False, "money": 100.0, "encoded": b"hola", "height": 184}
+    data_json = {"name": "Juan", "age": 30, "has_pets": False, "money": 100.0, "encoded": "hola", "height": 184}
+
+    # assert user.deserialize(avro_binary, create_instance=False) == data
+    assert user.deserialize(avro_json, serialization_type="avro-json", create_instance=False) == data
+
+    # assert user.deserialize(avro_binary) == user
+    assert user.deserialize(avro_json, serialization_type="avro-json") == user
+    assert user.to_dict() == data
+    assert user.to_json() == json.dumps(data_json)
+
+
+def test_primitive_types_with_nulls():
+    class User(AvroBaseModel):
+        name: Optional[str] = None
+        age: Optional[int] = 20
+        has_pets: Optional[bool] = False
+        money: Optional[float] = None
+        encoded: Optional[bytes] = None
+        height: Optional[types.Int32] = None
+
+    data = {"name": None, "age": 20, "has_pets": False, "money": 100.0, "encoded": b"hola", "height": 184}
+    data_json = {"name": None, "age": 20, "has_pets": False, "money": 100.0, "encoded": "hola", "height": 184}
+
+    user = User(**data)
+    avro_binary = user.serialize()
+    avro_json = user.serialize(serialization_type="avro-json")
+
+    assert user.deserialize(avro_binary, create_instance=False) == data
+    assert user.deserialize(avro_json, serialization_type="avro-json", create_instance=False) == data
+
+    assert user.deserialize(avro_binary) == user
+    assert user.deserialize(avro_json, serialization_type="avro-json") == user
+
+    assert user.to_dict() == data
+    assert user.to_json() == json.dumps(data_json)
+
+    data = {"name": None, "age": 20, "has_pets": False, "money": None, "encoded": None, "height": None}
+
+    user = User()
+    avro_binary = user.serialize()
+    avro_json = user.serialize(serialization_type="avro-json")
+
+    assert user.deserialize(avro_binary, create_instance=False) == data
+    assert user.deserialize(avro_json, serialization_type="avro-json", create_instance=False) == data
+    assert user.deserialize(avro_binary) == user
+    assert user.deserialize(avro_json, serialization_type="avro-json") == user
+
+    assert user.to_dict() == data
+    assert user.to_json() == json.dumps(data)
+
+
+def test_float32_primitive_type():
+    class User(AvroBaseModel):
+        height: Optional[types.Float32] = None
+
+    data = {"height": 178.3}
+
+    user = User(**data)
+    avro_binary = user.serialize()
+    avro_json = user.serialize(serialization_type="avro-json")
+
+    # Floating point error expected
+    res = user.deserialize(avro_binary, create_instance=False)
+    assert res["height"] != data["height"]
+    assert math.isclose(res["height"], data["height"], abs_tol=1e-5)
+
+    res = user.deserialize(avro_json, serialization_type="avro-json", create_instance=False)
+    assert res["height"] == data["height"]
+
+    # Floating point error expected
+    res = user.deserialize(avro_binary)
+    assert res.height != user.height
+    assert math.isclose(res.height, user.height, abs_tol=1e-5)
+
+    res = user.deserialize(avro_json, serialization_type="avro-json")
+    assert res.height == user.height
+
+    res = user.to_dict()
+    assert res["height"] == data["height"]
+
+    data = {"height": None}
+
+    user = User()
+    avro_binary = user.serialize()
+    avro_json = user.serialize(serialization_type="avro-json")
+
+    assert user.deserialize(avro_binary, create_instance=False) == data
+    assert user.deserialize(avro_json, serialization_type="avro-json", create_instance=False) == data
+    assert user.deserialize(avro_binary) == user
+    assert user.deserialize(avro_json, serialization_type="avro-json") == user
+
+    assert user.to_dict() == data
