@@ -1,4 +1,5 @@
 import pydantic
+from pydantic.v1 import ConstrainedInt
 
 from . import fields
 
@@ -25,11 +26,12 @@ PYDANTIC_INMUTABLE_FIELDS_CLASSES = {
     pydantic.PositiveFloat: fields.PositiveFloatField,
     pydantic.NegativeInt: fields.NegativeIntField,
     pydantic.PositiveInt: fields.PositiveIntField,
-    pydantic.ConstrainedInt: fields.ConstrainedIntField,
+    ConstrainedInt: fields.ConstrainedIntField,
     # ConstrainedIntValue is a dynamic type that needs to be referenced by qualified name
     # and cannot be imported directly
     "ConstrainedIntValue": fields.ConstrainedIntField,
 }
+
 
 PYDANTIC_LOGICAL_TYPES_FIELDS_CLASSES = {
     pydantic.UUID1: fields.UUID1Field,

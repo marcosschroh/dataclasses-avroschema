@@ -328,11 +328,6 @@ LOGICAL_TYPES_AND_DEFAULTS = (
     (datetime.datetime, {"type": field_utils.LONG, "logicalType": field_utils.TIMESTAMP_MILLIS}),
     (uuid.uuid4, {"type": field_utils.STRING, "logicalType": field_utils.UUID}),
     (uuid.UUID, {"type": field_utils.STRING, "logicalType": field_utils.UUID}),
-    # pydantic fields
-    (pydantic.UUID1, {"type": field_utils.STRING, "logicalType": field_utils.UUID, "pydantic-class": "UUID1"}),
-    (pydantic.UUID3, {"type": field_utils.STRING, "logicalType": field_utils.UUID, "pydantic-class": "UUID3"}),
-    (pydantic.UUID4, {"type": field_utils.STRING, "logicalType": field_utils.UUID, "pydantic-class": "UUID4"}),
-    (pydantic.UUID5, {"type": field_utils.STRING, "logicalType": field_utils.UUID, "pydantic-class": "UUID5"}),
 )
 
 LOGICAL_TYPES_AND_INVALID_DEFAULTS = (

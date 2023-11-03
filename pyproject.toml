@@ -27,8 +27,8 @@ faker = {version = ">=18.3.1,<20.0.0", optional = true}
 inflector = "^3.1.0"
 faust-streaming = {version = "^0.10.11", optional = true}
 casefy = "^0.1.7"
-pydantic = {version = "^1.10.9", optional = true, extras = ["email"]}
 typing-extensions = {version = "^4.2.0", python = "<3.9"}
+pydantic = {version = "^2.4.2", optional = true, extras = ["email"]}
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1"

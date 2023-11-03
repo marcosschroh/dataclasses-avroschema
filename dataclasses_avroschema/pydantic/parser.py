@@ -10,16 +10,16 @@ class PydanticParser(Parser):
     def parse_fields(self, exclude: typing.List) -> typing.List[Field]:
         return [
             AvroField(
-                model_field.name,
-                model_field.annotation,
+                field_name,
+                field_info.rebuild_annotation(),
                 default=dataclasses.MISSING
-                if model_field.required or model_field.default_factory
-                else model_field.default,
-                default_factory=model_field.default_factory,
-                metadata=model_field.field_info.extra.get("metadata", {}),
+                if field_info.is_required() or field_info.default_factory
+                else field_info.default,
+                default_factory=field_info.default_factory,
+                metadata=field_info.json_schema_extra.get("metadata", {}) if field_info.json_schema_extra else {},
                 model_metadata=self.metadata,
                 parent=self.parent,
             )
-            for model_field in self.type.__fields__.values()
-            if model_field.name not in exclude
+            for field_name, field_info in self.type.model_fields.items()
+            if field_name not in exclude and field_name != "model_config"
         ]
