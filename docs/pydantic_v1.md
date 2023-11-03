@@ -1,20 +1,23 @@
-# Pydantic Integration
+# Pydantic V1 Integration
 
-It is possible to use [pydantic](https://docs.pydantic.dev/latest/) with `dataclasses-avroschema` making use of `AvroBaseModel`:
+It is possible to use [pydantic](https://docs.pydantic.dev/1.10/) with `dataclasses-avroschema` making use of `AvroBaseModel`:
 
 You must use use all the `pydantic` features and all `dataclasses-avroschema` functionality will be injected.
 
 !!! note
     With `pydantic` you do not have to use `python dataclasses`
 
+!!! warning
+    The support of `pydantic v1` will be deprecated in the future. We recommend to migrate to `pydantic v2`.
+
 ## Avro and Json schemas
 
 ```python title="Basic usage"
 import typing
 import enum
-from dataclasses_avroschema.pydantic import AvroBaseModel
+from dataclasses_avroschema.pydantic.v1 import AvroBaseModel
 
-from pydantic import Field
+from pydantic.v1 import Field
 
 
 class FavoriteColor(str, enum.Enum):
@@ -55,24 +58,21 @@ UserAdvance.avro_schema()
 }'
 
 # Json schema
-UserAdvance.model_json_schema()
+UserAdvance.json_schema()
 
-{
-    'required': ['name', 'age'],
-    'title': 'UserAdvance',
-    'type': 'object'
-    'properties': {
-        'name': {'title': 'Name', 'type': 'string'},
-        'age': {'title': 'Age', 'type': 'integer'},
-        'pets': {'items': {'type': 'string'}, 'title': 'Pets', 'type': 'array'},
-        'accounts': {'additionalProperties': {'type': 'integer'}, 'title': 'Accounts', 'type': 'object'},
-        'has_car': {'default': False, 'title': 'Has Car', 'type': 'boolean'},
-        'favorite_colors': {'allOf': [{'$ref': '#/$defs/FavoriteColor'}], 'default': 'BLUE'},
-        'country': {'default': 'Argentina', 'title': 'Country', 'type': 'string'},
-        'address': {'default': None, 'title': 'Address', 'type': 'string'}
-    },
-    '$defs': {'FavoriteColor': {'enum': ['BLUE', 'YELLOW', 'GREEN'], 'title': 'FavoriteColor', 'type': 'string'}},
-}
+'{
+    "title": "UserAdvance",
+    "type": "object",
+    "properties": {
+        "name": {"title": "Name", "type": "string"},
+        "age": {"title": "Age", "type": "integer"},
+        "pets": {"title": "Pets", "type": "array", "items": {"type": "string"}},
+        "accounts": {"title": "Accounts", "type": "object", "additionalProperties": {"type": "integer"}},
+        "has_car": {"title": "Has Car", "default": false, "type": "boolean"},
+        "favorite_colors": {"default": "BLUE", "allOf": [{"$ref": "#/definitions/FavoriteColor"}]},
+        "country": {"title": "Country", "default": "Argentina", "type": "string"},
+        "address": {"title": "Address", "type": "string"}},
+        "required": ["name", "age"], "definitions": {"FavoriteColor": {"title": "FavoriteColor", "description": "An enumeration.", "enum": ["BLUE", "YELLOW", "GREEN"], "type": "string"}}}'
 ```
 
 *(This script is complete, it should run "as is")*
@@ -112,6 +112,7 @@ using the key `pydantic-class`.
 | double       | pydantic.PositiveFloat |
 | long         | pydantic.NegativeInt |
 | long         | pydantic.PositiveIntstr |
+| long         | pydantic.ConstrainedInt (conint) |
 
 | Avro Type    | Logical type | Pydantic Type |
 |--------------|--------------|---------------|
@@ -122,7 +123,7 @@ using the key `pydantic-class`.
 
 ```python
 import pydantic
-from dataclasses_avroschema.pydantic import AvroBaseModel
+from dataclasses_avroschema.pydantic.v1 import AvroBaseModel
 
 
 class Infrastructure(AvroBaseModel):
@@ -194,7 +195,7 @@ with open("models.py", mode="+w") as f:
 and then render the result:
 
 ```python
-from dataclasses_avroschema.pydantic import AvroBaseModel
+from dataclasses_avroschema.pydantic.v1 import AvroBaseModel
 import pydantic
 import typing
 
@@ -240,6 +241,7 @@ class Infrastructure(AvroBaseModel):
 | double    | "pydantic-class": "PositiveFloat"  | pydantic.PositiveFloat |
 | long      | "pydantic-class": "NegativeInt"    | pydantic.NegativeInt |
 | long      | "pydantic-class": "PositiveInt"    | pydantic.PositiveInt |
+| long      | "pydantic-class": ConstrainedInt"  | pydantic.ConstrainedInt |
 
 |Avro Type  | Logical Type | Metadata | Pydantic Type                      |
 |-----------|--------------|----------|------------------------------------|
@@ -256,10 +258,10 @@ class Infrastructure(AvroBaseModel):
 user = UserAdvance(name="bond", age=50)
 
 # to_json from dataclasses-avroschema is the same that json from pydantic
-assert user.to_json(separators=(",",":",)) == user.model_dump_json()
+assert user.to_json() == user.json()
 
 # to_dict from dataclasses-avroschema is the same that dict from pydantic
-assert user.to_dict() == user.model_dump()
+assert user.to_dict() == user.dict()
 ```
 
 ```python title="serialization"
@@ -276,7 +278,7 @@ UserAdvance.deserialize(data=event)
 ```python title="parse_obj usage"
 import typing
 
-from dataclasses_avroschema.pydantic import AvroBaseModel
+from dataclasses_avroschema.pydantic.v1 import AvroBaseModel
 
 
 class Address(AvroBaseModel):
@@ -304,17 +306,14 @@ user = User.parse_obj(data=data_user)
 assert type(user.addresses[0]) is Address
 ```
 
-!!! note
-    The method `parse_obj` is defined by `dataclasses_avroschemas` which internally is calling `model_validate` (introduced in pydantic v2)
-
 *(This script is complete, it should run "as is")*
 
-```python title="validate_python usage"
+```python title="parse_obj_as usage"
 from typing import List
 
-from pydantic import TypeAdapter
+from pydantic import parse_obj_as
 
-from dataclasses_avroschema.pydantic import AvroBaseModel
+from dataclasses_avroschema.pydantic.v1 import AvroBaseModel
 
 
 class User(AvroBaseModel):
@@ -324,8 +323,7 @@ class User(AvroBaseModel):
 
 
 data = [{"name": "bond", "age": 50}, {"name": "bond2", "age": 60}]
-UserListValidator = TypeAdapter(List[User])
-users = UserListValidator.validate_python(data)
+users = parse_obj_as(List[User], data)
 
 users[0].avro_schema()
 # '{"type": "record", "name": "User", "fields": [{"name": "name", "type": "string"}, {"name": "age", "type": "long"}], "doc": "User with multiple Address"}'
@@ -340,8 +338,8 @@ It is also possible to create `fake` instances with `pydantic` models:
 ```python
 import typing
 import datetime
-from pydantic import Field
-from dataclasses_avroschema.pydantic import AvroBaseModel
+from pydanti.v1 import Field
+from dataclasses_avroschema.pydantic.v1 import AvroBaseModel
 
 
 class User(AvroBaseModel):
@@ -363,12 +361,12 @@ print(User.fake())
 
 ### Excluding fields
 
-Pydantic Fields can be excluded when `dict`, `json` or `copy` methods are called. This meaans that the exclusion is only for [exporting models](https://docs.pydantic.dev/latest/concepts/fields/#exclude) but not excluded in the instance creations, then the `avro serialization` will include all the class attributes.
+Pydantic Fields can be excluded when `dict`, `json` or `copy` methods are called. This meaans that the exclusion is only for [exporting models](https://docs.pydantic.dev/1.10/usage/exporting_models/) but not excluded in the instance creations, then the `avro serialization` will include all the class attributes.
 
 ```python
 import typing
-from pydantic import Field
-from dataclasses_avroschema.pydantic import AvroBaseModel
+from pydantic.v1 import Field
+from dataclasses_avroschema.pydantic.v1 import AvroBaseModel
 
 
 class User(AvroBaseModel):
@@ -382,7 +380,7 @@ user = User(name="bond", age=50, has_car=True)
 print(user)
 # >>> User(name='bond', age=50, pets=['dog', 'cat'], accounts={'key': 1}, has_car=True)
 
-print(user.model_dump())
+print(user.dict())
 # >>> {'name': 'bond', 'age': 50, 'has_car': True} Excludes pets and accounts !!!
 
 event = user.serialize()
@@ -393,7 +391,7 @@ assert user == User.deserialize(event)
 
 ## Model Config
 
-With `AvroBaseModel` you can use the same [Model Config](https://docs.pydantic.dev/latest/usage/model_config/) that `pydantic` provides,
+With `AvroBaseModel` you can use the same [Model Config](https://docs.pydantic.dev/1.10/usage/model_config/) that `pydantic` provides,
 for example:
 
 === "Not use Enum values"
@@ -419,8 +417,6 @@ for example:
     ```python
     import enum
     from dataclasses_avroschema.pydantic import AvroBaseModel
-    from pydantic import ConfigDict
-
 
     class Color(str, enum.Enum):
         BLUE = "BLUE"
@@ -428,12 +424,14 @@ for example:
 
 
     class Bus(AvroBaseModel):
-        model_config = ConfigDict(use_enum_values=True)
         driver: str
         color: Color
 
+        class Config:
+            use_enum_values = True
+
     bus =  Bus(driver="bond", color=Color.RED)
-    print(busmodel_dump())
+    print(bus.dict())
     # >>> {'driver': 'bond', 'color': 'RED'}
     ```
 
@@ -446,9 +444,11 @@ To add `custom field attributes` the `metadata` attribute must be set in `pydant
 
 ### Custom Data Types as Fields
 
-If needed, you can annotate fields with [custom classes](https://docs.pydantic.dev/latest/concepts/types/#customizing-validation-with-getpydanticcoreschema) that define validators.
+If needed, you can annotate fields with custom classes that define validators.
 
-### Classes with `__get_pydantic_core_schema__`
+### Classes with `__get_validators__`
+
+These classes are [defined by pydantic](https://docs.pydantic.dev/1.10/usage/types/#classes-with-__get_validators__) as Python classes that define the `validate` and `__get_validators__` methods.
 
 !!! note
     The conversion mapping of a custom class to its [supported type](./fields_specification.md#avro-field-and-python-types-summary) must be defined in the model's [`json_encoders`](https://docs.pydantic.dev/1.10/usage/exporting_models/#json_encoders) config.
@@ -457,12 +457,7 @@ If needed, you can annotate fields with [custom classes](https://docs.pydantic.d
     [Generating models](#Model-generation) from avro schemas that were generated by classes containing Custom Class fields is not supported.
 
 ```python
-from typing import Any
-
-from dataclasses_avroschema.pydantic import AvroBaseModel
-
-from pydantic import ConfigDict, GetCoreSchemaHandler
-from pydantic_core import core_schema
+from dataclasses_avroschema.pydantic.v1 import AvroBaseModel
 
 
 class CustomClass:
@@ -470,41 +465,27 @@ class CustomClass:
         self.value = value
 
     @classmethod
-    def __get_pydantic_core_schema__(cls, source_type: Any, handler: GetCoreSchemaHandler):
-        def validate(value):
-            if isinstance(value, CustomClass):
-                return value
-            elif not isinstance(value, str):
-                raise ValueError(f"Value must be a string or CustomClass - not {type(value)}")
+    def __get_validators__(cls):
+        yield cls.validate
 
-            return cls(value)
+    @classmethod
+    def validate(cls, value):
+        if isinstance(value, CustomClass):
+            return value
+        elif not isinstance(value, str):
+            raise ValueError(f"Value must be a string or CustomClass - not {type(value)}")
 
-        from_str_schema = core_schema.chain_schema(
-            [
-                core_schema.str_schema(),
-                core_schema.no_info_plain_validator_function(validate),
-            ]
-        )
-
-        return core_schema.json_or_python_schema(
-            json_schema=from_str_schema,
-            python_schema=core_schema.union_schema(
-                [
-                    # check if it's an instance first before doing any further work
-                    core_schema.is_instance_schema(CustomClass),
-                    from_str_schema,
-                ]
-            ),
-            serialization=core_schema.plain_serializer_function_ser_schema(lambda instance: instance.x),
-        )
+        return cls(value)
 
     def __str__(self) -> str:
         return f"{self.value}"
 
 
 class MyModel(AvroBaseModel):
-    model_config = ConfigDict(json_encoders={CustomClass: str}, arbitrary_types_allowed=True)
     my_id: CustomClass
+
+    class Config:
+        json_encoders = {CustomClass: str}
 
 
 print(MyModel.avro_schema_to_python())

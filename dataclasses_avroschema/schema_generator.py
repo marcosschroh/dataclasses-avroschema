@@ -158,9 +158,9 @@ class AvroModel:
         # and after that convert into python
         return self.asdict()
 
-    def to_json(self) -> str:
+    def to_json(self, **kwargs) -> str:
         data = serialization.to_json(self.asdict())
-        return json.dumps(data)
+        return json.dumps(data, **kwargs)
 
     @classmethod
     def config(cls: Type[CT]) -> Config:

@@ -9,13 +9,14 @@ from .types import JsonDict
 
 try:
     import pydantic  # pragma: no cover
+    from pydantic import v1
 except ImportError:  # type: ignore # pragma: no cover
     pydantic = None  # type: ignore # pragma: no cover
 
 
 def is_pydantic_model(klass: type) -> bool:
     if pydantic is not None:
-        return issubclass(klass, pydantic.BaseModel)
+        return issubclass(klass, v1.BaseModel) or issubclass(klass, pydantic.BaseModel)
     return False
 
 
@@ -32,19 +33,22 @@ def is_union(a_type: type) -> bool:
     return isinstance(a_type, typing._GenericAlias) and a_type.__origin__ is typing.Union  # type: ignore
 
 
-def is_self_referenced(a_type: type) -> bool:
+def is_self_referenced(a_type: type, parent: type) -> bool:
     """
     Given a python type, return True if is self referenced, meaning
     that is instance of typing.ForwardRef, otherwise False
 
     Arguments:
         a_type (typing.Any): python type
+        parent (typing.Any) python type
 
     Returns:
         bool
 
     Example:
-        a_type = typing.Type["User"]]
+        class User(...)
+            a_type_with_type: typing.Type["User"]] = None
+            a_type: "User" = None
 
         is_self_referenced(a_type) # True
     """
@@ -52,7 +56,7 @@ def is_self_referenced(a_type: type) -> bool:
         isinstance(a_type, typing._GenericAlias)  # type: ignore
         and a_type.__args__
         and isinstance(a_type.__args__[0], typing.ForwardRef)  # type: ignore
-    )
+    ) or a_type == parent
 
 
 def is_annotated(a_type: typing.Any) -> bool:
@@ -71,6 +75,7 @@ def standardize_custom_type(value: typing.Any) -> typing.Any:
         return value.value
     elif is_pydantic_model(type(value)):
         return standardize_custom_type(value.asdict())
+
     return value
 
 

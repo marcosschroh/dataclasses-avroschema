@@ -1,14 +1,7 @@
-import datetime
-import enum
 import json
 import os
-import typing
-import uuid
 
 import pytest
-from pydantic import Field
-
-from dataclasses_avroschema.pydantic import AvroBaseModel
 
 AVRO_SCHEMAS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "avro")
 
@@ -152,38 +145,3 @@ def pydantic_fields_schema():
 @pytest.fixture
 def order_fields_schema():
     return load_json("order_fields.avsc")
-
-
-@pytest.fixture
-def AvroBaseModel_model():
-    class Bus(AvroBaseModel):
-        "A Bus"
-        engine_name: str
-
-        class Meta:
-            namespace = "types.bus_type"
-
-    class Car(AvroBaseModel):
-        "A Car"
-        engine_name: str
-
-        class Meta:
-            namespace = "types.car_type"
-
-    class TripDistance(str, enum.Enum):
-        CLOSE = "Close"
-        FAR = "Far"
-
-        class Meta:
-            doc = "Distance of the trip"
-
-    class UnionSchema(AvroBaseModel):
-        "Some Unions"
-        first_union: typing.Union[str, int]
-        logical_union: typing.Union[datetime.datetime, datetime.date, uuid.UUID]
-        lake_trip: typing.Union[Bus, Car] = Field(default_factory=lambda: Bus(engine_name="honda"))
-        river_trip: typing.Optional[typing.Union[Bus, Car]] = None
-        mountain_trip: typing.Union[Bus, Car] = Field(default_factory=lambda: Bus.parse_obj({"engine_name": "honda"}))
-        trip_distance: typing.Union[int, TripDistance] = 123
-
-    return UnionSchema

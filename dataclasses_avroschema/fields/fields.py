@@ -476,6 +476,13 @@ class SelfReferenceField(Field):
             return None
         return dataclasses.MISSING
 
+    def fake(self) -> typing.Any:
+        if getattr(self.type, "__args__", None):
+            # It means that self.type is `typing.Type['AType']`, and the argument is a string
+            # then we return None
+            return None
+        return self.type.fake()
+
 
 @dataclasses.dataclass
 class DateField(ImmutableField):
@@ -743,6 +750,7 @@ class RecordField(Field):
 
         if self.default is None:
             return [field_utils.NULL, record_type]
+
         return record_type
 
     def default_to_avro(self, value: "schema_generator.AvroModel") -> typing.Dict:
@@ -757,6 +765,7 @@ class RecordField(Field):
 
 
 from .mapper import (
+    ALL_TYPES_FIELD_CLASSES,
     CONTAINER_FIELDS_CLASSES,
     IMMUTABLE_FIELDS_CLASSES,
     LOGICAL_TYPES_FIELDS_CLASSES,
@@ -764,7 +773,7 @@ from .mapper import (
 )
 
 LOGICAL_CLASSES = LOGICAL_TYPES_FIELDS_CLASSES.keys()
-PYDANTIC_CUSTOM_CLASS_METHOD_NAMES = {"__get_validators__", "validate"}
+PYDANTIC_CUSTOM_CLASS_METHOD_NAMES = {"__get_validators__", "__get_pydantic_core_schema__"}
 
 
 def field_factory(
@@ -783,18 +792,15 @@ def field_factory(
         metadata = {}
 
     field_info = None
-
     if native_type is None:
         native_type = type(None)
 
-    if native_type not in types.CUSTOM_TYPES and utils.is_annotated(native_type):
+    if utils.is_annotated(native_type) and native_type not in ALL_TYPES_FIELD_CLASSES:
         a_type, *extra_args = get_args(native_type)
         field_info = next((arg for arg in extra_args if isinstance(arg, types.FieldInfo)), None)
-        if field_info is None or a_type in (decimal.Decimal, types.Fixed):
-            # it means that it is a custom type defined by us
-            # `Int32`, `Float32`,`TimeMicro` or `DateTimeMicro`
-            # or a type Annotated with the end user
-            native_type = a_type
+        # it means that it is a custom type defined by us `Int32`, `Float32`,`TimeMicro` or `DateTimeMicro`
+        # or a known type Annotated with the end user
+        native_type = a_type
 
     if native_type in IMMUTABLE_FIELDS_CLASSES:
         klass = IMMUTABLE_FIELDS_CLASSES[native_type]
@@ -823,7 +829,7 @@ def field_factory(
             parent=parent,
         )
 
-    elif utils.is_self_referenced(native_type):
+    elif utils.is_self_referenced(native_type, parent):
         return SelfReferenceField(
             name=name,
             type=native_type,
@@ -917,16 +923,19 @@ def field_factory(
     elif (
         inspect.isclass(native_type)
         and not is_pydantic_model(native_type)
-        and all(method_name in dir(native_type) for method_name in PYDANTIC_CUSTOM_CLASS_METHOD_NAMES)
+        and any(method_name in dir(native_type) for method_name in PYDANTIC_CUSTOM_CLASS_METHOD_NAMES)
     ):
-        try:
-            # Build a field for the encoded type since that's what will be serialized
-            encoded_type = parent.__config__.json_encoders[native_type]
-        except KeyError:
-            raise ValueError(
-                f"Type {native_type} for field {name} must be listed in the pydantic 'json_encoders' config for {parent}"
-                " (or for one of the classes in its inheritance tree since pydantic configs are inherited)"
-            )
+        if getattr(parent, "__config__", None):
+            try:
+                # Build a field for the encoded type since that's what will be serialized
+                encoded_type = parent.__config__.json_encoders[native_type]
+            except KeyError:
+                raise ValueError(
+                    f"Type {native_type} for field {name} must be listed in the pydantic 'json_encoders' config for {parent}"
+                    " (or for one of the classes in its inheritance tree since pydantic configs are inherited)"
+                )
+        else:
+            encoded_type = parent.model_config["json_encoders"][native_type]
 
         # default_factory is not schema-friendly for Custom Classes since it could be returning
         # dynamically constructed values that should not be treated as defaults. For example,

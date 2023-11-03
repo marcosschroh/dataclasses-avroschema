@@ -157,7 +157,7 @@ class PositiveFloatField(PydanticField):
     avro_type: typing.ClassVar[typing.Dict[str, str]] = {"type": DOUBLE, "pydantic-class": "PositiveFloat"}
 
     def fake(self) -> float:
-        return fake.pyfloat(positive=True)
+        return fake.pyfloat(positive=True, min_value=1)
 
 
 class NegativeIntField(PydanticField):
