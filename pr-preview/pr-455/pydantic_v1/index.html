@@ -1493,7 +1493,7 @@ then the proper pydantic types will be used.</p>
 <p>All pydantic supported fields can be used with fake</p>
 </div>
 <h3 id="excluding-fields">Excluding fields</h3>
-<p>Pydantic Fields can be excluded when <code>dict</code>, <code>json</code> or <code>copy</code> methods are called. This meaans that the exclusion is only for <a href="https://docs.pydantic.dev/latest/usage/exporting_models/">exporting models</a> but not excluded in the instance creations, then the <code>avro serialization</code> will include all the class attributes.</p>
+<p>Pydantic Fields can be excluded when <code>dict</code>, <code>json</code> or <code>copy</code> methods are called. This meaans that the exclusion is only for <a href="https://docs.pydantic.dev/1.10/usage/exporting_models/">exporting models</a> but not excluded in the instance creations, then the <code>avro serialization</code> will include all the class attributes.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">typing</span>
 <span class="kn">from</span> <span class="nn">pydantic.v1</span> <span class="kn">import</span> <span class="n">Field</span>
 <span class="kn">from</span> <span class="nn">dataclasses_avroschema.pydantic.v1</span> <span class="kn">import</span> <span class="n">AvroBaseModel</span>
@@ -1516,8 +1516,9 @@ then the proper pydantic types will be used.</p>
 <span class="n">event</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">serialize</span><span class="p">()</span>
 <span class="k">assert</span> <span class="n">user</span> <span class="o">==</span> <span class="n">User</span><span class="o">.</span><span class="n">deserialize</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
 </code></pre></div>
+<p><em>(This script is complete, it should run "as is")</em></p>
 <h2 id="model-config">Model Config</h2>
-<p>With <code>AvroBaseModel</code> you can use the same <a href="https://docs.pydantic.dev/latest/usage/model_config/">Model Config</a> that <code>pydantic</code> provides,
+<p>With <code>AvroBaseModel</code> you can use the same <a href="https://docs.pydantic.dev/1.10/usage/model_config/">Model Config</a> that <code>pydantic</code> provides,
 for example:</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Not use Enum values</label><label for="__tabbed_1_2">Use Enum values</label></div>
 <div class="tabbed-content">
@@ -1625,6 +1626,7 @@ for example:</p>
 <span class="sd">}</span>
 <span class="sd">&quot;&quot;&quot;</span>
 </code></pre></div>
+<p><em>(This script is complete, it should run "as is")</em></p>
 
 
 
