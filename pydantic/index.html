@@ -11,7 +11,7 @@
       
       
       
-        <link rel="prev" href="../model_generator/">
+        <link rel="prev" href="../pydantic_v1/">
       
       
         <link rel="next" href="../faust_records/">
@@ -480,6 +480,25 @@
       
   
   
+  
+    <li class="md-nav__item">
+      <a href="../pydantic_v1/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Pydantic V1
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
     
   
   
@@ -627,19 +646,19 @@
     Adding Custom Field-level Attributes
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
+    <nav class="md-nav" aria-label="Adding Custom Field-level Attributes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#custom-data-types-as-fields" class="md-nav__link">
     Custom Data Types as Fields
   </a>
   
-    <nav class="md-nav" aria-label="Custom Data Types as Fields">
-      <ul class="md-nav__list">
+</li>
         
           <li class="md-nav__item">
-  <a href="#classes-with-__get_validators__" class="md-nav__link">
-    Classes with __get_validators__
+  <a href="#classes-with-__get_pydantic_core_schema__" class="md-nav__link">
+    Classes with __get_pydantic_core_schema__
   </a>
   
 </li>
@@ -878,19 +897,19 @@
     Adding Custom Field-level Attributes
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
+    <nav class="md-nav" aria-label="Adding Custom Field-level Attributes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#custom-data-types-as-fields" class="md-nav__link">
     Custom Data Types as Fields
   </a>
   
-    <nav class="md-nav" aria-label="Custom Data Types as Fields">
-      <ul class="md-nav__list">
+</li>
         
           <li class="md-nav__item">
-  <a href="#classes-with-__get_validators__" class="md-nav__link">
-    Classes with __get_validators__
+  <a href="#classes-with-__get_pydantic_core_schema__" class="md-nav__link">
+    Classes with __get_pydantic_core_schema__
   </a>
   
 </li>
@@ -919,7 +938,7 @@
 
 
 <h1 id="pydantic-integration">Pydantic Integration</h1>
-<p>It is possible to use <a href="https://pydantic-docs.helpmanual.io/">pydantic</a> with <code>dataclasses-avroschema</code> making use of <code>AvroBaseModel</code>:</p>
+<p>It is possible to use <a href="https://docs.pydantic.dev/latest/">pydantic</a> with <code>dataclasses-avroschema</code> making use of <code>AvroBaseModel</code>:</p>
 <p>You must use use all the <code>pydantic</code> features and all <code>dataclasses-avroschema</code> functionality will be injected.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -971,21 +990,24 @@
 <span class="p">}</span><span class="s1">&#39;</span>
 
 <span class="c1"># Json schema</span>
-<span class="n">UserAdvance</span><span class="o">.</span><span class="n">json_schema</span><span class="p">()</span>
+<span class="n">UserAdvance</span><span class="o">.</span><span class="n">model_json_schema</span><span class="p">()</span>
 
-<span class="s1">&#39;{</span>
-    <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;UserAdvance&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Name&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">},</span>
-        <span class="s2">&quot;age&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Age&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;integer&quot;</span><span class="p">},</span>
-        <span class="s2">&quot;pets&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Pets&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span> <span class="s2">&quot;items&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">}},</span>
-        <span class="s2">&quot;accounts&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Accounts&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span> <span class="s2">&quot;additionalProperties&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;integer&quot;</span><span class="p">}},</span>
-        <span class="s2">&quot;has_car&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Has Car&quot;</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;boolean&quot;</span><span class="p">},</span>
-        <span class="s2">&quot;favorite_colors&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="s2">&quot;BLUE&quot;</span><span class="p">,</span> <span class="s2">&quot;allOf&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;$ref&quot;</span><span class="p">:</span> <span class="s2">&quot;#/definitions/FavoriteColor&quot;</span><span class="p">}]},</span>
-        <span class="s2">&quot;country&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Country&quot;</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="s2">&quot;Argentina&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">},</span>
-        <span class="s2">&quot;address&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Address&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">}},</span>
-        <span class="s2">&quot;required&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">],</span> <span class="s2">&quot;definitions&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;FavoriteColor&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;FavoriteColor&quot;</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;An enumeration.&quot;</span><span class="p">,</span> <span class="s2">&quot;enum&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;BLUE&quot;</span><span class="p">,</span> <span class="s2">&quot;YELLOW&quot;</span><span class="p">,</span> <span class="s2">&quot;GREEN&quot;</span><span class="p">],</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">}}}</span><span class="s1">&#39;</span>
+<span class="p">{</span>
+    <span class="s1">&#39;required&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;age&#39;</span><span class="p">],</span>
+    <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;UserAdvance&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;object&#39;</span>
+    <span class="s1">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;Name&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;string&#39;</span><span class="p">},</span>
+        <span class="s1">&#39;age&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;Age&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;integer&#39;</span><span class="p">},</span>
+        <span class="s1">&#39;pets&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;items&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;string&#39;</span><span class="p">},</span> <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;Pets&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;array&#39;</span><span class="p">},</span>
+        <span class="s1">&#39;accounts&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;additionalProperties&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;integer&#39;</span><span class="p">},</span> <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;Accounts&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;object&#39;</span><span class="p">},</span>
+        <span class="s1">&#39;has_car&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;default&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;Has Car&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;boolean&#39;</span><span class="p">},</span>
+        <span class="s1">&#39;favorite_colors&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;allOf&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;$ref&#39;</span><span class="p">:</span> <span class="s1">&#39;#/$defs/FavoriteColor&#39;</span><span class="p">}],</span> <span class="s1">&#39;default&#39;</span><span class="p">:</span> <span class="s1">&#39;BLUE&#39;</span><span class="p">},</span>
+        <span class="s1">&#39;country&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;default&#39;</span><span class="p">:</span> <span class="s1">&#39;Argentina&#39;</span><span class="p">,</span> <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;Country&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;string&#39;</span><span class="p">},</span>
+        <span class="s1">&#39;address&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;default&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;Address&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;string&#39;</span><span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s1">&#39;$defs&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;FavoriteColor&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;enum&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;BLUE&#39;</span><span class="p">,</span> <span class="s1">&#39;YELLOW&#39;</span><span class="p">,</span> <span class="s1">&#39;GREEN&#39;</span><span class="p">],</span> <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;FavoriteColor&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;string&#39;</span><span class="p">}},</span>
+<span class="p">}</span>
 </code></pre></div>
 <p><em>(This script is complete, it should run "as is")</em></p>
 <div class="admonition note">
@@ -1092,10 +1114,6 @@ using the key <code>pydantic-class</code>.</p>
 <tr>
 <td>long</td>
 <td>pydantic.PositiveIntstr</td>
-</tr>
-<tr>
-<td>long</td>
-<td>pydantic.ConstrainedInt (conint)</td>
 </tr>
 </tbody>
 </table>
@@ -1334,11 +1352,6 @@ then the proper pydantic types will be used.</p>
 <td>"pydantic-class": "PositiveInt"</td>
 <td>pydantic.PositiveInt</td>
 </tr>
-<tr>
-<td>long</td>
-<td>"pydantic-class": ConstrainedInt"</td>
-<td>pydantic.ConstrainedInt</td>
-</tr>
 </tbody>
 </table>
 <table>
@@ -1382,10 +1395,10 @@ then the proper pydantic types will be used.</p>
 <div class="highlight"><span class="filename">getting dict and json</span><pre><span></span><code><span class="n">user</span> <span class="o">=</span> <span class="n">UserAdvance</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;bond&quot;</span><span class="p">,</span> <span class="n">age</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
 
 <span class="c1"># to_json from dataclasses-avroschema is the same that json from pydantic</span>
-<span class="k">assert</span> <span class="n">user</span><span class="o">.</span><span class="n">to_json</span><span class="p">()</span> <span class="o">==</span> <span class="n">user</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+<span class="k">assert</span> <span class="n">user</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">separators</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">,</span><span class="s2">&quot;:&quot;</span><span class="p">,))</span> <span class="o">==</span> <span class="n">user</span><span class="o">.</span><span class="n">model_dump_json</span><span class="p">()</span>
 
 <span class="c1"># to_dict from dataclasses-avroschema is the same that dict from pydantic</span>
-<span class="k">assert</span> <span class="n">user</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="o">==</span> <span class="n">user</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
+<span class="k">assert</span> <span class="n">user</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="o">==</span> <span class="n">user</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span>
 </code></pre></div>
 <div class="highlight"><span class="filename">serialization</span><pre><span></span><code><span class="n">event</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">serialize</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
@@ -1424,10 +1437,14 @@ then the proper pydantic types will be used.</p>
 <span class="n">user</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">parse_obj</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data_user</span><span class="p">)</span>
 <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">addresses</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">is</span> <span class="n">Address</span>
 </code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The method <code>parse_obj</code> is defined by <code>dataclasses_avroschemas</code> which internally is calling <code>model_validate</code> (introduced in pydantic v2)</p>
+</div>
 <p><em>(This script is complete, it should run "as is")</em></p>
-<div class="highlight"><span class="filename">parse_obj_as usage</span><pre><span></span><code><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+<div class="highlight"><span class="filename">validate_python usage</span><pre><span></span><code><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
 
-<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">parse_obj_as</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">TypeAdapter</span>
 
 <span class="kn">from</span> <span class="nn">dataclasses_avroschema.pydantic</span> <span class="kn">import</span> <span class="n">AvroBaseModel</span>
 
@@ -1439,7 +1456,8 @@ then the proper pydantic types will be used.</p>
 
 
 <span class="n">data</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;bond&quot;</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">:</span> <span class="mi">50</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;bond2&quot;</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">:</span> <span class="mi">60</span><span class="p">}]</span>
-<span class="n">users</span> <span class="o">=</span> <span class="n">parse_obj_as</span><span class="p">(</span><span class="n">List</span><span class="p">[</span><span class="n">User</span><span class="p">],</span> <span class="n">data</span><span class="p">)</span>
+<span class="n">UserListValidator</span> <span class="o">=</span> <span class="n">TypeAdapter</span><span class="p">(</span><span class="n">List</span><span class="p">[</span><span class="n">User</span><span class="p">])</span>
+<span class="n">users</span> <span class="o">=</span> <span class="n">UserListValidator</span><span class="o">.</span><span class="n">validate_python</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
 <span class="n">users</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">avro_schema</span><span class="p">()</span>
 <span class="c1"># &#39;{&quot;type&quot;: &quot;record&quot;, &quot;name&quot;: &quot;User&quot;, &quot;fields&quot;: [{&quot;name&quot;: &quot;name&quot;, &quot;type&quot;: &quot;string&quot;}, {&quot;name&quot;: &quot;age&quot;, &quot;type&quot;: &quot;long&quot;}], &quot;doc&quot;: &quot;User with multiple Address&quot;}&#39;</span>
@@ -1470,7 +1488,7 @@ then the proper pydantic types will be used.</p>
 <p>All pydantic supported fields can be used with fake</p>
 </div>
 <h3 id="excluding-fields">Excluding fields</h3>
-<p>Pydantic Fields can be excluded when <code>dict</code>, <code>json</code> or <code>copy</code> methods are called. This meaans that the exclusion is only for <a href="https://docs.pydantic.dev/latest/usage/exporting_models/">exporting models</a> but not excluded in the instance creations, then the <code>avro serialization</code> will include all the class attributes.</p>
+<p>Pydantic Fields can be excluded when <code>dict</code>, <code>json</code> or <code>copy</code> methods are called. This meaans that the exclusion is only for <a href="https://docs.pydantic.dev/latest/concepts/fields/#exclude">exporting models</a> but not excluded in the instance creations, then the <code>avro serialization</code> will include all the class attributes.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">typing</span>
 <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">Field</span>
 <span class="kn">from</span> <span class="nn">dataclasses_avroschema.pydantic</span> <span class="kn">import</span> <span class="n">AvroBaseModel</span>
@@ -1487,12 +1505,13 @@ then the proper pydantic types will be used.</p>
 <span class="nb">print</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
 <span class="c1"># &gt;&gt;&gt; User(name=&#39;bond&#39;, age=50, pets=[&#39;dog&#39;, &#39;cat&#39;], accounts={&#39;key&#39;: 1}, has_car=True)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">dict</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">model_dump</span><span class="p">())</span>
 <span class="c1"># &gt;&gt;&gt; {&#39;name&#39;: &#39;bond&#39;, &#39;age&#39;: 50, &#39;has_car&#39;: True} Excludes pets and accounts !!!</span>
 
 <span class="n">event</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">serialize</span><span class="p">()</span>
 <span class="k">assert</span> <span class="n">user</span> <span class="o">==</span> <span class="n">User</span><span class="o">.</span><span class="n">deserialize</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
 </code></pre></div>
+<p><em>(This script is complete, it should run "as is")</em></p>
 <h2 id="model-config">Model Config</h2>
 <p>With <code>AvroBaseModel</code> you can use the same <a href="https://docs.pydantic.dev/latest/usage/model_config/">Model Config</a> that <code>pydantic</code> provides,
 for example:</p>
@@ -1519,6 +1538,8 @@ for example:</p>
 <div class="tabbed-block">
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">enum</span>
 <span class="kn">from</span> <span class="nn">dataclasses_avroschema.pydantic</span> <span class="kn">import</span> <span class="n">AvroBaseModel</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">ConfigDict</span>
+
 
 <span class="k">class</span> <span class="nc">Color</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
     <span class="n">BLUE</span> <span class="o">=</span> <span class="s2">&quot;BLUE&quot;</span>
@@ -1526,14 +1547,12 @@ for example:</p>
 
 
 <span class="k">class</span> <span class="nc">Bus</span><span class="p">(</span><span class="n">AvroBaseModel</span><span class="p">):</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">use_enum_values</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">driver</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">color</span><span class="p">:</span> <span class="n">Color</span>
 
-    <span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
-        <span class="n">use_enum_values</span> <span class="o">=</span> <span class="kc">True</span>
-
 <span class="n">bus</span> <span class="o">=</span>  <span class="n">Bus</span><span class="p">(</span><span class="n">driver</span><span class="o">=</span><span class="s2">&quot;bond&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">Color</span><span class="o">.</span><span class="n">RED</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">bus</span><span class="o">.</span><span class="n">dict</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">busmodel_dump</span><span class="p">())</span>
 <span class="c1"># &gt;&gt;&gt; {&#39;driver&#39;: &#39;bond&#39;, &#39;color&#39;: &#39;RED&#39;}</span>
 </code></pre></div>
 </div>
@@ -1545,10 +1564,9 @@ for example:</p>
 <p class="admonition-title">Note</p>
 <p>Make sure that <code>pydantic.Field</code> is used and <em>NOT</em> <code>dataclasses.field</code></p>
 </div>
-<h2 id="custom-data-types-as-fields">Custom Data Types as Fields</h2>
-<p>If needed, you can annotate fields with custom classes that define validators.</p>
-<h3 id="classes-with-__get_validators__">Classes with <code>__get_validators__</code></h3>
-<p>These classes are <a href="https://docs.pydantic.dev/1.10/usage/types/#classes-with-__get_validators__">defined by pydantic</a> as Python classes that define the <code>validate</code> and <code>__get_validators__</code> methods.</p>
+<h3 id="custom-data-types-as-fields">Custom Data Types as Fields</h3>
+<p>If needed, you can annotate fields with <a href="https://docs.pydantic.dev/latest/concepts/types/#customizing-validation-with-getpydanticcoreschema">custom classes</a> that define validators.</p>
+<h3 id="classes-with-__get_pydantic_core_schema__">Classes with <code>__get_pydantic_core_schema__</code></h3>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The conversion mapping of a custom class to its <a href="../fields_specification/#avro-field-and-python-types-summary">supported type</a> must be defined in the model's <a href="https://docs.pydantic.dev/1.10/usage/exporting_models/#json_encoders"><code>json_encoders</code></a> config.</p>
@@ -1557,7 +1575,12 @@ for example:</p>
 <p class="admonition-title">Warning</p>
 <p><a href="#Model-generation">Generating models</a> from avro schemas that were generated by classes containing Custom Class fields is not supported.</p>
 </div>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">dataclasses_avroschema.pydantic</span> <span class="kn">import</span> <span class="n">AvroBaseModel</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
+
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema.pydantic</span> <span class="kn">import</span> <span class="n">AvroBaseModel</span>
+
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">ConfigDict</span><span class="p">,</span> <span class="n">GetCoreSchemaHandler</span>
+<span class="kn">from</span> <span class="nn">pydantic_core</span> <span class="kn">import</span> <span class="n">core_schema</span>
 
 
 <span class="k">class</span> <span class="nc">CustomClass</span><span class="p">:</span>
@@ -1565,27 +1588,41 @@ for example:</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">__get_validators__</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-        <span class="k">yield</span> <span class="bp">cls</span><span class="o">.</span><span class="n">validate</span>
+    <span class="k">def</span> <span class="nf">__get_pydantic_core_schema__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">source_type</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">handler</span><span class="p">:</span> <span class="n">GetCoreSchemaHandler</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">CustomClass</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">value</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Value must be a string or CustomClass - not </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">CustomClass</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">value</span>
-        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Value must be a string or CustomClass - not </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="n">from_str_schema</span> <span class="o">=</span> <span class="n">core_schema</span><span class="o">.</span><span class="n">chain_schema</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">core_schema</span><span class="o">.</span><span class="n">str_schema</span><span class="p">(),</span>
+                <span class="n">core_schema</span><span class="o">.</span><span class="n">no_info_plain_validator_function</span><span class="p">(</span><span class="n">validate</span><span class="p">),</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">core_schema</span><span class="o">.</span><span class="n">json_or_python_schema</span><span class="p">(</span>
+            <span class="n">json_schema</span><span class="o">=</span><span class="n">from_str_schema</span><span class="p">,</span>
+            <span class="n">python_schema</span><span class="o">=</span><span class="n">core_schema</span><span class="o">.</span><span class="n">union_schema</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="c1"># check if it&#39;s an instance first before doing any further work</span>
+                    <span class="n">core_schema</span><span class="o">.</span><span class="n">is_instance_schema</span><span class="p">(</span><span class="n">CustomClass</span><span class="p">),</span>
+                    <span class="n">from_str_schema</span><span class="p">,</span>
+                <span class="p">]</span>
+            <span class="p">),</span>
+            <span class="n">serialization</span><span class="o">=</span><span class="n">core_schema</span><span class="o">.</span><span class="n">plain_serializer_function_ser_schema</span><span class="p">(</span><span class="k">lambda</span> <span class="n">instance</span><span class="p">:</span> <span class="n">instance</span><span class="o">.</span><span class="n">x</span><span class="p">),</span>
+        <span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span>
 
 
 <span class="k">class</span> <span class="nc">MyModel</span><span class="p">(</span><span class="n">AvroBaseModel</span><span class="p">):</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">json_encoders</span><span class="o">=</span><span class="p">{</span><span class="n">CustomClass</span><span class="p">:</span> <span class="nb">str</span><span class="p">},</span> <span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">my_id</span><span class="p">:</span> <span class="n">CustomClass</span>
-
-    <span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
-        <span class="n">json_encoders</span> <span class="o">=</span> <span class="p">{</span><span class="n">CustomClass</span><span class="p">:</span> <span class="nb">str</span><span class="p">}</span>
 
 
 <span class="nb">print</span><span class="p">(</span><span class="n">MyModel</span><span class="o">.</span><span class="n">avro_schema_to_python</span><span class="p">())</span>
@@ -1602,6 +1639,7 @@ for example:</p>
 <span class="sd">}</span>
 <span class="sd">&quot;&quot;&quot;</span>
 </code></pre></div>
+<p><em>(This script is complete, it should run "as is")</em></p>
 
 
 
