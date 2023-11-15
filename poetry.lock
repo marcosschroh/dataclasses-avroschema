@@ -609,13 +609,13 @@ dev = ["black", "coveralls", "mypy", "pre-commit", "pylint", "pytest (>=5)", "py
 
 [[package]]
 name = "dc-avro"
-version = "0.6.5"
+version = "0.7.0"
 description = ""
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "dc_avro-0.6.5-py3-none-any.whl", hash = "sha256:6ff681e02e584daa2b25600a2c955a56480282e87f2565c6fbb6398934726316"},
-    {file = "dc_avro-0.6.5.tar.gz", hash = "sha256:0db7d3bdfa223caab3f15fb323c1348239a67a83ed5236bf2acfda37002cfc7e"},
+    {file = "dc_avro-0.7.0-py3-none-any.whl", hash = "sha256:3eed20385f14e6883ab9bd28dba2d552e0cbb2bf6611cc88ce4894d3465bf3e5"},
+    {file = "dc_avro-0.7.0.tar.gz", hash = "sha256:56c8e44870d4d3a1d1e70750d616db403369e21f9ee474b94ec8e327e71d6f60"},
 ]
 
 [package.dependencies]
@@ -2318,4 +2318,4 @@ pydantic = ["pydantic"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "dc770ad3c86f578672fcb7004bf21db7d289e8243dfd48a24544fb2ed772d491"
+content-hash = "56eb854c80e25c685d8cce82c5424633088f51e88d2e315b731a19b66588c4ed"
