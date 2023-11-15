@@ -43,7 +43,7 @@ mkdocs = "^1"
 mkdocs-material = "^9"
 
 [tool.poetry.group.cli.dependencies]
-dc-avro = "^0.6.4"
+dc-avro = ">=0.6.4,<0.8.0"
 
 
 [tool.poetry.group.ci-publish.dependencies]
