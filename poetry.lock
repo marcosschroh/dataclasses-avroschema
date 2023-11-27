@@ -765,20 +765,20 @@ zstandard = ["zstandard"]
 
 [[package]]
 name = "faust-streaming"
-version = "0.10.16"
+version = "0.10.17"
 description = "Python Stream processing."
 optional = true
 python-versions = ">=3.8.0"
 files = [
-    {file = "faust-streaming-0.10.16.tar.gz", hash = "sha256:0772a47c6e2fd8270b3e601a4b446d9b6f93e40d7f5e4e312b5a1f0084a86af0"},
-    {file = "faust_streaming-0.10.16-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:a173981feb05628601b233d68f0e6dd3c43484bb47ac9587103d2a8e4d34af83"},
-    {file = "faust_streaming-0.10.16-cp310-cp310-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:73b37d041e4098978cc19a731b5c08d2a7a89f8e7adaaa50674c1656316b58b1"},
-    {file = "faust_streaming-0.10.16-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:5fb27c663b43f9c077bba5396af52d4568b9c7227ca6c0dd6b53550be1ff0b90"},
-    {file = "faust_streaming-0.10.16-cp311-cp311-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:d35771698e5c28628ea7b7667ac5abffa3cdbc80a80d506a7417075069724197"},
-    {file = "faust_streaming-0.10.16-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:d8911346d375cbe67e4692899aab9107167652c8c14af9a00411511b0157713e"},
-    {file = "faust_streaming-0.10.16-cp38-cp38-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:0b6e72011d0e996777b1a6d90efb27a05dfacbe9549a34833cfd0b6c91ef387a"},
-    {file = "faust_streaming-0.10.16-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:7c8ed3269ae12652d2dab448f3128c5628e1054bdc1f7a15d7d2cbaa9cf4d543"},
-    {file = "faust_streaming-0.10.16-cp39-cp39-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:19ad995c4b47d7e5f9061af87b2a4b4b7032b189010432a4cf68e24e09c104e5"},
+    {file = "faust-streaming-0.10.17.tar.gz", hash = "sha256:76ef206b67ad7ab918c2b8766153bcbe60c2e6063a45b65c04461ce5d3b32908"},
+    {file = "faust_streaming-0.10.17-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:19b6f447a5c6321f0b68920dea66e64f542cd6db2b789f4f76beb849d14d8236"},
+    {file = "faust_streaming-0.10.17-cp310-cp310-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:6b5e3e2f767967c10be6e40a23ce37111e2b4c20b80e1df87951f5f35a8946d9"},
+    {file = "faust_streaming-0.10.17-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:d493ed9076bdf12f63975c72acf8ddef000ba0971e9251595a58db56a18232b5"},
+    {file = "faust_streaming-0.10.17-cp311-cp311-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:171a866a7fa64232fc348641f1b870bbde74a4556a4b409eabe985f8e19e4fdb"},
+    {file = "faust_streaming-0.10.17-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:82cd2d4947053c99d61c823df69ede6b4211bb414c9a8ed6efac19ac0bd3d662"},
+    {file = "faust_streaming-0.10.17-cp38-cp38-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:65f1ce3c832642046a31551da59c04684775fc8e5db49cd44ac1bc444acbd88e"},
+    {file = "faust_streaming-0.10.17-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:a9cbf39b9d7345f6c8e7d014075623f5be44da61dc100963dbeb779dcf797900"},
+    {file = "faust_streaming-0.10.17-cp39-cp39-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:87b9eaac3b9064c7e6a39a0e39164a68e1a062af435f35fb0d161eb9a9a601b1"},
 ]
 
 [package.dependencies]
@@ -793,7 +793,7 @@ mypy-extensions = "*"
 opentracing = ">=1.3.0,<=2.4.0"
 six = "*"
 terminaltables = ">=3.1,<4.0"
-venusian = "3.0.0"
+venusian = "3.1.0"
 yarl = ">=1.0,<2.0"
 
 [package.extras]
@@ -2145,17 +2145,17 @@ zstd = ["zstandard (>=0.18.0)"]
 
 [[package]]
 name = "venusian"
-version = "3.0.0"
+version = "3.1.0"
 description = "A library for deferring decorator actions"
 optional = true
-python-versions = ">=3.5"
+python-versions = ">=3.7"
 files = [
-    {file = "venusian-3.0.0-py3-none-any.whl", hash = "sha256:06e7385786ad3a15c70740b2af8d30dfb063a946a851dcb4159f9e2a2302578f"},
-    {file = "venusian-3.0.0.tar.gz", hash = "sha256:f6842b7242b1039c0c28f6feef29016e7e7dd3caaeb476a193acf737db31ee38"},
+    {file = "venusian-3.1.0-py3-none-any.whl", hash = "sha256:d1fb1e49927f42573f6c9b7c4fcf61c892af8fdcaa2314daa01d9a560b23488d"},
+    {file = "venusian-3.1.0.tar.gz", hash = "sha256:eb72cdca6f3139a15dc80f9c95d3c10f8a54a0ba881eeef8e2ec5b42d3ee3a95"},
 ]
 
 [package.extras]
-docs = ["Sphinx", "repoze.sphinx.autointerface"]
+docs = ["Sphinx (>=4.3.2)", "pylons-sphinx-themes", "repoze.sphinx.autointerface", "sphinx-copybutton"]
 testing = ["coverage", "pytest", "pytest-cov"]
 
 [[package]]
