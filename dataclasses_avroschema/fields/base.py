@@ -31,6 +31,7 @@ class Field:
     default_factory: typing.Any = dataclasses.MISSING
     metadata: typing.Mapping = dataclasses.field(default_factory=dict)
     model_metadata: typing.Optional[utils.SchemaMetadata] = None
+    extra_default_types_allowed: typing.Tuple = dataclasses.field(default_factory=tuple)
 
     def __post_init__(self) -> None:
         self.model_metadata = self.model_metadata or utils.SchemaMetadata()  # type: ignore
@@ -93,8 +94,9 @@ class Field:
         return self.default
 
     def validate_default(self, default: typing.Any) -> bool:
-        a_type = self.type
+        a_type = (self.type, *self.extra_default_types_allowed)
         msg = f'Invalid default type {type(default)} for field "{self.name}". Default should be {self.type}'
+
         if utils.is_annotated(self.type):
             a_type, _ = get_args(self.type)
 

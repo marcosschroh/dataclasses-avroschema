@@ -64,13 +64,15 @@ PRIMITIVE_TYPES_AND_DEFAULTS = (
     (Annotated[bool, "boolean"], True),
     (Annotated[float, "float"], 10.4),
     (Annotated[bytes, "bytes"], b"test"),
+    # test the subclasses types are also allowed
+    (float, 10),
 )
 
 PRIMITIVE_TYPES_AND_INVALID_DEFAULTS = (
     (str, 1),
     (int, "test"),
     (bool, 10),
-    (float, False),
+    (float, "test"),
     (bytes, "test"),
     (None, 1),
     (type(None), "test"),

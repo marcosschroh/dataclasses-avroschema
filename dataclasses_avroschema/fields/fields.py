@@ -97,6 +97,9 @@ class BooleanField(ImmutableField):
 class DoubleField(ImmutableField):
     avro_type: typing.ClassVar[str] = field_utils.DOUBLE
 
+    def __post_init__(self):
+        self.extra_default_types_allowed = (int,)
+
     def fake(self) -> float:
         return fake.pyfloat()
 
