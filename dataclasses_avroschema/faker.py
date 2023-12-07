@@ -5,7 +5,7 @@ try:
 except ModuleNotFoundError:  # pragma: no cover
 
     class FakeStub:
-        """A stub for Faker.fake() when the feature [faker] is not enabled.
+        r"""A stub for Faker.fake() when the feature [faker] is not enabled.
         It raises a hard RuntimeError when faker is not installed and
         we tried to invoke `.fake()` on any of our fields.
         We can find the local usages of faker methods (i.e. fake.<method>(*args, **kwargs)) with:
