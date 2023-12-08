@@ -158,7 +158,7 @@ class AvroModel:
         # and after that convert into python
         return self.asdict()
 
-    def to_json(self, **kwargs) -> str:
+    def to_json(self, **kwargs: Any) -> str:
         data = serialization.to_json(self.asdict())
         return json.dumps(data, **kwargs)
 
@@ -191,12 +191,13 @@ class AvroModel:
         return config
 
     @classmethod
-    def fake(cls: Type[CT], **data: Dict[str, Any]) -> CT:
+    def fake(cls: Type[CT], **data: Any) -> CT:
         """
         Creates a fake instance of the model.
 
-        Attributes:
-            data: Dict[str, Any] represent the user values to use in the instance
+        Keyword Arguments:
+            Any user values to use in the instance. All fields not explicitly passed
+            will be filled with fake data.
         """
         # only generate fakes for fields that were not provided in data
         payload = {field.name: field.fake() for field in cls.get_fields() if field.name not in data.keys()}
