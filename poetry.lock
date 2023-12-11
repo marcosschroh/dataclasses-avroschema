@@ -123,49 +123,47 @@ aiohttp = ">=1.1"
 
 [[package]]
 name = "aiokafka"
-version = "0.8.1"
-description = "Kafka integration with asyncio."
+version = "0.9.0"
+description = "Kafka integration with asyncio"
 optional = true
 python-versions = ">=3.8"
 files = [
-    {file = "aiokafka-0.8.1-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:1f6044ed270b946d31f265903b5eb101940ed0ff3a902eaf8178103c943bbcc9"},
-    {file = "aiokafka-0.8.1-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:1e24839088fd6d3ff481cc09a48ea487b997328df11630bc0a1b88255edbcfe9"},
-    {file = "aiokafka-0.8.1-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:3816bcfc3c57dfa4ed77fe1dc3a9a464e17b6400061348155115f282c8150c47"},
-    {file = "aiokafka-0.8.1-cp310-cp310-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:b2bf97548fa77ad31062ca580368d346b16ba9fdca5856c435f256f3699ab12b"},
-    {file = "aiokafka-0.8.1-cp310-cp310-win32.whl", hash = "sha256:6421ee81084532f915501074a132acb2afc8cb88bf5ddb11e584230a30f6f006"},
-    {file = "aiokafka-0.8.1-cp310-cp310-win_amd64.whl", hash = "sha256:9f19d90b7360bc2239fcd8b147508ae39c3e5b1acfc8e6a2a9b0f306070f7ffe"},
-    {file = "aiokafka-0.8.1-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:673c163dee62dfe45146d5250af0e395da5cc92b63f8878c592abc7dc1862899"},
-    {file = "aiokafka-0.8.1-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:4693fbe3c10f125bf3e2df8a8ccbca3eff2bdaaa6589d28c7532c10e7d84598b"},
-    {file = "aiokafka-0.8.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:bbffc431d9285328c0bc108949132ae11cec863f1dd5a43a1fc3d45a69ffb8a9"},
-    {file = "aiokafka-0.8.1-cp311-cp311-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:4fccd599ab6b3fda4f4187d854b343f153b40d05d6774be9acf238618da50031"},
-    {file = "aiokafka-0.8.1-cp311-cp311-win32.whl", hash = "sha256:90960356513f3979754261b132b12a96b0d9e3c6eb44420e3a90a7c31156a81a"},
-    {file = "aiokafka-0.8.1-cp311-cp311-win_amd64.whl", hash = "sha256:7f09784322c0d2c4fcc222add4337a5ac394aa30a248eb4e0e4587a125573c75"},
-    {file = "aiokafka-0.8.1-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:ff318d29ecbeea8c58d69c91c24d48d7ed4a8d3e829b607e670d118a9a35d5ba"},
-    {file = "aiokafka-0.8.1-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:af6df9a41e08b61d7e62c0a416feeabd81bad76fa5c70d499b083d6af9ce72c3"},
-    {file = "aiokafka-0.8.1-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:7d327d66b41c4e3bafff7f9efb71936a08f940aa665680717e20862e4272a068"},
-    {file = "aiokafka-0.8.1-cp38-cp38-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:24373bb2d519abac036d5b04ebc43452ef4ad1916953b6678b9801a9c93ba237"},
-    {file = "aiokafka-0.8.1-cp38-cp38-win32.whl", hash = "sha256:fd8f9e17bc9cd2ea664a7f5133aede39a8fffebffe0c450252d475dbdedb4a35"},
-    {file = "aiokafka-0.8.1-cp38-cp38-win_amd64.whl", hash = "sha256:2fa54b8b068d9d8735cb6757a0f48168f8cf9be68860b0bae6b3ed1684cef49b"},
-    {file = "aiokafka-0.8.1-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:bf7473c55dc7959d4b7f9d750fa6017b325813d6cb761e488c2d9ea44e922954"},
-    {file = "aiokafka-0.8.1-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:c4332d37cb9d52181cfda4236566b4028c7c188549277f87bcc3027577d72b1b"},
-    {file = "aiokafka-0.8.1-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:1f43d2afd7d3e4407ada8d754895fad7c344ca00648a8a38418d76564eaaf6cd"},
-    {file = "aiokafka-0.8.1-cp39-cp39-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:a8a641a8102c51422afe111d4bc70c51f335f38fc5906e4c839bd17afeaf3cb2"},
-    {file = "aiokafka-0.8.1-cp39-cp39-win32.whl", hash = "sha256:935da8c4da9a00a1e16020d88e578206097b4bb72ebc2a25fbd2cb817907ef28"},
-    {file = "aiokafka-0.8.1-cp39-cp39-win_amd64.whl", hash = "sha256:45cd28af6590d6a999bb706803166570121ba8a5a0d06c51ebd8a59fab53593c"},
-    {file = "aiokafka-0.8.1.tar.gz", hash = "sha256:d300188e358cd29989c817f6ee2a2965a039e5a71de8ade6f80f02ebb9bd07b8"},
+    {file = "aiokafka-0.9.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:cc9ccae749f15a0a316d6dca7c1a259524854c1d111d0a981ec9a39416afbe4f"},
+    {file = "aiokafka-0.9.0-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:6a2a24faee32e7170ef07691d5af75bdd572e513dea162ee398c80ed1c4bcf5f"},
+    {file = "aiokafka-0.9.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:f617e107bf070a9644c2eaba0388fdf1022d4c7a4f7bc387243de7c87afcece7"},
+    {file = "aiokafka-0.9.0-cp310-cp310-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:85b53b41e3ca536e303352deba65be8f9932d8908f87bb8a59e1a96e32d5892a"},
+    {file = "aiokafka-0.9.0-cp310-cp310-win32.whl", hash = "sha256:f11e00ecc72fad86c51c594d0c9d336a99b478a127887823b7816cc00c7c9799"},
+    {file = "aiokafka-0.9.0-cp310-cp310-win_amd64.whl", hash = "sha256:e67187a7a399ed110bb70a0fb5a74d5351589dfb7dab9fe88901b81794186990"},
+    {file = "aiokafka-0.9.0-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:6e63c80bb5753382fcc5137f62307f837678d00847b5386d0f3803270843d52e"},
+    {file = "aiokafka-0.9.0-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:b0b45b3f4b9448a3e2256615d1a93e1e2cae186a810b9bb928d224ae5ea04472"},
+    {file = "aiokafka-0.9.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:332828c7b12ac19133d4af60e3a86a7b6e09b28d6157e50545faa4ae32a2617b"},
+    {file = "aiokafka-0.9.0-cp311-cp311-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:c3cb09e16846d77094ed2940ef9a64f3956fae85aab9fd6f5e7d5c77b610d9ae"},
+    {file = "aiokafka-0.9.0-cp311-cp311-win32.whl", hash = "sha256:4feaf851fc68ebd90438e28509471cf10dc068b700cc446a21fd8c696eedc370"},
+    {file = "aiokafka-0.9.0-cp311-cp311-win_amd64.whl", hash = "sha256:035383408b411c3c180b5dd8e5794ef0bdca50921b330f022ebe33cf977c1e9b"},
+    {file = "aiokafka-0.9.0-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:93918bc9a33019e13932df8cc461fee488b6efbb58093d4876890bf9bf8785f0"},
+    {file = "aiokafka-0.9.0-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:e69a12956e3ff1a1d21c8e576bee042176551683310ddca27f25fead028ca46f"},
+    {file = "aiokafka-0.9.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:6d8b9bc181bd8d65f9529d7eaf60cf0ba6982bc33a2a0bccb2833d2b41b8dd65"},
+    {file = "aiokafka-0.9.0-cp312-cp312-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:a021c3ef27d8c045a15f8ec14bdeffa10a8959b491601304cc25c8081cf00af3"},
+    {file = "aiokafka-0.9.0-cp312-cp312-win32.whl", hash = "sha256:0fff7cd498f31ff69e450b272d76b20776bef17bf17beae43a465c3f07983a5c"},
+    {file = "aiokafka-0.9.0-cp312-cp312-win_amd64.whl", hash = "sha256:91e3ec7b22b09ed51c0bcad72b1b599dae2455f83912881fed24c3abe4198c3e"},
+    {file = "aiokafka-0.9.0-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:47b701d077e1a3b2b6f254baa947b0b8faf47c68514bc19297227917d0e227f7"},
+    {file = "aiokafka-0.9.0-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:f24c4a9eee7f0a201943aa41b7f922ae5821a5be2b38b8264fc171d9e09e64e1"},
+    {file = "aiokafka-0.9.0-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:766d965262225f79474558f528b01abb83cfb73832ab50de823b326e5929282f"},
+    {file = "aiokafka-0.9.0-cp38-cp38-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:cd00d685b68d93ef50051f51196b508b767746d66cabbd3fa0a8cbfb3ad5d0a4"},
+    {file = "aiokafka-0.9.0-cp38-cp38-win32.whl", hash = "sha256:2f1e2feded35e748976c9cf83b5148d9f00a749f6494da872f9a5b48601152d0"},
+    {file = "aiokafka-0.9.0-cp38-cp38-win_amd64.whl", hash = "sha256:1131ae81f1026a64836d85f53b8c5081f771b85c4d00a9855a69245af71e1691"},
+    {file = "aiokafka-0.9.0-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:07d6e8f0e3a4ef555fbc81ba7bca63dfbd5620dd12255242eb12e6a45c47c9ca"},
+    {file = "aiokafka-0.9.0-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:32dfdb19a60b1c85582ae12f8466136ff68479ed5c9b874240e034f468384895"},
+    {file = "aiokafka-0.9.0-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:209458fffff5560bc59ea6032e678a1bf018c7fb3dbdd622c0af5b81e3e2b902"},
+    {file = "aiokafka-0.9.0-cp39-cp39-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:320f2b504b0e16ac67e0d17d48bd08fa9ee3c3e1bafebe61b404aa16142a2129"},
+    {file = "aiokafka-0.9.0-cp39-cp39-win32.whl", hash = "sha256:3b0c76944e09702d0cb9a26777aec3fd7ec94d18144531a34b7ec8a980a55747"},
+    {file = "aiokafka-0.9.0-cp39-cp39-win_amd64.whl", hash = "sha256:0db60cc9abd4399b25f49c79318a680d446297aebf5e51b25b351124b437d122"},
+    {file = "aiokafka-0.9.0.tar.gz", hash = "sha256:11f6bd9b7772a8f5f04b2ce379759800e108475c3df4f11c491ada7587b85166"},
 ]
 
 [package.dependencies]
 async-timeout = "*"
-kafka-python = ">=2.0.2"
 packaging = "*"
-
-[package.extras]
-all = ["gssapi", "lz4", "python-snappy (>=0.5)", "zstandard"]
-gssapi = ["gssapi"]
-lz4 = ["lz4"]
-snappy = ["python-snappy (>=0.5)"]
-zstd = ["zstandard"]
 
 [[package]]
 name = "aiosignal"
@@ -753,25 +751,26 @@ zstandard = ["zstandard"]
 
 [[package]]
 name = "faust-streaming"
-version = "0.10.18"
-description = ""
+version = "0.10.21"
+description = "Python Stream Processing. A Faust fork"
 optional = true
 python-versions = ">=3.8.0"
 files = [
-    {file = "faust_streaming-0.10.18-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:6fb31f74141d5dc0f86895eda3fb4123fd4ddce3f4d88d027fd938623bec6aba"},
-    {file = "faust_streaming-0.10.18-cp310-cp310-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:45d14d5a4981d1e05b76c029d5c26723e6a898f6b5df96088332b658545bf285"},
-    {file = "faust_streaming-0.10.18-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:0b3855410859a2d0061140c36f7a87b54bb53d60ea3d911d5e5cd72aeaaedc30"},
-    {file = "faust_streaming-0.10.18-cp311-cp311-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:def14a07dead7b1a2616f38af78501a93ccc1f5c61f0081ecb67de8fd2093a1f"},
-    {file = "faust_streaming-0.10.18-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:ba03d9a522a4dec1350941e2206485b3e212094170b21cad20224516d8062772"},
-    {file = "faust_streaming-0.10.18-cp38-cp38-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:c1fed8c8aebe2738e94a84c40ee1a13aa4448bb5c6d7f49a3db6dbc151df470d"},
-    {file = "faust_streaming-0.10.18-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:66e892c74125875901cf9b1cf41d464f4b0f182073515f21656cc94b7442237a"},
-    {file = "faust_streaming-0.10.18-cp39-cp39-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:1418b35fbc14793f7fcb7a52bee3fccabcc5960de58e3f8048cdad65ab0a9881"},
+    {file = "faust-streaming-0.10.21.tar.gz", hash = "sha256:608d5b0f2782f6b51fe45b02edfaf8bee6a272ac82fafd5a49ef1c53384e5308"},
+    {file = "faust_streaming-0.10.21-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:890e7c39c486d19ba9ea027811f9431d48541a554739cc9571944374e928d817"},
+    {file = "faust_streaming-0.10.21-cp310-cp310-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:19f99724a5d36034a73ce6af9b5761cf09baee15fe0373f04e6138d09e28b479"},
+    {file = "faust_streaming-0.10.21-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:17d433d5fe3ab5439a984bd01bf16b00f891a09d0917b2f79e0a6e62e8c580e7"},
+    {file = "faust_streaming-0.10.21-cp311-cp311-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ed88e65183138123e537c4f324d235b6d17a903378f8ad8d657b1a99fecb5d3e"},
+    {file = "faust_streaming-0.10.21-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:6d486603e90d6ca6be1126dff7c6e429cd1b61c609baae82d825f28cb1e12c03"},
+    {file = "faust_streaming-0.10.21-cp38-cp38-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:6520716cf651e45c7322eb8d09d16d8fb9591c56a4c77ba8b24f4105b6ee88be"},
+    {file = "faust_streaming-0.10.21-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:25a799bffcab0a75ba799e1e99c5f4f7e175c29a9d5f97184dbc9ab915828986"},
+    {file = "faust_streaming-0.10.21-cp39-cp39-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:f505ae56ffd7daa9d64d3ce66fb59543688062ebcb40a4ccd41bddd346af79f0"},
 ]
 
 [package.dependencies]
 aiohttp = ">=3.8.0,<4.0"
 aiohttp-cors = ">=0.7,<2.0"
-aiokafka = ">=0.8.0,<0.9.0"
+aiokafka = ">=0.9.0"
 click = ">=6.7,<8.2"
 croniter = ">=0.3.16"
 intervaltree = "*"
@@ -1027,20 +1026,6 @@ MarkupSafe = ">=2.0"
 
 [package.extras]
 i18n = ["Babel (>=2.7)"]
-
-[[package]]
-name = "kafka-python"
-version = "2.0.2"
-description = "Pure Python client for Apache Kafka"
-optional = true
-python-versions = "*"
-files = [
-    {file = "kafka-python-2.0.2.tar.gz", hash = "sha256:04dfe7fea2b63726cd6f3e79a2d86e709d608d74406638c5da33a01d45a9d7e3"},
-    {file = "kafka_python-2.0.2-py2.py3-none-any.whl", hash = "sha256:2d92418c7cb1c298fa6c7f0fb3519b520d0d7526ac6cb7ae2a4fc65a51a94b6e"},
-]
-
-[package.extras]
-crc32c = ["crc32c"]
 
 [[package]]
 name = "markdown"
