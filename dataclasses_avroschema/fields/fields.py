@@ -9,7 +9,13 @@ import uuid
 
 from typing_extensions import get_args, get_origin
 
-from dataclasses_avroschema import schema_generator, serialization, types, utils, version
+from dataclasses_avroschema import (
+    schema_generator,
+    serialization,
+    types,
+    utils,
+    version,
+)
 from dataclasses_avroschema.exceptions import InvalidMap
 from dataclasses_avroschema.faker import fake
 from dataclasses_avroschema.utils import is_pydantic_model
@@ -136,7 +142,7 @@ class NoneField(ImmutableField):
 @dataclasses.dataclass
 class ContainerField(Field):
     @property
-    def avro_type(self) -> typing.Dict:
+    def avro_type(self) -> typing.Dict:  # type: ignore
         ...  # pragma: no cover
 
     def get_avro_type(self) -> types.JsonDict:
@@ -875,7 +881,8 @@ def field_factory(
             container_klass = LiteralField
         else:
             raise ValueError(
-                f"Invalid Type {native_type} for field {name}. Accepted types are list, tuple, dict, typing.Union, or typing.Literal"
+                f"Invalid Type {native_type} for field {name}. "
+                "Accepted types are list, tuple, dict, typing.Union, or typing.Literal"
             )
 
         # check here
@@ -934,8 +941,10 @@ def field_factory(
                 encoded_type = parent.__config__.json_encoders[native_type]
             except KeyError:
                 raise ValueError(
-                    f"Type {native_type} for field {name} must be listed in the pydantic 'json_encoders' config for {parent}"
-                    " (or for one of the classes in its inheritance tree since pydantic configs are inherited)"
+                    f"Type {native_type} for field {name} must be "
+                    "listed in the pydantic 'json_encoders' config for {parent}"
+                    " (or for one of the classes in its inheritance tree since "
+                    "pydantic configs are inherited)"
                 )
         else:
             encoded_type = parent.model_config["json_encoders"][native_type]

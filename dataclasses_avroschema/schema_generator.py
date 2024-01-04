@@ -69,7 +69,9 @@ class AvroModel:
 
     @classmethod
     def avro_schema_to_python(
-        cls: Type[CT], parent: Optional["AvroModel"] = None, case_type: Optional[str] = None
+        cls: Type[CT],
+        parent: Optional["AvroModel"] = None,
+        case_type: Optional[str] = None,
     ) -> Dict[str, Any]:
         if parent is not None:
             # in this case the current class is a child with a parent
@@ -111,7 +113,10 @@ class AvroModel:
 
     def asdict(self, standardize_factory: Optional[Callable[..., Any]] = None) -> JsonDict:
         if standardize_factory is not None:
-            return dataclasses.asdict(self, dict_factory=lambda x: {key: standardize_factory(value) for key, value in x})  # type: ignore
+            return dataclasses.asdict(
+                self,
+                dict_factory=lambda x: {key: standardize_factory(value) for key, value in x},
+            )  # type: ignore
         return dataclasses.asdict(self)  # type: ignore
 
     def serialize(self, serialization_type: str = AVRO) -> bytes:
@@ -137,7 +142,10 @@ class AvroModel:
 
         schema = cls.avro_schema_to_python()
         payload = serialization.deserialize(
-            data, schema, serialization_type=serialization_type, writer_schema=writer_schema  # type: ignore
+            data,
+            schema,
+            serialization_type=serialization_type,
+            writer_schema=writer_schema,  # type: ignore
         )
         obj = cls.parse_obj(payload)
 
