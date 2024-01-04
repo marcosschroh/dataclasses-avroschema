@@ -33,7 +33,10 @@ class Suit(enum.Enum):
 def test_invalid_type_container_field():
     python_type = typing.Set
     name = "test_field"
-    msg = f"Invalid Type {python_type} for field {name}. Accepted types are list, tuple, dict, typing.Union, or typing.Literal"
+    msg = (
+        f"Invalid Type {python_type} for field {name}. "
+        "Accepted types are list, tuple, dict, typing.Union, or typing.Literal"
+    )
 
     with pytest.raises(ValueError, match=msg):
         AvroField(name, python_type, default=dataclasses.MISSING)

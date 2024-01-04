@@ -37,8 +37,8 @@ class Field:
         self.model_metadata = self.model_metadata or utils.SchemaMetadata()  # type: ignore
 
     @property
-    def avro_type(self) -> typing.Union[str, typing.Dict]:
-        ...  # pragma: no cover
+    def avro_type(self) -> typing.Union[str, typing.Dict]:  # type: ignore
+        ...  #  pragma: no cover
 
     @staticmethod
     def _get_self_reference_type(a_type: typing.Any) -> str:
