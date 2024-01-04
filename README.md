@@ -15,21 +15,21 @@ Generate [avro schemas](https://avro.apache.org/docs/1.8.2/spec.html) from pytho
 
 with `pip` or `poetry`:
 
-`pip install dataclasses-avroschema` or `poetry install`
+`pip install dataclasses-avroschema` or `poetry add dataclasses-avroschema`
 
 ### Extras
 
-- [pydantic](https://docs.pydantic.dev/): `pip install 'dataclasses-avroschema[pydantic]'` or `poetry install --extras "pydantic"`
-- [faust-streaming](https://github.com/faust-streaming/faust): `pip install 'dataclasses-avroschema[faust]'` or `poetry install --extras "faust"`
-- [faker](https://github.com/joke2k/faker): `pip install 'dataclasses-avroschema[faker]'` or `poetry install --extras "faker"`
+- [pydantic](https://docs.pydantic.dev/): `pip install 'dataclasses-avroschema[pydantic]'` or `poetry add dataclasses-avroschema --extras "pydantic"`
+- [faust-streaming](https://github.com/faust-streaming/faust): `pip install 'dataclasses-avroschema[faust]'` or `poetry add dataclasses-avroschema --extras "faust"`
+- [faker](https://github.com/joke2k/faker): `pip install 'dataclasses-avroschema[faker]'` or `poetry add dataclasses-avroschema --extras "faker"`
 
-*Note*: You can install all extra dependencies with `pip install dataclasses-avroschema[faust, pydantic, faker]` or `poetry install --extras "pydantic faust faker"`
+*Note*: You can install all extra dependencies with `pip install dataclasses-avroschema[faust, pydantic, faker]` or `poetry add dataclasses-avroschema --extras "pydantic faust faker"`
 
 ### CLI
 
 To add `avro schemas cli` install [dc-avro](https://marcosschroh.github.io/dc-avro/)
 
-`pip install 'dataclasses-avroschema[cli]'` or `poetry install --with cli`
+`pip install 'dataclasses-avroschema[cli]'` or `poetry add dataclasses-avroschema --with cli`
 
 ## Documentation
 
