@@ -220,7 +220,7 @@ import typing
 import enum
 import dataclasses
 
-from dataclasses_avroschema.avrodantic import AvroBaseModel
+from dataclasses_avroschema.pydantic import AvroBaseModel
 
 from pydantic import Field
 
