@@ -83,6 +83,7 @@ def user_v2_dataclass():
     @dataclasses.dataclass(repr=False)
     class UserV2(AvroModel):
         "A User V2"
+
         name: str
         age: int
 

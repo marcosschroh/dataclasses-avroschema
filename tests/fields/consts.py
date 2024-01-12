@@ -324,7 +324,7 @@ MAPPING_LOGICAL_TYPES = [
 
 # Represent the logical types
 # (python_type, avro_type)
-LOGICAL_TYPES_AND_DEFAULTS = (
+LOGICAL_TYPES = (
     (datetime.date, {"type": field_utils.INT, "logicalType": field_utils.DATE}),
     (datetime.time, {"type": field_utils.INT, "logicalType": field_utils.TIME_MILLIS}),
     (datetime.datetime, {"type": field_utils.LONG, "logicalType": field_utils.TIMESTAMP_MILLIS}),

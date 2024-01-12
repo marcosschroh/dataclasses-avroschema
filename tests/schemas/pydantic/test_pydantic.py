@@ -40,6 +40,20 @@ def test_pydantic_record_schema_primitive_types(user_avro_json):
     assert User.avro_schema() == json.dumps(user_avro_json)
 
 
+def test_exclude_default_from_schema(user_avro_json):
+    class User(AvroBaseModel):
+        name: str = Field(default="marcos", metadata={"exclude_default": True})
+        age: int = Field(default=20, metadata={"exclude_default": True})
+        has_pets: bool = Field(default=True, metadata={"exclude_default": True})
+        money: float = Field(default=100.5, metadata={"exclude_default": True})
+        encoded: bytes = Field(default=b"batman", metadata={"exclude_default": True})
+
+        class Meta:
+            schema_doc = False
+
+    assert User.avro_schema() == json.dumps(user_avro_json)
+
+
 def test_pydantic_record_schema_with_metadata():
     class User(AvroBaseModel):
         name: str = Field(metadata={"doc": "bar"})

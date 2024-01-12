@@ -46,14 +46,25 @@ def test_primitive_types_with_default_value(primitive_type, default):
 @pytest.mark.parametrize("primitive_type,default", consts.PRIMITIVE_TYPES_AND_DEFAULTS)
 def test_primitive_types_with_default_factory_value(primitive_type, default):
     name = "a_field"
-
     field = AvroField(name, primitive_type, default_factory=lambda: default)
-    result = field.to_dict()
 
+    result = field.to_dict()
     if field.avro_type == field_utils.BYTES:
         default = default.decode()
 
     assert {"name": name, "type": field.avro_type, "default": default} == result
+
+
+@pytest.mark.parametrize("primitive_type,default", consts.PRIMITIVE_TYPES_AND_DEFAULTS)
+def test_primitive_types_with_exclude_default_value(primitive_type, default):
+    name = "a_field"
+
+    field = AvroField(name, primitive_type, default=default, metadata={"exclude_default": True})
+    field_with_default_factory = AvroField(
+        name, primitive_type, default_factory=lambda: default, metadata={"exclude_default": True}
+    )
+
+    assert {"name": name, "type": field.avro_type} == field.to_dict() == field_with_default_factory.to_dict()
 
 
 @pytest.mark.parametrize("primitive_type,invalid_default", consts.PRIMITIVE_TYPES_AND_INVALID_DEFAULTS)

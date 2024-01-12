@@ -104,6 +104,7 @@ class DoubleField(ImmutableField):
     avro_type: typing.ClassVar[str] = field_utils.DOUBLE
 
     def __post_init__(self):
+        super().__post_init__()
         self.extra_default_types_allowed = (int,)
 
     def fake(self) -> float:
@@ -228,6 +229,7 @@ class DictField(ContainerField):
     internal_field: typing.Any = None
 
     def __post_init__(self) -> None:
+        super().__post_init__()
         key_type = self.type.__args__[0]
 
         if not issubclass(key_type, str):
@@ -348,6 +350,7 @@ class LiteralField(Field):
         """
         Derives Avro schema type[s] and validation requirements
         """
+        super().__post_init__()
         args = get_args(self.type)
         args_length = len(args)
         if args_length > 1:
@@ -386,6 +389,7 @@ class FixedField(BytesField):
     namespace: typing.Optional[str] = None
 
     def __post_init__(self) -> None:
+        super().__post_init__()
         self.set_fixed()
 
     def set_fixed(self) -> None:
@@ -697,6 +701,7 @@ class DecimalField(Field):
     decimal_places: int = 0  # amount of digits to the right side, in avro is called `scale`
 
     def __post_init__(self) -> None:
+        super().__post_init__()
         self.set_precision_scale()
 
     def set_precision_scale(self) -> None:
