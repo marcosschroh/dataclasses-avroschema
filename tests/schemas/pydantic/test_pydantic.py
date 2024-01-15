@@ -9,11 +9,17 @@ import pytest
 from pydantic import (
     UUID1,
     AmqpDsn,
+    AwareDatetime,
     CockroachDsn,
     EmailStr,
     Field,
+    FutureDate,
+    FutureDatetime,
     KafkaDsn,
     MongoDsn,
+    NaiveDatetime,
+    PastDate,
+    PastDatetime,
     PositiveInt,
     PostgresDsn,
     RedisDsn,
@@ -89,17 +95,26 @@ def test_pydantic_record_schema_complex_types_with_defaults(user_advance_with_de
     assert UserAdvance.avro_schema() == json.dumps(user_advance_with_defaults_avro_json)
 
 
-def test_pydantic_record_schema_logical_types(logical_types_schema):
+def test_pydantic_record_schema_logical_types(logical_types_pydantic_schema):
     a_datetime = datetime.datetime(2019, 10, 12, 17, 57, 42, tzinfo=datetime.timezone.utc)
+    a_past_datetime = datetime.datetime(2019, 10, 12, 17, 57, 42, tzinfo=datetime.timezone.utc)
+    a_future_datetime = datetime.datetime(9999, 12, 31, 23, 59, 59)
+    a_naive_datetime = datetime.datetime(2019, 10, 12, 17, 57, 42)
 
-    class LogicalTypes(AvroBaseModel):
+    class LogicalTypesPydantic(AvroBaseModel):
         "Some logical types"
         birthday: datetime.date = a_datetime.date()
         meeting_time: datetime.time = a_datetime.time()
         release_datetime: datetime.datetime = a_datetime
+        past_date: PastDate = a_past_datetime.date()
+        future_date: FutureDate = a_future_datetime.date()
+        past_datetime: PastDatetime = a_past_datetime
+        future_datetime: FutureDatetime = a_future_datetime
+        aware_datetime: AwareDatetime = a_datetime
+        naive_datetime: NaiveDatetime = a_naive_datetime
         event_uuid: uuid.UUID = "09f00184-7721-4266-a955-21048a5cc235"
 
-    assert LogicalTypes.avro_schema() == json.dumps(logical_types_schema)
+    assert LogicalTypesPydantic.avro_schema() == json.dumps(logical_types_pydantic_schema)
 
 
 def test_pydantic_record_one_to_one_relationship(user_one_address_schema):

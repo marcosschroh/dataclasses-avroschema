@@ -38,4 +38,10 @@ PYDANTIC_LOGICAL_TYPES_FIELDS_CLASSES = {
     pydantic.UUID3: fields.UUID3Field,
     pydantic.UUID4: fields.UUID4Field,
     pydantic.UUID5: fields.UUID5Field,
+    pydantic.PastDate: fields.PastDateField,
+    pydantic.FutureDate: fields.FutureDateField,
+    pydantic.PastDatetime: fields.PastDatetimeField,
+    pydantic.FutureDatetime: fields.FutureDatetimeField,
+    pydantic.AwareDatetime: fields.AwareDatetimeField,
+    pydantic.NaiveDatetime: fields.NaiveDatetimeField,
 }

@@ -26,7 +26,7 @@ avsc_files = [pytest.param(f, id=f.stem, marks=marks.get(f.stem, ())) for f in h
 def test_roundtrip(filename: Path):
     base_class = BaseClassEnum.AVRO_MODEL.value
 
-    if "pydantic_fields.avsc" in str(filename):
+    if "pydantic_fields.avsc" in str(filename) or "logical_types_pydantic" in str(filename):
         base_class = BaseClassEnum.AVRO_DANTIC_MODEL.value
 
     model_generator = ModelGenerator(base_class=base_class)

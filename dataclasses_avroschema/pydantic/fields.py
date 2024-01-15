@@ -1,13 +1,56 @@
 import typing
 import uuid
+from datetime import date, datetime
 from pathlib import Path
 
+from pydantic import AwareDatetime, FutureDatetime, NaiveDatetime, PastDate, PastDatetime
+
+from dataclasses_avroschema import utils
 from dataclasses_avroschema.faker import fake
 from dataclasses_avroschema.fields import fields
-from dataclasses_avroschema.fields.field_utils import DOUBLE, INT, LONG, STRING, UUID
+from dataclasses_avroschema.fields.field_utils import (
+    DATE,
+    DOUBLE,
+    INT,
+    LONG,
+    STRING,
+    TIMESTAMP_MILLIS,
+    UUID,
+)
 
 current_file = str(Path(__file__).absolute())
 current_dir = str(Path().absolute())
+
+
+def _default_to_avro_date(date: date):
+    """
+    Convert to datetime and get the amount of days
+    from the unix epoch, 1 January 1970 (ISO calendar)
+    for a given date
+
+    Arguments:
+        date (datetime.date)
+
+    Returns:
+        int
+    """
+    date_time = datetime.combine(date, datetime.min.time())
+    ts = (date_time - utils.epoch_naive).total_seconds()
+
+    return int(ts / (3600 * 24))
+
+
+def _default_to_avro_datetime(date_time: datetime):
+    """
+    Returns the number of milliseconds from the unix epoch,
+    1 January 1970 00:00:00.000 UTC for a given datetime
+    """
+    if date_time.tzinfo:
+        ts = (date_time - utils.epoch).total_seconds()
+    else:
+        ts = (date_time - utils.epoch_naive).total_seconds()
+
+    return int(ts * 1000)
 
 
 class PydanticField(fields.ImmutableField):
@@ -208,6 +251,114 @@ class UUID5Field(fields.UUIDField):
 
     def fake(self) -> uuid.UUID:
         return uuid.uuid5(namespace=uuid.NAMESPACE_URL, name=fake.pystr())
+
+
+class PastDateField(PydanticField):
+    """Like date, with the constraint that the value must be in the past."""
+
+    @property
+    def avro_type(self) -> typing.Dict:
+        return {
+            "type": INT,
+            "logicalType": DATE,
+            "pydantic-class": "PastDate",
+        }
+
+    def default_to_avro(self, date: PastDate) -> int:
+        return _default_to_avro_date(date)
+
+    def fake(self) -> datetime:
+        return fake.date_object()
+
+
+class FutureDateField(PydanticField):
+    """Like date, with the constraint that the value must be in the future"""
+
+    @property
+    def avro_type(self) -> typing.Dict:
+        return {
+            "type": INT,
+            "logicalType": DATE,
+            "pydantic-class": "FutureDate",
+        }
+
+    def default_to_avro(self, date: PastDate) -> int:
+        return _default_to_avro_date(date)
+
+    def fake(self) -> datetime:
+        return fake.date_object()
+
+
+class PastDatetimeField(PydanticField):
+    """Like datetime, with the constraint that the value must be in the past."""
+
+    @property
+    def avro_type(self) -> typing.Dict:
+        return {
+            "type": LONG,
+            "logicalType": TIMESTAMP_MILLIS,
+            "pydantic-class": "PastDatetime",
+        }
+
+    def default_to_avro(self, date_time: PastDatetime) -> int:
+        return _default_to_avro_datetime(date_time)
+
+    def fake(self) -> datetime:
+        return fake.date_time()
+
+
+class FutureDatetimeField(PydanticField):
+    """Like datetime, with the constraint that the value must be in the future."""
+
+    @property
+    def avro_type(self) -> typing.Dict:
+        return {
+            "type": LONG,
+            "logicalType": TIMESTAMP_MILLIS,
+            "pydantic-class": "FutureDatetime",
+        }
+
+    def default_to_avro(self, date_time: FutureDatetime) -> int:
+        return _default_to_avro_datetime(date_time)
+
+    def fake(self) -> datetime:
+        return fake.date_time()
+
+
+class AwareDatetimeField(PydanticField):
+    """Like datetime, with the constraint that the value must have timezone info."""
+
+    @property
+    def avro_type(self) -> typing.Dict:
+        return {
+            "type": LONG,
+            "logicalType": TIMESTAMP_MILLIS,
+            "pydantic-class": "AwareDatetime",
+        }
+
+    def default_to_avro(self, date_time: AwareDatetime) -> int:
+        return _default_to_avro_datetime(date_time)
+
+    def fake(self) -> datetime:
+        return fake.date_time()
+
+
+class NaiveDatetimeField(PydanticField):
+    """Like datetime, with the constraint that the value must lack timezone info."""
+
+    @property
+    def avro_type(self) -> typing.Dict:
+        return {
+            "type": LONG,
+            "logicalType": TIMESTAMP_MILLIS,
+            "pydantic-class": "NaiveDatetime",
+        }
+
+    def default_to_avro(self, date_time: NaiveDatetime) -> int:
+        return _default_to_avro_datetime(date_time)
+
+    def fake(self) -> datetime:
+        return fake.date_time()
 
 
 class ConstrainedIntField(PydanticField):
