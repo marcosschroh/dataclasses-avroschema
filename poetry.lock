@@ -599,13 +599,13 @@ dev = ["black", "coveralls", "mypy", "pre-commit", "pylint", "pytest (>=5)", "py
 
 [[package]]
 name = "dc-avro"
-version = "0.7.0"
+version = "0.8.0"
 description = ""
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "dc_avro-0.7.0-py3-none-any.whl", hash = "sha256:3eed20385f14e6883ab9bd28dba2d552e0cbb2bf6611cc88ce4894d3465bf3e5"},
-    {file = "dc_avro-0.7.0.tar.gz", hash = "sha256:56c8e44870d4d3a1d1e70750d616db403369e21f9ee474b94ec8e327e71d6f60"},
+    {file = "dc_avro-0.8.0-py3-none-any.whl", hash = "sha256:89d5da8ec55f283443e565c428d9880d8f252d992613247792e8b81ca3f615a9"},
+    {file = "dc_avro-0.8.0.tar.gz", hash = "sha256:8bba7bb5d3ff2e3f3f25d3f02e47b78bee2a851f6cdd4f361b222aa82fd1c427"},
 ]
 
 [package.dependencies]
@@ -613,7 +613,7 @@ aiofiles = ">=22.1.0,<23.0.0"
 dataclasses-avroschema = ">=0,<1"
 deepdiff = ">=6.2.3,<7.0.0"
 httpx = ">=0.23.3,<0.24.0"
-typer = {version = ">=0.7.0,<0.8.0", extras = ["all"]}
+typer = {version = ">=0.9.0,<0.10.0", extras = ["all"]}
 
 [[package]]
 name = "decli"
@@ -694,13 +694,13 @@ test = ["pytest (>=6)"]
 
 [[package]]
 name = "faker"
-version = "22.0.0"
+version = "22.2.0"
 description = "Faker is a Python package that generates fake data for you."
 optional = true
 python-versions = ">=3.8"
 files = [
-    {file = "Faker-22.0.0-py3-none-any.whl", hash = "sha256:9c22c0a734ca01c6e4f2259eab5dab9081905a9d67b27272aea5c9feeb5a3789"},
-    {file = "Faker-22.0.0.tar.gz", hash = "sha256:1d5dc0a75da7bc40741ee4c84d99dc087b97bd086d4222ad06ac4dd2219bcf3f"},
+    {file = "Faker-22.2.0-py3-none-any.whl", hash = "sha256:2c2b7a8e55368defd718226bd5b48ef31b2d082c2900ccb4200987e433be500e"},
+    {file = "Faker-22.2.0.tar.gz", hash = "sha256:fab78f435d27fa7bd109b095eea3504477e4149051c903fd63f11ce252e3d9b7"},
 ]
 
 [package.dependencies]
@@ -973,13 +973,13 @@ testing = ["flufl.flake8", "importlib-resources (>=1.3)", "packaging", "pyfakefs
 
 [[package]]
 name = "inflector"
-version = "3.1.0"
+version = "3.1.1"
 description = "Inflector for Python"
 optional = false
 python-versions = "*"
 files = [
-    {file = "Inflector-3.1.0-py3-none-any.whl", hash = "sha256:74b8f0f2e212c7129c26ad2058f82612a4a97ff45a7945d8eed2ff71b57e9a1b"},
-    {file = "Inflector-3.1.0.tar.gz", hash = "sha256:0a9be5dd1646512f5ab602dcf8723787331594d822d02f382323963787043ee7"},
+    {file = "Inflector-3.1.1-py3-none-any.whl", hash = "sha256:b158010b9c400382a9792dcaa05a02c198b27d17fb52a23262e8226c91b13c97"},
+    {file = "Inflector-3.1.1.tar.gz", hash = "sha256:1835ccc74ea8b5bea93cee9f7802b5cbbaaa937e268a197a937394aa47dee6d5"},
 ]
 
 [[package]]
@@ -2051,26 +2051,27 @@ files = [
 
 [[package]]
 name = "typer"
-version = "0.7.0"
+version = "0.9.0"
 description = "Typer, build great CLIs. Easy to code. Based on Python type hints."
 optional = false
 python-versions = ">=3.6"
 files = [
-    {file = "typer-0.7.0-py3-none-any.whl", hash = "sha256:b5e704f4e48ec263de1c0b3a2387cd405a13767d2f907f44c1a08cbad96f606d"},
-    {file = "typer-0.7.0.tar.gz", hash = "sha256:ff797846578a9f2a201b53442aedeb543319466870fbe1c701eab66dd7681165"},
+    {file = "typer-0.9.0-py3-none-any.whl", hash = "sha256:5d96d986a21493606a358cae4461bd8cdf83cbf33a5aa950ae629ca3b51467ee"},
+    {file = "typer-0.9.0.tar.gz", hash = "sha256:50922fd79aea2f4751a8e0408ff10d2662bd0c8bbfa84755a699f3bada2978b2"},
 ]
 
 [package.dependencies]
 click = ">=7.1.1,<9.0.0"
 colorama = {version = ">=0.4.3,<0.5.0", optional = true, markers = "extra == \"all\""}
-rich = {version = ">=10.11.0,<13.0.0", optional = true, markers = "extra == \"all\""}
+rich = {version = ">=10.11.0,<14.0.0", optional = true, markers = "extra == \"all\""}
 shellingham = {version = ">=1.3.0,<2.0.0", optional = true, markers = "extra == \"all\""}
+typing-extensions = ">=3.7.4.3"
 
 [package.extras]
-all = ["colorama (>=0.4.3,<0.5.0)", "rich (>=10.11.0,<13.0.0)", "shellingham (>=1.3.0,<2.0.0)"]
+all = ["colorama (>=0.4.3,<0.5.0)", "rich (>=10.11.0,<14.0.0)", "shellingham (>=1.3.0,<2.0.0)"]
 dev = ["autoflake (>=1.3.1,<2.0.0)", "flake8 (>=3.8.3,<4.0.0)", "pre-commit (>=2.17.0,<3.0.0)"]
 doc = ["cairosvg (>=2.5.2,<3.0.0)", "mdx-include (>=1.4.1,<2.0.0)", "mkdocs (>=1.1.2,<2.0.0)", "mkdocs-material (>=8.1.4,<9.0.0)", "pillow (>=9.3.0,<10.0.0)"]
-test = ["black (>=22.3.0,<23.0.0)", "coverage (>=6.2,<7.0)", "isort (>=5.0.6,<6.0.0)", "mypy (==0.910)", "pytest (>=4.4.0,<8.0.0)", "pytest-cov (>=2.10.0,<5.0.0)", "pytest-sugar (>=0.9.4,<0.10.0)", "pytest-xdist (>=1.32.0,<4.0.0)", "rich (>=10.11.0,<13.0.0)", "shellingham (>=1.3.0,<2.0.0)"]
+test = ["black (>=22.3.0,<23.0.0)", "coverage (>=6.2,<7.0)", "isort (>=5.0.6,<6.0.0)", "mypy (==0.910)", "pytest (>=4.4.0,<8.0.0)", "pytest-cov (>=2.10.0,<5.0.0)", "pytest-sugar (>=0.9.4,<0.10.0)", "pytest-xdist (>=1.32.0,<4.0.0)", "rich (>=10.11.0,<14.0.0)", "shellingham (>=1.3.0,<2.0.0)"]
 
 [[package]]
 name = "types-pytz"
@@ -2286,4 +2287,4 @@ pydantic = ["pydantic"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "b03ffbfcfdf87a68176fbabb9032cfb1982d1471174ca67552f3557b7f18702b"
+content-hash = "e81303bcbf70b75979f10ac712ea7a21af68c1ab502ec72a5a0f8525cfa522f2"
