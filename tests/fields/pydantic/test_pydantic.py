@@ -78,7 +78,7 @@ def test_pydantic_custom_class_field_with_misconfigured_parent():
         AvroField(field_name, PydanticCustomType, MisconfiguredParent)
 
 
-@pytest.mark.parametrize("python_type,avro_type", consts.PYDANTIC_LOGICAL_TYPES_AND_DEFAULTS)
+@pytest.mark.parametrize("python_type,avro_type", consts.PYDANTIC_LOGICAL_TYPES)
 def test_logical_types(python_type, avro_type):
     name = "a logical type"
     field = AvroField(name, python_type)
@@ -88,7 +88,7 @@ def test_logical_types(python_type, avro_type):
     assert expected == field.to_dict()
 
 
-@pytest.mark.parametrize("python_type,avro_type", consts.PYDANTIC_LOGICAL_TYPES_AND_DEFAULTS)
+@pytest.mark.parametrize("python_type,avro_type", consts.PYDANTIC_LOGICAL_TYPES)
 def test_logical_types_with_null_as_default(python_type, avro_type):
     name = "a logical type"
     field = AvroField(name, python_type, default=None)

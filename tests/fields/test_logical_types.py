@@ -11,7 +11,7 @@ from dataclasses_avroschema.fields import field_utils
 from . import consts
 
 
-@pytest.mark.parametrize("python_type,avro_type", consts.LOGICAL_TYPES_AND_DEFAULTS)
+@pytest.mark.parametrize("python_type,avro_type", consts.LOGICAL_TYPES)
 def test_logical_types(python_type, avro_type):
     name = "a logical type"
     python_type = python_type
@@ -22,7 +22,7 @@ def test_logical_types(python_type, avro_type):
     assert expected == field.to_dict()
 
 
-@pytest.mark.parametrize("python_type,avro_type", consts.LOGICAL_TYPES_AND_DEFAULTS)
+@pytest.mark.parametrize("python_type,avro_type", consts.LOGICAL_TYPES)
 def test_logical_types_with_null_as_default(python_type, avro_type):
     name = "a logical type"
     field = AvroField(name, python_type, default=None)
@@ -34,6 +34,20 @@ def test_logical_types_with_null_as_default(python_type, avro_type):
     }
 
     assert expected == field.to_dict()
+
+
+@pytest.mark.parametrize("python_type,avro_type", consts.LOGICAL_TYPES)
+def test_logical_types_exclude_default(python_type, avro_type):
+    name = "a logical type"
+    python_type = python_type
+    field = AvroField(name, python_type, default=1, metadata={"exclude_default": True})
+    field_with_default_factory = AvroField(
+        name, python_type, default_factory=lambda: 1, metadata={"exclude_default": True}
+    )
+
+    expected = {"name": name, "type": avro_type}
+
+    assert expected == field.to_dict() == field_with_default_factory.to_dict()
 
 
 def test_logical_type_date_with_default():

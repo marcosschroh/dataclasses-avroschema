@@ -299,3 +299,95 @@ User.avro_schema()
 ```
 
 *(This script is complete, it should run "as is")*
+
+## Exclude default value from schema
+
+Sometimes it is useful to exclude `default` values in the final `avro schema`, for example when default values are dynamically generated. In the following example, we have an User with fields `id` and `created_at`, their default are generated when an instance is created. Because the defaults are dynamic then the `avro schema` will change every time that is generated. 
+It is possible to `exclude` the `default` value using the `exclude_default` in the `metadata`. This is applicable when using `default` or `default_factory`
+
+=== "Schema with dynamic defaults"
+    ```python
+    import dataclasses
+    import datetime
+    from uuid import UUID, uuid4
+
+    from dataclasses_avroschema import AvroModel
+
+
+    @dataclasses.dataclass
+    class User(AvroModel):
+        id: UUID = dataclasses.field(default_factory=uuid4)
+        created_at: datetime.datetime = dataclasses.field(
+            default_factory=lambda: datetime.datetime.now(tz=datetime.timezone.utc)
+        )
+
+    User.avro_schema_to_python()
+
+
+    {
+      'type': 'record', 
+      'name': 'User', 
+      'fields': [
+        {
+          'name': 'uuid', 
+          'type': {
+            'type': 'string', 
+            'logicalType': 'uuid'
+          }, 
+          'default': '3f70bc2f-f533-434e-ab9b-982477626419'  # IT WILL CHANGE EVERY TIME!!!
+        }, 
+        {
+          'name': 'created_at', 
+          'type': {
+            'type': 'long', 
+            'logicalType': 'timestamp-millis'
+          }, 
+          'default': 1705154403499  # IT WILL CHANGE EVERY TIME!!!
+        }
+      ]
+    }
+    ```
+=== "Exlude default from schema"
+    ```python
+    import dataclasses
+    import datetime
+    from uuid import UUID, uuid4
+
+    from dataclasses_avroschema import AvroModel
+
+
+    @dataclasses.dataclass
+    class User(AvroModel):
+        id: UUID = dataclasses.field(default_factory=uuid4, metadata={"exclude_default": True})
+        created_at: datetime.datetime = dataclasses.field(
+          default_factory=lambda: datetime.datetime.now(tz=datetime.timezone.utc),
+          metadata={"exclude_default": True}
+      )
+
+    User.avro_schema_to_python()
+
+
+    {
+      'type': 'record', 
+      'name': 'User', 
+      'fields': [
+        {
+          'name': 'uuid', 
+          'type': {
+            'type': 'string', 
+            'logicalType': 'uuid'
+          }
+        }, 
+        {
+          'name': 'created_at', 
+          'type': {
+            'type': 'long', 
+            'logicalType': 'timestamp-millis'
+          }
+        }
+      ]
+    }
+    ```
+
+!!! note
+    This is also applicable for `AvroBaseModel` (pydantic)

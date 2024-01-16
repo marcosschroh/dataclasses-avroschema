@@ -1,6 +1,6 @@
 import json
 import typing
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 import pytest
 from fastavro.validation import ValidationError
@@ -29,6 +29,21 @@ def test_schema_render_from_class_with_field_metadata(
 
 def test_schema_render_from_class(user_dataclass, user_avro_json):
     assert user_dataclass.avro_schema() == json.dumps(user_avro_json)
+
+
+def test_schema_exlude_default(user_avro_json):
+    @dataclass(repr=False)
+    class User(AvroModel):
+        name: str = field(default="marcos", metadata={"exclude_default": True})
+        age: int = field(default=20, metadata={"exclude_default": True})
+        has_pets: bool = field(default=True, metadata={"exclude_default": True})
+        money: float = field(default=100.5, metadata={"exclude_default": True})
+        encoded: bytes = field(default=b"batman", metadata={"exclude_default": True})
+
+        class Meta:
+            schema_doc = False
+
+    assert User.avro_schema() == json.dumps(user_avro_json)
 
 
 def test_schema_render_from_instance(user_dataclass, user_avro_json):

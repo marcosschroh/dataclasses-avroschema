@@ -29,6 +29,7 @@ def test_schema_with_unions_type(union_type_schema: JsonDict) -> None:
     @dataclasses.dataclass
     class Bus(AvroModel):
         "A Bus"
+
         engine_name: str
 
         class Meta:
@@ -37,6 +38,7 @@ def test_schema_with_unions_type(union_type_schema: JsonDict) -> None:
     @dataclasses.dataclass
     class Car(AvroModel):
         "A Car"
+
         engine_name: str
 
         class Meta:
@@ -53,6 +55,7 @@ def test_schema_with_unions_type(union_type_schema: JsonDict) -> None:
     @dataclasses.dataclass
     class UnionSchema(AvroModel):
         "Some Unions"
+
         first_union: typing.Union[str, int]
         logical_union: typing.Union[datetime.datetime, datetime.date, uuid.uuid4]
         lake_trip: typing.Union[Bus, Car]
@@ -79,6 +82,7 @@ def test_schema_with_unions_defaults(default_union_schema: JsonDict) -> None:
     @dataclasses.dataclass
     class User(AvroModel):
         "An User"
+
         name: str
         age: int
         user_type: typing.Optional[UserType] = None
@@ -112,6 +116,7 @@ def test_schema_with_new_unions_type_syntax(union_type_schema: JsonDict) -> None
     @dataclasses.dataclass
     class Bus(AvroModel):
         "A Bus"
+
         engine_name: str
 
         class Meta:
@@ -120,6 +125,7 @@ def test_schema_with_new_unions_type_syntax(union_type_schema: JsonDict) -> None
     @dataclasses.dataclass
     class Car(AvroModel):
         "A Car"
+
         engine_name: str
 
         class Meta:
@@ -136,6 +142,7 @@ def test_schema_with_new_unions_type_syntax(union_type_schema: JsonDict) -> None
     @dataclasses.dataclass
     class UnionSchema(AvroModel):
         "Some Unions"
+
         first_union: str | int
         logical_union: datetime.datetime | datetime.date | uuid.UUID
         lake_trip: Bus | Car
@@ -163,6 +170,7 @@ def test_schema_with_new_unions_defaults_syntax(default_union_schema: JsonDict) 
     @dataclasses.dataclass
     class User(AvroModel):
         "An User"
+
         name: str
         age: int
         user_type: UserType | None = None
@@ -193,6 +201,7 @@ def test_schema_typing_optional_behavior(typing_optional_schema: JsonDict) -> No
     @dataclasses.dataclass
     class User(AvroModel):
         "An User"
+
         name: str
         age: int
         school_grade: typing.Optional[int]

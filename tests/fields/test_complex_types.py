@@ -92,13 +92,31 @@ def test_sequence_type_with_default(sequence, primitive_type, python_type_str):
         values = default = field.fake()
 
     field = AvroField(name, python_type, default=values)
-
-    # field = AvroField(name, python_type, default=values, default_factory=lambda: values)
-
     expected = {
         "name": name,
         "type": {"type": "array", "name": name, "items": python_type_str},
         "default": list(default),
+    }
+
+    assert expected == field.to_dict()
+
+
+@pytest.mark.parametrize("sequence, primitive_type,python_type_str", consts.SEQUENCES_AND_TYPES)
+def test_sequence_type_with_exclude_default(sequence, primitive_type, python_type_str):
+    name = "an_array_field"
+    python_type = sequence[primitive_type]
+    field = AvroField(name, python_type, default=dataclasses.MISSING)
+    field.avro_type
+
+    if python_type_str == field_utils.BYTES:
+        values = [b"hola", b"hi"]
+    else:
+        values = field.fake()
+
+    field = AvroField(name, python_type, default=values, metadata={"exclude_default": True})
+    expected = {
+        "name": name,
+        "type": {"type": "array", "name": name, "items": python_type_str},
     }
 
     assert expected == field.to_dict()
@@ -159,7 +177,7 @@ def test_sequence_with_logical_type_with_default(sequence, primitive_type, pytho
     name = "an_array_field"
     python_type = sequence[primitive_type]
     values = [value]
-    field = AvroField(name, python_type, default=values, default_factory=lambda: values)
+    field = AvroField(name, python_type, default_factory=lambda: values)
     field.avro_type
 
     expected = {
