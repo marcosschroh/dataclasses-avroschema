@@ -192,10 +192,38 @@ import pydantic
 class ConstrainedValues(AvroBaseModel):
     constrained_int: pydantic.conint(gt=10, lt=20)
 
-
-
 """
 
     model_generator = ModelGenerator(base_class=BaseClassEnum.AVRO_DANTIC_MODEL.value)
     result = model_generator.render(schema=schema_with_pydantic_constrained_fields)
+    assert result.strip() == expected_result.strip()
+
+
+def test_schema_with_pydantic_logical_fields(schema_with_pydantic_logical_fields):
+    expected_result = """
+from dataclasses_avroschema.pydantic import AvroBaseModel
+import datetime
+import pydantic
+import uuid
+
+
+
+class LogicalTypesPydantic(AvroBaseModel):
+    \"""
+    Some logical types
+    \"""
+    birthday: datetime.date = datetime.date(2019, 10, 12)
+    meeting_time: datetime.time = datetime.time(17, 57, 42)
+    release_datetime: datetime.datetime = datetime.datetime(2019, 10, 12, 17, 57, 42, tzinfo=datetime.timezone.utc)
+    past_date: pydantic.PastDate = datetime.date(2019, 10, 12)
+    future_date: pydantic.FutureDate = datetime.date(9999, 12, 31)
+    past_datetime: pydantic.PastDatetime = datetime.datetime(2019, 10, 12, 17, 57, 42, tzinfo=datetime.timezone.utc)
+    future_datetime: pydantic.FutureDatetime = datetime.datetime(9999, 12, 31, 23, 59, 59, tzinfo=datetime.timezone.utc)
+    aware_datetime: pydantic.AwareDatetime = datetime.datetime(2019, 10, 12, 17, 57, 42, tzinfo=datetime.timezone.utc)
+    naive_datetime: pydantic.NaiveDatetime = datetime.datetime(2019, 10, 12, 17, 57, 42, tzinfo=datetime.timezone.utc)
+    event_uuid: uuid.UUID = "09f00184-7721-4266-a955-21048a5cc235"
+
+"""
+    model_generator = ModelGenerator(base_class=BaseClassEnum.AVRO_DANTIC_MODEL.value)
+    result = model_generator.render(schema=schema_with_pydantic_logical_fields)
     assert result.strip() == expected_result.strip()
