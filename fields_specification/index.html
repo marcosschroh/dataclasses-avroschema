@@ -405,6 +405,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#exclude-default-value-from-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      Exclude default value from schema
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -821,6 +830,15 @@
   <a href="#adding-custom-field-level-attributes" class="md-nav__link">
     <span class="md-ellipsis">
       Adding Custom Field-level Attributes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exclude-default-value-from-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      Exclude default value from schema
     </span>
   </a>
   
@@ -1350,6 +1368,100 @@ In order to add custom fields, you can use the <code>field</code> descriptor of 
 <span class="p">}</span>
 </code></pre></div>
 <p><em>(This script is complete, it should run "as is")</em></p>
+<h2 id="exclude-default-value-from-schema">Exclude default value from schema</h2>
+<p>Sometimes it is useful to exclude <code>default</code> values in the final <code>avro schema</code>, for example when default values are dynamically generated. In the following example, we have an User with fields <code>id</code> and <code>created_at</code>, their default are generated when an instance is created. Because the defaults are dynamic then the <code>avro schema</code> will change every time that is generated. 
+It is possible to <code>exclude</code> the <code>default</code> value using the <code>exclude_default</code> in the <code>metadata</code>. This is applicable when using <code>default</code> or <code>default_factory</code></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Schema with dynamic defaults</label><label for="__tabbed_1_2">Exlude default from schema</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">dataclasses</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">uuid4</span>
+
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
+
+
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">uuid4</span><span class="p">)</span>
+    <span class="n">created_at</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">tz</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
+    <span class="p">)</span>
+
+<span class="n">User</span><span class="o">.</span><span class="n">avro_schema_to_python</span><span class="p">()</span>
+
+
+<span class="p">{</span>
+  <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;record&#39;</span><span class="p">,</span> 
+  <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;User&#39;</span><span class="p">,</span> 
+  <span class="s1">&#39;fields&#39;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;uuid&#39;</span><span class="p">,</span> 
+      <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;string&#39;</span><span class="p">,</span> 
+        <span class="s1">&#39;logicalType&#39;</span><span class="p">:</span> <span class="s1">&#39;uuid&#39;</span>
+      <span class="p">},</span> 
+      <span class="s1">&#39;default&#39;</span><span class="p">:</span> <span class="s1">&#39;3f70bc2f-f533-434e-ab9b-982477626419&#39;</span>  <span class="c1"># IT WILL CHANGE EVERY TIME!!!</span>
+    <span class="p">},</span> 
+    <span class="p">{</span>
+      <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;created_at&#39;</span><span class="p">,</span> 
+      <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;long&#39;</span><span class="p">,</span> 
+        <span class="s1">&#39;logicalType&#39;</span><span class="p">:</span> <span class="s1">&#39;timestamp-millis&#39;</span>
+      <span class="p">},</span> 
+      <span class="s1">&#39;default&#39;</span><span class="p">:</span> <span class="mi">1705154403499</span>  <span class="c1"># IT WILL CHANGE EVERY TIME!!!</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">dataclasses</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">uuid4</span>
+
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
+
+
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">uuid4</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;exclude_default&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+    <span class="n">created_at</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">field</span><span class="p">(</span>
+      <span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">tz</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">),</span>
+      <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;exclude_default&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+  <span class="p">)</span>
+
+<span class="n">User</span><span class="o">.</span><span class="n">avro_schema_to_python</span><span class="p">()</span>
+
+
+<span class="p">{</span>
+  <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;record&#39;</span><span class="p">,</span> 
+  <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;User&#39;</span><span class="p">,</span> 
+  <span class="s1">&#39;fields&#39;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;uuid&#39;</span><span class="p">,</span> 
+      <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;string&#39;</span><span class="p">,</span> 
+        <span class="s1">&#39;logicalType&#39;</span><span class="p">:</span> <span class="s1">&#39;uuid&#39;</span>
+      <span class="p">}</span>
+    <span class="p">},</span> 
+    <span class="p">{</span>
+      <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;created_at&#39;</span><span class="p">,</span> 
+      <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;long&#39;</span><span class="p">,</span> 
+        <span class="s1">&#39;logicalType&#39;</span><span class="p">:</span> <span class="s1">&#39;timestamp-millis&#39;</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+</div>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is also applicable for <code>AvroBaseModel</code> (pydantic)</p>
+</div>
 
 
 
