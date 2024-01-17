@@ -3,7 +3,14 @@ import math
 from typing import Any, Optional
 
 import pytest
-from pydantic import ConfigDict, Field, GetCoreSchemaHandler, ValidationError, conint, field_serializer
+from pydantic import (
+    ConfigDict,
+    Field,
+    GetCoreSchemaHandler,
+    ValidationError,
+    conint,
+    field_serializer,
+)
 from pydantic_core import core_schema
 
 from dataclasses_avroschema import types
@@ -151,6 +158,31 @@ def test_primitive_types_with_defaults():
     assert user.deserialize(avro_json, serialization_type="avro-json") == user
     assert user.to_dict() == data
     assert user.to_json() == json.dumps(data_json)
+
+
+def test_exclude_default_from_schema():
+    class User(AvroBaseModel):
+        name: str = Field(default="marcos", metadata={"exclude_default": True})
+        age: int = Field(default=20, metadata={"exclude_default": True})
+
+    assert User.avro_schema_to_python() == {
+        "type": "record",
+        "name": "User",
+        "fields": [{"name": "name", "type": "string"}, {"name": "age", "type": "long"}],
+    }
+
+    user = User()
+    data = {"name": "marcos", "age": 20}
+    avro_binary = user.serialize()
+    avro_json = user.serialize(serialization_type="avro-json")
+
+    assert user.deserialize(avro_binary, create_instance=False) == data
+    assert user.deserialize(avro_json, serialization_type="avro-json", create_instance=False) == data
+    assert user.deserialize(avro_binary) == user
+    assert user.deserialize(avro_json, serialization_type="avro-json") == user
+
+    assert user.to_dict() == data
+    assert user.to_json() == json.dumps(data)
 
 
 def test_primitive_types_with_nulls():

@@ -29,12 +29,14 @@ class Field:
     parent: typing.Any
     default: typing.Any
     default_factory: typing.Any = dataclasses.MISSING
-    metadata: typing.Mapping = dataclasses.field(default_factory=dict)
+    exclude_default: bool = False
+    metadata: typing.Dict = dataclasses.field(default_factory=dict)
     model_metadata: typing.Optional[utils.SchemaMetadata] = None
     extra_default_types_allowed: typing.Tuple = dataclasses.field(default_factory=tuple)
 
     def __post_init__(self) -> None:
         self.model_metadata = self.model_metadata or utils.SchemaMetadata()  # type: ignore
+        self.exclude_default = self.metadata.pop("exclude_default", False)  # type: ignore
 
     @property
     def avro_type(self) -> typing.Union[str, typing.Dict]:  # type: ignore
@@ -75,8 +77,8 @@ class Field:
                 * dict, he OrderedDict will contains the key values inside type
         """
         template = OrderedDict(self.get_metadata() + [("name", self.name), ("type", self.get_avro_type())])
-
         default = self.get_default_value()
+
         if default is not dataclasses.MISSING:
             if default is not None:
                 self.validate_default(default)
@@ -87,6 +89,9 @@ class Field:
         return template
 
     def get_default_value(self) -> typing.Any:
+        if self.exclude_default:
+            return dataclasses.MISSING
+
         is_default_factory_callable = callable(self.default_factory)
 
         if is_default_factory_callable:
