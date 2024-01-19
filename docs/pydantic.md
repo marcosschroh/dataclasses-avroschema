@@ -119,6 +119,13 @@ using the key `pydantic-class`.
 | string       | uuid         | pydantic.UUID3 |
 | string       | uuid         | pydantic.UUID4 |
 | string       | uuid         | pydantic.UUID5 |
+| int          | date         | pydantic.PastDate |
+| int          | date         | pydantic.FutureDate |
+| long         | timestamp-millis | pydantic.PastDatetime |
+| long         | timestamp-millis | pydantic.FutureDatetime |
+| long         | timestamp-millis | pydantic.AwareDatetime |
+| long         | timestamp-millis | pydantic.NaiveDatetime |
+
 
 ```python
 import pydantic
