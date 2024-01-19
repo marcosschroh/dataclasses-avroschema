@@ -509,6 +509,59 @@ def schema_with_pydantic_constrained_fields() -> JsonDict:
 
 
 @pytest.fixture
+def schema_with_pydantic_logical_fields() -> JsonDict:
+    return {
+        "type": "record",
+        "name": "LogicalTypesPydantic",
+        "fields": [
+            {"name": "birthday", "type": {"type": "int", "logicalType": "date"}, "default": 18181},
+            {"name": "meeting_time", "type": {"type": "int", "logicalType": "time-millis"}, "default": 64662000},
+            {
+                "name": "release_datetime",
+                "type": {"type": "long", "logicalType": "timestamp-millis"},
+                "default": 1570903062000,
+            },
+            {
+                "name": "past_date",
+                "type": {"type": "int", "logicalType": "date", "pydantic-class": "PastDate"},
+                "default": 18181,
+            },
+            {
+                "name": "future_date",
+                "type": {"type": "int", "logicalType": "date", "pydantic-class": "FutureDate"},
+                "default": 2932896,
+            },
+            {
+                "name": "past_datetime",
+                "type": {"type": "long", "logicalType": "timestamp-millis", "pydantic-class": "PastDatetime"},
+                "default": 1570903062000,
+            },
+            {
+                "name": "future_datetime",
+                "type": {"type": "long", "logicalType": "timestamp-millis", "pydantic-class": "FutureDatetime"},
+                "default": 253402300799000,
+            },
+            {
+                "name": "aware_datetime",
+                "type": {"type": "long", "logicalType": "timestamp-millis", "pydantic-class": "AwareDatetime"},
+                "default": 1570903062000,
+            },
+            {
+                "name": "naive_datetime",
+                "type": {"type": "long", "logicalType": "timestamp-millis", "pydantic-class": "NaiveDatetime"},
+                "default": 1570903062000,
+            },
+            {
+                "name": "event_uuid",
+                "type": {"type": "string", "logicalType": "uuid"},
+                "default": "09f00184-7721-4266-a955-21048a5cc235",
+            },
+        ],
+        "doc": "Some logical types",
+    }
+
+
+@pytest.fixture
 def with_fields_with_metadata() -> JsonDict:
     return {
         "type": "record",

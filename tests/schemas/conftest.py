@@ -113,6 +113,11 @@ def logical_types_micro_schemas():
 
 
 @pytest.fixture
+def logical_types_pydantic_schema():
+    return load_json("logical_types_pydantic.avsc")
+
+
+@pytest.fixture
 def union_type_schema():
     return load_json("union_type.avsc")
 

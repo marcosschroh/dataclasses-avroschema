@@ -1,10 +1,19 @@
 import typing
 import uuid
+from datetime import date, datetime
 from pathlib import Path
 
 from dataclasses_avroschema.faker import fake
 from dataclasses_avroschema.fields import fields
-from dataclasses_avroschema.fields.field_utils import DOUBLE, INT, LONG, STRING, UUID
+from dataclasses_avroschema.fields.field_utils import (
+    DATE,
+    DOUBLE,
+    INT,
+    LONG,
+    STRING,
+    TIMESTAMP_MILLIS,
+    UUID,
+)
 
 current_file = str(Path(__file__).absolute())
 current_dir = str(Path().absolute())
@@ -208,6 +217,108 @@ class UUID5Field(fields.UUIDField):
 
     def fake(self) -> uuid.UUID:
         return uuid.uuid5(namespace=uuid.NAMESPACE_URL, name=fake.pystr())
+
+
+class PastDateField(fields.DateField):
+    """Like date, with the constraint that the value must be in the past."""
+
+    @property
+    def avro_type(self) -> typing.Dict:
+        return {
+            "type": INT,
+            "logicalType": DATE,
+            "pydantic-class": "PastDate",
+        }
+
+    def validate_default(self, default) -> bool:
+        msg = f"Invalid default type. Default should be {date}"
+        assert isinstance(default, date), msg
+        return True
+
+
+class FutureDateField(fields.DateField):
+    """Like date, with the constraint that the value must be in the future"""
+
+    @property
+    def avro_type(self) -> typing.Dict:
+        return {
+            "type": INT,
+            "logicalType": DATE,
+            "pydantic-class": "FutureDate",
+        }
+
+    def validate_default(self, default) -> bool:
+        msg = f"Invalid default type. Default should be {date}"
+        assert isinstance(default, date), msg
+        return True
+
+
+class PastDatetimeField(fields.DatetimeField):
+    """Like datetime, with the constraint that the value must be in the past."""
+
+    @property
+    def avro_type(self) -> typing.Dict:
+        return {
+            "type": LONG,
+            "logicalType": TIMESTAMP_MILLIS,
+            "pydantic-class": "PastDatetime",
+        }
+
+    def validate_default(self, default) -> bool:
+        msg = f"Invalid default type. Default should be {datetime}"
+        assert isinstance(default, datetime), msg
+        return True
+
+
+class FutureDatetimeField(fields.DatetimeField):
+    """Like datetime, with the constraint that the value must be in the future."""
+
+    @property
+    def avro_type(self) -> typing.Dict:
+        return {
+            "type": LONG,
+            "logicalType": TIMESTAMP_MILLIS,
+            "pydantic-class": "FutureDatetime",
+        }
+
+    def validate_default(self, default) -> bool:
+        msg = f"Invalid default type. Default should be {datetime}"
+        assert isinstance(default, datetime), msg
+        return True
+
+
+class AwareDatetimeField(fields.DatetimeField):
+    """Like datetime, with the constraint that the value must have timezone info."""
+
+    @property
+    def avro_type(self) -> typing.Dict:
+        return {
+            "type": LONG,
+            "logicalType": TIMESTAMP_MILLIS,
+            "pydantic-class": "AwareDatetime",
+        }
+
+    def validate_default(self, default) -> bool:
+        msg = f"Invalid default type. Default should be {datetime}"
+        assert isinstance(default, datetime), msg
+        return True
+
+
+class NaiveDatetimeField(fields.DatetimeField):
+    """Like datetime, with the constraint that the value must lack timezone info."""
+
+    @property
+    def avro_type(self) -> typing.Dict:
+        return {
+            "type": LONG,
+            "logicalType": TIMESTAMP_MILLIS,
+            "pydantic-class": "NaiveDatetime",
+        }
+
+    def validate_default(self, default) -> bool:
+        msg = f"Invalid default type. Default should be {datetime}"
+        assert isinstance(default, datetime), msg
+        return True
 
 
 class ConstrainedIntField(PydanticField):
