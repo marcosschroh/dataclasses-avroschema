@@ -4,7 +4,7 @@ The following list represent the avro logical types mapped to python types:
 
 | Avro Type | Logical Type |Python Type |
 |-----------|--------------|-------------|
-| int       |  date        | datetime.date
+| int       |  date        | datetime.date |
 | int       |  time-millis | datetime.time     |
 | long      |  time-micros | types.TimeMicro |
 | long      |  timestamp-millis | datetime.datetime |
