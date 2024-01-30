@@ -34,7 +34,7 @@ pydantic = {version = "^2.4.2", optional = true, extras = ["email"]}
 mypy = "^1"
 ruff = "^0"
 black = "^23"
-pytest = "^7"
+pytest = ">=7,<9"
 pytest-cov = "^4"
 types-pytz = "^2023"
 
