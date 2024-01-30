@@ -115,7 +115,7 @@ class Field:
         return json.dumps(self.render(), indent=2)
 
     def to_dict(self) -> dict:
-        return json.loads(self.to_json())
+        return dict(self.render())
 
     @abc.abstractmethod
     def get_avro_type(self) -> typing.Any:

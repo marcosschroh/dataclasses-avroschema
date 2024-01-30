@@ -338,12 +338,6 @@ class UnionField(Field):
 
 @dataclasses.dataclass
 class LiteralField(Field):
-    """
-    Supports typing.Literal. Note that typing.Literal[v1, v2, v3] is
-    Python's shorthand for typing.Union[typing.Literal[v1], typing.Literal[v2], typing.Literal[v3]]
-    and will be treated as such.
-    """
-
     avro_field: typing.Optional[Field] = None
 
     def __post_init__(self) -> None:
@@ -352,13 +346,9 @@ class LiteralField(Field):
         """
         super().__post_init__()
         args = get_args(self.type)
-        args_length = len(args)
-        if args_length > 1:
-            # This field is of the form typing.Literal[v1, v2, v3], which is a union of Literals
-            native_type = typing.Union[tuple(typing.Literal[a] for a in args)]  # type: ignore
-        else:
-            native_type = type(args[0])
-
+        # always convert to an Union. If there is Literal has 1 argument then
+        # the Union will handle it properly.
+        native_type = typing.Union[tuple(type(a) for a in args)]  # type: ignore
         self.avro_field = AvroField(
             name=self.name,
             native_type=native_type,
@@ -368,7 +358,7 @@ class LiteralField(Field):
             model_metadata=self.model_metadata,
         )
 
-    def get_avro_type(self) -> typing.Any:
+    def get_avro_type(self) -> types.JsonDict:
         return self.avro_field.get_avro_type()  # type: ignore
 
     def default_to_avro(self, default: typing.Any):

@@ -5,6 +5,7 @@ import re
 import typing
 
 import pytest
+from typing_extensions import get_args
 
 from dataclasses_avroschema import AvroField, AvroModel, exceptions, types
 from dataclasses_avroschema.fields import field_utils
@@ -816,32 +817,54 @@ def test_literal_field_with_multiple_parameters():
 
 
 @pytest.mark.parametrize(
-    "default, avro_type, avro_default",
+    "python_type, avro_type, expected_default",
     [
-        (4, field_utils.LONG, 4),
-        ("4", field_utils.STRING, "4"),
-        (True, field_utils.BOOLEAN, True),
-        (b"four", field_utils.BYTES, "four"),
+        (typing.Literal[4], field_utils.LONG, 4),
+        (typing.Literal["4"], field_utils.STRING, "4"),
+        (typing.Literal[True], field_utils.BOOLEAN, True),
+        (typing.Literal[b"four"], field_utils.BYTES, "four"),
         (
-            Suit.DIAMONDS,
+            typing.Literal[Suit.DIAMONDS],
             {"type": field_utils.ENUM, "name": "Suit", "symbols": [s.value for s in Suit]},
             Suit.DIAMONDS.value,
         ),
-        (None, field_utils.NULL, None),
+        (typing.Literal[None], field_utils.NULL, None),
     ],
 )
-def test_literal_field_with_single_parameter_with_default(default, avro_type, avro_default):
+def test_literal_field_with_single_parameter_with_default(python_type, avro_type, expected_default):
     name = "test_field"
-    python_type = typing.Literal[default]  # type: ignore
     parent = AvroModel()
     parent._user_defined_types.clear()
-
-    field = AvroField(name, python_type, parent, default=default)
+    default = get_args(python_type)[0]
+    field = AvroField(name, python_type, parent=parent, default=default)
 
     assert field.to_dict() == {
         "name": name,
         "type": avro_type,
-        "default": avro_default,
+        "default": expected_default,
+    }
+
+    # Reset the class variable
+    AvroModel._user_defined_types.clear()
+
+
+@pytest.mark.parametrize(
+    "python_type, avro_type, default",
+    [
+        (typing.Optional[typing.Literal[4]], [field_utils.LONG, field_utils.NULL], 4),
+        (typing.Optional[typing.Literal["4"]], [field_utils.NULL, field_utils.STRING], None),
+    ],
+)
+def test_optional_literal_field(python_type, avro_type, default):
+    name = "test_field"
+    parent = AvroModel()
+    parent._user_defined_types.clear()
+    field = AvroField(name, python_type, parent=parent, default=default)
+
+    assert field.to_dict() == {
+        "name": name,
+        "type": avro_type,
+        "default": default,
     }
 
     # Reset the class variable
@@ -858,7 +881,6 @@ def test_literal_field_with_multiple_parameters_with_default():
     parent = AvroModel()
     parent._user_defined_types.clear()
     default = 2
-
     field = AvroField(name, python_type, parent, default=default)
 
     assert field.to_dict() == {
