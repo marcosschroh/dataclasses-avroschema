@@ -61,7 +61,7 @@ def deserialize(
 
     input_stream.flush()
 
-    return payload
+    return payload  # type: ignore
 
 
 def datetime_to_str(value: datetime.datetime) -> str:
