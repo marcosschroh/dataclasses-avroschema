@@ -36,7 +36,7 @@ ruff = "^0"
 black = "^23"
 pytest = ">=7,<9"
 pytest-cov = "^4"
-types-pytz = "^2023"
+types-pytz = ">=2023,<2025"
 
 [tool.poetry.group.docs.dependencies]
 mkdocs = "^1"
