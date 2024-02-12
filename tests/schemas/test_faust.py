@@ -68,6 +68,7 @@ def test_faust_record_schema_logical_types(logical_types_schema):
 
     class LogicalTypes(AvroRecord):
         "Some logical types"
+
         birthday: datetime.date = a_datetime.date()
         meeting_time: datetime.time = a_datetime.time()
         release_datetime: datetime.datetime = a_datetime
@@ -83,11 +84,13 @@ def test_faust_record_one_to_one_relationship(user_one_address_schema):
 
     class Address(AvroRecord):
         "An Address"
+
         street: str
         street_number: int
 
     class User(AvroRecord):
         "An User with Address"
+
         name: str
         age: int
         address: Address
@@ -95,18 +98,22 @@ def test_faust_record_one_to_one_relationship(user_one_address_schema):
     assert User.avro_schema() == json.dumps(user_one_address_schema)
 
 
-def test_faust_record_one_to_one_relationship_with_none_default(user_one_address_schema_with_none_default):
+def test_faust_record_one_to_one_relationship_with_none_default(
+    user_one_address_schema_with_none_default,
+):
     """
     Test schema relationship one-to-one
     """
 
     class Address(AvroRecord):
         "An Address"
+
         street: str
         street_number: int
 
     class User(AvroRecord):
         "An User with Address"
+
         name: str
         age: int
         address: Address = None
@@ -121,11 +128,13 @@ def test_faust_record_one_to_many_relationship(user_many_address_schema):
 
     class Address(AvroRecord):
         "An Address"
+
         street: str
         street_number: int
 
     class User(AvroRecord):
         "User with multiple Address"
+
         name: str
         age: int
         addresses: typing.List[Address]
@@ -140,11 +149,13 @@ def test_faust_record_one_to_many_map_relationship(user_many_address_map_schema)
 
     class Address(AvroRecord):
         "An Address"
+
         street: str
         street_number: int
 
     class User(AvroRecord):
         "User with multiple Address"
+
         name: str
         age: int
         addresses: typing.Dict[str, Address]
@@ -152,13 +163,16 @@ def test_faust_record_one_to_many_map_relationship(user_many_address_map_schema)
     assert User.avro_schema() == json.dumps(user_many_address_map_schema)
 
 
-def test_faust_record_self_one_to_one_relationship(user_self_reference_one_to_one_schema):
+def test_faust_record_self_one_to_one_relationship(
+    user_self_reference_one_to_one_schema,
+):
     """
     Test self relationship one-to-one
     """
 
     class User(AvroRecord):
         "User with self reference as friend"
+
         name: str
         age: int
         friend: typing.Type["User"]
@@ -176,6 +190,7 @@ def test_faust_record_self_one_to_many_relationship(
 
     class User(AvroRecord):
         "User with self reference as friends"
+
         name: str
         age: int
         friends: typing.List[typing.Type["User"]]
@@ -193,6 +208,7 @@ def test_faust_record_self_one_to_many_map_relationship(
 
     class User(AvroRecord):
         "User with self reference as friends"
+
         name: str
         age: int
         friends: typing.Dict[str, typing.Type["User"]]
@@ -205,6 +221,7 @@ def test_faust_record_self_one_to_many_map_relationship(
 def test_faust_record_schema_with_unions_type(union_type_schema):
     class Bus(AvroRecord):
         "A Bus"
+
         engine_name: str
 
         class Meta:
@@ -212,6 +229,7 @@ def test_faust_record_schema_with_unions_type(union_type_schema):
 
     class Car(AvroRecord):
         "A Car"
+
         engine_name: str
 
         class Meta:
@@ -226,6 +244,7 @@ def test_faust_record_schema_with_unions_type(union_type_schema):
 
     class UnionSchema(AvroRecord):
         "Some Unions"
+
         first_union: typing.Union[str, int]
         logical_union: typing.Union[datetime.datetime, datetime.date, uuid.uuid4]
         lake_trip: typing.Union[Bus, Car]
@@ -250,6 +269,7 @@ def test_field_metadata() -> None:
 def test_exclude_field_from_schema(user_extra_avro_attributes):
     class User(AvroRecord):
         "An User"
+
         name: str
         age: int
         last_name: fields.StringField = fields.StringField(required=False, defualt="Bond")

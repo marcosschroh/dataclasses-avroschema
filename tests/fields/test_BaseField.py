@@ -58,7 +58,10 @@ def test_render_with_metadata():
         "doc": "Official Breed Name",
     }
 
-    assert field.get_metadata() == [("encoding", "some_exotic_encoding"), ("doc", "Official Breed Name")]
+    assert field.get_metadata() == [
+        ("encoding", "some_exotic_encoding"),
+        ("doc", "Official Breed Name"),
+    ]
     assert expected == field.render()
 
 

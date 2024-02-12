@@ -58,7 +58,9 @@ class Address(AvroModel):
     assert result.strip() == expected_result.strip()
 
 
-def test_model_generator_primitive_types_with_default_null(schema_with_nulls: types.JsonDict) -> None:
+def test_model_generator_primitive_types_with_default_null(
+    schema_with_nulls: types.JsonDict,
+) -> None:
     expected_result = """
 from dataclasses_avroschema import AvroModel
 from dataclasses_avroschema import types
@@ -82,7 +84,9 @@ class User(AvroModel):
     assert result.strip() == expected_result.strip()
 
 
-def test_model_generator_primitive_types_with_unions(schema_with_unions: types.JsonDict) -> None:
+def test_model_generator_primitive_types_with_unions(
+    schema_with_unions: types.JsonDict,
+) -> None:
     expected_result = """
 from dataclasses_avroschema import AvroModel
 from dataclasses_avroschema import types
@@ -209,7 +213,9 @@ class User(AvroModel):
     assert result.strip() == expected_result.strip()
 
 
-def test_schema_with_enum_types_case_sensitivity(schema_with_enum_types_case_sensitivity: types.JsonDict) -> None:
+def test_schema_with_enum_types_case_sensitivity(
+    schema_with_enum_types_case_sensitivity: types.JsonDict,
+) -> None:
     expected_result = """
 from dataclasses_avroschema import AvroModel
 import dataclasses
@@ -231,7 +237,9 @@ class User(AvroModel):
     assert result.strip() == expected_result.strip()
 
 
-def test_schema_one_to_one_relationship(schema_one_to_one_relationship: types.JsonDict) -> None:
+def test_schema_one_to_one_relationship(
+    schema_one_to_one_relationship: types.JsonDict,
+) -> None:
     expected_result = """
 from dataclasses_avroschema import AvroModel
 import dataclasses
@@ -261,7 +269,9 @@ class User(AvroModel):
     assert result.strip() == expected_result.strip()
 
 
-def test_schema_one_to_many_array_relationship(schema_one_to_many_array_relationship: types.JsonDict) -> None:
+def test_schema_one_to_many_array_relationship(
+    schema_one_to_many_array_relationship: types.JsonDict,
+) -> None:
     expected_result = """
 from dataclasses_avroschema import AvroModel
 import dataclasses
@@ -290,7 +300,9 @@ class User(AvroModel):
     assert result.strip() == expected_result.strip()
 
 
-def test_schema_one_to_many_map_relationship(schema_one_to_many_map_relationship: types.JsonDict) -> None:
+def test_schema_one_to_many_map_relationship(
+    schema_one_to_many_map_relationship: types.JsonDict,
+) -> None:
     expected_result = """
 from dataclasses_avroschema import AvroModel
 import dataclasses
@@ -319,7 +331,9 @@ class User(AvroModel):
     assert result.strip() == expected_result.strip()
 
 
-def test_schema_one_to_self_relationship(schema_one_to_self_relationship: types.JsonDict) -> None:
+def test_schema_one_to_self_relationship(
+    schema_one_to_self_relationship: types.JsonDict,
+) -> None:
     expected_result = """
 from dataclasses_avroschema import AvroModel
 import dataclasses
@@ -476,7 +490,9 @@ class Address(AvroModel):
     assert result.strip() == expected_result.strip()
 
 
-def test_model_generator_with_fields_with_metadata(with_fields_with_metadata: types.JsonDict) -> None:
+def test_model_generator_with_fields_with_metadata(
+    with_fields_with_metadata: types.JsonDict,
+) -> None:
     expected_result = """
 from dataclasses_avroschema import AvroModel
 import dataclasses

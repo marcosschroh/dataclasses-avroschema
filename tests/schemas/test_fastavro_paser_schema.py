@@ -117,11 +117,13 @@ def test_one_to_one_schema():
 
     class Address(AvroModel):
         "An Address"
+
         street: str
         street_number: int
 
     class User(AvroModel):
         "An User with Address"
+
         name: str
         age: int
         address: Address
@@ -155,10 +157,12 @@ def test_one_to_one_repeated_schema():
 def test_repeated_schema_without_namespace():
     class Bus(AvroModel):
         "A Bus"
+
         engine_name: str
 
     class UnionSchema(AvroModel):
         "Some Unions"
+
         bus_one: Bus
         bus_two: Bus
 
@@ -235,11 +239,13 @@ def test_one_to_many_schema():
 
     class Address(AvroModel):
         "An Address"
+
         street: str
         street_number: int
 
     class User(AvroModel):
         "User with multiple Address"
+
         name: str
         age: int
         addresses: typing.List[Address]
@@ -254,11 +260,13 @@ def test_one_to_many_with_map_schema():
 
     class Address(AvroModel):
         "An Address"
+
         street: str
         street_number: int
 
     class User(AvroModel):
         "User with multiple Address"
+
         name: str
         age: int
         addresses: typing.Dict[str, Address]
@@ -273,6 +281,7 @@ def test_one_to_one_self_relationship():
 
     class User(AvroModel):
         "User with self reference as friend"
+
         name: str
         age: int
         friend: typing.Type["User"]
@@ -287,6 +296,7 @@ def test_one_to_many_self_reference_schema():
 
     class User(AvroModel):
         "User with self reference as friends"
+
         name: str
         age: int
         friends: typing.List[typing.Type["User"]]
@@ -301,6 +311,7 @@ def test_one_to_many_self_reference_map_schema():
 
     class User(AvroModel):
         "User with self reference as friends"
+
         name: str
         age: int
         friends: typing.Dict[str, typing.Type["User"]]
@@ -316,6 +327,7 @@ def test_logical_types_schema():
 
     class LogicalTypes(AvroModel):
         "Some logical types"
+
         birthday: datetime.date = a_datetime.date()
         meeting_time: datetime.time = a_datetime.time()
         release_datetime: datetime.datetime = a_datetime
@@ -332,6 +344,7 @@ def test_logical_micro_types_schema():
 
     class LogicalTypesMicro(AvroModel):
         "Some logical types"
+
         time_micros: TimeMicro
         datetime_micros: DateTimeMicro
         meeting_time: datetime.time = a_datetime.time()
@@ -346,6 +359,7 @@ def test_logical_micro_types_schema():
 def test_schema_with_union_types():
     class UnionSchema(AvroModel):
         "Some Unions"
+
         first_union: typing.Union[str, int]
         logical_union: typing.Union[datetime.datetime, datetime.date, uuid.uuid4]
         optional_union: typing.Optional[str]
@@ -358,14 +372,17 @@ def test_schema_with_union_types():
 def test_schema_with_union_record_types():
     class Bus(AvroModel):
         "A Bus"
+
         engine_name: str
 
     class Car(AvroModel):
         "A Car"
+
         engine_name: str
 
     class UnionSchema(AvroModel):
         "Some Unions"
+
         mountain_trip: typing.Union[Bus, Car] = dataclasses.field(default_factory=lambda: Bus(engine_name="honda"))
 
     assert parse_schema(UnionSchema.avro_schema_to_python())
@@ -374,6 +391,7 @@ def test_schema_with_union_record_types():
 def test_schema_array_with_union_types():
     class ArrayUnionSchema(AvroModel):
         "Array Some Unions"
+
         first_union: typing.List[typing.Union[str, int]]
         second_union: typing.List[typing.Union[str, int]] = dataclasses.field(default_factory=lambda: ["test"])
 
@@ -400,6 +418,7 @@ def test_namespaces():
 def test_use_of_same_type_in_nested_list():
     class Address(AvroModel):
         "An Address"
+
         street: str
         street_number: int
 
@@ -411,6 +430,7 @@ def test_use_of_same_type_in_nested_list():
 
     class User(AvroModel):
         "An User with Address and previous addresses"
+
         name: str
         age: int
         address: Address

@@ -21,18 +21,54 @@ from dataclasses_avroschema import AvroModel, case, types
 
 
 CASE_TO_DATA = [
-    (case.CAMELCASE, '{"type": "record", "name": "Event", "fields": [{"name": "eventId", "type": "string"}]}'),
-    (case.CAPITALCASE, '{"type": "record", "name": "Event", "fields": [{"name": "Event_id", "type": "string"}]}'),
-    (case.CONSTCASE, '{"type": "record", "name": "Event", "fields": [{"name": "EVENT_ID", "type": "string"}]}'),
-    (case.LOWERCASE, '{"type": "record", "name": "Event", "fields": [{"name": "event_id", "type": "string"}]}'),
-    (case.PASCALCASE, '{"type": "record", "name": "Event", "fields": [{"name": "EventId", "type": "string"}]}'),
-    (case.PATHCASE, '{"type": "record", "name": "Event", "fields": [{"name": "event/id", "type": "string"}]}'),
-    (case.SNAKECASE, '{"type": "record", "name": "Event", "fields": [{"name": "event_id", "type": "string"}]}'),
-    (case.SPINALCASE, '{"type": "record", "name": "Event", "fields": [{"name": "event-id", "type": "string"}]}'),
-    (case.UPPERSPINALCASE, '{"type": "record", "name": "Event", "fields": [{"name": "EVENT-ID", "type": "string"}]}'),
-    (case.TRIMCASE, '{"type": "record", "name": "Event", "fields": [{"name": "event_id", "type": "string"}]}'),
-    (case.UPPERCASE, '{"type": "record", "name": "Event", "fields": [{"name": "EVENT_ID", "type": "string"}]}'),
-    (case.ALPHANUMCASE, '{"type": "record", "name": "Event", "fields": [{"name": "eventid", "type": "string"}]}'),
+    (
+        case.CAMELCASE,
+        '{"type": "record", "name": "Event", "fields": [{"name": "eventId", "type": "string"}]}',
+    ),
+    (
+        case.CAPITALCASE,
+        '{"type": "record", "name": "Event", "fields": [{"name": "Event_id", "type": "string"}]}',
+    ),
+    (
+        case.CONSTCASE,
+        '{"type": "record", "name": "Event", "fields": [{"name": "EVENT_ID", "type": "string"}]}',
+    ),
+    (
+        case.LOWERCASE,
+        '{"type": "record", "name": "Event", "fields": [{"name": "event_id", "type": "string"}]}',
+    ),
+    (
+        case.PASCALCASE,
+        '{"type": "record", "name": "Event", "fields": [{"name": "EventId", "type": "string"}]}',
+    ),
+    (
+        case.PATHCASE,
+        '{"type": "record", "name": "Event", "fields": [{"name": "event/id", "type": "string"}]}',
+    ),
+    (
+        case.SNAKECASE,
+        '{"type": "record", "name": "Event", "fields": [{"name": "event_id", "type": "string"}]}',
+    ),
+    (
+        case.SPINALCASE,
+        '{"type": "record", "name": "Event", "fields": [{"name": "event-id", "type": "string"}]}',
+    ),
+    (
+        case.UPPERSPINALCASE,
+        '{"type": "record", "name": "Event", "fields": [{"name": "EVENT-ID", "type": "string"}]}',
+    ),
+    (
+        case.TRIMCASE,
+        '{"type": "record", "name": "Event", "fields": [{"name": "event_id", "type": "string"}]}',
+    ),
+    (
+        case.UPPERCASE,
+        '{"type": "record", "name": "Event", "fields": [{"name": "EVENT_ID", "type": "string"}]}',
+    ),
+    (
+        case.ALPHANUMCASE,
+        '{"type": "record", "name": "Event", "fields": [{"name": "eventid", "type": "string"}]}',
+    ),
 ]
 
 

@@ -8,7 +8,8 @@ from dataclasses_avroschema import AvroModel
 from dataclasses_avroschema.pydantic import AvroBaseModel
 
 parametrize_base_model = pytest.mark.parametrize(
-    "model_class, decorator", [(AvroModel, dataclasses.dataclass), (AvroBaseModel, lambda f: f)]
+    "model_class, decorator",
+    [(AvroModel, dataclasses.dataclass), (AvroBaseModel, lambda f: f)],
 )
 
 
@@ -21,12 +22,14 @@ def test_one_to_one_relationship(model_class: typing.Type[AvroModel], decorator:
     @decorator
     class Address(model_class):
         "An Address"
+
         street: str
         street_number: int
 
     @decorator
     class User(model_class):
         "An User with Address"
+
         name: str
         age: int
         address: Address
@@ -48,7 +51,11 @@ def test_one_to_one_relationship(model_class: typing.Type[AvroModel], decorator:
 
     avro_binary = b"\x08john(\x08test\x14"
     avro_json_binary = b'{"name": "john", "age": 20, "address": {"street": "test", "street_number": 10}}'
-    expected = {"name": "john", "age": 20, "address": {"street": "test", "street_number": 10}}
+    expected = {
+        "name": "john",
+        "age": 20,
+        "address": {"street": "test", "street_number": 10},
+    }
 
     assert user.serialize() == avro_binary
     assert user.serialize(serialization_type="avro-json") == avro_json_binary
@@ -71,6 +78,7 @@ def test_one_to_many_relationship(model_class: typing.Type[AvroModel], decorator
     @decorator
     class Address(model_class):
         "An Address"
+
         street: str
         street_number: int
         created_at: datetime.datetime
@@ -78,6 +86,7 @@ def test_one_to_many_relationship(model_class: typing.Type[AvroModel], decorator
     @decorator
     class User(model_class):
         "User with multiple Address"
+
         name: str
         age: int
         addresses: typing.List[Address]
@@ -137,12 +146,14 @@ def test_one_to_many_map_relationship(model_class: typing.Type[AvroModel], decor
     @decorator
     class Address(model_class):
         "An Address"
+
         street: str
         street_number: int
 
     @decorator
     class User(model_class):
         "User with multiple Address"
+
         name: str
         age: int
         addresses: typing.Dict[str, Address]
@@ -166,7 +177,11 @@ def test_one_to_many_map_relationship(model_class: typing.Type[AvroModel], decor
     avro_json_binary = (
         b'{"name": "john", "age": 20, "addresses": {"main_residence": {"street": "test", "street_number": 10}}}'
     )
-    expected = {"name": "john", "age": 20, "addresses": {"main_residence": {"street": "test", "street_number": 10}}}
+    expected = {
+        "name": "john",
+        "age": 20,
+        "addresses": {"main_residence": {"street": "test", "street_number": 10}},
+    }
 
     assert user.serialize() == avro_binary
     assert user.serialize(serialization_type="avro-json") == avro_json_binary

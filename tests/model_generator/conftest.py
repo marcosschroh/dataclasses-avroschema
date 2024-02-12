@@ -54,7 +54,11 @@ def schema_primitive_types_as_defined_types() -> Dict:
             {"name": "name", "type": ["null", {"type": "string"}]},
             {"name": "weight", "type": {"type": "int", "unit": "kg"}},
             {"name": "pet_age", "type": {"type": "int"}, "default": 1},
-            {"name": "expirience", "type": {"type": "int", "unit": "years"}, "default": 10},
+            {
+                "name": "expirience",
+                "type": {"type": "int", "unit": "years"},
+                "default": 10,
+            },
         ],
     }
 
@@ -109,12 +113,25 @@ def schema_with_array_types() -> Dict:
         "type": "record",
         "name": "User",
         "fields": [
-            {"name": "pets", "type": {"type": "array", "items": "string", "name": "pet"}},
-            {"name": "total", "type": {"type": "array", "items": ["int", "float"], "name": "total"}},
-            {"name": "cars", "type": {"type": "array", "items": "string", "name": "car"}, "default": []},
+            {
+                "name": "pets",
+                "type": {"type": "array", "items": "string", "name": "pet"},
+            },
+            {
+                "name": "total",
+                "type": {"type": "array", "items": ["int", "float"], "name": "total"},
+            },
+            {
+                "name": "cars",
+                "type": {"type": "array", "items": "string", "name": "car"},
+                "default": [],
+            },
             {
                 "name": "bank_accounts",
-                "type": ["null", {"type": "array", "items": "string", "name": "bank_account"}],
+                "type": [
+                    "null",
+                    {"type": "array", "items": "string", "name": "bank_account"},
+                ],
                 "default": None,
             },
             {
@@ -132,7 +149,10 @@ def schema_with_map_types() -> Dict:
         "type": "record",
         "name": "User",
         "fields": [
-            {"name": "accounts_money", "type": {"type": "map", "values": "float", "name": "accounts_money"}},
+            {
+                "name": "accounts_money",
+                "type": {"type": "map", "values": "float", "name": "accounts_money"},
+            },
             {
                 "name": "cars",
                 "type": {"type": "map", "values": ["string", "bytes"], "name": "car"},
@@ -149,7 +169,10 @@ def schema_with_map_types() -> Dict:
             },
             {
                 "name": "bank_accounts",
-                "type": ["null", {"type": "map", "values": "string", "name": "bank_account"}],
+                "type": [
+                    "null",
+                    {"type": "map", "values": "string", "name": "bank_account"},
+                ],
                 "default": None,
             },
         ],
@@ -164,7 +187,13 @@ def schema_with_fixed_types() -> Dict:
         "fields": [
             {
                 "name": "md5",
-                "type": {"type": "fixed", "name": "md5", "size": 16, "namespace": "md5", "aliases": ["md5", "hash"]},
+                "type": {
+                    "type": "fixed",
+                    "name": "md5",
+                    "size": 16,
+                    "namespace": "md5",
+                    "aliases": ["md5", "hash"],
+                },
             },
         ],
     }
@@ -247,7 +276,10 @@ def schema_one_to_one_relationship() -> JsonDict:
                 "type": {
                     "type": "record",
                     "name": "Address",
-                    "fields": [{"name": "street", "type": "string"}, {"name": "street_number", "type": "long"}],
+                    "fields": [
+                        {"name": "street", "type": "string"},
+                        {"name": "street_number", "type": "long"},
+                    ],
                     "doc": "An Address",
                 },
             },
@@ -283,7 +315,10 @@ def schema_one_to_many_array_relationship() -> JsonDict:
                     "items": {
                         "type": "record",
                         "name": "Address",
-                        "fields": [{"name": "street", "type": "string"}, {"name": "street_number", "type": "long"}],
+                        "fields": [
+                            {"name": "street", "type": "string"},
+                            {"name": "street_number", "type": "long"},
+                        ],
                         "doc": "An Address",
                     },
                     "name": "address",
@@ -291,11 +326,17 @@ def schema_one_to_many_array_relationship() -> JsonDict:
             },
             {
                 "name": "crazy_union",
-                "type": ["string", {"type": "array", "items": "Address", "name": "optional_address"}],
+                "type": [
+                    "string",
+                    {"type": "array", "items": "Address", "name": "optional_address"},
+                ],
             },
             {
                 "name": "optional_addresses",
-                "type": ["null", {"type": "array", "items": "Address", "name": "optional_address"}],
+                "type": [
+                    "null",
+                    {"type": "array", "items": "Address", "name": "optional_address"},
+                ],
                 "default": None,
             },
         ],
@@ -317,7 +358,10 @@ def schema_one_to_many_map_relationship() -> JsonDict:
                     "values": {
                         "type": "record",
                         "name": "Address",
-                        "fields": [{"name": "street", "type": "string"}, {"name": "street_number", "type": "long"}],
+                        "fields": [
+                            {"name": "street", "type": "string"},
+                            {"name": "street_number", "type": "long"},
+                        ],
                         "doc": "An Address",
                     },
                     "name": "address",
@@ -325,11 +369,17 @@ def schema_one_to_many_map_relationship() -> JsonDict:
             },
             {
                 "name": "crazy_union",
-                "type": ["string", {"type": "map", "values": "Address", "name": "optional_address"}],
+                "type": [
+                    "string",
+                    {"type": "map", "values": "Address", "name": "optional_address"},
+                ],
             },
             {
                 "name": "optional_addresses",
-                "type": ["null", {"type": "map", "values": "Address", "name": "optional_address"}],
+                "type": [
+                    "null",
+                    {"type": "map", "values": "Address", "name": "optional_address"},
+                ],
                 "default": None,
             },
         ],
@@ -345,8 +395,16 @@ def schema_one_to_self_relationship() -> JsonDict:
             {"name": "name", "type": "string"},
             {"name": "age", "type": "long"},
             {"name": "friend", "type": ["null", "User"], "default": None},
-            {"name": "relatives", "type": {"type": "array", "items": "User", "name": "relative"}, "default": []},
-            {"name": "teammates", "type": {"type": "map", "values": "User", "name": "teammate"}, "default": {}},
+            {
+                "name": "relatives",
+                "type": {"type": "array", "items": "User", "name": "relative"},
+                "default": [],
+            },
+            {
+                "name": "teammates",
+                "type": {"type": "map", "values": "User", "name": "teammate"},
+                "default": {},
+            },
         ],
     }
 
@@ -356,7 +414,17 @@ def schema_with_decimal_field() -> JsonDict:
     return {
         "type": "record",
         "name": "demo",
-        "fields": [{"name": "foo", "type": {"type": "bytes", "logicalType": "decimal", "precision": 10, "scale": 3}}],
+        "fields": [
+            {
+                "name": "foo",
+                "type": {
+                    "type": "bytes",
+                    "logicalType": "decimal",
+                    "precision": 10,
+                    "scale": 3,
+                },
+            }
+        ],
     }
 
 
@@ -367,14 +435,44 @@ def schema_with_logical_types() -> JsonDict:
         "name": "LogicalTypes",
         "fields": [
             {"name": "birthday", "type": {"type": "int", "logicalType": "date"}},
-            {"name": "birthday_time", "type": {"type": "int", "logicalType": "time-millis"}},
-            {"name": "birthday_datetime", "type": {"type": "long", "logicalType": "timestamp-millis"}},
+            {
+                "name": "birthday_time",
+                "type": {"type": "int", "logicalType": "time-millis"},
+            },
+            {
+                "name": "birthday_datetime",
+                "type": {"type": "long", "logicalType": "timestamp-millis"},
+            },
             {"name": "uuid_1", "type": {"type": "string", "logicalType": "uuid"}},
-            {"name": "money", "type": {"type": "bytes", "logicalType": "decimal", "precision": 3, "scale": 2}},
-            {"name": "meeting_date", "type": ["null", {"type": "int", "logicalType": "date"}], "default": None},
-            {"name": "release_date", "type": {"type": "int", "logicalType": "date"}, "default": 18181},
-            {"name": "meeting_time", "type": ["null", {"type": "int", "logicalType": "time-millis"}], "default": None},
-            {"name": "release_time", "type": {"type": "int", "logicalType": "time-millis"}, "default": 64662000},
+            {
+                "name": "money",
+                "type": {
+                    "type": "bytes",
+                    "logicalType": "decimal",
+                    "precision": 3,
+                    "scale": 2,
+                },
+            },
+            {
+                "name": "meeting_date",
+                "type": ["null", {"type": "int", "logicalType": "date"}],
+                "default": None,
+            },
+            {
+                "name": "release_date",
+                "type": {"type": "int", "logicalType": "date"},
+                "default": 18181,
+            },
+            {
+                "name": "meeting_time",
+                "type": ["null", {"type": "int", "logicalType": "time-millis"}],
+                "default": None,
+            },
+            {
+                "name": "release_time",
+                "type": {"type": "int", "logicalType": "time-millis"},
+                "default": 64662000,
+            },
             {
                 "name": "release_time_micro",
                 "type": {"type": "long", "logicalType": "time-micros"},
@@ -395,7 +493,11 @@ def schema_with_logical_types() -> JsonDict:
                 "type": {"type": "long", "logicalType": "timestamp-micros"},
                 "default": 1570903062000000,
             },
-            {"name": "uuid_2", "type": ["null", {"type": "string", "logicalType": "uuid"}], "default": None},
+            {
+                "name": "uuid_2",
+                "type": ["null", {"type": "string", "logicalType": "uuid"}],
+                "default": None,
+            },
             {
                 "name": "event_uuid",
                 "type": {"type": "string", "logicalType": "uuid"},
@@ -403,7 +505,12 @@ def schema_with_logical_types() -> JsonDict:
             },
             {
                 "name": "explicit_with_default",
-                "type": {"type": "bytes", "logicalType": "decimal", "precision": 3, "scale": 2},
+                "type": {
+                    "type": "bytes",
+                    "logicalType": "decimal",
+                    "precision": 3,
+                    "scale": 2,
+                },
                 "default": "\\u013a",
             },
         ],
@@ -421,10 +528,26 @@ def schema_with_logical_types_field_order() -> JsonDict:
         "name": "LogicalTypes",
         "fields": [
             {"name": "uuid_1", "type": {"type": "string", "logicalType": "uuid"}},
-            {"name": "meeting_date", "type": ["null", {"type": "int", "logicalType": "date"}], "default": None},
-            {"name": "release_date", "type": {"type": "int", "logicalType": "date"}, "default": 18181},
-            {"name": "meeting_time", "type": ["null", {"type": "int", "logicalType": "time-millis"}], "default": None},
-            {"name": "release_time", "type": {"type": "int", "logicalType": "time-millis"}, "default": 64662000},
+            {
+                "name": "meeting_date",
+                "type": ["null", {"type": "int", "logicalType": "date"}],
+                "default": None,
+            },
+            {
+                "name": "release_date",
+                "type": {"type": "int", "logicalType": "date"},
+                "default": 18181,
+            },
+            {
+                "name": "meeting_time",
+                "type": ["null", {"type": "int", "logicalType": "time-millis"}],
+                "default": None,
+            },
+            {
+                "name": "release_time",
+                "type": {"type": "int", "logicalType": "time-millis"},
+                "default": 64662000,
+            },
             {
                 "name": "release_time_micro",
                 "type": {"type": "long", "logicalType": "time-micros"},
@@ -436,8 +559,14 @@ def schema_with_logical_types_field_order() -> JsonDict:
                 "default": None,
             },
             {"name": "birthday", "type": {"type": "int", "logicalType": "date"}},
-            {"name": "birthday_time", "type": {"type": "int", "logicalType": "time-millis"}},
-            {"name": "birthday_datetime", "type": {"type": "long", "logicalType": "timestamp-millis"}},
+            {
+                "name": "birthday_time",
+                "type": {"type": "int", "logicalType": "time-millis"},
+            },
+            {
+                "name": "birthday_datetime",
+                "type": {"type": "long", "logicalType": "timestamp-millis"},
+            },
             {
                 "name": "release_datetime",
                 "type": {"type": "long", "logicalType": "timestamp-millis"},
@@ -448,7 +577,11 @@ def schema_with_logical_types_field_order() -> JsonDict:
                 "type": {"type": "long", "logicalType": "timestamp-micros"},
                 "default": 1570903062000000,
             },
-            {"name": "uuid_2", "type": ["null", {"type": "string", "logicalType": "uuid"}], "default": None},
+            {
+                "name": "uuid_2",
+                "type": ["null", {"type": "string", "logicalType": "uuid"}],
+                "default": None,
+            },
             {
                 "name": "event_uuid",
                 "type": {"type": "string", "logicalType": "uuid"},
@@ -456,10 +589,23 @@ def schema_with_logical_types_field_order() -> JsonDict:
             },
             {
                 "name": "explicit_with_default",
-                "type": {"type": "bytes", "logicalType": "decimal", "precision": 3, "scale": 2},
+                "type": {
+                    "type": "bytes",
+                    "logicalType": "decimal",
+                    "precision": 3,
+                    "scale": 2,
+                },
                 "default": "\\u013a",
             },
-            {"name": "money", "type": {"type": "bytes", "logicalType": "decimal", "precision": 3, "scale": 2}},
+            {
+                "name": "money",
+                "type": {
+                    "type": "bytes",
+                    "logicalType": "decimal",
+                    "precision": 3,
+                    "scale": 2,
+                },
+            },
         ],
     }
 
@@ -472,13 +618,24 @@ def schema_with_pydantic_fields() -> JsonDict:
         "fields": [
             {"pydantic-class": "EmailStr", "name": "email", "type": "string"},
             {"pydantic-class": "PostgresDsn", "name": "postgres_dsn", "type": "string"},
-            {"pydantic-class": "CockroachDsn", "name": "cockroach_dsn", "type": "string"},
+            {
+                "pydantic-class": "CockroachDsn",
+                "name": "cockroach_dsn",
+                "type": "string",
+            },
             {"pydantic-class": "AmqpDsn", "name": "amqp_dsn", "type": "string"},
             {"pydantic-class": "RedisDsn", "name": "redis_dsn", "type": "string"},
             {"pydantic-class": "MongoDsn", "name": "mongo_dsn", "type": "string"},
             {"pydantic-class": "KafkaDsn", "name": "kafka_url", "type": "string"},
             {"pydantic-class": "PositiveInt", "name": "total_nodes", "type": "long"},
-            {"name": "event_id", "type": {"type": "string", "logicalType": "uuid", "pydantic-class": "UUID3"}},
+            {
+                "name": "event_id",
+                "type": {
+                    "type": "string",
+                    "logicalType": "uuid",
+                    "pydantic-class": "UUID3",
+                },
+            },
             {
                 "name": "landing_zone_nodes",
                 "type": {
@@ -487,7 +644,11 @@ def schema_with_pydantic_fields() -> JsonDict:
                     "name": "landing_zone_node",
                 },
             },
-            {"name": "total_nodes_in_aws", "type": {"type": "long", "pydantic-class": "PositiveInt"}, "default": 10},
+            {
+                "name": "total_nodes_in_aws",
+                "type": {"type": "long", "pydantic-class": "PositiveInt"},
+                "default": 10,
+            },
             {
                 "name": "optional_kafka_url",
                 "type": ["null", {"type": "string", "pydantic-class": "KafkaDsn"}],
@@ -503,7 +664,11 @@ def schema_with_pydantic_constrained_fields() -> JsonDict:
         "type": "record",
         "name": "ConstrainedValues",
         "fields": [
-            {"pydantic-class": "conint(gt=10, lt=20)", "name": "constrained_int", "type": "int"},
+            {
+                "pydantic-class": "conint(gt=10, lt=20)",
+                "name": "constrained_int",
+                "type": "int",
+            },
         ],
     }
 
@@ -514,8 +679,16 @@ def schema_with_pydantic_logical_fields() -> JsonDict:
         "type": "record",
         "name": "LogicalTypesPydantic",
         "fields": [
-            {"name": "birthday", "type": {"type": "int", "logicalType": "date"}, "default": 18181},
-            {"name": "meeting_time", "type": {"type": "int", "logicalType": "time-millis"}, "default": 64662000},
+            {
+                "name": "birthday",
+                "type": {"type": "int", "logicalType": "date"},
+                "default": 18181,
+            },
+            {
+                "name": "meeting_time",
+                "type": {"type": "int", "logicalType": "time-millis"},
+                "default": 64662000,
+            },
             {
                 "name": "release_datetime",
                 "type": {"type": "long", "logicalType": "timestamp-millis"},
@@ -523,32 +696,56 @@ def schema_with_pydantic_logical_fields() -> JsonDict:
             },
             {
                 "name": "past_date",
-                "type": {"type": "int", "logicalType": "date", "pydantic-class": "PastDate"},
+                "type": {
+                    "type": "int",
+                    "logicalType": "date",
+                    "pydantic-class": "PastDate",
+                },
                 "default": 18181,
             },
             {
                 "name": "future_date",
-                "type": {"type": "int", "logicalType": "date", "pydantic-class": "FutureDate"},
+                "type": {
+                    "type": "int",
+                    "logicalType": "date",
+                    "pydantic-class": "FutureDate",
+                },
                 "default": 2932896,
             },
             {
                 "name": "past_datetime",
-                "type": {"type": "long", "logicalType": "timestamp-millis", "pydantic-class": "PastDatetime"},
+                "type": {
+                    "type": "long",
+                    "logicalType": "timestamp-millis",
+                    "pydantic-class": "PastDatetime",
+                },
                 "default": 1570903062000,
             },
             {
                 "name": "future_datetime",
-                "type": {"type": "long", "logicalType": "timestamp-millis", "pydantic-class": "FutureDatetime"},
+                "type": {
+                    "type": "long",
+                    "logicalType": "timestamp-millis",
+                    "pydantic-class": "FutureDatetime",
+                },
                 "default": 253402300799000,
             },
             {
                 "name": "aware_datetime",
-                "type": {"type": "long", "logicalType": "timestamp-millis", "pydantic-class": "AwareDatetime"},
+                "type": {
+                    "type": "long",
+                    "logicalType": "timestamp-millis",
+                    "pydantic-class": "AwareDatetime",
+                },
                 "default": 1570903062000,
             },
             {
                 "name": "naive_datetime",
-                "type": {"type": "long", "logicalType": "timestamp-millis", "pydantic-class": "NaiveDatetime"},
+                "type": {
+                    "type": "long",
+                    "logicalType": "timestamp-millis",
+                    "pydantic-class": "NaiveDatetime",
+                },
                 "default": 1570903062000,
             },
             {
@@ -567,7 +764,16 @@ def with_fields_with_metadata() -> JsonDict:
         "type": "record",
         "name": "Message",
         "fields": [
-            {"name": "fieldwithdefault", "type": "string", "default": "some default value"},
-            {"name": "someotherfield", "type": "long", "aliases": ["oldname"], "doc": "test"},
+            {
+                "name": "fieldwithdefault",
+                "type": "string",
+                "default": "some default value",
+            },
+            {
+                "name": "someotherfield",
+                "type": "long",
+                "aliases": ["oldname"],
+                "doc": "test",
+            },
         ],
     }

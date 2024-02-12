@@ -24,7 +24,12 @@ from . import field_utils
 from .base import Field
 
 if version.PY_VERSION >= (3, 9):  # pragma: no cover
-    GenericAlias = (typing.GenericAlias, typing._GenericAlias, typing._SpecialGenericAlias, typing._UnionGenericAlias)  # type: ignore # noqa: E501
+    GenericAlias = (
+        typing.GenericAlias,  # type: ignore
+        typing._GenericAlias,  # type: ignore
+        typing._SpecialGenericAlias,  # type: ignore
+        typing._UnionGenericAlias,  # type: ignore
+    )  # noqa: E501
 else:
     GenericAlias = typing._GenericAlias  # type: ignore  # pragma: no cover
 
@@ -61,7 +66,9 @@ __ALL__ = [
 
 
 class ImmutableField(Field):
-    def get_avro_type(self) -> typing.Union[str, typing.List, typing.Dict[str, typing.Any]]:
+    def get_avro_type(
+        self,
+    ) -> typing.Union[str, typing.List, typing.Dict[str, typing.Any]]:
         if self.default is None:
             return [field_utils.NULL, self.avro_type]
         return self.avro_type
@@ -198,7 +205,10 @@ class BaseListField(ContainerField):
             )
         else:
             self.internal_field = AvroField(
-                self.name, items_type, model_metadata=self.model_metadata, parent=self.parent
+                self.name,
+                items_type,
+                model_metadata=self.model_metadata,
+                parent=self.parent,
             )
 
         self.items_type = self.internal_field.get_avro_type()
@@ -240,7 +250,9 @@ class DictField(ContainerField):
         self.generate_values_type()
         return {"type": field_utils.MAP, "values": self.values_type}
 
-    def get_default_value(self) -> typing.Union[types.JsonDict, dataclasses._MISSING_TYPE]:
+    def get_default_value(
+        self,
+    ) -> typing.Union[types.JsonDict, dataclasses._MISSING_TYPE]:
         default = super().get_default_value()
 
         if default is not dataclasses.MISSING:
@@ -265,7 +277,12 @@ class DictField(ContainerField):
         so we take the second argument to determine the value type
         """
         values_type = self.type.__args__[1]
-        self.internal_field = AvroField(self.name, values_type, model_metadata=self.model_metadata, parent=self.parent)
+        self.internal_field = AvroField(
+            self.name,
+            values_type,
+            model_metadata=self.model_metadata,
+            parent=self.parent,
+        )
         self.values_type = self.internal_field.get_avro_type()
 
     def fake(self) -> typing.Dict[str, typing.Any]:
@@ -303,7 +320,12 @@ class UnionField(Field):
             unions.insert(0, field_utils.NULL)
         elif type(self.default) is not dataclasses._MISSING_TYPE:
             default_type = type(self.default)
-            default_field = AvroField(name, default_type, model_metadata=self.model_metadata, parent=self.parent)
+            default_field = AvroField(
+                name,
+                default_type,
+                model_metadata=self.model_metadata,
+                parent=self.parent,
+            )
             unions.append(default_field.get_avro_type())
             self.internal_fields.append(default_field)
 
@@ -706,7 +728,9 @@ class DecimalField(Field):
         if self.decimal_places < 0 or self.max_digits < self.decimal_places:
             raise ValueError("`decimal_places` must be zero or a positive integer less than or equal to the precision.")
 
-    def get_avro_type(self) -> typing.Union[types.JsonDict, typing.List[typing.Union[str, types.JsonDict]]]:
+    def get_avro_type(
+        self,
+    ) -> typing.Union[types.JsonDict, typing.List[typing.Union[str, types.JsonDict]]]:
         avro_type = {
             "type": field_utils.BYTES,
             "logicalType": field_utils.DECIMAL,
@@ -723,7 +747,10 @@ class DecimalField(Field):
         return serialization.decimal_to_str(default, self.max_digits, self.decimal_places)
 
     def fake(self) -> decimal.Decimal:
-        return fake.pydecimal(right_digits=self.decimal_places, left_digits=self.max_digits - self.decimal_places)
+        return fake.pydecimal(
+            right_digits=self.decimal_places,
+            left_digits=self.max_digits - self.decimal_places,
+        )
 
 
 @dataclasses.dataclass
@@ -777,7 +804,10 @@ from .mapper import (
 )
 
 LOGICAL_CLASSES = LOGICAL_TYPES_FIELDS_CLASSES.keys()
-PYDANTIC_CUSTOM_CLASS_METHOD_NAMES = {"__get_validators__", "__get_pydantic_core_schema__"}
+PYDANTIC_CUSTOM_CLASS_METHOD_NAMES = {
+    "__get_validators__",
+    "__get_pydantic_core_schema__",
+}
 
 
 def field_factory(

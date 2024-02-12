@@ -160,10 +160,38 @@ def test_logical_type_datetime_with_default() -> None:
         (uuid.uuid4, {"type": field_utils.STRING, "logicalType": field_utils.UUID}),
         (uuid.UUID, {"type": field_utils.STRING, "logicalType": field_utils.UUID}),
         # pydantic fields
-        (pydantic.UUID1, {"type": field_utils.STRING, "logicalType": field_utils.UUID, "pydantic-class": "UUID1"}),
-        (pydantic.UUID3, {"type": field_utils.STRING, "logicalType": field_utils.UUID, "pydantic-class": "UUID3"}),
-        (pydantic.UUID4, {"type": field_utils.STRING, "logicalType": field_utils.UUID, "pydantic-class": "UUID4"}),
-        (pydantic.UUID5, {"type": field_utils.STRING, "logicalType": field_utils.UUID, "pydantic-class": "UUID5"}),
+        (
+            pydantic.UUID1,
+            {
+                "type": field_utils.STRING,
+                "logicalType": field_utils.UUID,
+                "pydantic-class": "UUID1",
+            },
+        ),
+        (
+            pydantic.UUID3,
+            {
+                "type": field_utils.STRING,
+                "logicalType": field_utils.UUID,
+                "pydantic-class": "UUID3",
+            },
+        ),
+        (
+            pydantic.UUID4,
+            {
+                "type": field_utils.STRING,
+                "logicalType": field_utils.UUID,
+                "pydantic-class": "UUID4",
+            },
+        ),
+        (
+            pydantic.UUID5,
+            {
+                "type": field_utils.STRING,
+                "logicalType": field_utils.UUID,
+                "pydantic-class": "UUID5",
+            },
+        ),
     ),
 )
 def test_logical_type_uuid_with_default(python_type, avro_type) -> None:
@@ -258,7 +286,10 @@ def test_decimal_type():
 
     expected = {
         "name": name,
-        "type": ["null", {"type": "bytes", "logicalType": "decimal", "precision": 7, "scale": 5}],
+        "type": [
+            "null",
+            {"type": "bytes", "logicalType": "decimal", "precision": 7, "scale": 5},
+        ],
         "default": None,
     }
 
@@ -266,7 +297,8 @@ def test_decimal_type():
 
     # Validate 0 <= scale <= precision
     with pytest.raises(
-        ValueError, match="`decimal_places` must be zero or a positive integer less than or equal to the precision."
+        ValueError,
+        match="`decimal_places` must be zero or a positive integer less than or equal to the precision.",
     ):
         python_type = types.condecimal(max_digits=1, decimal_places=-1)
         field = AvroField(name, python_type)
@@ -275,7 +307,8 @@ def test_decimal_type():
 
     # Validate 0 <= scale <= precision
     with pytest.raises(
-        ValueError, match="`decimal_places` must be zero or a positive integer less than or equal to the precision."
+        ValueError,
+        match="`decimal_places` must be zero or a positive integer less than or equal to the precision.",
     ):
         python_type = types.condecimal(max_digits=1, decimal_places=3)
         field = AvroField(name, python_type)

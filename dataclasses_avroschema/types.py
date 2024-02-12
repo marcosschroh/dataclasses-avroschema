@@ -40,7 +40,10 @@ class DecimalFieldInfo(FieldInfo):
 
 class FixedFieldInfo(FieldInfo):
     def __init__(
-        self, size: int, aliases: typing.Optional[typing.List[str]] = None, namespace=typing.Optional[str]
+        self,
+        size: int,
+        aliases: typing.Optional[typing.List[str]] = None,
+        namespace=typing.Optional[str],
     ) -> None:
         self.size = size
         self.aliases = aliases
@@ -51,17 +54,19 @@ class FixedFieldInfo(FieldInfo):
 
 
 def confixed(
-    *, size, aliases: typing.Optional[typing.List[str]] = None, namespace: typing.Optional[str] = None
+    *,
+    size,
+    aliases: typing.Optional[typing.List[str]] = None,
+    namespace: typing.Optional[str] = None,
 ) -> typing.Type[bytes]:
-    return Annotated[  # type: ignore[return-value]
-        Fixed, FixedFieldInfo(size=size, aliases=aliases, namespace=namespace)
-    ]
+    return Annotated[Fixed, FixedFieldInfo(size=size, aliases=aliases, namespace=namespace)]  # type: ignore[return-value]
 
 
 def condecimal(*, max_digits: int, decimal_places: int) -> typing.Type[decimal.Decimal]:
-    return Annotated[  # type: ignore[return-value]
-        decimal.Decimal, DecimalFieldInfo(max_digits=max_digits, decimal_places=decimal_places)
-    ]
+    return Annotated[
+        decimal.Decimal,
+        DecimalFieldInfo(max_digits=max_digits, decimal_places=decimal_places),
+    ]  # type: ignore[return-value]
 
 
 Int32 = Annotated[int, "Int32"]

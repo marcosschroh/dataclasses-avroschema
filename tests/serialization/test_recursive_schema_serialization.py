@@ -7,7 +7,8 @@ from dataclasses_avroschema import AvroModel
 from dataclasses_avroschema.pydantic import AvroBaseModel
 
 parametrize_base_model = pytest.mark.parametrize(
-    "model_class, decorator", [(AvroModel, dataclasses.dataclass), (AvroBaseModel, lambda f: f)]
+    "model_class, decorator",
+    [(AvroModel, dataclasses.dataclass), (AvroBaseModel, lambda f: f)],
 )
 
 
@@ -20,6 +21,7 @@ def test_self_one_to_one_relationship(model_class: typing.Type[AvroModel], decor
     @decorator
     class User(model_class):
         "User with self reference as friend"
+
         name: str
         age: int
         friend: typing.Optional["User"] = None
@@ -72,6 +74,7 @@ def test_self_one_to_many_relationship(model_class: typing.Type[AvroModel], deco
     @decorator
     class User(model_class):
         "User with self reference as friends"
+
         name: str
         age: int
         friends: typing.List[typing.Type["User"]]
@@ -121,6 +124,7 @@ def test_self_one_to_many_map_relationship(model_class: typing.Type[AvroModel], 
     @decorator
     class User(model_class):
         "User with self reference as friends"
+
         name: str
         age: int
         friends: typing.Dict[str, typing.Type["User"]] = None

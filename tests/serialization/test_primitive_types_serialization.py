@@ -6,9 +6,21 @@ from dataclasses_avroschema import AvroModel, types
 
 
 def test_primitive_types(user_dataclass):
-    data = {"name": "juan", "age": 20, "has_pets": True, "money": 100.0, "encoded": b"hola"}
+    data = {
+        "name": "juan",
+        "age": 20,
+        "has_pets": True,
+        "money": 100.0,
+        "encoded": b"hola",
+    }
 
-    data_json = {"name": "juan", "age": 20, "has_pets": True, "money": 100.0, "encoded": "hola"}
+    data_json = {
+        "name": "juan",
+        "age": 20,
+        "has_pets": True,
+        "money": 100.0,
+        "encoded": "hola",
+    }
 
     user = user_dataclass(**data)
 
@@ -34,8 +46,22 @@ def test_primitive_types_with_defaults():
         encoded: bytes = b"hola"
         height: types.Int32 = 184
 
-    data = {"name": "marcos", "age": 20, "has_pets": False, "money": 100.0, "encoded": b"hola", "height": 184}
-    data_json = {"name": "marcos", "age": 20, "has_pets": False, "money": 100.0, "encoded": "hola", "height": 184}
+    data = {
+        "name": "marcos",
+        "age": 20,
+        "has_pets": False,
+        "money": 100.0,
+        "encoded": b"hola",
+        "height": 184,
+    }
+    data_json = {
+        "name": "marcos",
+        "age": 20,
+        "has_pets": False,
+        "money": 100.0,
+        "encoded": "hola",
+        "height": 184,
+    }
 
     user = User()
     avro_binary = user.serialize()
@@ -53,8 +79,22 @@ def test_primitive_types_with_defaults():
     user = User(name="Juan", age=30)
     avro_json = user.serialize(serialization_type="avro-json")
 
-    data = {"name": "Juan", "age": 30, "has_pets": False, "money": 100.0, "encoded": b"hola", "height": 184}
-    data_json = {"name": "Juan", "age": 30, "has_pets": False, "money": 100.0, "encoded": "hola", "height": 184}
+    data = {
+        "name": "Juan",
+        "age": 30,
+        "has_pets": False,
+        "money": 100.0,
+        "encoded": b"hola",
+        "height": 184,
+    }
+    data_json = {
+        "name": "Juan",
+        "age": 30,
+        "has_pets": False,
+        "money": 100.0,
+        "encoded": "hola",
+        "height": 184,
+    }
 
     # assert user.deserialize(avro_binary, create_instance=False) == data
     assert user.deserialize(avro_json, serialization_type="avro-json", create_instance=False) == data
@@ -75,8 +115,22 @@ def test_primitive_types_with_nulls():
         encoded: bytes = None
         height: types.Int32 = None
 
-    data = {"name": None, "age": 20, "has_pets": False, "money": 100.0, "encoded": b"hola", "height": 184}
-    data_json = {"name": None, "age": 20, "has_pets": False, "money": 100.0, "encoded": "hola", "height": 184}
+    data = {
+        "name": None,
+        "age": 20,
+        "has_pets": False,
+        "money": 100.0,
+        "encoded": b"hola",
+        "height": 184,
+    }
+    data_json = {
+        "name": None,
+        "age": 20,
+        "has_pets": False,
+        "money": 100.0,
+        "encoded": "hola",
+        "height": 184,
+    }
 
     user = User(**data)
     avro_binary = user.serialize()
@@ -91,7 +145,14 @@ def test_primitive_types_with_nulls():
     assert user.to_dict() == data
     assert user.to_json() == json.dumps(data_json)
 
-    data = {"name": None, "age": 20, "has_pets": False, "money": None, "encoded": None, "height": None}
+    data = {
+        "name": None,
+        "age": 20,
+        "has_pets": False,
+        "money": None,
+        "encoded": None,
+        "height": None,
+    }
 
     user = User()
     avro_binary = user.serialize()

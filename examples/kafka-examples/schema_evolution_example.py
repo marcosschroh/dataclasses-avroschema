@@ -17,6 +17,7 @@ class FavoriteColor(enum.Enum):
 @dataclass
 class UserModel(AvroModel):
     "An User"
+
     name: str
     age: int
     favorite_colors: FavoriteColor = FavoriteColor.BLUE
@@ -32,6 +33,7 @@ class UserModel(AvroModel):
 @dataclass
 class UserModelV2(AvroModel):
     "A User v2"
+
     name: str
     age: int
     favorite_colors: FavoriteColor = FavoriteColor.BLUE
@@ -43,7 +45,9 @@ class UserModelV2(AvroModel):
 
 
 def consume():
-    consumer = KafkaConsumer("my_topic", bootstrap_servers="localhost:9092", group_id="my-group")
+    consumer = KafkaConsumer(
+        "my_topic", bootstrap_servers="localhost:9092", group_id="my-group"
+    )
 
     for msg in consumer:
         print(f"Message received: {msg.value} at {msg.timestamp}")

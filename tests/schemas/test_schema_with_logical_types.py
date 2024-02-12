@@ -15,6 +15,7 @@ def test_logical_types_schema(logical_types_schema):
 
     class LogicalTypes(AvroModel):
         "Some logical types"
+
         birthday: datetime.date = a_datetime.date()
         meeting_time: datetime.time = a_datetime.time()
         release_datetime: datetime.datetime = a_datetime
@@ -31,6 +32,7 @@ def test_logical_micro_types_schema(logical_types_micro_schemas):
 
     class LogicalTypesMicro(AvroModel):
         "Some logical types"
+
         time_micros: types.TimeMicro
         datetime_micros: types.DateTimeMicro
         meeting_time: datetime.time = a_datetime.time()
@@ -49,6 +51,7 @@ def test_decimal_types_schema(decimal_types_schema):
 
     class DecimalTest(AvroModel):
         "Some Decimal Tests"
+
         implicit: types.condecimal(max_digits=3, decimal_places=2)
         explicit: types.condecimal(max_digits=13, decimal_places=11)
         explicit_with_default: types.condecimal(max_digits=7, decimal_places=5) = decimal.Decimal("3.14159")

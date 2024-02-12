@@ -31,9 +31,8 @@ typing-extensions = {version = "^4.2.0"}
 pydantic = {version = "^2.4.2", optional = true, extras = ["email"]}
 
 [tool.poetry.group.dev.dependencies]
-mypy = "^1"
-ruff = "^0"
-black = "^23"
+mypy = "^1.8.0"
+ruff = ">=0.1,<0.3"
 pytest = ">=7,<9"
 pytest-cov = "^4"
 types-pytz = ">=2023,<2025"
@@ -64,10 +63,6 @@ faker = [
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
-[tool.black]
-line-length = 120
-target_version = ['py37']
-
 [[tool.mypy.overrides]]
 module = "stringcase.*"
 ignore_missing_imports = true
@@ -79,7 +74,7 @@ ignore_missing_imports = true
 [tool.ruff]
 line-length = 120
 
-[tool.ruff.pydocstyle]
+[tool.ruff.lint.pydocstyle]
 convention = "google"
 
 [tool.ruff.lint]
@@ -95,11 +90,12 @@ select = [
     "I001"
 ]
 ignore = ["E402"]
+fixable = ["ALL"]
+unfixable = []
 
-[tool.ruff.extend-per-file-ignores]
+[tool.ruff.lint.extend-per-file-ignores]
 "tests/schemas/test_schema.py" = ["E501"]
 "tests/model_generator/test_model_generator.py" = ["E501"]
-
 
 [tool.commitizen]
 version = "0.56.2"

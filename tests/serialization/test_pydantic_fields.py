@@ -102,14 +102,18 @@ def test_int_constrained_type_deserialize_invalid():
 
 
 @pytest.mark.parametrize(
-    "serialization_type, expected_result", [(AVRO, parent_avro_binary), (AVRO_JSON, parent_avro_json)]
+    "serialization_type, expected_result",
+    [(AVRO, parent_avro_binary), (AVRO_JSON, parent_avro_json)],
 )
 def test_custom_class_type_serialize(serialization_type: str, expected_result: bytes):
     serialized = parent_under_test.serialize(serialization_type)
     assert serialized == expected_result
 
 
-@pytest.mark.parametrize("serialization_type, data", [(AVRO, parent_avro_binary), (AVRO_JSON, parent_avro_json)])
+@pytest.mark.parametrize(
+    "serialization_type, data",
+    [(AVRO, parent_avro_binary), (AVRO_JSON, parent_avro_json)],
+)
 def test_custom_class_type_deserialize(serialization_type: str, data: bytes):
     deserialized = Parent.deserialize(data, serialization_type)
     assert deserialized == parent_under_test
@@ -129,8 +133,22 @@ def test_primitive_types_with_defaults():
         encoded: bytes = b"hola"
         height: types.Int32 = 184
 
-    data = {"name": "marcos", "age": 20, "has_pets": False, "money": 100.0, "encoded": b"hola", "height": 184}
-    data_json = {"name": "marcos", "age": 20, "has_pets": False, "money": 100.0, "encoded": "hola", "height": 184}
+    data = {
+        "name": "marcos",
+        "age": 20,
+        "has_pets": False,
+        "money": 100.0,
+        "encoded": b"hola",
+        "height": 184,
+    }
+    data_json = {
+        "name": "marcos",
+        "age": 20,
+        "has_pets": False,
+        "money": 100.0,
+        "encoded": "hola",
+        "height": 184,
+    }
 
     user = User()
     avro_binary = user.serialize()
@@ -148,8 +166,22 @@ def test_primitive_types_with_defaults():
     user = User(name="Juan", age=30)
     avro_json = user.serialize(serialization_type="avro-json")
 
-    data = {"name": "Juan", "age": 30, "has_pets": False, "money": 100.0, "encoded": b"hola", "height": 184}
-    data_json = {"name": "Juan", "age": 30, "has_pets": False, "money": 100.0, "encoded": "hola", "height": 184}
+    data = {
+        "name": "Juan",
+        "age": 30,
+        "has_pets": False,
+        "money": 100.0,
+        "encoded": b"hola",
+        "height": 184,
+    }
+    data_json = {
+        "name": "Juan",
+        "age": 30,
+        "has_pets": False,
+        "money": 100.0,
+        "encoded": "hola",
+        "height": 184,
+    }
 
     # assert user.deserialize(avro_binary, create_instance=False) == data
     assert user.deserialize(avro_json, serialization_type="avro-json", create_instance=False) == data
@@ -194,8 +226,22 @@ def test_primitive_types_with_nulls():
         encoded: Optional[bytes] = None
         height: Optional[types.Int32] = None
 
-    data = {"name": None, "age": 20, "has_pets": False, "money": 100.0, "encoded": b"hola", "height": 184}
-    data_json = {"name": None, "age": 20, "has_pets": False, "money": 100.0, "encoded": "hola", "height": 184}
+    data = {
+        "name": None,
+        "age": 20,
+        "has_pets": False,
+        "money": 100.0,
+        "encoded": b"hola",
+        "height": 184,
+    }
+    data_json = {
+        "name": None,
+        "age": 20,
+        "has_pets": False,
+        "money": 100.0,
+        "encoded": "hola",
+        "height": 184,
+    }
 
     user = User(**data)
     avro_binary = user.serialize()
@@ -210,7 +256,14 @@ def test_primitive_types_with_nulls():
     assert user.to_dict() == data
     assert user.to_json() == json.dumps(data_json)
 
-    data = {"name": None, "age": 20, "has_pets": False, "money": None, "encoded": None, "height": None}
+    data = {
+        "name": None,
+        "age": 20,
+        "has_pets": False,
+        "money": None,
+        "encoded": None,
+        "height": None,
+    }
 
     user = User()
     avro_binary = user.serialize()

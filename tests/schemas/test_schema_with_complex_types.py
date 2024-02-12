@@ -98,7 +98,9 @@ def test_schema_with_unions_defaults(default_union_schema: JsonDict) -> None:
 # while further occurences are just the type name - which can cause problems when comparing lists of fields.
 
 
-def test_schema_with_optional_enum_defaults(optional_enum_with_default_schema: JsonDict) -> None:
+def test_schema_with_optional_enum_defaults(
+    optional_enum_with_default_schema: JsonDict,
+) -> None:
     class LimitTypes(enum.Enum):
         MIN_LIMIT = "MIN_LIMIT"
         MAX_LIMIT = "MAX_LIMIT"
