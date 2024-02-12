@@ -31,7 +31,9 @@ class User(BaseModel):
     assert result.strip() == expected_result.strip()
 
 
-def test_pydantic_model_with_meta_fields(schema_one_to_self_relationship: types.JsonDict) -> None:
+def test_pydantic_model_with_meta_fields(
+    schema_one_to_self_relationship: types.JsonDict,
+) -> None:
     expected_result = """
 from pydantic import BaseModel
 from pydantic import Field
@@ -51,7 +53,9 @@ class User(BaseModel):
     assert result.strip() == expected_result.strip()
 
 
-def test_avro_pydantic_model(schema_one_to_many_map_relationship: types.JsonDict) -> None:
+def test_avro_pydantic_model(
+    schema_one_to_many_map_relationship: types.JsonDict,
+) -> None:
     expected_result = """
 from dataclasses_avroschema.pydantic import AvroBaseModel
 import typing
@@ -79,7 +83,9 @@ class User(AvroBaseModel):
     assert result.strip() == expected_result.strip()
 
 
-def test_avro_pydantic_model_with_meta_fields(schema_one_to_self_relationship: types.JsonDict) -> None:
+def test_avro_pydantic_model_with_meta_fields(
+    schema_one_to_self_relationship: types.JsonDict,
+) -> None:
     expected_result = """
 from dataclasses_avroschema.pydantic import AvroBaseModel
 from pydantic import Field
@@ -181,7 +187,9 @@ class Infrastructure(AvroBaseModel):
     assert result.strip() == expected_result.strip()
 
 
-def test_schema_with_pydantic_constrained_field(schema_with_pydantic_constrained_fields):
+def test_schema_with_pydantic_constrained_field(
+    schema_with_pydantic_constrained_fields,
+):
     expected_result = """
 from dataclasses_avroschema import types
 from dataclasses_avroschema.pydantic import AvroBaseModel

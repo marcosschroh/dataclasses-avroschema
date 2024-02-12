@@ -9,13 +9,22 @@ here = Path(__file__).parent.absolute()
 
 marks = {
     "user_self_reference_one_to_many": [
-        pytest.mark.xfail(raises=AssertionError, reason="schema generator does not handle self references correctly")
+        pytest.mark.xfail(
+            raises=AssertionError,
+            reason="schema generator does not handle self references correctly",
+        )
     ],
     "user_self_reference_one_to_many_map": [
-        pytest.mark.xfail(raises=ValueError, reason="schema generator does not handle self references correctly")
+        pytest.mark.xfail(
+            raises=ValueError,
+            reason="schema generator does not handle self references correctly",
+        )
     ],
     "user_self_reference_one_to_one": [
-        pytest.mark.xfail(raises=ValueError, reason="schema generator does not handle self references correctly")
+        pytest.mark.xfail(
+            raises=ValueError,
+            reason="schema generator does not handle self references correctly",
+        )
     ],
 }
 

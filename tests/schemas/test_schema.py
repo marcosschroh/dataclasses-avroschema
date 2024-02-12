@@ -94,6 +94,7 @@ def test_extra_avro_attributes(user_extra_avro_attributes):
 
     class User(AvroModel):
         "An User"
+
         name: str
         age: int
 
@@ -110,6 +111,7 @@ def test_extra_avro_attributes(user_extra_avro_attributes):
 def test_class_empty_metaclass():
     class User(AvroModel):
         "An User"
+
         name: str
         age: int
 
@@ -228,6 +230,7 @@ def test_order_field_not_specifing_all(order_fields_schema):
 def test_exclude_field_from_schema(user_extra_avro_attributes):
     class User(AvroModel):
         "An User"
+
         name: str
         age: int
         last_name: str = "Bond"
@@ -277,12 +280,14 @@ def test_parse_obj():
     @dataclass
     class Address(AvroModel):
         "An Address"
+
         street: str
         street_number: int
 
     @dataclass
     class User(AvroModel):
         "User with multiple Address"
+
         name: str
         age: int
         addresses: typing.List[Address]
@@ -302,7 +307,9 @@ def test_parse_obj():
     assert User.avro_schema()
 
 
-def test_avro_schema_to_python_method_with_inheritance(user_avro_json: JsonDict) -> None:
+def test_avro_schema_to_python_method_with_inheritance(
+    user_avro_json: JsonDict,
+) -> None:
     @dataclass
     class Parent(AvroModel):
         name: str

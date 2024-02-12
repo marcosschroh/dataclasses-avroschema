@@ -16,6 +16,7 @@ a_datetime = datetime.datetime(2019, 10, 12, 17, 57, 42, tzinfo=UTC)
 @dataclass
 class Address(AvroModel):
     "An Address"
+
     street: str
     street_number: int
 
@@ -23,6 +24,7 @@ class Address(AvroModel):
 @dataclass
 class User(AvroModel):
     "User with multiple Address"
+
     name: str
     age: int
     addresses: typing.List[Address]
@@ -31,6 +33,7 @@ class User(AvroModel):
 @dataclass
 class UserCompatible(AvroModel):
     "User with multiple Address"
+
     name: str
     age: int
     addresses: typing.List[Address]
@@ -53,7 +56,11 @@ data_user = {
 
 user_avro_binary = b"\x08john(\x02\x08test\x14\x00"
 user_avro_json = b'{"name": "john", "age": 20, "addresses": [{"street": "test", "street_number": 10}]}'
-user_json = {"name": "john", "age": 20, "addresses": [{"street": "test", "street_number": 10}]}
+user_json = {
+    "name": "john",
+    "age": 20,
+    "addresses": [{"street": "test", "street_number": 10}],
+}
 
 
 class FavoriteColor(str, enum.Enum):
@@ -150,7 +157,10 @@ CLASSES_DATA_BINARY = (
 )
 
 
-@pytest.mark.parametrize("klass, data, avro_binary, avro_json, instance_json, python_dict", CLASSES_DATA_BINARY)
+@pytest.mark.parametrize(
+    "klass, data, avro_binary, avro_json, instance_json, python_dict",
+    CLASSES_DATA_BINARY,
+)
 def test_serialization(klass, data, avro_binary, avro_json, instance_json, python_dict):
     instance = klass(**data)
 
@@ -159,7 +169,8 @@ def test_serialization(klass, data, avro_binary, avro_json, instance_json, pytho
 
 
 @pytest.mark.parametrize(
-    "serialization_type, data", [(AVRO, b"\x02\x00\x00"), (AVRO_JSON, b'{"users": [{"color": "BLUE"}]}')]
+    "serialization_type, data",
+    [(AVRO, b"\x02\x00\x00"), (AVRO_JSON, b'{"users": [{"color": "BLUE"}]}')],
 )
 def test_serialization_with_enum_in_sequences(serialization_type: str, data: bytes) -> None:
     @dataclass
@@ -178,7 +189,10 @@ def test_serialization_with_enum_in_sequences(serialization_type: str, data: byt
     }
 
 
-@pytest.mark.parametrize("klass, data, avro_binary, avro_json, instance_json, python_dict", CLASSES_DATA_BINARY)
+@pytest.mark.parametrize(
+    "klass, data, avro_binary, avro_json, instance_json, python_dict",
+    CLASSES_DATA_BINARY,
+)
 def test_deserialization(klass, data, avro_binary, avro_json, instance_json, python_dict):
     instance = klass(**data)
 
@@ -189,7 +203,10 @@ def test_deserialization(klass, data, avro_binary, avro_json, instance_json, pyt
     assert instance.deserialize(avro_json, serialization_type="avro-json") == instance
 
 
-@pytest.mark.parametrize("klass, data, avro_binary, avro_json, instance_json, python_dict", CLASSES_DATA_BINARY)
+@pytest.mark.parametrize(
+    "klass, data, avro_binary, avro_json, instance_json, python_dict",
+    CLASSES_DATA_BINARY,
+)
 def test_deserialization_with_class(klass, data, avro_binary, avro_json, instance_json, python_dict):
     instance = klass(**data)
 

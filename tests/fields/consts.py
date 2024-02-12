@@ -28,25 +28,49 @@ PRIMITIVE_TYPES = (
     (Annotated[bytes, "bytes"], field_utils.BYTES),
     # pydantic fields
     (pydantic.FilePath, {"type": field_utils.STRING, "pydantic-class": "FilePath"}),
-    (pydantic.DirectoryPath, {"type": field_utils.STRING, "pydantic-class": "DirectoryPath"}),
+    (
+        pydantic.DirectoryPath,
+        {"type": field_utils.STRING, "pydantic-class": "DirectoryPath"},
+    ),
     (pydantic.EmailStr, {"type": field_utils.STRING, "pydantic-class": "EmailStr"}),
     (pydantic.NameEmail, {"type": field_utils.STRING, "pydantic-class": "NameEmail"}),
     (pydantic.AnyUrl, {"type": field_utils.STRING, "pydantic-class": "AnyUrl"}),
     (pydantic.AnyHttpUrl, {"type": field_utils.STRING, "pydantic-class": "AnyHttpUrl"}),
     (pydantic.HttpUrl, {"type": field_utils.STRING, "pydantic-class": "HttpUrl"}),
     (pydantic.FileUrl, {"type": field_utils.STRING, "pydantic-class": "FileUrl"}),
-    (pydantic.PostgresDsn, {"type": field_utils.STRING, "pydantic-class": "PostgresDsn"}),
-    (pydantic.CockroachDsn, {"type": field_utils.STRING, "pydantic-class": "CockroachDsn"}),
+    (
+        pydantic.PostgresDsn,
+        {"type": field_utils.STRING, "pydantic-class": "PostgresDsn"},
+    ),
+    (
+        pydantic.CockroachDsn,
+        {"type": field_utils.STRING, "pydantic-class": "CockroachDsn"},
+    ),
     (pydantic.AmqpDsn, {"type": field_utils.STRING, "pydantic-class": "AmqpDsn"}),
     (pydantic.RedisDsn, {"type": field_utils.STRING, "pydantic-class": "RedisDsn"}),
     (pydantic.MongoDsn, {"type": field_utils.STRING, "pydantic-class": "MongoDsn"}),
     (pydantic.KafkaDsn, {"type": field_utils.STRING, "pydantic-class": "KafkaDsn"}),
     (pydantic.SecretStr, {"type": field_utils.STRING, "pydantic-class": "SecretStr"}),
-    (pydantic.IPvAnyAddress, {"type": field_utils.STRING, "pydantic-class": "IPvAnyAddress"}),
-    (pydantic.IPvAnyInterface, {"type": field_utils.STRING, "pydantic-class": "IPvAnyInterface"}),
-    (pydantic.IPvAnyNetwork, {"type": field_utils.STRING, "pydantic-class": "IPvAnyNetwork"}),
-    (pydantic.NegativeFloat, {"type": field_utils.DOUBLE, "pydantic-class": "NegativeFloat"}),
-    (pydantic.PositiveFloat, {"type": field_utils.DOUBLE, "pydantic-class": "PositiveFloat"}),
+    (
+        pydantic.IPvAnyAddress,
+        {"type": field_utils.STRING, "pydantic-class": "IPvAnyAddress"},
+    ),
+    (
+        pydantic.IPvAnyInterface,
+        {"type": field_utils.STRING, "pydantic-class": "IPvAnyInterface"},
+    ),
+    (
+        pydantic.IPvAnyNetwork,
+        {"type": field_utils.STRING, "pydantic-class": "IPvAnyNetwork"},
+    ),
+    (
+        pydantic.NegativeFloat,
+        {"type": field_utils.DOUBLE, "pydantic-class": "NegativeFloat"},
+    ),
+    (
+        pydantic.PositiveFloat,
+        {"type": field_utils.DOUBLE, "pydantic-class": "PositiveFloat"},
+    ),
     (pydantic.NegativeInt, {"type": field_utils.LONG, "pydantic-class": "NegativeInt"}),
     (pydantic.PositiveInt, {"type": field_utils.LONG, "pydantic-class": "PositiveInt"}),
 )
@@ -109,7 +133,10 @@ UNION_PRIMITIVE_ELEMENTS = (
             field_utils.PYTHON_TYPE_TO_AVRO[datetime.datetime],
         ),
     ),
-    (typing.Union[float, str, int], (field_utils.DOUBLE, field_utils.STRING, field_utils.LONG)),
+    (
+        typing.Union[float, str, int],
+        (field_utils.DOUBLE, field_utils.STRING, field_utils.LONG),
+    ),
     (
         typing.Union[str, float, int, bool],
         (field_utils.STRING, field_utils.DOUBLE, field_utils.LONG, field_utils.BOOLEAN),
@@ -132,13 +159,21 @@ UNION_PRIMITIVE_ELEMENTS_DEFAULTS = (
         ),
         now,
     ),
-    (typing.Union[float, str, int], (field_utils.DOUBLE, field_utils.STRING, field_utils.LONG), 100.0),
+    (
+        typing.Union[float, str, int],
+        (field_utils.DOUBLE, field_utils.STRING, field_utils.LONG),
+        100.0,
+    ),
     (
         typing.Union[bool, str, float, int],
         (field_utils.BOOLEAN, field_utils.STRING, field_utils.DOUBLE, field_utils.LONG),
         False,
     ),
-    (typing.Union[Annotated[str, "string"], int], (field_utils.STRING, field_utils.LONG), "test"),
+    (
+        typing.Union[Annotated[str, "string"], int],
+        (field_utils.STRING, field_utils.LONG),
+        "test",
+    ),
 )
 
 UNION_WITH_ARRAY = (
@@ -188,15 +223,33 @@ UNION_WITH_MAP = (
 )
 
 OPTIONAL_UNION_COMPLEX_TYPES = (
-    (typing.List[str], {"type": field_utils.ARRAY, "items": field_utils.STRING, "name": "optional_field"}),
+    (
+        typing.List[str],
+        {
+            "type": field_utils.ARRAY,
+            "items": field_utils.STRING,
+            "name": "optional_field",
+        },
+    ),
     (
         typing.List[datetime.datetime],
-        {"type": field_utils.ARRAY, "items": field_utils.LOGICAL_DATETIME_MILIS, "name": "optional_field"},
+        {
+            "type": field_utils.ARRAY,
+            "items": field_utils.LOGICAL_DATETIME_MILIS,
+            "name": "optional_field",
+        },
     ),
-    (typing.Dict[str, int], {"type": field_utils.MAP, "values": field_utils.LONG, "name": "optional_field"}),
+    (
+        typing.Dict[str, int],
+        {"type": field_utils.MAP, "values": field_utils.LONG, "name": "optional_field"},
+    ),
     (
         typing.Dict[str, datetime.datetime],
-        {"type": field_utils.MAP, "values": field_utils.LOGICAL_DATETIME_MILIS, "name": "optional_field"},
+        {
+            "type": field_utils.MAP,
+            "values": field_utils.LOGICAL_DATETIME_MILIS,
+            "name": "optional_field",
+        },
     ),
 )
 
@@ -225,7 +278,12 @@ if PY_VER >= (3, 10):
         (float | str | int, (field_utils.DOUBLE, field_utils.STRING, field_utils.LONG)),
         (
             typing.Union[str, float, int, bool],
-            (field_utils.STRING, field_utils.DOUBLE, field_utils.LONG, field_utils.BOOLEAN),
+            (
+                field_utils.STRING,
+                field_utils.DOUBLE,
+                field_utils.LONG,
+                field_utils.BOOLEAN,
+            ),
         ),
     )
 
@@ -241,10 +299,19 @@ if PY_VER >= (3, 10):
             ),
             now,
         ),
-        (float | str | int, (field_utils.DOUBLE, field_utils.STRING, field_utils.LONG), 100.0),
+        (
+            float | str | int,
+            (field_utils.DOUBLE, field_utils.STRING, field_utils.LONG),
+            100.0,
+        ),
         (
             str | float | int | bool,
-            (field_utils.BOOLEAN, field_utils.STRING, field_utils.DOUBLE, field_utils.LONG),
+            (
+                field_utils.BOOLEAN,
+                field_utils.STRING,
+                field_utils.DOUBLE,
+                field_utils.LONG,
+            ),
             False,
         ),
     )
@@ -295,7 +362,14 @@ def xfail_annotation(typ):
     )
 
 
-SEQUENCE_TYPES = (typing.List, typing.Tuple, typing.Sequence, typing.MutableSequence, list, tuple)
+SEQUENCE_TYPES = (
+    typing.List,
+    typing.Tuple,
+    typing.Sequence,
+    typing.MutableSequence,
+    list,
+    tuple,
+)
 MAPPING_TYPES = (typing.Dict, typing.Mapping, typing.MutableMapping, dict)
 
 SEQUENCES_AND_TYPES = [
@@ -327,7 +401,10 @@ MAPPING_LOGICAL_TYPES = [
 LOGICAL_TYPES = (
     (datetime.date, {"type": field_utils.INT, "logicalType": field_utils.DATE}),
     (datetime.time, {"type": field_utils.INT, "logicalType": field_utils.TIME_MILLIS}),
-    (datetime.datetime, {"type": field_utils.LONG, "logicalType": field_utils.TIMESTAMP_MILLIS}),
+    (
+        datetime.datetime,
+        {"type": field_utils.LONG, "logicalType": field_utils.TIMESTAMP_MILLIS},
+    ),
     (uuid.uuid4, {"type": field_utils.STRING, "logicalType": field_utils.UUID}),
     (uuid.UUID, {"type": field_utils.STRING, "logicalType": field_utils.UUID}),
 )

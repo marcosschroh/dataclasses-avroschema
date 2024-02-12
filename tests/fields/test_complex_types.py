@@ -406,7 +406,13 @@ def test_union_with_arrays(union, avro_types) -> None:
     name = "an_union_field"
     field = AvroField(name, union)
 
-    expected = {"name": name, "type": [{"type": "array", "name": name, "items": avro_types[0]}, avro_types[1]]}
+    expected = {
+        "name": name,
+        "type": [
+            {"type": "array", "name": name, "items": avro_types[0]},
+            avro_types[1],
+        ],
+    }
 
     assert expected == field.to_dict()
 
@@ -416,7 +422,10 @@ def test_union_with_maps(union, avro_types) -> None:
     name = "an_union_field"
     field = AvroField(name, union)
 
-    expected = {"name": name, "type": [{"type": "map", "name": name, "values": avro_types[0]}, avro_types[1]]}
+    expected = {
+        "name": name,
+        "type": [{"type": "map", "name": name, "values": avro_types[0]}, avro_types[1]],
+    }
 
     assert expected == field.to_dict()
 
@@ -461,10 +470,12 @@ def test_union_as_optional_with_primitives(primitive_type, avro_type) -> None:
 def test_union_type_with_records():
     class User(AvroModel):
         "User"
+
         first_name: str
 
     class Car(AvroModel):
         "Car"
+
         engine_name: str
 
     class UnionRecord(AvroModel):
@@ -496,10 +507,12 @@ def test_union_type_with_records():
 def test_union_type_with_record_none_default():
     class User(AvroModel):
         "User"
+
         first_name: str
 
     class Car(AvroModel):
         "Car"
+
         engine_name: str
 
     class UnionRecord(AvroModel):
@@ -533,10 +546,12 @@ def test_union_type_with_record_none_default():
 def test_union_type_with_record_default():
     class User(AvroModel):
         "User"
+
         first_name: str
 
     class Car(AvroModel):
         "Car"
+
         engine_name: str
 
     class UnionRecord(AvroModel):
@@ -667,7 +682,15 @@ def test_enum_type():
     python_type = CardType
     field = AvroField(name, python_type, parent=parent)
 
-    expected = {"name": name, "type": {"type": "enum", "name": "CardType", "symbols": symbols, "namespace": namespace}}
+    expected = {
+        "name": name,
+        "type": {
+            "type": "enum",
+            "name": "CardType",
+            "symbols": symbols,
+            "namespace": namespace,
+        },
+    }
 
     assert expected == field.to_dict()
 
@@ -728,7 +751,13 @@ def test_enum_type():
 
 
 def test_enum_field():
-    enum_field = AvroField("field_name", Color, default=Color.BLUE, metadata={"key": "value"}, parent=AvroModel())
+    enum_field = AvroField(
+        "field_name",
+        Color,
+        default=Color.BLUE,
+        metadata={"key": "value"},
+        parent=AvroModel(),
+    )
 
     assert enum_field.get_symbols() == ["Blue", "Green", "Yellow"]
     assert enum_field._get_meta_class_attributes() == {
@@ -808,7 +837,11 @@ def test_literal_field_with_multiple_parameters():
             field_utils.STRING,
             field_utils.BOOLEAN,
             field_utils.BYTES,
-            {"type": field_utils.ENUM, "name": "Suit", "symbols": [s.value for s in Suit]},
+            {
+                "type": field_utils.ENUM,
+                "name": "Suit",
+                "symbols": [s.value for s in Suit],
+            },
         ],
     }
 
@@ -825,7 +858,11 @@ def test_literal_field_with_multiple_parameters():
         (typing.Literal[b"four"], field_utils.BYTES, "four"),
         (
             typing.Literal[Suit.DIAMONDS],
-            {"type": field_utils.ENUM, "name": "Suit", "symbols": [s.value for s in Suit]},
+            {
+                "type": field_utils.ENUM,
+                "name": "Suit",
+                "symbols": [s.value for s in Suit],
+            },
             Suit.DIAMONDS.value,
         ),
         (typing.Literal[None], field_utils.NULL, None),
@@ -852,7 +889,11 @@ def test_literal_field_with_single_parameter_with_default(python_type, avro_type
     "python_type, avro_type, default",
     [
         (typing.Optional[typing.Literal[4]], [field_utils.LONG, field_utils.NULL], 4),
-        (typing.Optional[typing.Literal["4"]], [field_utils.NULL, field_utils.STRING], None),
+        (
+            typing.Optional[typing.Literal["4"]],
+            [field_utils.NULL, field_utils.STRING],
+            None,
+        ),
     ],
 )
 def test_optional_literal_field(python_type, avro_type, default):
@@ -892,7 +933,11 @@ def test_literal_field_with_multiple_parameters_with_default():
             field_utils.STRING,
             field_utils.BYTES,
             field_utils.BOOLEAN,
-            {"type": field_utils.ENUM, "name": "Suit", "symbols": [s.value for s in Suit]},
+            {
+                "type": field_utils.ENUM,
+                "name": "Suit",
+                "symbols": [s.value for s in Suit],
+            },
             field_utils.NULL,
         ],
         "default": default,

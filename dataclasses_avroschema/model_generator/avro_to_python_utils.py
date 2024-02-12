@@ -52,7 +52,10 @@ LOGICAL_TYPE_TEMPLATES = {
         hour=time_obj.hour, minute=time_obj.minute, second=time_obj.second
     ),
     field_utils.TIME_MICROS: lambda time_obj: templates.time_micros_template.safe_substitute(
-        hour=time_obj.hour, minute=time_obj.minute, second=time_obj.second, microsecond=time_obj.microsecond
+        hour=time_obj.hour,
+        minute=time_obj.minute,
+        second=time_obj.second,
+        microsecond=time_obj.microsecond,
     ),
     field_utils.TIMESTAMP_MILLIS: lambda datetime_obj: templates.datetime_template.safe_substitute(
         year=datetime_obj.year,

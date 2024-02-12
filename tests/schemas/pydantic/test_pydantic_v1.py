@@ -61,7 +61,11 @@ def test_pydantic_record_schema_with_metadata():
         class Meta:
             schema_doc = False
 
-    expected_schema = {"type": "record", "name": "User", "fields": [{"doc": "bar", "name": "name", "type": "string"}]}
+    expected_schema = {
+        "type": "record",
+        "name": "User",
+        "fields": [{"doc": "bar", "name": "name", "type": "string"}],
+    }
     assert User.avro_schema() == json.dumps(expected_schema)
 
 
@@ -108,6 +112,7 @@ def test_pydantic_record_schema_logical_types(logical_types_schema):
 
     class LogicalTypes(AvroBaseModel):
         "Some logical types"
+
         birthday: datetime.date = a_datetime.date()
         meeting_time: datetime.time = a_datetime.time()
         release_datetime: datetime.datetime = a_datetime
@@ -123,11 +128,13 @@ def test_pydantic_record_one_to_one_relationship(user_one_address_schema):
 
     class Address(AvroBaseModel):
         "An Address"
+
         street: str
         street_number: int
 
     class User(AvroBaseModel):
         "An User with Address"
+
         name: str
         age: int
         address: Address
@@ -135,18 +142,22 @@ def test_pydantic_record_one_to_one_relationship(user_one_address_schema):
     assert User.avro_schema() == json.dumps(user_one_address_schema)
 
 
-def test_pydantic_record_one_to_one_relationship_with_none_default(user_one_address_schema_with_none_default):
+def test_pydantic_record_one_to_one_relationship_with_none_default(
+    user_one_address_schema_with_none_default,
+):
     """
     Test schema relationship one-to-one
     """
 
     class Address(AvroBaseModel):
         "An Address"
+
         street: str
         street_number: int
 
     class User(AvroBaseModel):
         "An User with Address"
+
         name: str
         age: int
         address: Address = None
@@ -161,11 +172,13 @@ def test_pydantic_record_one_to_many_relationship(user_many_address_schema):
 
     class Address(AvroBaseModel):
         "An Address"
+
         street: str
         street_number: int
 
     class User(AvroBaseModel):
         "User with multiple Address"
+
         name: str
         age: int
         addresses: typing.List[Address]
@@ -180,11 +193,13 @@ def test_pydantic_record_one_to_many_map_relationship(user_many_address_map_sche
 
     class Address(AvroBaseModel):
         "An Address"
+
         street: str
         street_number: int
 
     class User(AvroBaseModel):
         "User with multiple Address"
+
         name: str
         age: int
         addresses: typing.Dict[str, Address]
@@ -192,13 +207,16 @@ def test_pydantic_record_one_to_many_map_relationship(user_many_address_map_sche
     assert User.avro_schema() == json.dumps(user_many_address_map_schema)
 
 
-def test_pydantic_record_self_one_to_one_relationship(user_self_reference_one_to_one_schema):
+def test_pydantic_record_self_one_to_one_relationship(
+    user_self_reference_one_to_one_schema,
+):
     """
     Test self relationship one-to-one
     """
 
     class User(AvroBaseModel):
         "User with self reference as friend"
+
         name: str
         age: int
         friend: typing.Type["User"]
@@ -216,6 +234,7 @@ def test_pydantic_record_self_one_to_many_relationship(
 
     class User(AvroBaseModel):
         "User with self reference as friends"
+
         name: str
         age: int
         friends: typing.List[typing.Type["User"]]
@@ -233,6 +252,7 @@ def test_pydantic_record_self_one_to_many_map_relationship(
 
     class User(AvroBaseModel):
         "User with self reference as friends"
+
         name: str
         age: int
         friends: typing.Dict[str, typing.Type["User"]]
@@ -244,6 +264,7 @@ def test_pydantic_record_self_one_to_many_map_relationship(
 def test_pydantic_record_schema_with_unions_type(union_type_schema):
     class Bus(AvroBaseModel):
         "A Bus"
+
         engine_name: str
 
         class Meta:
@@ -251,6 +272,7 @@ def test_pydantic_record_schema_with_unions_type(union_type_schema):
 
     class Car(AvroBaseModel):
         "A Car"
+
         engine_name: str
 
         class Meta:
@@ -266,6 +288,7 @@ def test_pydantic_record_schema_with_unions_type(union_type_schema):
 
     class UnionSchema(AvroBaseModel):
         "Some Unions"
+
         first_union: typing.Union[str, int]
         logical_union: typing.Union[datetime.datetime, datetime.date, uuid.UUID]
         lake_trip: typing.Union[Bus, Car]
@@ -365,6 +388,7 @@ def test_to_json(AvroBaseModelV1):
 def test_to_json_logical_types():
     class LogicalTypes(AvroBaseModel):
         "Some logical types"
+
         birthday: datetime.date
         meeting_time: datetime.time
         release_datetime: datetime.datetime
@@ -427,11 +451,13 @@ def test_parse_obj():
 
     class Address(AvroBaseModel):
         "An Address"
+
         street: str
         street_number: int
 
     class User(AvroBaseModel):
         "User with multiple Address"
+
         name: str
         age: int
         addresses: typing.List[Address]
@@ -492,6 +518,7 @@ def test_exclude_fields() -> None:
 def test_exclude_field_from_schema(user_extra_avro_attributes):
     class User(AvroBaseModel):
         "An User"
+
         name: str
         age: int
         last_name: str = "Bond"

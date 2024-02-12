@@ -466,7 +466,11 @@ class ModelGenerator:
         return language_type
 
     def get_language_type(
-        self, *, type: str, default: typing.Optional[str] = None, model_name: typing.Optional[str] = None
+        self,
+        *,
+        type: str,
+        default: typing.Optional[str] = None,
+        model_name: typing.Optional[str] = None,
     ) -> str:
         if type in (field_utils.INT, field_utils.FLOAT):
             self.imports.add("from dataclasses_avroschema import types")

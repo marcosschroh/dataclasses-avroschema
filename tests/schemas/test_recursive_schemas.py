@@ -11,6 +11,7 @@ def test_self_one_to_one_relationship(user_self_reference_one_to_one_schema):
 
     class User(AvroModel):
         "User with self reference as friend"
+
         name: str
         age: int
         friend: typing.Type["User"]
@@ -26,6 +27,7 @@ def test_self_one_to_many_relationship(user_self_reference_one_to_many_schema):
 
     class User(AvroModel):
         "User with self reference as friends"
+
         name: str
         age: int
         friends: typing.List[typing.Type["User"]]
@@ -41,6 +43,7 @@ def test_self_one_to_many_map_relationship(user_self_reference_one_to_many_map_s
 
     class User(AvroModel):
         "User with self reference as friends"
+
         name: str
         age: int
         friends: typing.Dict[str, typing.Type["User"]]

@@ -23,6 +23,7 @@ def test_logical_types(model_class: typing.Type[AvroModel], decorator: typing.Ca
     @decorator
     class LogicalTypes(model_class):
         "Some logical types"
+
         birthday: datetime.date
         meeting_time: datetime.time
         meeting_time_micro: types.TimeMicro
@@ -66,6 +67,7 @@ def test_logical_union(model_class: typing.Type[AvroModel], decorator: typing.Ca
     @decorator
     class UnionSchema(model_class):
         "Some Unions"
+
         logical_union: typing.Union[datetime.datetime, datetime.date, uuid.UUID]
 
     data = {
@@ -94,6 +96,7 @@ def test_logical_types_with_defaults(model_class: typing.Type[AvroModel], decora
     @decorator
     class LogicalTypes(model_class):
         "Some logical types"
+
         implicit_decimal: types.condecimal(max_digits=3, decimal_places=2)
         birthday: datetime.date = a_datetime.date()
         meeting_time: datetime.time = a_datetime.time()
@@ -146,6 +149,7 @@ def test_decimals_defaults(model_class: typing.Type[AvroModel], decorator: typin
     @decorator
     class LogicalTypes(model_class):
         "Some logical types"
+
         explicit: types.condecimal(max_digits=3, decimal_places=2)
         explicit_decimal_with_default: types.condecimal(max_digits=6, decimal_places=5) = decimal.Decimal("3.14159")
         negative_default: types.condecimal(max_digits=3, decimal_places=2) = decimal.Decimal("-1.23")

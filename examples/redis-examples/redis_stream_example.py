@@ -17,6 +17,7 @@ class FavoriteColor(enum.Enum):
 @dataclass
 class UserModel(AvroModel):
     "An User"
+
     name: str
     age: int
     favorite_colors: FavoriteColor = FavoriteColor.BLUE

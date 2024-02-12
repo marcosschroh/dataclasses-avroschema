@@ -14,6 +14,7 @@ from dataclasses_avroschema.pydantic import AvroBaseModel, v1
 def AvroBaseModelV1():
     class Bus(v1.AvroBaseModel):
         "A Bus"
+
         engine_name: str
 
         class Meta:
@@ -21,6 +22,7 @@ def AvroBaseModelV1():
 
     class Car(v1.AvroBaseModel):
         "A Car"
+
         engine_name: str
 
         class Meta:
@@ -35,6 +37,7 @@ def AvroBaseModelV1():
 
     class UnionSchema(v1.AvroBaseModel):
         "Some Unions"
+
         first_union: typing.Union[str, int]
         logical_union: typing.Union[datetime.datetime, datetime.date, uuid.UUID]
         lake_trip: typing.Union[Bus, Car] = Field(default_factory=lambda: Bus(engine_name="honda"))
@@ -49,6 +52,7 @@ def AvroBaseModelV1():
 def AvroBaseModelV2():
     class Bus(AvroBaseModel):
         "A Bus"
+
         engine_name: str
 
         class Meta:
@@ -56,6 +60,7 @@ def AvroBaseModelV2():
 
     class Car(AvroBaseModel):
         "A Car"
+
         engine_name: str
 
         class Meta:
@@ -70,6 +75,7 @@ def AvroBaseModelV2():
 
     class UnionSchema(AvroBaseModel):
         "Some Unions"
+
         first_union: typing.Union[str, int]
         logical_union: typing.Union[datetime.datetime, datetime.date, uuid.UUID]
         lake_trip: typing.Union[Bus, Car] = pydantic.Field(default_factory=lambda: Bus(engine_name="honda"))

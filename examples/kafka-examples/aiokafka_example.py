@@ -17,6 +17,7 @@ class FavoriteColor(enum.Enum):
 @dataclass
 class UserModel(AvroModel):
     "An User"
+
     name: str
     age: int
     favorite_colors: FavoriteColor = FavoriteColor.BLUE
@@ -30,7 +31,11 @@ class UserModel(AvroModel):
 
 async def consume(loop, total_events=10):
     consumer = AIOKafkaConsumer(
-        "my_topic", "my_other_topic", loop=loop, bootstrap_servers="localhost:9092", group_id="my-group"
+        "my_topic",
+        "my_other_topic",
+        loop=loop,
+        bootstrap_servers="localhost:9092",
+        group_id="my-group",
     )
     # Get cluster layout and join group `my-group`
     await consumer.start()

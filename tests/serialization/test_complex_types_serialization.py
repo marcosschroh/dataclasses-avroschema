@@ -300,7 +300,10 @@ def test_literal_enum():
         nested: NestedTestModel
 
     example = TestModel(literal=TestEnum.ONE, nested=NestedTestModel(literal=TestEnum.TWO))
-    expected_data = {"literal": TestEnum.ONE.value, "nested": {"literal": TestEnum.TWO.value}}
+    expected_data = {
+        "literal": TestEnum.ONE.value,
+        "nested": {"literal": TestEnum.TWO.value},
+    }
     expected_json = json.dumps({"literal": TestEnum.ONE.value, "nested": {"literal": TestEnum.TWO.value}})
 
     avro_binary = example.serialize()

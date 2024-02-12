@@ -9,7 +9,10 @@ from dataclasses_avroschema import AvroModel
 from tests.serialization.test_serialization import CLASSES_DATA_BINARY
 
 
-@pytest.mark.parametrize("klass, data, avro_binary, avro_json, instance_json, python_dict", CLASSES_DATA_BINARY)
+@pytest.mark.parametrize(
+    "klass, data, avro_binary, avro_json, instance_json, python_dict",
+    CLASSES_DATA_BINARY,
+)
 def test_to_dict_to_json(klass, data, avro_binary, avro_json, instance_json, python_dict):
     instance = klass(**data)
 
@@ -70,12 +73,22 @@ def test_custom_dacite_config():
                 "cast": [],  # this should not override the default cast behavior
             }
 
-    data = {"driver": "Marcos", "total": 10, "color": Color.RED, "routes": ["route 53", "routes 51"]}
+    data = {
+        "driver": "Marcos",
+        "total": 10,
+        "color": Color.RED,
+        "routes": ["route 53", "routes 51"],
+    }
     bus = Bus.parse_obj(data=data)
 
     serialized_val = Trip(transport=bus).serialize()
     assert Trip.deserialize(serialized_val, create_instance=False) == {
-        "transport": {"color": Color.RED, "driver": "Marcos", "routes": ("route 53", "routes 51"), "total": 10}
+        "transport": {
+            "color": Color.RED,
+            "driver": "Marcos",
+            "routes": ("route 53", "routes 51"),
+            "total": 10,
+        }
     }
     instance = Trip.deserialize(serialized_val)
     assert instance.transport == bus
