@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "schema-evolution-example"
+version = "0.1.0"
+description = ""
+authors = ["marcosschroh <schrohm@gmail.com>"]
+packages = [{include = "schema_evolution_example"}]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+kafka-python = "^2.0.2"
+dataclasses-avroschema = { path = "../../../.", develop = true }
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+app = "schema_evolution_example.app:main"

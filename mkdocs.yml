@@ -41,15 +41,18 @@ nav:
   - Pydantic V1: 'pydantic_v1.md'
   - Pydantic: 'pydantic.md'
   - Faust: 'faust_records.md'
-  - Kafka examples: 'kafka_examples.md'
-  - Redis examples: 'redis_examples.md'
+  - Examples: 'examples.md'
   - Good Practices: good_practices.md
   - Migration Guide: 'migration_guide.md'
 
 markdown_extensions:
   - pymdownx.highlight
   - pymdownx.inlinehilite
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.snippets
   - pymdownx.critic
   - pymdownx.caret
@@ -64,3 +67,6 @@ markdown_extensions:
   - pymdownx.tabbed:
       alternate_style: true 
 
+plugins:
+  - autorefs
+  - mkdocstrings

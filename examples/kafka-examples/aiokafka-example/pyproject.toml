@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "aiokafka-example"
+version = "0.1.0"
+description = ""
+authors = ["marcosschroh <schrohm@gmail.com>"]
+packages = [{include = "aiokafka_example"}]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+aiokafka = "^0.10.0"
+dataclasses-avroschema = { path = "../../../.", develop = true }
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+app = "aiokafka_example.app:main"
+

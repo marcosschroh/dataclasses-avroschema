@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "redis-streams-example"
+version = "0.1.0"
+description = ""
+authors = ["marcosschroh <schrohm@gmail.com>"]
+packages = [{include = "redis_streams_example"}]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+walrus = "^0.9.3"
+dataclasses-avroschema = { path = "../../../.", develop = true }
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+app = "redis_streams_example.app:main"
