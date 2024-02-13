@@ -1,3 +1,0 @@
-dataclasses-avroschema
-walrus
-git+https://github.com/RedisGears/redisgears-py.git

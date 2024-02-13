@@ -42,19 +42,11 @@ kafka-cluster: build run
 
 # Kafka related
 list-topics:
-	docker-compose exec kafka kafka-topics --list --zookeeper zookeeper:32181
+	docker-compose exec kafka kafka-topics --list --bootstrap-server kafka:9092
 
 create-topic:
-	docker-compose exec kafka kafka-topics --create --zookeeper zookeeper:32181 --replication-factor ${replication-factor} --partitions ${partitions} --topic ${topic-name}
+	docker-compose exec kafka kafka-topics --create  --if-not-exists \
+		--bootstrap-server kafka:9092 \ --replication-factor ${replication-factor} --partitions ${partitions} --topic ${topic-name}
 
-aiokafka-example:
-	@$(MAKE) create-topic topic-name="my_topic" || true
-	python aiokafka_example.py
-
-kafka-python-example:
-	@$(MAKE) create-topic topic-name="my_topic" || true
-	python kafka_python_example.py
-
-schema-evolution-example:
-	@$(MAKE) create-topic topic-name="my_topic" || true
-	python schema_evolution_example.py
+create-example-topics:
+	@$(MAKE) create-topic topic-name="my-topic"

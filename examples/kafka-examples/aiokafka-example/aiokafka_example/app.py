@@ -1,13 +1,8 @@
-Under [examples](https://github.com/marcosschroh/dataclasses-avroschema/tree/master/examples) folder you can find 3 differents examples, one with [aiokafka](https://github.com/aio-libs/aiokafka) (`async`) showing the simplest use case when a `AvroModel` instance is serialized and sent it thorught kafka, and the event is consumed.
-The other two examples are `sync` using the [kafka-python](https://github.com/dpkp/kafka-python) driver, where the `avro-json` serialization and `schema evolution` (`FULL` compatibility) is shown.
-
-### Minimal example
-
-```python  title="Example with aiokafka driver"
 import asyncio
 import enum
-from dataclasses import dataclass
 import random
+from dataclasses import dataclass
+from typing import Optional
 
 from aiokafka import AIOKafkaConsumer, AIOKafkaProducer
 
@@ -15,18 +10,20 @@ from dataclasses_avroschema import AvroModel
 
 
 class FavoriteColor(enum.Enum):
-    BLUE = "Blue"
-    YELLOW = "Yellow"
-    GREEN = "Green"
+    BLUE = "BLUE"
+    YELLOW = "YELLOW"
+    GREEN = "GREEN"
+
 
 @dataclass
 class UserModel(AvroModel):
     "An User"
+
     name: str
     age: int
     favorite_colors: FavoriteColor = FavoriteColor.BLUE
     country: str = "Argentina"
-    address: str = None
+    address: Optional[str] = None
 
     class Meta:
         namespace = "User.v1"
@@ -35,9 +32,12 @@ class UserModel(AvroModel):
 
 async def consume(loop, total_events=10):
     consumer = AIOKafkaConsumer(
-        'my_topic', 'my_other_topic',
-        loop=loop, bootstrap_servers='localhost:9092',
-        group_id="my-group")
+        "my_topic",
+        "my_other_topic",
+        loop=loop,
+        bootstrap_servers="localhost:9092",
+        group_id="my-group",
+    )
     # Get cluster layout and join group `my-group`
     await consumer.start()
     run_consumer = True
@@ -58,8 +58,7 @@ async def consume(loop, total_events=10):
 
 
 async def send(loop, total_events=10):
-    producer = AIOKafkaProducer(
-        loop=loop, bootstrap_servers='localhost:9092')
+    producer = AIOKafkaProducer(loop=loop, bootstrap_servers="localhost:9092")
     # Get cluster layout and initial topic/partition leadership information
     await producer.start()
 
@@ -68,8 +67,16 @@ async def send(loop, total_events=10):
         print(f"Sending event number {event_number}")
 
         user = UserModel(
-            name=random.choice(["Juan", "Peter", "Michael", "Moby", "Kim",]),
-            age=random.randint(1, 50)
+            name=random.choice(
+                [
+                    "Juan",
+                    "Peter",
+                    "Michael",
+                    "Moby",
+                    "Kim",
+                ]
+            ),
+            age=random.randint(1, 50),
         )
 
         # create the message
@@ -84,11 +91,7 @@ async def send(loop, total_events=10):
         print("Stoping producer...")
 
 
-if __name__ == "__main__":
+def main():
     loop = asyncio.get_event_loop()
     tasks = asyncio.gather(send(loop), consume(loop))
-
     loop.run_until_complete(tasks)
-```
-
-*(This script is complete, it should run "as is")*

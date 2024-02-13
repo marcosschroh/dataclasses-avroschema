@@ -35,9 +35,3 @@ stop-redis-cluster:
 	@$(MAKE) remove-network
 
 redis-cluster: build run
-
-redis-stream-example:
-	python redis_stream_example.py
-
-redis-gears-example:
-	python redis_gears_example.py

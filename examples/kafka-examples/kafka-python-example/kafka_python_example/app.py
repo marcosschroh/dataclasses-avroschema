@@ -2,6 +2,7 @@ import enum
 import random
 from dataclasses import dataclass
 from time import sleep
+from typing import Optional
 
 from kafka import KafkaConsumer, KafkaProducer
 
@@ -22,7 +23,7 @@ class UserModel(AvroModel):
     age: int
     favorite_colors: FavoriteColor = FavoriteColor.BLUE
     country: str = "Argentina"
-    address: str = None
+    address: Optional[str] = None
 
     class Meta:
         namespace = "User.v1"
@@ -74,6 +75,6 @@ def send(total_events=10):
     print("Stoping producer...")
 
 
-if __name__ == "__main__":
+def main():
     send()
     consume()
