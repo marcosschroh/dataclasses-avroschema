@@ -114,8 +114,9 @@ class ModelGenerator:
 
         # Checks whether "original_schema" key is provided in the metadata_field_templates Dict. If so it will parse
         # the entire schema string into the Meta class field "original_schema" for each class.
-        if schema_template := self.metadata_field_templates['original_schema']:
-            metadata.append(self._add_schema_to_metaclass(schema_template, schema))
+        original_schema_key = 'original_schema'
+        if original_schema_key in self.metadata_field_templates:
+            metadata.append(self._add_schema_to_metaclass(self.metadata_field_templates[original_schema_key], schema))
 
         if field_order is not None:
             metadata.append(
