@@ -581,6 +581,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#rabbitmq-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      RabbitMQ examples
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -668,6 +677,15 @@
   <a href="#redis-examples" class="md-nav__link">
     <span class="md-ellipsis">
       Redis examples
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rabbitmq-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      RabbitMQ examples
     </span>
   </a>
   
@@ -1065,6 +1083,89 @@ The other two examples are <code>sync</code> using the <a href="https://github.c
 
     <span class="n">produce</span><span class="p">(</span><span class="n">consumer_group</span><span class="p">)</span>
     <span class="n">consume</span><span class="p">(</span><span class="n">consumer_group</span><span class="p">)</span>
+</code></pre></div>
+<p><em>(This script is complete, it should run "as is")</em></p>
+<h2 id="rabbitmq-examples">RabbitMQ examples</h2>
+<p>Minimal rabbitmq <a href="https://github.com/marcosschroh/dataclasses-avroschema/blob/master/examples/rabbitmq-examples/rabbitmq-pika/rabbitmq_pika/app.py">example</a> with <a href="https://github.com/pika/pika">pika</a> driver.</p>
+<div class="highlight"><span class="filename">rabbitmq example</span><pre><span></span><code><span class="kn">import</span> <span class="nn">enum</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+
+<span class="kn">import</span> <span class="nn">pika</span>
+
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
+
+
+<span class="k">class</span> <span class="nc">FavoriteColor</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="n">BLUE</span> <span class="o">=</span> <span class="s2">&quot;BLUE&quot;</span>
+    <span class="n">YELLOW</span> <span class="o">=</span> <span class="s2">&quot;YELLOW&quot;</span>
+    <span class="n">GREEN</span> <span class="o">=</span> <span class="s2">&quot;GREEN&quot;</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">UserModel</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
+    <span class="s2">&quot;An User&quot;</span>
+
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">favorite_colors</span><span class="p">:</span> <span class="n">FavoriteColor</span> <span class="o">=</span> <span class="n">FavoriteColor</span><span class="o">.</span><span class="n">BLUE</span>
+    <span class="n">country</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Argentina&quot;</span>
+    <span class="n">address</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">namespace</span> <span class="o">=</span> <span class="s2">&quot;User.v1&quot;</span>
+        <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;user-v1&quot;</span><span class="p">,</span> <span class="s2">&quot;super user&quot;</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">consume</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">queue_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">channel</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">properties</span><span class="p">,</span> <span class="n">body</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Message received with body: </span><span class="si">{</span><span class="n">body</span><span class="si">}</span><span class="s2"> in channel </span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="n">UserModel</span><span class="o">.</span><span class="n">deserialize</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Message deserialized: </span><span class="si">{</span><span class="n">user</span><span class="si">}</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">channel</span><span class="o">.</span><span class="n">basic_consume</span><span class="p">(</span><span class="n">on_message_callback</span><span class="o">=</span><span class="n">callback</span><span class="p">,</span> <span class="n">queue</span><span class="o">=</span><span class="n">queue_name</span><span class="p">)</span>
+    <span class="n">channel</span><span class="o">.</span><span class="n">start_consuming</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">produce</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">queue_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">total_events</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">event_number</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">total_events</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="c1"># Produce message</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Sending event number </span><span class="si">{</span><span class="n">event_number</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">user</span> <span class="o">=</span> <span class="n">UserModel</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="s2">&quot;Juan&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;Peter&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;Michael&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;Moby&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;Kim&quot;</span><span class="p">,</span>
+                <span class="p">]</span>
+            <span class="p">),</span>
+            <span class="n">age</span><span class="o">=</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="c1"># create the message</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">serialize</span><span class="p">()</span>
+
+        <span class="c1"># publish</span>
+        <span class="n">channel</span><span class="o">.</span><span class="n">basic_publish</span><span class="p">(</span><span class="n">exchange</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">routing_key</span><span class="o">=</span><span class="n">queue_name</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="n">message</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">rabbitmq_url</span> <span class="o">=</span> <span class="s2">&quot;amqp://guest:guest@localhost:5672/</span><span class="si">%2f</span><span class="s2">&quot;</span>
+    <span class="n">queue_name</span> <span class="o">=</span> <span class="s2">&quot;test-stream&quot;</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="n">pika</span><span class="o">.</span><span class="n">URLParameters</span><span class="p">(</span><span class="n">rabbitmq_url</span><span class="p">)</span>
+
+    <span class="n">connection</span> <span class="o">=</span> <span class="n">pika</span><span class="o">.</span><span class="n">BlockingConnection</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+    <span class="n">channel</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">channel</span><span class="p">()</span>
+    <span class="n">channel</span><span class="o">.</span><span class="n">queue_declare</span><span class="p">(</span><span class="n">queue</span><span class="o">=</span><span class="n">queue_name</span><span class="p">,</span> <span class="n">durable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">produce</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="n">channel</span><span class="p">,</span> <span class="n">queue_name</span><span class="o">=</span><span class="n">queue_name</span><span class="p">)</span>
+    <span class="n">consume</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="n">channel</span><span class="p">,</span> <span class="n">queue_name</span><span class="o">=</span><span class="n">queue_name</span><span class="p">)</span>
+
+    <span class="n">connection</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 </code></pre></div>
 <p><em>(This script is complete, it should run "as is")</em></p>
 
