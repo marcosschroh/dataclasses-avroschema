@@ -510,3 +510,40 @@ class Message(AvroModel):
     model_generator = ModelGenerator()
     result = model_generator.render(schema=with_fields_with_metadata)
     assert result.strip() == expected_result.strip()
+
+
+def test_schema_with_schema_meta_field(
+    schema_one_to_many_array_relationship: types.JsonDict,
+) -> None:
+    expected_result = """
+from dataclasses_avroschema import AvroModel
+import dataclasses
+import typing
+
+
+@dataclasses.dataclass
+class Address(AvroModel):
+    \"""
+    An Address
+    \"""
+    street: str
+    street_number: int
+
+    class Meta:
+        original_schema = '{"type": "record", "name": "Address", "fields": [{"name": "street", "type": "string"}, {"name": "street_number", "type": "long"}], "doc": "An Address"}'
+
+
+@dataclasses.dataclass
+class User(AvroModel):
+    name: str
+    age: int
+    addresses: typing.List[Address]
+    crazy_union: typing.Union[str, typing.List[Address]]
+    optional_addresses: typing.Optional[typing.List[Address]] = None
+
+    class Meta:
+        original_schema = '{"type": "record", "name": "User", "fields": [{"name": "name", "type": "string"}, {"name": "age", "type": "long"}, {"name": "addresses", "type": {"type": "array", "items": {"type": "record", "name": "Address", "fields": [{"name": "street", "type": "string"}, {"name": "street_number", "type": "long"}], "doc": "An Address"}, "name": "address"}}, {"name": "crazy_union", "type": ["string", {"type": "array", "items": "Address", "name": "optional_address"}]}, {"name": "optional_addresses", "type": ["null", {"type": "array", "items": "Address", "name": "optional_address"}], "default": null}]}'
+"""
+    model_generator = ModelGenerator(include_original_schema=True)
+    result = model_generator.render(schema=schema_one_to_many_array_relationship)
+    assert result.strip() == expected_result.strip()

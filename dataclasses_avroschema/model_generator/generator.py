@@ -1,5 +1,6 @@
 import copy
 import dataclasses
+import json
 import typing
 from dataclasses import dataclass, field
 from string import Template
@@ -40,17 +41,22 @@ class ModelGenerator:
             "aliases": "aliases",
         }
     )
-    matadata_field_templates: typing.Dict[str, Template] = field(
+    metadata_field_templates: typing.Dict[str, Template] = field(
         default_factory=lambda: {
             "namespace": templates.metaclass_field_template,
             "doc": templates.metaclass_field_template,
             "aliases": templates.metaclass_alias_field_template,
+            "original_schema": templates.metaclass_schema_field_template,
         }
     )
     # represent the decorator to add in the base class
     base_class_decotator: str = ""
     avro_type_to_python: typing.Dict[str, str] = field(init=False)
     logical_types_imports: typing.Dict[str, str] = field(init=False)
+
+    # Boolean to indicate whether original_schema field containing the original schema string should be generated in
+    # Meta class of all generated objects
+    include_original_schema: bool = False
 
     def __post_init__(self) -> None:
         # add the base class import
@@ -100,16 +106,21 @@ class ModelGenerator:
         return "".join([extra for extra in self.extras])
 
     def render_metaclass(
-        self, *, schema: JsonDict, field_order: typing.Optional[typing.List[str]] = None
+            self, *, schema: JsonDict, field_order: typing.Optional[typing.List[str]] = None
     ) -> typing.Optional[str]:
         """
         Render Class Meta that contains the schema matadata
         """
         metadata = [
-            self.matadata_field_templates[meta_avro_field].safe_substitute(name=meta_field, value=value)
+            self.metadata_field_templates[meta_avro_field].safe_substitute(name=meta_field, value=value)
             for meta_avro_field, meta_field in self.metadata_fields_mapper.items()
             if (value := schema.get(meta_avro_field))
         ]
+
+        # Parse the entire schema string into the Meta class field "original_schema" for each class.
+        # If self.include_original_schema is set to True.
+        if self.include_original_schema:
+            metadata.append(self._add_schema_to_metaclass(self.metadata_field_templates['original_schema'], schema))
 
         if field_order is not None:
             metadata.append(
@@ -124,10 +135,11 @@ class ModelGenerator:
         if properties:
             # some formating to remove identation at the end of the Class Meta to make it more compatible with black
             return (
-                self.field_identation.join(
-                    [line for line in templates.metaclass_template.safe_substitute(properties=properties).split("\n")]
-                ).rstrip(self.field_identation)
-                + "\n"
+                    self.field_identation.join(
+                        [line for line in
+                         templates.metaclass_template.safe_substitute(properties=properties).split("\n")]
+                    ).rstrip(self.field_identation)
+                    + "\n"
             )
         return None
 
@@ -466,11 +478,11 @@ class ModelGenerator:
         return language_type
 
     def get_language_type(
-        self,
-        *,
-        type: str,
-        default: typing.Optional[str] = None,
-        model_name: typing.Optional[str] = None,
+            self,
+            *,
+            type: str,
+            default: typing.Optional[str] = None,
+            model_name: typing.Optional[str] = None,
     ) -> str:
         if type in (field_utils.INT, field_utils.FLOAT):
             self.imports.add("from dataclasses_avroschema import types")
@@ -537,8 +549,8 @@ class ModelGenerator:
 
         """
         if self.base_class in (
-            BaseClassEnum.AVRO_DANTIC_MODEL.value,
-            BaseClassEnum.PYDANTIC_MODEL.value,
+                BaseClassEnum.AVRO_DANTIC_MODEL.value,
+                BaseClassEnum.PYDANTIC_MODEL.value,
         ):
             pydantic_class = field.get("pydantic-class")
 
@@ -548,12 +560,12 @@ class ModelGenerator:
         return None
 
     def get_field_default(
-        self,
-        *,
-        field_type: AvroTypeRepr,
-        default: typing.Any,
-        name: str,
-        field_metadata: typing.Optional[JsonDict] = None,
+            self,
+            *,
+            field_type: AvroTypeRepr,
+            default: typing.Any,
+            name: str,
+            field_metadata: typing.Optional[JsonDict] = None,
     ) -> typing.Any:
         """
         Returns the default value according to the field type
@@ -630,3 +642,11 @@ class ModelGenerator:
             )
 
         return default
+
+    @staticmethod
+    def _add_schema_to_metaclass(schema_template: Template, schema: JsonDict) -> str:
+        """
+        Parses provided schema to ModelGenerator.render() to a Meta field string by using
+        metaclass_schema_field_template.
+        """
+        return schema_template.safe_substitute(name="original_schema", schema=json.dumps(schema))
