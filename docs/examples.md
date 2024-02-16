@@ -32,3 +32,13 @@ Minimal redis [example](https://github.com/marcosschroh/dataclasses-avroschema/t
 ```
 
 *(This script is complete, it should run "as is")*
+
+## RabbitMQ examples
+
+Minimal rabbitmq [example](https://github.com/marcosschroh/dataclasses-avroschema/blob/master/examples/rabbitmq-examples/rabbitmq-pika/rabbitmq_pika/app.py) with [pika](https://github.com/pika/pika) driver.
+
+```python title="rabbitmq example"
+--8<-- "examples/rabbitmq-examples/rabbitmq-pika/rabbitmq_pika/app.py"
+```
+
+*(This script is complete, it should run "as is")*
