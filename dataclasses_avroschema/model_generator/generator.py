@@ -1,5 +1,6 @@
 import copy
 import dataclasses
+import json
 import typing
 from dataclasses import dataclass, field
 from string import Template
@@ -40,7 +41,7 @@ class ModelGenerator:
             "aliases": "aliases",
         }
     )
-    matadata_field_templates: typing.Dict[str, Template] = field(
+    metadata_field_templates: typing.Dict[str, Template] = field(
         default_factory=lambda: {
             "namespace": templates.metaclass_field_template,
             "doc": templates.metaclass_field_template,
@@ -106,10 +107,15 @@ class ModelGenerator:
         Render Class Meta that contains the schema matadata
         """
         metadata = [
-            self.matadata_field_templates[meta_avro_field].safe_substitute(name=meta_field, value=value)
+            self.metadata_field_templates[meta_avro_field].safe_substitute(name=meta_field, value=value)
             for meta_avro_field, meta_field in self.metadata_fields_mapper.items()
             if (value := schema.get(meta_avro_field))
         ]
+
+        # Checks whether "original_schema" key is provided in the metadata_field_templates Dict. If so it will parse
+        # the entire schema string into the Meta class field "original_schema" for each class.
+        if schema_template := self.metadata_field_templates['original_schema']:
+            metadata.append(self._add_schema_to_metaclass(schema_template, schema))
 
         if field_order is not None:
             metadata.append(
@@ -630,3 +636,11 @@ class ModelGenerator:
             )
 
         return default
+
+    @staticmethod
+    def _add_schema_to_metaclass(schema_template: Template, schema: JsonDict) -> str:
+        """
+        Parses provided schema to ModelGenerator.render() to a Meta field string by using
+        metaclass_schema_field_template.
+        """
+        return schema_template.safe_substitute(name="original_schema", schema=json.dumps(schema))

@@ -3,6 +3,7 @@ from string import Template
 FIELD_TEMPLATE = "$name: $type"
 METACLASS_FIELD_TEMPLATE = '$name = "$value"'
 METACLASS_ALIAS_FIELD = "$name = $value"
+METACLASS_SCHEMA_FIELD = "$name = '$schema'"
 FIELD_DEFAULT_TEMPLATE = " = $default"
 OPTIONAL_TEMPLATE = "typing.Optional[$type]"
 UNION_TEMPLATE = "typing.Union[$type]"
@@ -57,6 +58,7 @@ PYDANTIC_FIELD = "Field($properties)"
 field_template = Template(FIELD_TEMPLATE)
 metaclass_field_template = Template(METACLASS_FIELD_TEMPLATE)
 metaclass_alias_field_template = Template(METACLASS_ALIAS_FIELD)
+metaclass_schema_field_template = Template(METACLASS_SCHEMA_FIELD)
 field_default_template = Template(FIELD_DEFAULT_TEMPLATE)
 optional_template = Template(OPTIONAL_TEMPLATE)
 union_template = Template(UNION_TEMPLATE)
