@@ -466,3 +466,53 @@ class User(AvroModel):
 ```
 
 As the example shows the second enum member `UnitMultiPlayer.p` is not in uppercase otherwise will collide with the first member `UnitMultiPlayer.P`
+
+## Original schema string
+
+Ideally, the schema from the generated model must perfectly match the original schema, unfortunately that is not always the case when avro types, that have inner names (arrays, enums, fixed and maps), are used.
+
+To counteract a potential mismatch when referring to the schema using `GeneratedModel.avro_schema()`, which returns a generated schema based on the model. It is possible to specify to include the original schema string when using the ModelGenerator, like so: `ModelGenerator(include_original_schema=True)` 
+```python
+from dataclasses_avroschema import ModelGenerator
+
+schema = {
+    "type": "record",
+    "namespace": "com.kubertenes",
+    "name": "AvroDeployment",
+    "fields": [
+        {"name": "image", "type": "string"},
+        {"name": "replicas", "type": "int"},
+        {"name": "port", "type": "int"},
+    ],
+}
+
+model_generator = ModelGenerator(include_original_schema=True)
+result = model_generator.render(schema=schema)
+
+# save the result in a file
+with open("models.py", mode="+w") as f:
+    f.write(result)
+```
+
+Then the result will be:
+
+```python
+# models.py
+import dataclasses
+
+from dataclasses_avroschema import AvroModel
+from dataclasses_avroschema import types
+
+
+@dataclasses.dataclass
+class AvroDeployment(AvroModel):
+    image: str
+    replicas: types.Int32
+    port: types.Int32
+
+    class Meta:
+        namespace = "com.kubertenes"
+        original_schema = '{"type": "record", "namespace": "com.kubertenes", "name": "AvroDeployment", "fields": [{"name": "image", "type": "string"}, {"name": "replicas", "type": "int"}, {"name": "port", "type": "int"}]}'
+```
+
+As the example shows, the Meta class of AvroDeployment, now contains an "original_schema" field `AvroDeployment.Meta.original_schema`, which can be referred to instead. 
