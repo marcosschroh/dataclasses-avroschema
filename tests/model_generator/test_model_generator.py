@@ -1,6 +1,5 @@
 from dataclasses_avroschema import ModelGenerator, types
 from dataclasses_avroschema.fields import field_utils
-from dataclasses_avroschema.model_generator import templates
 from dataclasses_avroschema.model_generator.avro_to_python_utils import render_datetime
 
 
