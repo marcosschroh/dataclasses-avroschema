@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "rabbitmq-pika"
+version = "0.1.0"
+description = ""
+authors = ["marcosschroh <schrohm@gmail.com>"]
+packages = [{include = "rabbitmq_pika"}]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+dataclasses-avroschema = { path = "../../../.", develop = true }
+pika = "^1.3.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+app = "rabbitmq_pika.app:main"
+
