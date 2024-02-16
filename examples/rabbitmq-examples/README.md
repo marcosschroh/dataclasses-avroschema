@@ -1,6 +1,6 @@
-# Examples of dataclasses-avroschema
+# Examples of dataclasses-avroschema with RabbitMQ
 
-You will find an example of how to use [dataclasses-avroschema](https://github.com/marcosschroh/dataclasses-avroschema) and the integration with the python drivers [walrus](https://github.com/coleifer/walrus)
+You will find an example of how to use [dataclasses-avroschema](https://github.com/marcosschroh/dataclasses-avroschema) and the integration with the python drivers [pika](https://github.com/pika/pika)
 
 ## Requirements
 
@@ -8,8 +8,8 @@ You will find an example of how to use [dataclasses-avroschema](https://github.c
 
 ### Cluster setup
 
-1. `cd redis-examples`
-1. `make redis-cluster` to start the redis cluster
+1. `cd rabbitmq-examples`
+1. `docker-compose up` to start the rabbitmq cluster
 
 ## Examples
 
@@ -40,9 +40,9 @@ class UserModel(AvroModel):
 
 ### dataclasses-avroschema and redis streams with walrus
 
-In the file [app.py](https://github.com/marcosschroh/dataclasses-avroschema/blob/master/examples/redis-examples/redis-streams-example/redis_streams_example/app.py) you will find a the simplest use case of `redis streams` using the driver `walrus`. We create a consumer group and messages are read one by one.
+In the file [app.py](https://github.com/marcosschroh/dataclasses-avroschema/blob/master/examples/rabbitmq-examples/rabbitmq-pika/rabbitmq_pika/app.py) you will find a the simplest use case of `rabbitmq streams` using the driver `pike`.
 
-1. `cd redis-examples/redis-streams-example`
+1. `cd rabbitmq-examples/rabbitmq-pika`
 1. `poetry install`
 1. `poetry run app`
 1. To stop the producer/consumer use `Ctrl + c`
