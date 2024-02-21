@@ -85,11 +85,11 @@ class ModelGenerator:
             self.imports_dict = {"dataclass_field": "from pydantic import Field"}
 
     @staticmethod
-    def validate_schema(*, schema: JsonDict) -> None:
+    def validate_schema(*, schemas: typing.List[JsonDict]) -> None:
         """
-        Validate that the schema is a valid avro schema
+        Validate that the schemas are valid avro schemas
         """
-        fastavro.parse_schema(schema)
+        fastavro.parse_schema(schemas)
 
     def render_imports(self) -> str:
         """
@@ -106,13 +106,15 @@ class ModelGenerator:
         return "".join([extra for extra in self.extras])
 
     def render_metaclass(
-            self, *, schema: JsonDict, field_order: typing.Optional[typing.List[str]] = None
+        self, *, schema: JsonDict, field_order: typing.Optional[typing.List[str]] = None
     ) -> typing.Optional[str]:
         """
         Render Class Meta that contains the schema matadata
         """
         metadata = [
-            self.metadata_field_templates[meta_avro_field].safe_substitute(name=meta_field, value=value)
+            self.metadata_field_templates[meta_avro_field].safe_substitute(
+                name=meta_field, value=value
+            )
             for meta_avro_field, meta_field in self.metadata_fields_mapper.items()
             if (value := schema.get(meta_avro_field))
         ]
@@ -120,7 +122,11 @@ class ModelGenerator:
         # Parse the entire schema string into the Meta class field "original_schema" for each class.
         # If self.include_original_schema is set to True.
         if self.include_original_schema:
-            metadata.append(self._add_schema_to_metaclass(self.metadata_field_templates['original_schema'], schema))
+            metadata.append(
+                self._add_schema_to_metaclass(
+                    self.metadata_field_templates["original_schema"], schema
+                )
+            )
 
         if field_order is not None:
             metadata.append(
@@ -135,11 +141,15 @@ class ModelGenerator:
         if properties:
             # some formating to remove identation at the end of the Class Meta to make it more compatible with black
             return (
-                    self.field_identation.join(
-                        [line for line in
-                         templates.metaclass_template.safe_substitute(properties=properties).split("\n")]
-                    ).rstrip(self.field_identation)
-                    + "\n"
+                self.field_identation.join(
+                    [
+                        line
+                        for line in templates.metaclass_template.safe_substitute(
+                            properties=properties
+                        ).split("\n")
+                    ]
+                ).rstrip(self.field_identation)
+                + "\n"
             )
         return None
 
@@ -150,7 +160,9 @@ class ModelGenerator:
         if not docstring:
             return ""
 
-        indented = self.field_identation + self.field_identation.join(docstring.splitlines())
+        indented = self.field_identation + self.field_identation.join(
+            docstring.splitlines()
+        )
 
         return f'{self.field_identation}"""{indented}{self.field_identation}"""'
 
@@ -207,8 +219,8 @@ class ModelGenerator:
         """
         Render the module with the classes generated from the schemas
         """
-        for schema in schemas:
-            self.validate_schema(schema=schema)
+
+        self.validate_schema(schemas=schemas)
 
         classes = "\n".join(self.render_class(schema=schema) for schema in schemas)
         imports = self.render_imports()
@@ -281,7 +293,9 @@ class ModelGenerator:
             # with the form {"type": "a_primitive_type"}, example {"type": "string"})
             result = language_type
         else:
-            result = templates.field_template.safe_substitute(name=name, type=language_type)
+            result = templates.field_template.safe_substitute(
+                name=name, type=language_type
+            )
 
         # optional field attribute
         default_generated = self.get_field_default(
@@ -290,11 +304,15 @@ class ModelGenerator:
 
         if default_generated is not dataclasses.MISSING:
             if type != field_utils.DECIMAL:
-                result += templates.field_default_template.safe_substitute(default=default_generated)
+                result += templates.field_default_template.safe_substitute(
+                    default=default_generated
+                )
             if default is not dataclasses.MISSING:
                 has_default = True
 
-        return FieldRepresentation(name=name, string_representation=result, has_default=has_default)
+        return FieldRepresentation(
+            name=name, string_representation=result, has_default=has_default
+        )
 
     @staticmethod
     def is_logical_type(*, field: JsonDict) -> bool:
@@ -302,7 +320,9 @@ class ModelGenerator:
             return True
 
         field_type = field["type"]
-        return isinstance(field_type, dict) and field_type.get("logicalType") is not None
+        return (
+            isinstance(field_type, dict) and field_type.get("logicalType") is not None
+        )
 
     def parse_logical_type(self, *, field: JsonDict) -> str:
         field_name = field.get("name")
@@ -323,24 +343,32 @@ class ModelGenerator:
             type = self.avro_type_to_python[logical_type]
 
         if field_name is not None:
-            field_repr = templates.field_template.safe_substitute(name=field_name, type=type)
+            field_repr = templates.field_template.safe_substitute(
+                name=field_name, type=type
+            )
             return field_repr
 
         return type
 
-    def parse_decimal(self, *, field: JsonDict, default: typing.Optional[str] = None) -> str:
+    def parse_decimal(
+        self, *, field: JsonDict, default: typing.Optional[str] = None
+    ) -> str:
         precision = field["precision"]
         scale = field["scale"]
 
         self.imports.add("from dataclasses_avroschema import types")
-        field_repr = templates.decimal_type_template.safe_substitute(precision=precision, scale=scale)
+        field_repr = templates.decimal_type_template.safe_substitute(
+            precision=precision, scale=scale
+        )
 
         if default is not None:
             self.imports.add("import decimal")
             default = templates.decimal_template.safe_substitute(
                 value=serialization.string_to_decimal(value=default, schema=field)
             )
-            field_repr += templates.field_default_template.safe_substitute(default=default)
+            field_repr += templates.field_default_template.safe_substitute(
+                default=default
+            )
         return field_repr
 
     def parse_union(self, *, field_types: typing.List, model_name: str) -> str:
@@ -360,7 +388,9 @@ class ModelGenerator:
         # XXX: Maybe more useful in general
         def render_type(typ: str) -> str:
             if isinstance(typ, dict):
-                field_representation = self.render_field(field=typ, model_name=model_name)
+                field_representation = self.render_field(
+                    field=typ, model_name=model_name
+                )
                 return field_representation.string_representation
             else:
                 return self.get_language_type(type=typ, model_name=model_name)
@@ -390,7 +420,9 @@ class ModelGenerator:
             {"name": "pets", "type": {"type": "array", "items": "string", "name": "pet"}}
         """
         type = field["items"]
-        language_type = self._get_complex_langauge_type(type=type, model_name=model_name)
+        language_type = self._get_complex_langauge_type(
+            type=type, model_name=model_name
+        )
 
         return templates.list_template.safe_substitute(type=language_type)
 
@@ -404,7 +436,9 @@ class ModelGenerator:
             {"name": "accounts_money", "type": {"type": "map", "values": "float", "name": "accounts_money"}},
         """
         type = field["values"]
-        language_type = self._get_complex_langauge_type(type=type, model_name=model_name)
+        language_type = self._get_complex_langauge_type(
+            type=type, model_name=model_name
+        )
 
         return templates.dict_template.safe_substitute(type=language_type)
 
@@ -445,13 +479,17 @@ class ModelGenerator:
 
         symbols_repr = self.field_identation.join(
             [
-                templates.enum_symbol_template.safe_substitute(key=key, value=f'"{value}"')
+                templates.enum_symbol_template.safe_substitute(
+                    key=key, value=f'"{value}"'
+                )
                 for key, value in symbols_map.items()
             ]
         )
 
         docstring = self.render_docstring(docstring=field.get("doc"))
-        enum_class = templates.enum_template.safe_substitute(name=enum_name, symbols=symbols_repr, docstring=docstring)
+        enum_class = templates.enum_template.safe_substitute(
+            name=enum_name, symbols=symbols_repr, docstring=docstring
+        )
         metaclass = self.render_metaclass(schema=field)
 
         if metaclass:
@@ -478,11 +516,11 @@ class ModelGenerator:
         return language_type
 
     def get_language_type(
-            self,
-            *,
-            type: str,
-            default: typing.Optional[str] = None,
-            model_name: typing.Optional[str] = None,
+        self,
+        *,
+        type: str,
+        default: typing.Optional[str] = None,
+        model_name: typing.Optional[str] = None,
     ) -> str:
         if type in (field_utils.INT, field_utils.FLOAT):
             self.imports.add("from dataclasses_avroschema import types")
@@ -527,7 +565,9 @@ class ModelGenerator:
                 ]
             )
 
-        return {name: value for name, value in field.items() if name not in keys_to_ignore}
+        return {
+            name: value for name, value in field.items() if name not in keys_to_ignore
+        }
 
     def _resolve_type_from_metadata(self, *, field: JsonDict) -> typing.Optional[str]:
         """
@@ -549,8 +589,8 @@ class ModelGenerator:
 
         """
         if self.base_class in (
-                BaseClassEnum.AVRO_DANTIC_MODEL.value,
-                BaseClassEnum.PYDANTIC_MODEL.value,
+            BaseClassEnum.AVRO_DANTIC_MODEL.value,
+            BaseClassEnum.PYDANTIC_MODEL.value,
         ):
             pydantic_class = field.get("pydantic-class")
 
@@ -560,12 +600,12 @@ class ModelGenerator:
         return None
 
     def get_field_default(
-            self,
-            *,
-            field_type: AvroTypeRepr,
-            default: typing.Any,
-            name: str,
-            field_metadata: typing.Optional[JsonDict] = None,
+        self,
+        *,
+        field_type: AvroTypeRepr,
+        default: typing.Any,
+        name: str,
+        field_metadata: typing.Optional[JsonDict] = None,
     ) -> typing.Any:
         """
         Returns the default value according to the field type
@@ -590,25 +630,33 @@ class ModelGenerator:
         elif isinstance(field_type, dict):
             inner_type = field_type["type"]
             name = field_type.get("name", name)
-            default = self.get_field_default(field_type=inner_type, name=name, default=default)
+            default = self.get_field_default(
+                field_type=inner_type, name=name, default=default
+            )
         elif field_type == field_utils.ENUM:
             default = f"{casefy.pascalcase(name)}.{casefy.uppercase(default)}"
         elif isinstance(field_type, list):
-            default = self.get_field_default(field_type=field_type[0], default=default, name=name)
+            default = self.get_field_default(
+                field_type=field_type[0], default=default, name=name
+            )
         elif isinstance(default, dict):
             # Then is can be a regular dict as default or a record
             if default:
                 if field_type not in field_utils.AVRO_TYPES:
                     # Try to get the last part in case that the type is namespaced `types.bus_type.Bus`
                     field_type = field_type.split(".")[-1]
-                    default = templates.instance_template.safe_substitute(type=field_type, properties=f"**{default}")
+                    default = templates.instance_template.safe_substitute(
+                        type=field_type, properties=f"**{default}"
+                    )
 
                 # it is an array or maps with some defaults that we should
                 # express with a lambda function
                 dataclass_field_default_factory = f"default_factory=lambda: {default}"
             else:
                 # it is an array or maps with `[]` or `{} ` as default
-                dataclass_field_default_factory = f"default_factory={default.__class__.__name__}"
+                dataclass_field_default_factory = (
+                    f"default_factory={default.__class__.__name__}"
+                )
         elif isinstance(default, list):
             if default:
                 # TODO: check the defaults with custom types
@@ -617,7 +665,9 @@ class ModelGenerator:
                 dataclass_field_default_factory = f"default_factory=lambda: {default}"
             else:
                 # it is an array or maps with `[]` or `{} ` as default
-                dataclass_field_default_factory = f"default_factory={default.__class__.__name__}"
+                dataclass_field_default_factory = (
+                    f"default_factory={default.__class__.__name__}"
+                )
         elif field_type in avro_to_python_utils.LOGICAL_TYPES_TO_PYTHON:
             func = avro_to_python_utils.LOGICAL_TYPES_TO_PYTHON[field_type]
             python_type = func(default)
@@ -634,11 +684,16 @@ class ModelGenerator:
         if any(dataclass_field_properties):
             # If the default was not set or the default_factory was set
             # then we not need a default in the field
-            if default is not dataclasses.MISSING and dataclass_field_default_factory is None:
+            if (
+                default is not dataclasses.MISSING
+                and dataclass_field_default_factory is None
+            ):
                 dataclass_field_properties.append(f" default={default}")
 
             default = self.render_dataclass_field(
-                properties=",".join([prop for prop in dataclass_field_properties if prop is not None])
+                properties=",".join(
+                    [prop for prop in dataclass_field_properties if prop is not None]
+                )
             )
 
         return default
@@ -649,4 +704,6 @@ class ModelGenerator:
         Parses provided schema to ModelGenerator.render() to a Meta field string by using
         metaclass_schema_field_template.
         """
-        return schema_template.safe_substitute(name="original_schema", schema=json.dumps(schema))
+        return schema_template.safe_substitute(
+            name="original_schema", schema=json.dumps(schema)
+        )
