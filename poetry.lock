@@ -724,12 +724,12 @@ zstandard = ["zstandard"]
 
 [[package]]
 name = "faust-streaming"
-version = "0.10.22"
+version = "0.10.23"
 description = "Python Stream processing."
 optional = true
 python-versions = ">=3.8.0"
 files = [
-    {file = "faust-streaming-0.10.22.tar.gz", hash = "sha256:d444ed2a5806666ae09d24b0557b59a2c13adf49fdc5797e7d403d84856b300b"},
+    {file = "faust-streaming-0.10.23.tar.gz", hash = "sha256:34120e3279042e4b2b0e0c30c03fde98ecf02ce16c6e7ab42cda9d4ed5168237"},
 ]
 
 [package.dependencies]
