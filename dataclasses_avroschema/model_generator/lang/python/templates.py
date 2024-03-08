@@ -1,6 +1,6 @@
 from string import Template
 
-FIELD_TEMPLATE = "$name: $type"
+FIELD_TYPE_TEMPLATE = "$name: $type"
 METACLASS_FIELD_TEMPLATE = '$name = "$value"'
 METACLASS_ALIAS_FIELD = "$name = $value"
 METACLASS_SCHEMA_FIELD = "$name = '$schema'"
@@ -10,7 +10,7 @@ UNION_TEMPLATE = "typing.Union[$type]"
 LIST_TEMPLATE = "typing.List[$type]"
 DICT_TEMPLATE = "typing.Dict[str, $type]"
 FIXED_TEMPLATE = "types.confixed($properties)"
-DATACLASS_FIELD = "dataclasses.field($properties)"
+FIELD_TEMPLATE = "dataclasses.field($properties)"
 TYPE_TEMPLATE = '"$type"'
 DATE_TEMPLATE = "datetime.date($year, $month, $day)"
 TIME_TEMPLATE = "datetime.time($hour, $minute, $second)"
@@ -55,7 +55,7 @@ $classes
 # Pydanntic specific
 PYDANTIC_FIELD = "Field($properties)"
 
-field_template = Template(FIELD_TEMPLATE)
+field_type_template = Template(FIELD_TYPE_TEMPLATE)
 metaclass_field_template = Template(METACLASS_FIELD_TEMPLATE)
 metaclass_alias_field_template = Template(METACLASS_ALIAS_FIELD)
 metaclass_schema_field_template = Template(METACLASS_SCHEMA_FIELD)
@@ -69,7 +69,7 @@ decimal_template = Template(DECIMAL_TEMPLATE)
 decimal_type_template = Template(DECIMAL_TYPE_TEMPLATE)
 enum_symbol_template = Template(ENUM_SYMBOL_TEMPLATE)
 enum_template = Template(ENUM_TEMPLATE)
-dataclass_field_template = Template(DATACLASS_FIELD)
+field_template = Template(FIELD_TEMPLATE)
 pydantic_field_template = Template(PYDANTIC_FIELD)
 class_template = Template(CLASS_TEMPLATE)
 instance_template = Template(INSTANCE_TEMPLATE)

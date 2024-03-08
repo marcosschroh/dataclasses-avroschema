@@ -42,7 +42,7 @@ The rendered result is a string that contains the proper identation, so the resu
 ## Usage
 
 ```python
-from dataclasses_avroschema import ModelGenerator
+from dataclasses_avroschema import ModelGenerator, ModelType
 
 model_generator = ModelGenerator()
 
@@ -57,7 +57,7 @@ schema = {
     ],
 }
 
-result = model_generator.render(schema=schema)
+result = model_generator.render(schema=schema, model_type=ModelType.DATACLASS.value)
 
 # save the result in a file
 with open("models.py", mode="+w") as f:
@@ -88,8 +88,8 @@ class AvroDeployment(AvroModel):
 
 It's also possible to generate a Python module containing classes from multiple schemas using `render_module`.
 
-```py
-from dataclasses_avroschema import ModelGenerator
+```python
+from dataclasses_avroschema import ModelGenerator, ModelType
 
 model_generator = ModelGenerator()
 
@@ -110,7 +110,7 @@ address_schema = {
     ],
 }
 
-result = model_generator.render_module(schemas=[user_schema, address_schema])
+result = model_generator.render_module(schemas=[user_schema, address_schema], model_type=ModelType.DATACLASS.value)
 
 with open("models.py", mode="+w") as f:
     f.write(result)
@@ -141,7 +141,7 @@ Generating a single module from multiple schemas is useful for example to group 
 
 ## Render Pydantic models
 
-It is also possible to render `BaseModel` (pydantic) and `AvroBaseModel` (avro + pydantic) models as well simply specifying the `base class`.
+It is also possible to render `BaseModel` (pydantic) and `AvroBaseModel` (avro + pydantic) models as well.
 The end result will also include the necessaty imports and the use of `pydantic.Field` in case that it is needed:
 
 For example:
@@ -166,10 +166,10 @@ and then render the result:
 === "Pydantic models"
 
     ```python
-    from dataclasses_avroschema import ModelGenerator, BaseClassEnum
+    from dataclasses_avroschema import ModelGenerator, ModelType
 
-    model_generator = ModelGenerator(base_class=BaseClassEnum.PYDANTIC_MODEL.value)
-    result = model_generator.render(schema=schema)
+    model_generator = ModelGenerator()
+    result = model_generator.render(schema=schema, model_type=ModelType.PYDANTIC.value)
 
     # save the result in a file
     with open("models.py", mode="+w") as f:
@@ -194,10 +194,10 @@ and then render the result:
 === "Avrodantic models"
 
     ```python
-    from dataclasses_avroschema import ModelGenerator, BaseClassEnum
+    from dataclasses_avroschema import ModelGenerator
 
-    model_generator = ModelGenerator(base_class=BaseClassEnum.AVRO_DANTIC_MODEL.value)
-    result = model_generator.render(schema=schema)
+    model_generator = ModelGenerator()
+    result = model_generator.render(schema=schema, model_type=ModelType.AVRODANTIC.value)
 
     # save the result in a file
     with open("models.py", mode="+w") as f:
@@ -367,7 +367,7 @@ declared before required fields, which means that and invalid model will be gene
 For example the following schema contains the field `has_pets` (optional) before required fields:
 
 ```python
-from dataclasses_avroschema import ModelGenerator
+from dataclasses_avroschema import ModelGenerator, ModelType
 
 
 schema = {
@@ -383,7 +383,7 @@ schema = {
 }
 
 model_generator = ModelGenerator()
-result = model_generator.render(schema=schema)
+result = model_generator.render(schema=schema, model_type=ModelType.DATACLASS.value)
 
 # save the result in a file
 with open("models.py", mode="+w") as f:
@@ -420,7 +420,7 @@ Having something like that is NOT reccomended at all because it is meaninless, r
 When the schema generator encounter this situation it can not generated the proper `enum` with `uppercases` key so it will use the `symbol` without any transformation
 
 ```python
-from dataclasses_avroschema import ModelGenerator
+from dataclasses_avroschema import ModelGenerator, ModelType
 
 schema = {
     "type": "record",
@@ -438,7 +438,7 @@ schema = {
 }
 
 model_generator = ModelGenerator()
-result = model_generator.render(schema=schema)
+result = model_generator.render(schema=schema, model_type=ModelType.DATACLASS.value)
 
 # save the result in a file
 with open("models.py", mode="+w") as f:
@@ -471,9 +471,10 @@ As the example shows the second enum member `UnitMultiPlayer.p` is not in upperc
 
 Ideally, the schema from the generated model must perfectly match the original schema, unfortunately that is not always the case when avro types, that have inner names (arrays, enums, fixed and maps), are used.
 
-To counteract a potential mismatch when referring to the schema using `GeneratedModel.avro_schema()`, which returns a generated schema based on the model. It is possible to specify to include the original schema string when using the ModelGenerator, like so: `ModelGenerator(include_original_schema=True)` 
+To counteract a potential mismatch when referring to the schema using `GeneratedModel.avro_schema()`, which returns a generated schema based on the model. It is possible to specify to include the original schema string when using the ModelGenerator specifying `include_original_schema=True`
+
 ```python
-from dataclasses_avroschema import ModelGenerator
+from dataclasses_avroschema import ModelGenerator, ModelType
 
 schema = {
     "type": "record",
@@ -486,8 +487,8 @@ schema = {
     ],
 }
 
-model_generator = ModelGenerator(include_original_schema=True)
-result = model_generator.render(schema=schema)
+model_generator = ModelGenerator()
+result = model_generator.render(schema=schema, model_type=ModelType.DATACLASS.value, include_original_schema=True)
 
 # save the result in a file
 with open("models.py", mode="+w") as f:

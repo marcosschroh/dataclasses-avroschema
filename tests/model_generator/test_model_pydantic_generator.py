@@ -1,6 +1,8 @@
-from dataclasses_avroschema import BaseClassEnum, ModelGenerator, types
+from dataclasses_avroschema import ModelGenerator, ModelType, types
 from dataclasses_avroschema.fields import field_utils
-from dataclasses_avroschema.model_generator.avro_to_python_utils import render_datetime
+from dataclasses_avroschema.model_generator.lang.python.avro_to_python_utils import (
+    render_datetime,
+)
 
 
 def test_pydantic_model(schema_one_to_many_map_relationship: types.JsonDict) -> None:
@@ -26,8 +28,8 @@ class User(BaseModel):
     crazy_union: typing.Union[str, typing.Dict[str, Address]]
     optional_addresses: typing.Optional[typing.Dict[str, Address]] = None
 """
-    model_generator = ModelGenerator(base_class=BaseClassEnum.PYDANTIC_MODEL.value)
-    result = model_generator.render(schema=schema_one_to_many_map_relationship)
+    model_generator = ModelGenerator()
+    result = model_generator.render(schema=schema_one_to_many_map_relationship, model_type=ModelType.PYDANTIC.value)
     assert result.strip() == expected_result.strip()
 
 
@@ -48,8 +50,8 @@ class User(BaseModel):
     relatives: typing.List["User"] = Field(default_factory=list)
     teammates: typing.Dict[str, "User"] = Field(default_factory=dict)
 """
-    model_generator = ModelGenerator(base_class=BaseClassEnum.PYDANTIC_MODEL.value)
-    result = model_generator.render(schema=schema_one_to_self_relationship)
+    model_generator = ModelGenerator()
+    result = model_generator.render(schema=schema_one_to_self_relationship, model_type=ModelType.PYDANTIC.value)
     assert result.strip() == expected_result.strip()
 
 
@@ -78,8 +80,8 @@ class User(AvroBaseModel):
     crazy_union: typing.Union[str, typing.Dict[str, Address]]
     optional_addresses: typing.Optional[typing.Dict[str, Address]] = None
 """
-    model_generator = ModelGenerator(base_class=BaseClassEnum.AVRO_DANTIC_MODEL.value)
-    result = model_generator.render(schema=schema_one_to_many_map_relationship)
+    model_generator = ModelGenerator()
+    result = model_generator.render(schema=schema_one_to_many_map_relationship, model_type=ModelType.AVRODANTIC.value)
     assert result.strip() == expected_result.strip()
 
 
@@ -100,8 +102,8 @@ class User(AvroBaseModel):
     relatives: typing.List["User"] = Field(default_factory=list)
     teammates: typing.Dict[str, "User"] = Field(default_factory=dict)
 """
-    model_generator = ModelGenerator(base_class=BaseClassEnum.AVRO_DANTIC_MODEL.value)
-    result = model_generator.render(schema=schema_one_to_self_relationship)
+    model_generator = ModelGenerator()
+    result = model_generator.render(schema=schema_one_to_self_relationship, model_type=ModelType.AVRODANTIC.value)
     assert result.strip() == expected_result.strip()
 
 
@@ -115,8 +117,8 @@ from dataclasses_avroschema.pydantic import AvroBaseModel
 class Demo(AvroBaseModel):
     foo: types.condecimal(max_digits=10, decimal_places=3)
 """
-    model_generator = ModelGenerator(base_class=BaseClassEnum.AVRO_DANTIC_MODEL.value)
-    result = model_generator.render(schema=schema_with_decimal_field)
+    model_generator = ModelGenerator()
+    result = model_generator.render(schema=schema_with_decimal_field, model_type=ModelType.AVRODANTIC.value)
     assert result.strip() == expected_result.strip()
 
 
@@ -153,8 +155,8 @@ class LogicalTypes(AvroBaseModel):
     explicit_with_default: types.condecimal(max_digits=3, decimal_places=2) = decimal.Decimal('3.14')
 
 """
-    model_generator = ModelGenerator(base_class=BaseClassEnum.AVRO_DANTIC_MODEL.value)
-    result = model_generator.render(schema=schema_with_logical_types)
+    model_generator = ModelGenerator()
+    result = model_generator.render(schema=schema_with_logical_types, model_type=ModelType.AVRODANTIC.value)
     assert result.strip() == expected_result.strip()
 
 
@@ -182,8 +184,8 @@ class Infrastructure(AvroBaseModel):
 
 """
 
-    model_generator = ModelGenerator(base_class=BaseClassEnum.AVRO_DANTIC_MODEL.value)
-    result = model_generator.render(schema=schema_with_pydantic_fields)
+    model_generator = ModelGenerator()
+    result = model_generator.render(schema=schema_with_pydantic_fields, model_type=ModelType.AVRODANTIC.value)
     assert result.strip() == expected_result.strip()
 
 
@@ -202,8 +204,10 @@ class ConstrainedValues(AvroBaseModel):
 
 """
 
-    model_generator = ModelGenerator(base_class=BaseClassEnum.AVRO_DANTIC_MODEL.value)
-    result = model_generator.render(schema=schema_with_pydantic_constrained_fields)
+    model_generator = ModelGenerator()
+    result = model_generator.render(
+        schema=schema_with_pydantic_constrained_fields, model_type=ModelType.AVRODANTIC.value
+    )
     assert result.strip() == expected_result.strip()
 
 
@@ -232,6 +236,6 @@ class LogicalTypesPydantic(AvroBaseModel):
     event_uuid: uuid.UUID = "09f00184-7721-4266-a955-21048a5cc235"
 
 """
-    model_generator = ModelGenerator(base_class=BaseClassEnum.AVRO_DANTIC_MODEL.value)
-    result = model_generator.render(schema=schema_with_pydantic_logical_fields)
+    model_generator = ModelGenerator()
+    result = model_generator.render(schema=schema_with_pydantic_logical_fields, model_type=ModelType.AVRODANTIC.value)
     assert result.strip() == expected_result.strip()

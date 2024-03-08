@@ -1,6 +1,8 @@
-from dataclasses_avroschema import ModelGenerator, types
+from dataclasses_avroschema import ModelGenerator, ModelType, types
 from dataclasses_avroschema.fields import field_utils
-from dataclasses_avroschema.model_generator.avro_to_python_utils import render_datetime
+from dataclasses_avroschema.model_generator.lang.python.avro_to_python_utils import (
+    render_datetime,
+)
 
 
 def test_model_generator_primitive_types(schema: types.JsonDict) -> None:
@@ -30,7 +32,7 @@ class User(AvroModel):
         aliases = ['schema', 'test-schema']
 """
     model_generator = ModelGenerator()
-    result = model_generator.render(schema=schema)
+    result = model_generator.render(schema=schema, model_type=ModelType.DATACLASS.value)
     assert result.strip() == expected_result.strip()
 
 
@@ -544,6 +546,6 @@ class User(AvroModel):
     class Meta:
         original_schema = '{"type": "record", "name": "User", "fields": [{"name": "name", "type": "string"}, {"name": "age", "type": "long"}, {"name": "addresses", "type": {"type": "array", "items": {"type": "record", "name": "Address", "fields": [{"name": "street", "type": "string"}, {"name": "street_number", "type": "long"}], "doc": "An Address"}, "name": "address"}}, {"name": "crazy_union", "type": ["string", {"type": "array", "items": "Address", "name": "optional_address"}]}, {"name": "optional_addresses", "type": ["null", {"type": "array", "items": "Address", "name": "optional_address"}], "default": null}]}'
 """
-    model_generator = ModelGenerator(include_original_schema=True)
-    result = model_generator.render(schema=schema_one_to_many_array_relationship)
+    model_generator = ModelGenerator()
+    result = model_generator.render(schema=schema_one_to_many_array_relationship, include_original_schema=True)
     assert result.strip() == expected_result.strip()
