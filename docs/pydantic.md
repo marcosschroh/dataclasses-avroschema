@@ -126,7 +126,6 @@ using the key `pydantic-class`.
 | long         | timestamp-millis | pydantic.AwareDatetime |
 | long         | timestamp-millis | pydantic.NaiveDatetime |
 
-
 ```python
 import pydantic
 from dataclasses_avroschema.pydantic import AvroBaseModel
@@ -174,9 +173,9 @@ then the proper pydantic types will be used.
 Schema example:
 
 ```python
-from dataclasses_avroschema import ModelGenerator, BaseClassEnum
+from dataclasses_avroschema import ModelGenerator, ModelType
 
-model_generator = ModelGenerator(base_class=BaseClassEnum.AVRO_DANTIC_MODEL.value)
+model_generator = ModelGenerator()
 
 schema = {
     "type": "record",
@@ -192,7 +191,7 @@ schema = {
     ]
 }
 
-result = model_generator.render(schema=schema)
+result = model_generator.render(schema=schema, model_type=ModelType.AVRODANTIC.value)
 
 with open("models.py", mode="+w") as f:
     f.write(result)
@@ -202,8 +201,8 @@ and then render the result:
 
 ```python
 from dataclasses_avroschema.pydantic import AvroBaseModel
-import pydantic
 import typing
+import pydantic
 
 
 class Infrastructure(AvroBaseModel):
