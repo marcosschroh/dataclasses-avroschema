@@ -1,9 +1,8 @@
-# Changelog
+## 0.57.2 (2024-03-11)
 
-All notable changes to this project will be documented in this file.
+### Fix
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+- model generator refactored (#569)
 
 ## 0.57.1 (2024-02-22)
 
@@ -91,11 +90,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 0.51.0 (2023-09-20)
 
-### BREAKING CHANGE
+### Feat
 
 - **pydantic-v2**: First steps to support pydantic v2. Namespace dataclasses_avroschame.pydantic added. All AvroModel fields now are private (#427)
-
-*Migration guide for pydantic users*: https://marcosschroh.github.io/dataclasses-avroschema/migration_guide/#migration-from-previous-versions-to-0510
 
 ## 0.50.2 (2023-09-19)
 
@@ -358,633 +355,580 @@ Co-authored-by: Maximilian Hils <git@maximilianhils.com>
 
 ## 0.38.0 (2023-03-22)
 
-- First release added with `commitizen`
+## v0.37.5 (2023-03-17)
 
-## [0.37.5] - 2023-03-17
+### Fix
 
-- Avro schema generation should always return the same result. Close #254 (#255)
+- avro schema generation should always return the same result. Close #254 (#255)
 
-### Fixed
+## v0.37.4 (2023-03-06)
 
-## [0.37.4] - 2023-03-06
+### Fix
 
-- Exception `NameSpaceRequiredException` removed. Close #246 (#253)
+- release v0.37.3 -> v0.37.4
+- exception NameSpaceRequiredException removed. Close #246 (#253)
 
-### Fixed
+## v0.37.3 (2023-03-06)
 
-## [0.37.3] - 2023-03-06
+### Fix
 
-- Dependencies and documentation (#252)
+- dependencies and documentation (#252)
 
-### Fixed
+## v0.37.2 (2023-03-02)
 
-## [0.37.2] - 2023-03-02
+### Fix
 
-- Use `UUID` type instead of function `uuid4` on model generation (#251)
+- use UUID type instead of function uuid4 (#251)
 
-### Fixed
+## v0.37.1 (2023-02-24)
 
-## [0.37.1] - 2023-02-24
+### Fix
 
-- Use `pydantic UUID4` when generating pydantic models. (#247)
+- use pydantic UUID4 when generating pydantic models. (#247)
 
-### Added
+## v0.37.0 (2023-02-22)
 
-## [0.37.0] - 2023-02-22
+### Feat
 
-- Dacite custom config added to class Meta. Closes #242 (#245)
+- dacite custom config added to class Meta. Closes #242 (#245)
 
-### Fixed
+## v0.36.3 (2023-02-16)
 
-## [0.36.3] - 2023-02-16
+### Fix
 
 - ListField fake generation when it contains Optional. Closes #232 (#244)
 
-### Fixed
+## v0.36.2 (2023-02-14)
 
-## [0.36.2] - 2023-02-14
+### Fix
 
-- Do not persist the schema when the parent class is not an AvroModel. Closes #241
+- do not persist the schema when the parent class is not an AvroModel. Closes #241 (#243)
 
-### Fixed
+### Perf
 
-## [0.36.1] - 2023-01-19
+- ruff added in order to replace isort and flake8 (#238)
 
-- Model generator with only decimal fields.
-- Use `pydantic.condecimal` instead of the custom `Decimal` as default value when generate `pydantic` models
+## v0.36.1 (2023-01-19)
 
-### Added
+### Fix
 
-## [0.36.0] - 2023-01-18
+- use pydantic condecimal when generating pydantic models. Closes #234 (#237)
+- model generator with only decimal fields. Closes #233 (#236)
 
-- Generate a Python module from multiple schemas [235](https://github.com/marcosschroh/dataclasses-avroschema/pull/235)
+## v0.36.0 (2023-01-18)
 
-### Added
+### Feat
 
-## [0.35.0] - 2023-01-10
+- Generate a Python module from multiple schemas (#235)
 
-- Convert python models from `avsc` schemas [227](https://github.com/marcosschroh/dataclasses-avroschema/pull/227)
-  
-### Fixed
+## v0.35.0 (2023-01-10)
 
-## [0.34.6] - 2023-01-06
+### Feat
 
-- Use namespaces when an enum is used multiple times in a class. Cases should not apply to enum names. Closes [221](https://github.com/marcosschroh/dataclasses-avroschema/issues/221)
+- model generator added (#227)
+- self relationship schema generation
 
-### Fixed
+feat: logicalTypes model generation
 
-## [0.34.5] - 2023-01-06
+feat: logical types model generator
 
-- Schema generation with optional enum when using pydantic. Closes [229](https://github.com/marcosschroh/dataclasses-avroschema/issues/229)
+fix: field order, pascal case for class names
 
-### Fixed
+fix: add class Meta support
 
-## [0.34.4] - 2023-01-04
+Co-authored-by: Marcos Schroh <marcos.schroh@kpn.com>
 
-- Fake generation with optional user defined types [228](https://github.com/marcosschroh/dataclasses-avroschema/pull/228)
+## v0.34.6 (2023-01-06)
 
-### Fixed
+### Fix
 
-## [0.34.3] - 2022-12-15
+- use namespaces when an enum is used multiple times in a class. Cases should not apply to enum names. Closes #221 (#231)
 
-- `Decimal` fields serialization [222](https://github.com/marcosschroh/dataclasses-avroschema/issues/222)
+## v0.34.5 (2023-01-06)
 
-### Fixed
+### Fix
 
-## [0.34.2] - 2022-11-18
+- schema generation with optional enum when using pydantic. Closes #229 (#230)
 
-- pydantic `fake` and nested json serialization [219](https://github.com/marcosschroh/dataclasses-avroschema/issues/219)
+## v0.34.4 (2023-01-04)
 
-### Fixed
+### Fix
 
-## [0.34.1] - 2022-11-11
+- fake generation with optional user defined types (#228)
 
-- include field `metadata` when using `faust` records [218](https://github.com/marcosschroh/dataclasses-avroschema/issues/218)
+## v0.34.3 (2022-12-15)
 
-### Added
+### Fix
 
-## [0.34.0] - 2022-11-01
+- serialize decimal fields. Closes #222 (#224)
 
-- `typing.UnionType` support added [212](https://github.com/marcosschroh/dataclasses-avroschema/issues/212)
+## v0.34.2 (2022-11-18)
 
-### Added
+### Fix
 
-## [0.33.0] - 2022-11-01
+- pydantic fake and nested json serialization (#219)
 
-- python 3.11 support added [215](https://github.com/marcosschroh/dataclasses-avroschema/pull/215)
+## v0.34.1 (2022-11-11)
 
-### Fixed
+### Fix
 
-## [0.32.3] - 2022-10-31
+- include field metadata when using faust records. Closes #217 (#218)
 
-- Logial types fixed. Update to `fastavro` 1.7.0 [214](https://github.com/marcosschroh/dataclasses-avroschema/pull/214)
+## v0.34.0 (2022-11-01)
 
-### Fixed
+### Feat
 
-## [0.32.2] - 2022-10-25
+- types.UnionType support added (#213)
 
-- Nested enums serialization [211](https://github.com/marcosschroh/dataclasses-avroschema/pull/211)
+## v0.33.0 (2022-11-01)
 
-### Fixed
+## v0.32.3 (2022-10-31)
 
-## [0.32.1] - 2022-10-13
+### Fix
 
-- Use python __slots__
+- update to latest fastavro. logical types fixed (#214)
 
-### Added
+## v0.32.2 (2022-10-25)
 
-## [0.32.0] - 2022-10-13
+### Fix
 
-- Provide data to the fake functionality [205](https://github.com/marcosschroh/dataclasses-avroschema/pull/205)
+- nested enums serialization. Closes #208 (#211)
 
-### Fixed
+## v0.32.1 (2022-10-13)
 
-## [0.31.3] - 2022-10-07
+### Perf
 
-- utils refactor. @dataclass decorator included in all code examples. Inheritance example added.
+- use python __slots__ (#206)
 
-### Fixed
+## v0.32.0 (2022-10-13)
 
-## [0.31.2] - 2022-10-03
+### Feat
 
-- UnknownType on serialization with intermediates schemas [201](https://github.com/marcosschroh/dataclasses-avroschema/pull/201)
+- provide data to the fake functionality (#205)
 
-### Fixed
+## v0.31.3 (2022-10-07)
 
-## [0.31.1] - 2022-09-30
+### Fix
 
-- Name collision on splittes schema usage [198](https://github.com/marcosschroh/dataclasses-avroschema/pull/198).
+- utils refactor. @dataclass decorator included in all code examples. Inheritance example added. Closes #202 (#204)
 
-### Added
+## v0.31.2 (2022-10-03)
 
-## [0.31.0] - 2022-09-23
+### Fix
 
-- Micro precision added to time and datetime [197](https://github.com/marcosschroh/dataclasses-avroschema/pull/197). `TimeMicro` and `DateTimeMicro` field types added.
+- UnknownType on serialization with intermediates schemas. Closes #199 (#201)
 
-### Fixed
+## v0.31.1 (2022-09-30)
 
-## [0.30.3] - 2022-08-05
+### Fix
 
-- `typing` issues fixed [186](https://github.com/marcosschroh/dataclasses-avroschema/issues/186)
+- name collision on splittes schema usage. Close #196 (#198)
 
-### Fixed
+## v0.31.0 (2022-09-23)
 
-## [0.30.2] - 2022-08-04
+### Feat
 
-- Do not use name and type from metadata in avro schema [189](https://github.com/marcosschroh/dataclasses-avroschema/issues/189)
+- micro precision added to time and datetime types (#197)
 
-### Fixed
+## v0.30.3 (2022-08-05)
 
-## [0.30.1] - 2022-08-02
+### Fix
 
-- Dependency `fastavro` updated to close [184](https://github.com/marcosschroh/dataclasses-avroschema/issues/184)
+- mypy issues (#186)
 
-### Added
+## v0.30.2 (2022-08-04)
 
-## [0.30.0] - 2022-05-18
+### Fix
 
-- Raise `InvalidMap` exception when a `Dict` has not `string` keys
-- Now it is possible to use `Meta.schema_doc` to set the `schema documentation`
+- Do not use name and type from metadata in avro schema (#188) (#189)
 
-### Fixed
+## v0.30.1 (2022-08-02)
 
-## [0.29.2] - 2022-05-06
+### Fix
 
-- Priority ordering for record field naming fixed [176](https://github.com/marcosschroh/dataclasses-avroschema/pull/176). `alias_nested_items` must have priority order
-  1. Check if exists an alias_nested_items in parent class or Meta class of own model
-  2. Check if the schema_name is present in the Meta class of own model
-  3. Use the default class Name (self.type.__name__)
+- fastavro dependency updated. Close #184 (#187)
 
-### Fixed
+## v0.30.0 (2022-05-18)
 
-## [0.29.1] - 2022-04-15
+## v0.29.2 (2022-05-06)
 
-- Generate correct schema name [172](https://github.com/marcosschroh/dataclasses-avroschema/pull/172):
-  1. Check if the schema_name is present in the Meta class of own model
-  2. Check if exists an alias_nested_items in parent class or Meta class of own model
-  3. Use the default class Name (self.type.__name__)
+## v0.29.1 (2022-04-15)
 
-## [0.29.0] - 2022-04-08
+### Fix
 
-### Added
+- nested metadata not respected. closes #171 (#172)
 
-- Created nested schema resolution directly from dictionaries using `parse_obj` [90](https://github.com/marcosschroh/dataclasses-avroschema/issues/90)
+## v0.29.0 (2022-04-08)
 
-## [0.28.1] - 2022-04-05
+### Fix
 
-### Fixed
+- create nested schema resolution directly from dictionaries (#170)
 
-- `alias_nested_items` for `ListField` and `DictField` [158](https://github.com/marcosschroh/dataclasses-avroschema/issues/158)
+## v0.28.1 (2022-04-05)
 
-## [0.28.0] - 2022-03-23
+### Fix
 
-### Added
+- alias for nested items (#169)
 
-- [pydantic](https://pydantic-docs.helpmanual.io/) support added [163](https://github.com/marcosschroh/dataclasses-avroschema/pull/163)
+## v0.28.0 (2022-03-23)
 
-## [0.27.2] - 2022-03-23
+### Feat
 
-### Fixed
+- pydantic support added (#163)
 
-- Generate wheel package [162](https://github.com/marcosschroh/dataclasses-avroschema/pull/162)
+## v0.27.2 (2022-03-23)
 
-## [0.27.1] - 2022-03-22
+### Fix
 
-### Fixed
+- rebuild cache (#164)
 
-- bump `fastavro` from 1.4.9 to 1.4.10
-- bump `inflect` from 5.3.0 to 5.4.0 
+## v0.27.1 (2022-03-22)
 
-## [0.27.0] - 2022-02-18
+## v0.27.0 (2022-02-18)
 
-### Added
+### Feat
 
-- `types.Enum` replaced by `enum.Enum` [153](https://github.com/marcosschroh/dataclasses-avroschema/pull/153/files)
+- add enum support (#153)
 
-## [0.26.1] - 2021-12-07
+## v0.26.1 (2021-12-07)
 
-### Fixed
+### Feat
 
-- Use root reference to generate valid schemas in multiple inheritance levels [148](https://github.com/marcosschroh/dataclasses-avroschema/pull/148)
+- manual job trigger (#146)
 
-## [0.26.0] - 2021-12-06
+### Fix
 
-### Added
+- use root reference to generate valid schemas in multiple inheritance levels (#148)
+- cache and release expresion (#147)
 
-- `validate` method added to `AvroModel` [144](https://github.com/marcosschroh/dataclasses-avroschema/pull/144)
+## v0.26.0 (2021-12-06)
 
-## [0.25.3] - 2021-11-26
+### Feat
 
-### Fixed
+- validate method added (#144)
 
-- Generate valid avro schemas when inheritance has multiple levels [140](https://github.com/marcosschroh/dataclasses-avroschema/pull/140)
+### Fix
 
-## [0.25.2] - 2021-10-09
+- some type checks (#143)
+- mkdocs styles (#141)
 
-### Fixed
+## v0.25.3 (2021-11-26)
 
-- api `get_fields` now returns all rendered fields [134](https://github.com/marcosschroh/dataclasses-avroschema/pull/134)
+### Fix
 
-## [0.25.1] - 2021-10-09
+- generate valid avro schemas when inheritance has multiple levels (#140)
+- api get_fields now returns all rendered fields (#134)
 
-### Fixed
+## v0.25.1 (2021-10-06)
 
-- Support for default `null` decimals added [130](https://github.com/marcosschroh/dataclasses-avroschema/pull/130)
+## v0.25.0 (2021-09-27)
 
-## [0.25.0] - 2021-09-27
+### Feat
 
-### Added
+- case schemas. Closes #79 (#95)
 
-- New style type annotations support added (`tuple`, `list` and `dict`) [122](https://github.com/marcosschroh/dataclasses-avroschema/pull/122)
-- Case schemas added [95](https://github.com/marcosschroh/dataclasses-avroschema/pull/95)
+### Fix
 
-Available cases:
+- new style type annotations don't work for containers and maps (#122)
+- possible crash if no docs (#123)
 
-|Case| Example|
-|----|--------|
-|camelcase |'foo_bar_baz' # => "fooBarBaz"|
-|capitalcase|'foo_bar_baz' # => "Foo_bar_baz"|
-|constcase|'FooBarBaz' # => "_FOO_BAR_BAZ"|
-|lowercase|'FooBarBaz' # => "foobarbaz"|
-|pascalcase|'FooBarBaz' # => "FooBarBaz"|
-|pathcase|'foo_bar_baz' # => "foo/bar/baz"|
-|snakecase|'FooBarBaz' # => "foo_bar_baz"|
-|spinalcase|'FooBarBaz' # => "-foo-bar-baz"|
-|trimcase|'FooBarBaz' # => "FooBarBaz"|
-|uppercase|'FooBarBaz' # => "FOOBARBAZ|
-|alphanumcase|'Foo_123 Bar!' # =>'Foo123Bar'|
+## v0.24.0 (2021-09-24)
 
-## [0.24.0] - 2021-09-24
+### Feat
 
-### Added
+- add `int` and `float` Avro type support (#119)
 
-- `int` and `float` Avro type support [119](https://github.com/marcosschroh/dataclasses-avroschema/pull/119)
+## v0.23.2 (2021-09-04)
 
-## [0.23.2] - 2021-09-04
+### Fix
 
-### Fixed
+- use namespaces on repeated user types with complex types (#117)
 
-- Use `namespaces` on repeated user types with complex types [117](https://github.com/marcosschroh/dataclasses-avroschema/pull/117)
+## v0.23.1 (2021-09-03)
 
-## [0.23.1] - 2021-09-03
+### Fix
 
-### Fixed
+- using namespaces for repeated nested types in arrays and maps (#116)
 
-- Use `namespaces` for repeated types in arrays and maps [116](https://github.com/marcosschroh/dataclasses-avroschema/pull/116)
+## v0.23.0 (2021-08-26)
 
-## [0.23.0] - 2021-08-26
+### Feat
 
-### Added
+- use namespaces for repeated types (#115)
 
-- Use `namespaces` for repeated types [115](https://github.com/marcosschroh/dataclasses-avroschema/pull/115)
-- Record names now are generated using `class.__name__` instead of `class.__name__.lower()_record`
+## v0.22.1 (2021-07-05)
 
-## [0.22.1] - 2021-07-05
+## v0.22.0 (2021-06-30)
 
-### Fixed
+### Feat
 
-- Cleanup [112](https://github.com/marcosschroh/dataclasses-avroschema/pull/112)
+- alias nested schemas added (#110)
 
-## [0.22.0] - 2021-07-01
+## v0.21.0 (2021-06-17)
 
-### Added
+### Fix
 
-- Alias for nested items (`nested records`, `arrays` and `maps`) [110](https://github.com/marcosschroh/dataclasses-avroschema/pull/110)
-- Improve type annotations [109](https://github.com/marcosschroh/dataclasses-avroschema/pull/109)
+- github CI added (#106)
 
-## [0.21.0] - 2021-06-17
+## v0.20.4 (2021-05-05)
 
-### Added
+## v0.20.3 (2021-04-29)
 
-- Mitration to GithubCI
-- `GenericAlias` test in Python `3.9`
-- Add Python `3.8` and `3.9` in the `CI build`
-- Add `schema_name` attribute to `SchemaMetadata`
-- Add optional writer_schema in `deserialization`
+### Fix
 
-### Added
+- dependencies updated (#97)
+- Improve error message in unknown type (#94)
+- generators fixtures replaced with container. Close #70 (#91)
 
-## [0.20.4] - 2021-05-05
+## v0.20.2 (2021-01-27)
 
-### Fixed
+### Fix
 
-- Unpin install_requires with version ranges [99](https://github.com/marcosschroh/dataclasses-avroschema/pull/99)
+- avro-json serialization with defaults (#89)
 
-## [0.20.3] - 2021-04-29
+## v0.20.1 (2020-12-04)
 
-### Fixed
+## v0.20.0 (2020-11-24)
 
-- Improve error message in unknown type: https://github.com/marcosschroh/dataclasses-avroschema/issues/88
-- dependencies updated
+## v0.19.0 (2020-11-12)
 
-## [0.20.2] - 2021-01-27
+### Fix
 
-### Fixed
+- doc updated
 
-- avro-json serialization with defaults [89](https://github.com/marcosschroh/dataclasses-avroschema/pull/89)
+## v0.18.0 (2020-10-10)
 
-## [0.20.1] - 2020-12-04
+### Fix
 
-### Fixed
+- correct name generation for nested records (#81)
 
-- Correct out-of-spec Avro schemas with typing.Union [#87](https://github.com/marcosschroh/dataclasses-avroschema/pull/87)
+## v0.17.0 (2020-09-04)
 
-## [0.20.0] - 2020-11-24
+### Feat
 
-### Added
+- fake class instances generation added (#77)
 
-- Support for decimal logical type added [#86](https://github.com/marcosschroh/dataclasses-avroschema/pull/86)
+## v0.16.0 (2020-08-27)
 
-## [0.19.0] - 2020-11-12
+### Fix
 
-### Added
+- isort (#71)
 
-- Default Avro type for Python ints has been changed from `int` to `long` and `float` to `double` [83](https://github.com/marcosschroh/dataclasses-avroschema/pull/83). Reason:
-  - [Integers have unlimited precision](https://docs.python.org/3.4/library/stdtypes.html#typesnumeric)
-  - Floating point numbers are usually implemented using `double` in C
-  - [almost all platforms map Python floats to IEEE-754 `double` precision](https://docs.python.org/3/tutorial/floatingpoint.html#representation-error)
+## v0.15.2 (2020-08-25)
 
-## [0.18.0] - 2020-10-10
+### Fix
 
-### Added
+- pytz added as requirement (#69)
 
-- Allow multiple references to the same class in record relationships
-- Correct name generation for nested records [81](https://github.com/marcosschroh/dataclasses-avroschema/pull/81)
+## v0.15.1 (2020-08-22)
 
-## [0.17.0] - 2020-09-04
+### Fix
 
-### Added
+- include UUID as field type (#68)
 
-- Fake instances generation added
+## v0.15.0 (2020-08-16)
 
-## [0.16.0] - 2020-08-27
+### Fix
 
-### Added
+- use generic to_avro method for logical types (#66)
+- replace 'null' str with avro null (json) (#65)
 
-- Deserialization process generate class instances instead a pythn dict
-- In order to get a python dict in the deserialiation process the flag `create_instance=False` should be used
-- Example with usage with kafka drivers added
+### Perf
 
-## [0.15.2] - 2020-08-25
+- check for dataclass.MISSING removed. coverage increased up to 99% (#61)
 
-### Fixed
+## v0.14.6 (2020-07-11)
 
-- `pytz` added as requirement
+### Fix
 
-## [0.15.1] - 2020-08-22
+- field SelfReference fixed (#59)
 
-### Fixed
+## v0.14.5 (2020-07-09)
 
-- `UUID` type fixed
+### Fix
 
-## [0.15.0] - 2020-08-16
+- null should not be included when a default value is defined (#58)
 
-### Added
+## v0.14.4 (2020-07-03)
 
-- replaced `null` string with `avro null` (json)
-- code improvement
+### Fix
 
-## [0.14.6] - 2020-07-11
+- union with complex type fixed. union with optional types fixed. close #51. (#56)
 
-### Changed
+## v0.14.3 (2020-06-29)
 
-- `SelfReferenceField` when is used inn `array` and `maps`
-- `SelfReferenceField` default value fixed
+### Fix
 
-## [0.14.5] - 2020-07-09
+- refactor logical types (#54)
+- support for aware datetime added (#53)
+- serialization for complex types (#49)
 
-### Changed
+## v0.14.2 (2020-06-16)
 
-- `null` should not be included when a default value is defined for premitive types
+### Fix
 
-## [0.14.4] - 2020-07-03
+- pytest dependency updated (#46)
 
-### Changed
+## v0.14.1 (2020-06-09)
 
-- `typing.Optional` union fixed
-- `typing.Union` with complex types (sequeces and Dict) fixed
+### Fix
 
-## [0.14.3] - 2020-06-29
+- bytes type fixed (#42)
 
-### Changed
+## v0.14.0 (2020-06-01)
 
-- documentation of `dataclasses.field` descriptor added
-- support for aware datetime added
-- `serialization` fixed for complex types
+## v0.13.1 (2020-05-28)
 
-## [0.14.2] - 2020-06-16
+### Fix
 
-### Changed
+- enum field refactored in order to include other enum attributes (#37)
 
-- `to_json` method fixed. [issue 47](https://github.com/marcosschroh/dataclasses-avroschema/issues/47)
+## v0.13.0 (2020-05-25)
 
-## [0.14.1] - 2020-06-09
+### Feat
 
-### Changed
+- generate json payload from class instance accroding to the avro schema generated (#36)
 
-- bytes type fixed
-- null with Schema Logical Types and Relationships supported
+## v0.12.0 (2020-05-25)
 
-## [0.14.0] - 2020-06-01
+### Fix
 
-### Added
+- schema-generator import improved (#35)
 
-- inheritance approach adopted over composition
+## v0.11.1 (2020-05-20)
 
-### Removed
+### Feat
 
-- SchemaGenerator class
+- serialization added (#34)
 
-## [0.13.1] - 2020-05-29
+### Fix
 
-### Changed
+- fastavro included as dependencie
+- development scripts updated. (#33)
 
-- `enum` type now is represented by `types.Enum`
+## v0.10.0 (2020-02-16)
 
-## [0.13.0] - 2020-05-28
+### Feat
 
-### Added
+- fixed type support added (#32)
 
-- json payload generated from class instance
+## v0.9.0 (2020-01-24)
 
-## [0.12.0] - 2020-05-25
+### Fix
 
-### Added
+- isort added. more mypy types added. WIP mypy checks (#30)
+- Correct license to MIT in setup.py (#29)
 
-- import of SchemaGenetor improved
-- Documentation updated
+## v0.8.0 (2020-01-06)
 
-## [0.11.0] - 2020-05-20
+## v0.7.4 (2019-11-21)
 
-### Added
+### Fix
 
-- Serialization/deserialization added
+- **Avro-Array**: Handle union inside array field. Closes #21
 
-## [0.10.0] - 2020-02-16
+## v0.7.3 (2019-11-16)
 
-### Added
+### Fix
 
-- fixed type support
+- **typing.Dict**: Include LogicalTypes as values
+- **typing.List**: Include LogicalTypes as items
+- Code refactor and first steps to support logicaltypes in sequences and maps
 
-## [0.9.0] - 2020-01-24
+## v0.7.2 (2019-11-07)
 
-### Added
+### Fix
 
-- Ability to store metadata into fields
-- More type checks
-- isort package added
+- Union type allow logical and primitive types
 
-## [0.8.0] - 2020-01-06
+## v0.7.1 (2019-10-25)
 
-### Added
+### Fix
 
-- Support `typing.Optional` added
+- Support for Sequences and Mapping added
 
-## [0.7.4] - 2019-11-21
+## v0.7.0 (2019-10-23)
 
-### Changed
+### Feat
 
-- Union types can be included in sequences types
+- Generate Avro Schemas from Faust Records
 
-## [0.7.3] - 2019-11-16
+## v0.6.1 (2019-10-21)
 
-### Changed
+### Fix
 
-- Logical types now are allowed in Sequences and Maps
+- Validate default values when the avro schema is generated
 
-## [0.7.2] - 2019-11-07
+## v0.6.0 (2019-10-17)
 
-### Changed
+### Feat
 
-- Union type now allows logical and primitive types
+- Union support added
 
-## [0.7.1] - 2019-10-21
+### Fix
 
-### Changed
+- mkdocs fixed
 
-- Support for Sequences and Mappings added
+## v0.5.0 (2019-10-13)
 
-| Avro Type | Python Type |
-|-----------|-------------|
-| arrays    |   typing.Sequence, typing.MutableSequence      |
-| maps      |  typing.Mapping, typing.MutableMapping      |
+### Feat
 
-## [0.7.0] - 2019-10-23
+- **LogicalTypes**: Support for Date, Time, Datetime and UUID added
 
-### Added
+## v0.4.1 (2019-10-11)
 
-- Faust support: Now is possible to generate Avro Schemas from a Faust Records
+### Fix
 
-## [0.6.1] - 2019-10-21
+- Fields refactor
 
-### Changed
+## v0.4.0 (2019-10-05)
 
-- Now default values are validated according to the field type
+### Feat
 
-## [0.6.0] - 2019-10-17
+- Self relationship OneToOne added
+- Self relationship OneToMany added
+- Self relationship OneToMany finished. Factory Pattern used in SchemaGenarator and AvroSchemaDefinition
 
-### Added
+## v0.3.1 (2019-09-05)
 
-- Avro Union support added
+## v0.3.0 (2019-09-03)
 
-## [0.5.0] - 2019-10-13
+### Feat
 
-### Added
+- Singular names are generated for array, map chilndren's namea nd enum
 
-- Support for some logical types
+## v0.2.0 (2019-09-02)
 
-| Avro Type | Logical Type |Python Type |
-|-----------|--------------|-------------|
-| int       |  date        | datetime.date
-| int       |  time-millis | datetime.time     |
-| long      |  timestamp-millis | datetime.datetime |
-| string    |  uuid        | uuid.uuid4 |
+### Feat
 
-## [0.4.1] - 2019-10-11
+- OneToMany schema relationship added.
 
-### Changed
+## v0.1.1 (2019-09-02)
 
-- Code refactor: Field have been devided into several field classes to make the code more redeable
+### Feat
 
-## [0.4.0] - 2019-09-02
+- One To Many relationship added
+- One to One schema relationship added
+- Travis added
 
-### Added
+### Fix
 
-- Recursive Schema Relationships:
-  - Recursive OneToOne relationship added
-  - Recursive OneToMany relationship added
+- Default values for Map and Array
+- Map, Array and Enum types fixed. Schema Parse tests added with fastavro
+- License added
+- mkdocs links updated
 
-## [0.3.0] - 2019-09-05
+## v0.1.0 (2019-08-29)
 
-### Changed
+### Feat
 
-- Code refator and improvements
+- clean & publish scrips added. Docs added
+- avro_schema method added to SchemaGenerator class. Doc added.
+- Aliases and Namespaces avro check added
 
-## [0.3.0] - 2019-09-03
+### Fix
 
-### Added
-
-- Singular name for array's child name
-- Singular name for map's child name
-- Singular name for nested relationship OneToMany
-
-## [0.2.0] - 2019-09-02
-
-### Added
-
-- Schema Relationships:
-  - OneToOne relationship added
-  - OneToMany relationship added (array and map)
-
-## [0.1.1] - 2019-09-02
-
-### Added
-
-- Enum, Array and Map fields fixed
-- Schema Parse tests added using fastavro
-
-## [0.1.0] - 2019-08-29
-
-### Added
-
-- First release
+- clean & publish scripts should be executables
+- Exclude default type only when is a tuple
+- The avro schema returned should be string, not a python dict.
+- Package renamed to dataclasses_avroschema
