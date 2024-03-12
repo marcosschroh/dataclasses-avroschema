@@ -48,7 +48,7 @@ class BaseGenerator:
         }
     )
     # represent the decorator to add in the base class
-    base_class_decotator: str = ""
+    base_class_decorator: str = ""
     base_class: str = field(init=False)
     field_template: Template = field(init=False)
     avro_type_to_lang: typing.Dict[str, str] = field(init=False)
@@ -161,7 +161,7 @@ class BaseGenerator:
 
         rendered_class = templates.class_template.safe_substitute(
             name=name,
-            decorator=self.base_class_decotator,
+            decorator=self.base_class_decorator,
             base_class=self.base_class,
             fields=rendered_fields_string,
             docstring=docstring,
@@ -244,7 +244,10 @@ class BaseGenerator:
             field_type=type, default=default, name=name, field_metadata=field_metadata
         )
 
-        if default_generated is not dataclasses.MISSING:
+        if default_generated not in (
+            dataclasses.MISSING,
+            "",
+        ):
             if type != field_utils.DECIMAL:
                 result += templates.field_default_template.safe_substitute(default=default_generated)
             if default is not dataclasses.MISSING:
@@ -419,7 +422,7 @@ class BaseGenerator:
 
     def _get_complex_langauge_type(self, *, type: typing.Any, model_name: str) -> str:
         """
-        Get the language type for complext types (array and maps)
+        Get the language type for complex types (array and maps)
         """
         self.imports.add("import typing")
 
@@ -505,26 +508,40 @@ class BaseGenerator:
             If the default is "bond" the method should return '"bond"' so the double quotes
             won't be scaped during the field render
         """
-        dataclass_field_default_factory = dataclass_field_metadata = None
-        if field_metadata:
-            dataclass_field_metadata = f"metadata={field_metadata}"
+        field_metadata = field_metadata or {}
+        field_metadata_repr = None
+        default_repr = ""
 
-        if default is dataclasses.MISSING:
-            # we do not do anything, just check dataclasses.field properties
-            pass
-        elif field_type in (field_utils.STRING, field_utils.UUID):
-            default = f'"{default}"'
-        elif field_type == field_utils.BYTES:
-            default = f'b"{default}"'
-        elif isinstance(field_type, dict):
+        if isinstance(field_type, dict):
             inner_type = field_type["type"]
-            name = field_type.get("name", name)
-            default = self.get_field_default(field_type=inner_type, name=name, default=default)
+            inner_name = field_type.get("name", "")
+
+            # Check that internal field name is different to the original name
+            # for example: {"name": "age", "type": { "type": "array", "items": "string", "name": "my_age" }}
+            # in this case my_age is not in age which means that this must be reflected in the model
+            # This does not applu to `enums` and `records`
+            if inner_name not in name and inner_type not in (
+                field_utils.ENUM,
+                field_utils.RECORD,
+            ):
+                field_metadata["inner_name"] = inner_name
+
+            inner_default_repr = self.get_field_default(field_type=inner_type, name=inner_name or name, default=default)
+
+            if inner_default_repr not in (None, dataclasses.MISSING):
+                default_repr += inner_default_repr
+        elif default is dataclasses.MISSING:
+            pass
+        elif field_type in (field_utils.STRING, field_utils.UUID,):
+            default_repr = f'"{default}"'
+        elif field_type in (field_utils.BYTES, field_utils.FIXED,):
+            default_repr = f'b"{default}"'
         elif field_type == field_utils.ENUM:
-            default = f"{casefy.pascalcase(name)}.{casefy.uppercase(default)}"
+            default_repr = f"{casefy.pascalcase(name)}.{casefy.uppercase(default)}"
         elif isinstance(field_type, list):
-            default = self.get_field_default(field_type=field_type[0], default=default, name=name)
-        elif isinstance(default, dict):
+            # union type
+            default_repr = self.get_field_default(field_type=field_type[0], default=default, name=name)
+        elif isinstance(default, (dict, list)):
             # Then is can be a regular dict as default or a record
             if default:
                 if field_type not in field_utils.AVRO_TYPES:
@@ -532,45 +549,39 @@ class BaseGenerator:
                     field_type = field_type.split(".")[-1]
                     default = templates.instance_template.safe_substitute(type=field_type, properties=f"**{default}")
 
-                # it is an array or maps with some defaults that we should
-                # express with a lambda function
-                dataclass_field_default_factory = f"default_factory=lambda: {default}"
-            else:
-                # it is an array or maps with `[]` or `{} ` as default
-                dataclass_field_default_factory = f"default_factory={default.__class__.__name__}"
-        elif isinstance(default, list):
-            if default:
-                # TODO: check the defaults with custom types
-                # it is an array or maps with some defaults that we should
-                # express with a lambda function
-                dataclass_field_default_factory = f"default_factory=lambda: {default}"
-            else:
-                # it is an array or maps with `[]` or `{} ` as default
-                dataclass_field_default_factory = f"default_factory={default.__class__.__name__}"
+                return f"{default}"
+            return default.__class__.__name__
         elif field_type in avro_to_python_utils.LOGICAL_TYPES_TO_PYTHON:
             func = avro_to_python_utils.LOGICAL_TYPES_TO_PYTHON[field_type]
             python_type = func(default)
             template_func = avro_to_python_utils.LOGICAL_TYPE_TEMPLATES[field_type]
-            default = template_func(python_type)
+            default_repr = template_func(python_type)
         else:
-            default = default
+            default_repr = str(default)
 
-        dataclass_field_properties = [
-            dataclass_field_default_factory,
-            dataclass_field_metadata,
-        ]
+        dataclass_field_properties = []
+        if field_metadata:
+            field_metadata_repr = f"metadata={field_metadata}"
 
-        if any(dataclass_field_properties):
-            # If the default was not set or the default_factory was set
-            # then we not need a default in the field
-            if default is not dataclasses.MISSING and dataclass_field_default_factory is None:
-                dataclass_field_properties.append(f" default={default}")
+        if field_metadata_repr or isinstance(default, (dict, list)):
+            dataclass_field_properties = [field_metadata_repr]
 
-            default = self.render_dataclass_field(
-                properties=",".join([prop for prop in dataclass_field_properties if prop is not None])
+            if isinstance(default, (dict, list)):
+                if default:
+                    dataclass_prop = f"default_factory=lambda: {default_repr}"
+                else:
+                    dataclass_prop = f"default_factory={default_repr}"
+
+                dataclass_field_properties.append(dataclass_prop)
+            else:
+                if default is not dataclasses.MISSING:
+                    dataclass_field_properties.append(f"default={default_repr}")
+
+            default_repr = self.render_dataclass_field(
+                properties=", ".join([prop for prop in dataclass_field_properties if prop])
             )
 
-        return default
+        return default_repr
 
     @staticmethod
     def _add_schema_to_metaclass(schema_template: Template, schema: JsonDict) -> str:

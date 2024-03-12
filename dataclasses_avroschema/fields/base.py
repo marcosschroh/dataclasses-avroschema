@@ -30,6 +30,7 @@ class Field:
     default: typing.Any
     default_factory: typing.Any = dataclasses.MISSING
     exclude_default: bool = False
+    inner_name: typing.Optional[str] = None
     metadata: typing.Dict = dataclasses.field(default_factory=dict)
     model_metadata: typing.Optional[utils.SchemaMetadata] = None
     extra_default_types_allowed: typing.Tuple = dataclasses.field(default_factory=tuple)
@@ -37,6 +38,7 @@ class Field:
     def __post_init__(self) -> None:
         self.model_metadata = self.model_metadata or utils.SchemaMetadata()  # type: ignore
         self.exclude_default = self.metadata.pop("exclude_default", False)  # type: ignore
+        self.inner_name = self.metadata.pop("inner_name", None)  # type: ignore
 
     @property
     def avro_type(self) -> typing.Union[str, typing.Dict]:  # type: ignore

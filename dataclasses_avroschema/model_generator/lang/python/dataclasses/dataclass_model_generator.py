@@ -11,7 +11,7 @@ class DataclassModelGenerator(BaseGenerator):
 
         self.base_class = "AvroModel"
         # represent the decorator to add in the base class
-        self.base_class_decotator = "@dataclasses.dataclass"
+        self.base_class_decorator = "@dataclasses.dataclass"
 
         self.imports.add("import dataclasses")
         self.imports.add("from dataclasses_avroschema import AvroModel")
