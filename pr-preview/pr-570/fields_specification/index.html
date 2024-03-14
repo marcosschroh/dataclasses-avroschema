@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#primitive-types-and-python-representation" class="md-skip">
+        <a href="#fields-specification" class="md-skip">
           Skip to content
         </a>
       
@@ -303,6 +303,8 @@
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
+        
+      
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
           
@@ -330,6 +332,8 @@
 <nav class="md-nav md-nav--secondary" aria-label="Table of contents">
   
   
+  
+    
   
   
     <label class="md-nav__title" for="__toc">
@@ -411,6 +415,15 @@
   <a href="#exclude-default-value-from-schema" class="md-nav__link">
     <span class="md-ellipsis">
       Exclude default value from schema
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fields-with-custom-inner-names" class="md-nav__link">
+    <span class="md-ellipsis">
+      Fields with custom inner names
     </span>
   </a>
   
@@ -741,6 +754,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -826,6 +841,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#fields-with-custom-inner-names" class="md-nav__link">
+    <span class="md-ellipsis">
+      Fields with custom inner names
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -844,8 +868,7 @@
   
 
 
-  <h1>Fields Specification</h1>
-
+<h1 id="fields-specification">Fields Specification</h1>
 <p>Apache Avro has <code>Primitive Types</code>, <code>Complex Types</code> and <code>Logical Types</code>, so we need to match these types with python types.</p>
 <h2 id="primitive-types-and-python-representation">Primitive Types and python representation</h2>
 <p>The set of primitive type names is:</p>
@@ -1444,6 +1467,43 @@ It is possible to <code>exclude</code> the <code>default</code> value using the 
 <p class="admonition-title">Note</p>
 <p>This is also applicable for <code>AvroBaseModel</code> (pydantic)</p>
 </div>
+<h2 id="fields-with-custom-inner-names">Fields with custom inner names</h2>
+<p>Some avro fields like <code>arrays</code>, <code>map</code> and <code>fixed</code> define an <code>inner name</code> besides the <code>field name</code>. For this use cases, the <code>metadata</code> property <code>inner-name</code> must be defined, for example:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">types</span>
+<span class="kn">import</span> <span class="nn">dataclasses</span>
+<span class="kn">import</span> <span class="nn">typing</span>
+
+
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span> <span class="nc">DeliveryBatch</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
+    <span class="n">receivers_payload</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;inner_name&#39;</span><span class="p">:</span> <span class="s1">&#39;my_custom_name&#39;</span><span class="p">})</span>
+    <span class="n">accounts</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;inner_name&#39;</span><span class="p">:</span> <span class="s1">&#39;my_account&#39;</span><span class="p">})</span>
+    <span class="n">md5</span><span class="p">:</span> <span class="n">types</span><span class="o">.</span><span class="n">confixed</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s2">&quot;md5&quot;</span><span class="p">,</span> <span class="n">aliases</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;md5&#39;</span><span class="p">,</span> <span class="s1">&#39;hash&#39;</span><span class="p">])</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;inner_name&#39;</span><span class="p">:</span> <span class="s1">&#39;my_md5&#39;</span><span class="p">}</span>
+</code></pre></div>
+<p>which will produce the following schema:</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;record&quot;</span><span class="p">,</span>
+<span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DeliveryBatch&quot;</span><span class="p">,</span>
+<span class="nt">&quot;fields&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;receivers_payload&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;array&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;items&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;my_custom_name&quot;</span><span class="p">}},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;accounts&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;map&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;values&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;my_account&quot;</span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;md5&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;fixed&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;my_md5&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;size&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">16</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;namespace&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;md5&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;aliases&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;md5&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;hash&quot;</span><span class="p">]</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
 
 
 
