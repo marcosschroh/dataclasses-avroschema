@@ -31,7 +31,7 @@ class ModelType(str, enum.Enum):
 class ModelGenerator:
     base_class: str = BaseClassEnum.AVRO_MODEL.value
     include_original_schema: bool = False
-    model_generator_mapper: typing.Dict[str, BaseGenerator] = field(init=False)
+    model_type_mapper: typing.Dict[str, BaseGenerator] = field(init=False)
 
     def __post_init__(self) -> None:
         # This mapper should be oppulated on run time and be available using pluigns

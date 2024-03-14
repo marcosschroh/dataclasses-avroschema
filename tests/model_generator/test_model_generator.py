@@ -163,7 +163,7 @@ import dataclasses
 
 @dataclasses.dataclass
 class User(AvroModel):
-    md5: types.confixed(size=16, namespace="md5", aliases=['md5', 'hash'])
+    md5: types.confixed(size=16, namespace="md5", aliases=['md5', 'hash']) = b"u00ffffffffffffx"
 """
     model_generator = ModelGenerator()
     result = model_generator.render(schema=schema_with_fixed_types)
@@ -212,6 +212,32 @@ class User(AvroModel):
 """
     model_generator = ModelGenerator()
     result = model_generator.render(schema=schema_with_enum_types)
+    assert result.strip() == expected_result.strip()
+
+
+def test_schema_with_custom_inner_names(schema_with_custom_inner_names: types.JsonDict) -> None:
+    expected_result = """
+from dataclasses_avroschema import AvroModel
+from dataclasses_avroschema import types
+import dataclasses
+import typing
+
+
+@dataclasses.dataclass
+class DeliveryBatch(AvroModel):
+    receivers_payload: typing.List[str] = dataclasses.field(metadata={'inner_name': 'my_custom_name'})
+    accounts: typing.Dict[str, str] = dataclasses.field(metadata={'inner_name': 'my_account'})
+    md5: types.confixed(size=16, namespace="md5", aliases=['md5', 'hash']) = dataclasses.field(metadata={'inner_name': 'my_md5'})
+    friends: typing.List[str] = dataclasses.field(metadata={'inner_name': 'my_friend'}, default_factory=list)
+    teammates: typing.Dict[str, str] = dataclasses.field(metadata={'inner_name': 'my_teammate'}, default_factory=dict)
+    a_fixed: types.confixed(size=16) = dataclasses.field(metadata={'inner_name': 'my_fixed'}, default=b"u00ffffffffffffx")
+
+    class Meta:
+        namespace = "app.delivery.email"
+
+"""
+    model_generator = ModelGenerator()
+    result = model_generator.render(schema=schema_with_custom_inner_names)
     assert result.strip() == expected_result.strip()
 
 

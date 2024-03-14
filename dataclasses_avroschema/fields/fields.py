@@ -155,7 +155,7 @@ class ContainerField(Field):
 
     def get_avro_type(self) -> types.JsonDict:
         avro_type = self.avro_type
-        avro_type["name"] = self.get_singular_name(self.name)
+        avro_type["name"] = self.inner_name or self.get_singular_name(self.name)
 
         return avro_type
 
@@ -413,7 +413,7 @@ class FixedField(BytesField):
     def get_avro_type(self) -> types.JsonDict:
         avro_type = {
             "type": field_utils.FIXED,
-            "name": self.get_singular_name(self.name),
+            "name": self.inner_name or self.get_singular_name(self.name),
             "size": int(self.size),
         }
 

@@ -194,6 +194,7 @@ def schema_with_fixed_types() -> Dict:
                     "namespace": "md5",
                     "aliases": ["md5", "hash"],
                 },
+                "default": "u00ffffffffffffx"
             },
         ],
     }
@@ -260,6 +261,47 @@ def schema_with_enum_types_case_sensitivity() -> Dict:
                 },
             }
         ],
+    }
+
+
+@pytest.fixture
+def schema_with_custom_inner_names() -> Dict:
+    return {
+        "type": "record",
+        "name": "DeliveryBatch",
+        "fields": [
+            {"name": "receivers_payload", "type": {"type": "array", "items": "string", "name": "my_custom_name"}},
+            {
+                "name": "accounts",
+                "type": {"type": "map", "values": "string", "name": "my_account"},
+            },
+            {
+                "name": "md5",
+                "type": {
+                    "type": "fixed",
+                    "name": "my_md5",
+                    "size": 16,
+                    "namespace": "md5",
+                    "aliases": ["md5", "hash"],
+                },
+            },
+            {"name": "friends", "type": {"type": "array", "items": "string", "name": "my_friend"}, "default": []},
+            {
+                "name": "teammates",
+                "type": {"type": "map", "values": "string", "name": "my_teammate"},
+                "default": {},
+            },
+            {
+                "name": "a_fixed",
+                "type": {
+                    "type": "fixed",
+                    "name": "my_fixed",
+                    "size": 16,
+                },
+                "default": "u00ffffffffffffx",
+            },
+        ],
+        "namespace": "app.delivery.email",
     }
 
 

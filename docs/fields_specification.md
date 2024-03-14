@@ -1,3 +1,5 @@
+# Fields Specification
+
 Apache Avro has `Primitive Types`, `Complex Types` and `Logical Types`, so we need to match these types with python types.
 
 ## Primitive Types and python representation
@@ -391,3 +393,47 @@ It is possible to `exclude` the `default` value using the `exclude_default` in t
 
 !!! note
     This is also applicable for `AvroBaseModel` (pydantic)
+
+## Fields with custom inner names
+
+Some avro fields like `arrays`, `map` and `fixed` define an `inner name` besides the `field name`. For this use cases, the `metadata` property `inner-name` must be defined, for example:
+
+```python
+from dataclasses_avroschema import AvroModel
+from dataclasses_avroschema import types
+import dataclasses
+import typing
+
+
+@dataclasses.dataclass
+class DeliveryBatch(AvroModel):
+    receivers_payload: typing.List[str] = dataclasses.field(metadata={'inner_name': 'my_custom_name'})
+    accounts: typing.Dict[str, str] = dataclasses.field(metadata={'inner_name': 'my_account'})
+    md5: types.confixed(size=16, namespace="md5", aliases=['md5', 'hash']) = dataclasses.field(metadata={'inner_name': 'my_md5'}
+```
+
+which will produce the following schema:
+
+```json
+{
+"type": "record",
+"name": "DeliveryBatch",
+"fields": [
+    {"name": "receivers_payload", "type": {"type": "array", "items": "string", "name": "my_custom_name"}},
+    {
+        "name": "accounts",
+        "type": {"type": "map", "values": "string", "name": "my_account"}
+    },
+    {
+        "name": "md5",
+        "type": {
+            "type": "fixed",
+            "name": "my_md5",
+            "size": 16,
+            "namespace": "md5",
+            "aliases": ["md5", "hash"]
+        }
+    },
+  ]
+}
+```

@@ -43,7 +43,7 @@ def test_invalid_type_container_field():
         AvroField(name, python_type, default=dataclasses.MISSING)
 
 
-@pytest.mark.parametrize("sequence, python_primitive_type,python_type_str", consts.SEQUENCES_AND_TYPES)
+@pytest.mark.parametrize("sequence, python_primitive_type, python_type_str", consts.SEQUENCES_AND_TYPES)
 def test_sequence_type_with_no_default(sequence, python_primitive_type, python_type_str):
     """
     When the type is List, the Avro field type should be array
@@ -56,6 +56,21 @@ def test_sequence_type_with_no_default(sequence, python_primitive_type, python_t
     expected = {
         "name": name,
         "type": {"type": "array", "name": name, "items": python_type_str},
+    }
+
+    assert expected == field.to_dict()
+
+
+@pytest.mark.parametrize("sequence, primitive_type, python_type_str", consts.SEQUENCES_AND_TYPES)
+def test_sequence_type_with_custom_inner_name(sequence, primitive_type, python_type_str):
+    name = "an_array_field"
+    python_type = sequence[primitive_type]
+    inner_name = "my-inner-name"
+    field = AvroField(name, python_type, metadata={"inner_name": inner_name})
+
+    expected = {
+        "name": name,
+        "type": {"type": "array", "name": inner_name, "items": python_type_str},
     }
 
     assert expected == field.to_dict()
