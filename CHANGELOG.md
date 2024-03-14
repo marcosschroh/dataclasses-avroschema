@@ -1,3 +1,9 @@
+## 0.57.3 (2024-03-14)
+
+### Fix
+
+- add inner names suppor for complex types. Closes #534 and related to #544 (#570)
+
 ## 0.57.2 (2024-03-11)
 
 ### Fix
