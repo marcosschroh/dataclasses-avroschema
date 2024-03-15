@@ -1,3 +1,9 @@
+## 0.57.4 (2024-03-15)
+
+### Fix
+
+- do not force pascalcase for enum names. Closes #544 (#571)
+
 ## 0.57.3 (2024-03-14)
 
 ### Fix
