@@ -250,18 +250,63 @@ import dataclasses
 import enum
 
 
-class UnitMultiPlayer(enum.Enum):
+class unit_multi_player(enum.Enum):
     q = "q"
     Q = "Q"
 
 
 @dataclasses.dataclass
 class User(AvroModel):
-    unit_multi_player: UnitMultiPlayer
+    unit_multi_player: unit_multi_player
 
 """
     model_generator = ModelGenerator()
     result = model_generator.render(schema=schema_with_enum_types_case_sensitivity)
+    assert result.strip() == expected_result.strip()
+
+
+def test_enum_types_with_no_pascal_case(schema_with_enum_types_no_pascal_case) -> None:
+    expected_result = '''
+from dataclasses_avroschema import AvroModel
+import dataclasses
+import enum
+import typing
+
+
+class my_favorite_color(enum.Enum):
+    """
+    A favorite color
+    """
+    BLUE = "Blue"
+    YELLOW = "Yellow"
+    GREEN = "Green"
+
+    class Meta:
+        namespace = "some.name.space"
+        aliases = ['Color', 'My favorite color']
+
+
+class super_heros(enum.Enum):
+    BATMAN = "batman"
+    SUPERMAN = "superman"
+    SPIDERMAN = "spiderman"
+
+
+class cars(enum.Enum):
+    BMW = "bmw"
+    FERRARY = "ferrary"
+    DUNA = "duna"
+
+
+@dataclasses.dataclass
+class User(AvroModel):
+    favorite_color: my_favorite_color
+    primaty_color: my_favorite_color
+    superheros: super_heros = super_heros.BATMAN
+    my_cars: typing.Optional[cars] = None
+'''
+    model_generator = ModelGenerator()
+    result = model_generator.render(schema=schema_with_enum_types_no_pascal_case)
     assert result.strip() == expected_result.strip()
 
 

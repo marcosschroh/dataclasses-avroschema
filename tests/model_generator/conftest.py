@@ -194,7 +194,7 @@ def schema_with_fixed_types() -> Dict:
                     "namespace": "md5",
                     "aliases": ["md5", "hash"],
                 },
-                "default": "u00ffffffffffffx"
+                "default": "u00ffffffffffffx",
             },
         ],
     }
@@ -236,7 +236,7 @@ def schema_with_enum_types() -> Dict:
                     "null",
                     {
                         "type": "enum",
-                        "name": "cars",
+                        "name": "Cars",
                         "symbols": ["bmw", "ferrary", "duna"],
                     },
                 ],
@@ -260,6 +260,38 @@ def schema_with_enum_types_case_sensitivity() -> Dict:
                     "symbols": ["q", "Q"],
                 },
             }
+        ],
+    }
+
+
+@pytest.fixture
+def schema_with_enum_types_no_pascal_case() -> Dict:
+    return {
+        "type": "record",
+        "name": "User",
+        "fields": [
+            {
+                "name": "favorite_color",
+                "type": {
+                    "type": "enum",
+                    "name": "my_favorite_color",
+                    "symbols": ["Blue", "Yellow", "Green"],
+                    "doc": "A favorite color",
+                    "namespace": "some.name.space",
+                    "aliases": ["Color", "My favorite color"],
+                },
+            },
+            {"name": "primaty_color", "type": "some.name.space.my_favorite_color"},
+            {
+                "name": "superheros",
+                "type": {"type": "enum", "name": "super_heros", "symbols": ["batman", "superman", "spiderman"]},
+                "default": "batman",
+            },
+            {
+                "name": "my_cars",
+                "type": ["null", {"type": "enum", "name": "cars", "symbols": ["bmw", "ferrary", "duna"]}],
+                "default": None,
+            },
         ],
     }
 
