@@ -69,6 +69,9 @@ User.avro_schema()
 }'
 ```
 
+!!! info
+    There are not restriction about `enum` names but is is highly recommended to use `pascalcase`
+
 ### Repeated Enums
 
 Sometimes we have cases where an `Enum` is used more than once with a particular class, for those cases the same `type` is used in order to generate a valid schema.

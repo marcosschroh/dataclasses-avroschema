@@ -391,8 +391,7 @@ class BaseGenerator:
         """
         self.imports.add("import enum")
 
-        field_name: str = field["name"]
-        enum_name = casefy.pascalcase(field_name)
+        enum_name: str = field["name"]
 
         symbols_map = {}
         symbols: typing.List[str] = field["symbols"]
@@ -532,12 +531,18 @@ class BaseGenerator:
                 default_repr += inner_default_repr
         elif default is dataclasses.MISSING:
             pass
-        elif field_type in (field_utils.STRING, field_utils.UUID,):
+        elif field_type in (
+            field_utils.STRING,
+            field_utils.UUID,
+        ):
             default_repr = f'"{default}"'
-        elif field_type in (field_utils.BYTES, field_utils.FIXED,):
+        elif field_type in (
+            field_utils.BYTES,
+            field_utils.FIXED,
+        ):
             default_repr = f'b"{default}"'
         elif field_type == field_utils.ENUM:
-            default_repr = f"{casefy.pascalcase(name)}.{casefy.uppercase(default)}"
+            default_repr = f"{name}.{casefy.uppercase(default)}"
         elif isinstance(field_type, list):
             # union type
             default_repr = self.get_field_default(field_type=field_type[0], default=default, name=name)
