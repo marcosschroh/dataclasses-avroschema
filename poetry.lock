@@ -448,13 +448,13 @@ development = ["black", "flake8", "mypy", "pytest", "types-colorama"]
 
 [[package]]
 name = "commitizen"
-version = "3.18.0"
+version = "3.18.4"
 description = "Python commitizen client tool"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "commitizen-3.18.0-py3-none-any.whl", hash = "sha256:7e3272725216aa3049e258bb438e0097e07607712325f5ce71d9a0bdf7805370"},
-    {file = "commitizen-3.18.0.tar.gz", hash = "sha256:42c1d29ba6a64ddbc6d9952f4bcc2ac7094956e27e47e96c931895e2659e6cee"},
+    {file = "commitizen-3.18.4-py3-none-any.whl", hash = "sha256:42c9b2c5fd3d6b83ebf850424227a8935d3e49f9fa636c58c072a370713b176a"},
+    {file = "commitizen-3.18.4.tar.gz", hash = "sha256:57b3051d4170e23a5317f348d1bc61b98e57ac01b04f66e0f9a25fef75e6f679"},
 ]
 
 [package.dependencies]
