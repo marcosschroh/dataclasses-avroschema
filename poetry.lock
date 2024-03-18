@@ -724,23 +724,31 @@ zstandard = ["zstandard"]
 
 [[package]]
 name = "faust-streaming"
-version = "0.10.23"
-description = "Python Stream processing."
+version = "0.10.24"
+description = "Python Stream Processing. A Faust fork"
 optional = true
 python-versions = ">=3.8.0"
 files = [
-    {file = "faust-streaming-0.10.23.tar.gz", hash = "sha256:34120e3279042e4b2b0e0c30c03fde98ecf02ce16c6e7ab42cda9d4ed5168237"},
+    {file = "faust-streaming-0.10.24.tar.gz", hash = "sha256:17a1a9bbb462b73c4efeeed305349157840c22d5a66eef2e0bce211f69a32b8d"},
+    {file = "faust_streaming-0.10.24-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:2a779d428076a3591c9904bfd753322b0c637b607c0d194e9fe34f79e3d26fa8"},
+    {file = "faust_streaming-0.10.24-cp310-cp310-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a86ef3e203516802ba69e62cc18247e32110077b85dec9802470df11d9f716dd"},
+    {file = "faust_streaming-0.10.24-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:1192a1a7d3e59e5756a66ae214d022a56323f53cc48a05b15af95d0dcf545440"},
+    {file = "faust_streaming-0.10.24-cp311-cp311-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:0b4a4c17b4a623d88397e3bce02e3526a0be69cc86f6e1999a3acc921937a283"},
+    {file = "faust_streaming-0.10.24-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:da92698cae17cbdaa7075f94982f1667e442b6916a01956a61d18c393d18d2a0"},
+    {file = "faust_streaming-0.10.24-cp38-cp38-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:6bac129c5170f7867ec0dfc82734fd21c4a9d5b46f5781a259606f4ef507c39c"},
+    {file = "faust_streaming-0.10.24-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:63bad1138e8f64be1a0a52e6632821fc41ef9cc32abdb488a1f2f8d9c9de3b68"},
+    {file = "faust_streaming-0.10.24-cp39-cp39-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:b538112197bb294c29dc96beab5c66cd3cb3bf534dc2dcf2eddbbdb9929455f2"},
 ]
 
 [package.dependencies]
 aiohttp = ">=3.8.0,<4.0"
-aiohttp_cors = ">=0.7,<2.0"
+aiohttp-cors = ">=0.7,<2.0"
 aiokafka = ">=0.9.0"
 click = ">=6.7,<8.2"
 croniter = ">=0.3.16"
 intervaltree = "*"
 mode-streaming = ">=0.3.0"
-mypy_extensions = "*"
+mypy-extensions = "*"
 opentracing = ">=1.3.0,<=2.4.0"
 six = "*"
 terminaltables = ">=3.1,<4.0"
@@ -758,11 +766,11 @@ debug = ["aiomonitor (>=0.4.4)", "setproctitle (>=1.1)"]
 eventlet = ["dnspython", "faust-aioeventlet"]
 fast = ["aiodns (>=1.1)", "ciso8601", "cython", "faust-cchardet", "orjson (>=2.0,<4.0)", "setproctitle (>=1.1)"]
 orjson = ["orjson (>=2.0,<4.0)"]
-prometheus = ["prometheus_client"]
+prometheus = ["prometheus-client"]
 redis = ["aredis (>=1.1.3,<2.0)"]
 rocksdb = ["faust-streaming-rocksdb (>=0.8.0)"]
 rocksdict = ["rocksdict (>=0.3.11,<4.0)"]
-sentry = ["raven (>=6.10.0,<7.0)", "raven-aiohttp (>=0.7.0)", "sentry_sdk (>=0.7.10)"]
+sentry = ["raven (>=6.10.0,<7.0)", "raven-aiohttp (>=0.7.0)", "sentry-sdk (>=0.7.10)"]
 setproctitle = ["setproctitle (>=1.1)"]
 statsd = ["statsd (>=4.0.1,<4.1.0)"]
 uvloop = ["uvloop (>=0.8.1)"]
