@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import dataclasses
 import typing
+from collections import OrderedDict
 
 from pydantic.fields import FieldInfo
 
@@ -33,3 +34,9 @@ class PydanticParser(Parser):
             for field_name, field_info in self.type.model_fields.items()
             if field_name not in exclude and field_name != "model_config"
         ]
+
+    def render(self) -> OrderedDict:
+        schema = super().render()
+        if "doc" not in schema and self.type.model_config and "title" in self.type.model_config:
+            schema["doc"] = self.type.model_config["title"]
+        return schema
