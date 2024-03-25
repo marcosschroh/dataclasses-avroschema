@@ -155,7 +155,7 @@ class AvroModel:
 
     @classmethod
     def parse_obj(cls: Type[CT], data: Dict) -> CT:
-        return from_dict(data_class=cls, data=data, config=cls.config())
+        return from_dict(data_class=cls, data=data, config=cls.dacite_config())
 
     def validate(self) -> bool:
         schema = self.avro_schema_to_python()
@@ -171,7 +171,7 @@ class AvroModel:
         return json.dumps(data, **kwargs)
 
     @classmethod
-    def config(cls: Type[CT]) -> Config:
+    def dacite_config(cls: Type[CT]) -> Config:
         """
         Get the default config for dacite and always include the self reference
         """
@@ -211,4 +211,4 @@ class AvroModel:
         payload = {field.name: field.fake() for field in cls.get_fields() if field.name not in data.keys()}
         payload.update(data)
 
-        return from_dict(data_class=cls, data=payload, config=cls.config())
+        return from_dict(data_class=cls, data=payload, config=cls.dacite_config())
