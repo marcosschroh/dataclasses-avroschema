@@ -64,8 +64,8 @@ class AvroModel:
         return Parser(type=cls._klass, metadata=cls._metadata, parent=cls._parent or cls)
 
     @classmethod
-    def avro_schema(cls: Type[CT], case_type: Optional[str] = None) -> str:
-        return json.dumps(cls.avro_schema_to_python(case_type=case_type))
+    def avro_schema(cls: Type[CT], case_type: Optional[str] = None, **kwargs) -> str:
+        return json.dumps(cls.avro_schema_to_python(case_type=case_type), **kwargs)
 
     @classmethod
     def avro_schema_to_python(
