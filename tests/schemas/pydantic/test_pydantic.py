@@ -11,6 +11,7 @@ from pydantic import (
     AmqpDsn,
     AwareDatetime,
     CockroachDsn,
+    ConfigDict,
     EmailStr,
     Field,
     FutureDate,
@@ -71,6 +72,21 @@ def test_pydantic_record_schema_with_metadata():
         "type": "record",
         "name": "User",
         "fields": [{"doc": "bar", "name": "name", "type": "string"}],
+    }
+    assert User.avro_schema() == json.dumps(expected_schema)
+
+
+def test_pydantic_record_schema_with_description():
+    class User(AvroBaseModel):
+        model_config = ConfigDict(title="User doc")
+
+        name: str = Field(description="bar")
+
+    expected_schema = {
+        "type": "record",
+        "name": "User",
+        "fields": [{"doc": "bar", "name": "name", "type": "string"}],
+        "doc": "User doc",
     }
     assert User.avro_schema() == json.dumps(expected_schema)
 
