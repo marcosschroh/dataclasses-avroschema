@@ -13,9 +13,11 @@ from dataclasses_avroschema.parser import Parser
 class PydanticParser(Parser):
     @staticmethod
     def get_field_metadata(field_info: FieldInfo) -> dict[str, typing.Any]:
-        metadata = field_info.json_schema_extra.get("metadata", {}) if field_info.json_schema_extra else {}
+        metadata: dict[str, typing.Any] = (
+            field_info.json_schema_extra.get("metadata", {}) if field_info.json_schema_extra else {}  # type: ignore
+        )
         if field_info.description:
-            metadata["doc"] = field_info.description
+            metadata["doc"] = field_info.description  # type: ignore
         return metadata
 
     def parse_fields(self, exclude: typing.List) -> typing.List[Field]:
@@ -42,5 +44,5 @@ class PydanticParser(Parser):
         elif self.type.model_config and "title" in self.type.model_config:
             doc = self.type.model_config["title"]
         else:
-            doc = self.type.__doc__
+            doc = super().generate_documentation()
         return doc
