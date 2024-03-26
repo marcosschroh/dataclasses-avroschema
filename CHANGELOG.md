@@ -1,3 +1,9 @@
+## 0.57.5 (2024-03-26)
+
+### Fix
+
+- improve pydantic model translation (#582)
+
 ## 0.57.4 (2024-03-15)
 
 ### Fix
