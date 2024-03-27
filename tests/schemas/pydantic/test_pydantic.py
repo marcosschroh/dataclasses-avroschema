@@ -91,6 +91,22 @@ def test_pydantic_record_schema_with_description():
     assert User.avro_schema() == json.dumps(expected_schema)
 
 
+def test_pydantic_record_schema_with_aliases():
+    class User(AvroBaseModel):
+        foo: str = Field(alias="FOO")
+        bar: str = Field(serialization_alias="BAR")
+
+    expected_schema = {
+        "type": "record",
+        "name": "User",
+        "fields": [
+            {"aliases": ["FOO"], "name": "foo", "type": "string"},
+            {"aliases": ["BAR"], "name": "bar", "type": "string"},
+        ],
+    }
+    assert User.avro_schema() == json.dumps(expected_schema)
+
+
 def test_pydantic_record_schema_complex_types(user_advance_avro_json, color_enum):
     class UserAdvance(AvroBaseModel):
         name: str

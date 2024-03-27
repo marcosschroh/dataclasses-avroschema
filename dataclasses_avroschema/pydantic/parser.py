@@ -18,6 +18,16 @@ class PydanticParser(Parser):
         )
         if field_info.description:
             metadata["doc"] = field_info.description  # type: ignore
+
+        aliases = set(metadata.get("aliases", []))
+
+        if field_info.alias:
+            aliases.add(field_info.alias)
+        if field_info.serialization_alias:
+            aliases.add(field_info.serialization_alias)
+        if aliases:
+            metadata["aliases"] = list(aliases)
+
         return metadata
 
     def parse_fields(self, exclude: typing.List) -> typing.List[Field]:
