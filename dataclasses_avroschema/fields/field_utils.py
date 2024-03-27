@@ -1,5 +1,6 @@
 import datetime
 import enum
+import typing
 import uuid
 
 from dataclasses_avroschema import types
@@ -97,3 +98,11 @@ PYTHON_TYPE_TO_AVRO = {
     datetime.datetime: {"type": LONG, "logicalType": TIMESTAMP_MILLIS},
     uuid.uuid4: {"type": STRING, "logicalType": UUID},
 }
+
+
+def ensure_null_first(avro_type: typing.Any) -> typing.Any:
+    """Ensures null appears first in avro_type, if present."""
+    if not isinstance(avro_type, list) or NULL not in avro_type:
+        return avro_type
+
+    return [NULL] + [atype for atype in avro_type if atype != NULL]

@@ -18,6 +18,7 @@ from dataclasses_avroschema import (
 )
 from dataclasses_avroschema.exceptions import InvalidMap
 from dataclasses_avroschema.faker import fake
+from dataclasses_avroschema.fields.field_utils import ensure_null_first
 from dataclasses_avroschema.utils import is_pydantic_model
 
 from . import field_utils
@@ -211,7 +212,7 @@ class BaseListField(ContainerField):
                 parent=self.parent,
             )
 
-        self.items_type = self.internal_field.get_avro_type()
+        self.items_type = ensure_null_first(self.internal_field.get_avro_type())
 
 
 @dataclasses.dataclass

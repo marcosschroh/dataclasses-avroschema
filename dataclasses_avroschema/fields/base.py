@@ -9,6 +9,7 @@ from inflector import Inflector
 from typing_extensions import get_args
 
 from dataclasses_avroschema import utils
+from dataclasses_avroschema.fields.field_utils import ensure_null_first
 
 p = Inflector()
 
@@ -78,7 +79,8 @@ class Field:
                 * tuple, he OrderedDict will contains the key symbols inside type
                 * dict, he OrderedDict will contains the key values inside type
         """
-        template = OrderedDict(self.get_metadata() + [("name", self.name), ("type", self.get_avro_type())])
+        avro_type = ensure_null_first(self.get_avro_type())
+        template = OrderedDict(self.get_metadata() + [("name", self.name), ("type", avro_type)])
         default = self.get_default_value()
 
         if default is not dataclasses.MISSING:
@@ -120,8 +122,7 @@ class Field:
         return dict(self.render())
 
     @abc.abstractmethod
-    def get_avro_type(self) -> typing.Any:
-        ...  # pragma: no cover
+    def get_avro_type(self) -> typing.Any: ...  # pragma: no cover
 
     def fake(self) -> typing.Any:
         return None
