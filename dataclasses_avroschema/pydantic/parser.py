@@ -21,9 +21,9 @@ class PydanticParser(Parser):
 
         aliases = set(metadata.get("aliases", []))
 
-        if field_info.alias:
+        if field_info.alias is not None:
             aliases.add(field_info.alias)
-        if field_info.serialization_alias:
+        if field_info.serialization_alias is not None:
             aliases.add(field_info.serialization_alias)
         if aliases:
             metadata["aliases"] = list(aliases)
