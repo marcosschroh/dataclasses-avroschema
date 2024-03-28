@@ -120,8 +120,7 @@ class Field:
         return dict(self.render())
 
     @abc.abstractmethod
-    def get_avro_type(self) -> typing.Any:
-        ...  # pragma: no cover
+    def get_avro_type(self) -> typing.Any: ...  # pragma: no cover
 
     def fake(self) -> typing.Any:
         return None
