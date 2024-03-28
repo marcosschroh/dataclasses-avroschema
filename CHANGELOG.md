@@ -1,3 +1,9 @@
+## 0.58.0 (2024-03-28)
+
+### Feat
+
+- Support for Pydantic field alias and serialization_alias (#583). Closes #293
+
 ## 0.57.5 (2024-03-26)
 
 ### Fix
