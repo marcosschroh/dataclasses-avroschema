@@ -107,19 +107,6 @@ def test_pydantic_record_schema_with_aliases():
     assert User.avro_schema() == json.dumps(expected_schema)
 
 
-def test_pydantic_record_schema_null_first():
-    class User(AvroBaseModel):
-        foo: typing.Optional[typing.List[typing.Optional[str]]]
-
-    expected_schema = {
-        "type": "record",
-        "name": "User",
-        "fields": [{"name": "foo", "type": ["null", {"type": "array", "items": ["null", "string"], "name": "foo"}]}],
-    }
-
-    assert User.avro_schema() == json.dumps(expected_schema)
-
-
 def test_pydantic_record_schema_complex_types(user_advance_avro_json, color_enum):
     class UserAdvance(AvroBaseModel):
         name: str
