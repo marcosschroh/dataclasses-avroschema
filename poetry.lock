@@ -724,20 +724,20 @@ zstandard = ["zstandard"]
 
 [[package]]
 name = "faust-streaming"
-version = "0.10.24"
+version = "0.11.0"
 description = "Python Stream Processing. A Faust fork"
 optional = true
 python-versions = ">=3.8.0"
 files = [
-    {file = "faust-streaming-0.10.24.tar.gz", hash = "sha256:17a1a9bbb462b73c4efeeed305349157840c22d5a66eef2e0bce211f69a32b8d"},
-    {file = "faust_streaming-0.10.24-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:2a779d428076a3591c9904bfd753322b0c637b607c0d194e9fe34f79e3d26fa8"},
-    {file = "faust_streaming-0.10.24-cp310-cp310-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a86ef3e203516802ba69e62cc18247e32110077b85dec9802470df11d9f716dd"},
-    {file = "faust_streaming-0.10.24-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:1192a1a7d3e59e5756a66ae214d022a56323f53cc48a05b15af95d0dcf545440"},
-    {file = "faust_streaming-0.10.24-cp311-cp311-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:0b4a4c17b4a623d88397e3bce02e3526a0be69cc86f6e1999a3acc921937a283"},
-    {file = "faust_streaming-0.10.24-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:da92698cae17cbdaa7075f94982f1667e442b6916a01956a61d18c393d18d2a0"},
-    {file = "faust_streaming-0.10.24-cp38-cp38-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:6bac129c5170f7867ec0dfc82734fd21c4a9d5b46f5781a259606f4ef507c39c"},
-    {file = "faust_streaming-0.10.24-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:63bad1138e8f64be1a0a52e6632821fc41ef9cc32abdb488a1f2f8d9c9de3b68"},
-    {file = "faust_streaming-0.10.24-cp39-cp39-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:b538112197bb294c29dc96beab5c66cd3cb3bf534dc2dcf2eddbbdb9929455f2"},
+    {file = "faust-streaming-0.11.0.tar.gz", hash = "sha256:7b86dfb822a0e18583ded20106832d79aabf45c6592a5d7c7fba181f7dd9883e"},
+    {file = "faust_streaming-0.11.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:c383c1c0302dfa7944a40fcf21e20ce327be90d766c2c92266400ac5b85a1bd5"},
+    {file = "faust_streaming-0.11.0-cp310-cp310-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a1e040ba4e80490e39925db4273a7a7da3c3b365019146fa3dd12d02d641f13c"},
+    {file = "faust_streaming-0.11.0-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:e0a526955452d96b219b32c341c241db6efeaf6cea3fc67b2075aa611a2e47fd"},
+    {file = "faust_streaming-0.11.0-cp311-cp311-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:dde5fa70d9c4db27e405a97e823e7a33966606c395a24b228980247a0e7df416"},
+    {file = "faust_streaming-0.11.0-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:34244670a3e7dc94ea45e86d32246bd7cbfbede1a690c18a1607baa3f15f61f1"},
+    {file = "faust_streaming-0.11.0-cp38-cp38-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:3f205900b52abb6468edf8b50ca89613d8e7fd1f834e1696f23a82e0af1346fd"},
+    {file = "faust_streaming-0.11.0-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:ced68a8cca723f812143388c3e04e28fba861b6e1f138f494e2b5b3b3a9fb580"},
+    {file = "faust_streaming-0.11.0-cp39-cp39-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:4292420801a99ecb750321435d66aff24a83a3f8f3f257995e135654065886ea"},
 ]
 
 [package.dependencies]
@@ -747,7 +747,7 @@ aiokafka = ">=0.9.0"
 click = ">=6.7,<8.2"
 croniter = ">=0.3.16"
 intervaltree = "*"
-mode-streaming = ">=0.3.0"
+mode-streaming = ">=0.4.0"
 mypy-extensions = "*"
 opentracing = ">=1.3.0,<=2.4.0"
 six = "*"
@@ -1295,24 +1295,23 @@ mkdocstrings = ">=0.20"
 
 [[package]]
 name = "mode-streaming"
-version = "0.3.5"
-description = "AsyncIO Service-based programming."
+version = "0.4.0"
+description = "AsyncIO Service-based programming"
 optional = true
-python-versions = ">=3.7"
+python-versions = ">=3.8"
 files = [
-    {file = "mode-streaming-0.3.5.tar.gz", hash = "sha256:b9ed989541925a949dec236ff81a1362f93c5f9474ec7f26225f5685170e8888"},
-    {file = "mode_streaming-0.3.5-py2.py3-none-any.whl", hash = "sha256:689b8e74f1d72884658a090ea0ed20527a22817ecc922bdc0e1c62d4919d349f"},
+    {file = "mode_streaming-0.4.0-py2.py3-none-any.whl", hash = "sha256:fc945e0faac6ec6a058a1262d9ae0edc7dca432d93f138af9e6a33778260da4e"},
 ]
 
 [package.dependencies]
-colorlog = ">=2.9.0"
-croniter = ">=0.3.16"
+colorlog = ">=6.0.0,<7.0.0"
+croniter = ">=2.0.0,<3.0.0"
 mypy-extensions = "*"
 
 [package.extras]
 eventlet = ["dnspython", "faust-aioeventlet"]
-gevent = ["aiogevent (>=0.2,<1.0)"]
-uvloop = ["uvloop (>=0.8.1)"]
+gevent = ["asyncio-gevent (>=0.2,<1.0)"]
+uvloop = ["uvloop (>=0.19.0)"]
 
 [[package]]
 name = "multidict"
@@ -2403,4 +2402,4 @@ pydantic = ["pydantic"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "3abfbd73ee9a6674a2f179e8134ccb8eb669b9d29384714367047314f09d6f05"
+content-hash = "2e4c778e17530604bde777e78d1c6ec70ff45da9caf78693b1e5c51fe3633e2c"
