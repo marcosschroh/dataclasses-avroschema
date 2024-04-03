@@ -1,0 +1,1785 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="avro, kafka, client, avro schema, apache, python">
+      
+      
+      
+      
+        <link rel="prev" href="../pydantic_v1/">
+      
+      
+        <link rel="next" href="../faust_records/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.16">
+    
+    
+      
+        <title>Pydantic - Dataclasses Avro Schema</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.bcfcd587.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#pydantic-integration" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Dataclasses Avro Schema" class="md-header__button md-logo" aria-label="Dataclasses Avro Schema" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Dataclasses Avro Schema
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Pydantic
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7M9 21a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-1H9v1Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue-grey" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7M9 21v-1h6v1a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1m3-17a5 5 0 0 0-5 5c0 2.05 1.23 3.81 3 4.58V16h4v-2.42c1.77-.77 3-2.53 3-4.58a5 5 0 0 0-5-5Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/marcosschroh/dataclasses-avroschema" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    marcosschroh/dataclasses-avroschema
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Dataclasses Avro Schema" class="md-nav__button md-logo" aria-label="Dataclasses Avro Schema" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    Dataclasses Avro Schema
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/marcosschroh/dataclasses-avroschema" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    marcosschroh/dataclasses-avroschema
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Introduction
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../avro_schema/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Avro Schema and Python Classes
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../fields_specification/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Fields Specification
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../primitive_types/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Primitive Types
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../complex_types/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Complex Types
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../logical_types/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Logical Types
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../records/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Records
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../schema_relationships/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Schema Relationships
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../serialization/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Serialization
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../case/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Case Schemas
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../factories_and_fixtures/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Factory and fixtures
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../model_generator/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Model Generator
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pydantic_v1/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Pydantic V1
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Pydantic
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Pydantic
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#avro-and-json-schemas" class="md-nav__link">
+    <span class="md-ellipsis">
+      Avro and Json schemas
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#avro-schemas-with-pydantic-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      Avro schemas with pydantic types
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Avro schemas with pydantic types">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#supported-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      Supported fields
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#model-generation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Model generation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Model generation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mapping-avro-fields-to-pydantic-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mapping avro fields to pydantic types
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pydantic-and-dataclasses_avroschema-batteries" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pydantic and dataclasses_avroschema batteries
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Pydantic and dataclasses_avroschema batteries">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#to-dict-to-json-and-serialization" class="md-nav__link">
+    <span class="md-ellipsis">
+      To dict, to json and serialization
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parsing-objects" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parsing Objects
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fake" class="md-nav__link">
+    <span class="md-ellipsis">
+      Fake
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#excluding-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      Excluding fields
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#model-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      Model Config
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adding-custom-field-level-attributes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Adding Custom Field-level Attributes
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Adding Custom Field-level Attributes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#custom-data-types-as-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      Custom Data Types as Fields
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#classes-with-__get_pydantic_core_schema__" class="md-nav__link">
+    <span class="md-ellipsis">
+      Classes with __get_pydantic_core_schema__
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../faust_records/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Faust
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Examples
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../good_practices/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Good Practices
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../migration_guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Migration Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#avro-and-json-schemas" class="md-nav__link">
+    <span class="md-ellipsis">
+      Avro and Json schemas
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#avro-schemas-with-pydantic-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      Avro schemas with pydantic types
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Avro schemas with pydantic types">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#supported-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      Supported fields
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#model-generation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Model generation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Model generation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mapping-avro-fields-to-pydantic-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mapping avro fields to pydantic types
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pydantic-and-dataclasses_avroschema-batteries" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pydantic and dataclasses_avroschema batteries
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Pydantic and dataclasses_avroschema batteries">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#to-dict-to-json-and-serialization" class="md-nav__link">
+    <span class="md-ellipsis">
+      To dict, to json and serialization
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parsing-objects" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parsing Objects
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fake" class="md-nav__link">
+    <span class="md-ellipsis">
+      Fake
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#excluding-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      Excluding fields
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#model-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      Model Config
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adding-custom-field-level-attributes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Adding Custom Field-level Attributes
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Adding Custom Field-level Attributes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#custom-data-types-as-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      Custom Data Types as Fields
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#classes-with-__get_pydantic_core_schema__" class="md-nav__link">
+    <span class="md-ellipsis">
+      Classes with __get_pydantic_core_schema__
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="pydantic-integration">Pydantic Integration</h1>
+<p>It is possible to use <a href="https://docs.pydantic.dev/latest/">pydantic</a> with <code>dataclasses-avroschema</code> making use of <code>AvroBaseModel</code>:</p>
+<p>You must use use all the <code>pydantic</code> features and all <code>dataclasses-avroschema</code> functionality will be injected.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>With <code>pydantic</code> you do not have to use <code>python dataclasses</code></p>
+</div>
+<h2 id="avro-and-json-schemas">Avro and Json schemas</h2>
+<div class="highlight"><span class="filename">Basic usage</span><pre><span></span><code><span class="kn">import</span> <span class="nn">typing</span>
+<span class="kn">import</span> <span class="nn">enum</span>
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema.pydantic</span> <span class="kn">import</span> <span class="n">AvroBaseModel</span>
+
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">Field</span>
+
+
+<span class="k">class</span> <span class="nc">FavoriteColor</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="n">BLUE</span> <span class="o">=</span> <span class="s2">&quot;BLUE&quot;</span>
+    <span class="n">YELLOW</span> <span class="o">=</span> <span class="s2">&quot;YELLOW&quot;</span>
+    <span class="n">GREEN</span> <span class="o">=</span> <span class="s2">&quot;GREEN&quot;</span>
+
+
+<span class="k">class</span> <span class="nc">UserAdvance</span><span class="p">(</span><span class="n">AvroBaseModel</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">pets</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;dog&quot;</span><span class="p">,</span> <span class="s2">&quot;cat&quot;</span><span class="p">])</span>
+    <span class="n">accounts</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+    <span class="n">has_car</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">favorite_colors</span><span class="p">:</span> <span class="n">FavoriteColor</span> <span class="o">=</span> <span class="n">FavoriteColor</span><span class="o">.</span><span class="n">BLUE</span>
+    <span class="n">country</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Argentina&quot;</span>
+    <span class="n">address</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">schema_doc</span> <span class="o">=</span> <span class="kc">False</span>
+
+
+<span class="c1"># Avro schema</span>
+<span class="n">UserAdvance</span><span class="o">.</span><span class="n">avro_schema</span><span class="p">()</span>
+<span class="s1">&#39;{</span>
+    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;record&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;UserAdvance&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;age&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;long&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;pets&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span> <span class="s2">&quot;items&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;pet&quot;</span><span class="p">},</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;dog&quot;</span><span class="p">,</span> <span class="s2">&quot;cat&quot;</span><span class="p">]},</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;accounts&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;map&quot;</span><span class="p">,</span> <span class="s2">&quot;values&quot;</span><span class="p">:</span> <span class="s2">&quot;long&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;account&quot;</span><span class="p">},</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}},</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;has_car&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;boolean&quot;</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;favorite_colors&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;enum&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;FavoriteColor&quot;</span><span class="p">,</span> <span class="s2">&quot;symbols&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;BLUE&quot;</span><span class="p">,</span> <span class="s2">&quot;YELLOW&quot;</span><span class="p">,</span> <span class="s2">&quot;GREEN&quot;</span><span class="p">]},</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="s2">&quot;BLUE&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;country&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="s2">&quot;Argentina&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;address&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;null&quot;</span><span class="p">,</span> <span class="s2">&quot;string&quot;</span><span class="p">],</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span><span class="s1">&#39;</span>
+
+<span class="c1"># Json schema</span>
+<span class="n">UserAdvance</span><span class="o">.</span><span class="n">model_json_schema</span><span class="p">()</span>
+
+<span class="p">{</span>
+    <span class="s1">&#39;required&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;age&#39;</span><span class="p">],</span>
+    <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;UserAdvance&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;object&#39;</span>
+    <span class="s1">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;Name&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;string&#39;</span><span class="p">},</span>
+        <span class="s1">&#39;age&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;Age&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;integer&#39;</span><span class="p">},</span>
+        <span class="s1">&#39;pets&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;items&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;string&#39;</span><span class="p">},</span> <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;Pets&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;array&#39;</span><span class="p">},</span>
+        <span class="s1">&#39;accounts&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;additionalProperties&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;integer&#39;</span><span class="p">},</span> <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;Accounts&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;object&#39;</span><span class="p">},</span>
+        <span class="s1">&#39;has_car&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;default&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;Has Car&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;boolean&#39;</span><span class="p">},</span>
+        <span class="s1">&#39;favorite_colors&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;allOf&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;$ref&#39;</span><span class="p">:</span> <span class="s1">&#39;#/$defs/FavoriteColor&#39;</span><span class="p">}],</span> <span class="s1">&#39;default&#39;</span><span class="p">:</span> <span class="s1">&#39;BLUE&#39;</span><span class="p">},</span>
+        <span class="s1">&#39;country&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;default&#39;</span><span class="p">:</span> <span class="s1">&#39;Argentina&#39;</span><span class="p">,</span> <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;Country&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;string&#39;</span><span class="p">},</span>
+        <span class="s1">&#39;address&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;default&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;Address&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;string&#39;</span><span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s1">&#39;$defs&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;FavoriteColor&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;enum&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;BLUE&#39;</span><span class="p">,</span> <span class="s1">&#39;YELLOW&#39;</span><span class="p">,</span> <span class="s1">&#39;GREEN&#39;</span><span class="p">],</span> <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;FavoriteColor&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;string&#39;</span><span class="p">}},</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><em>(This script is complete, it should run "as is")</em></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You must use pydantic.Field instead of dataclasses.field</p>
+</div>
+<h2 id="avro-schemas-with-pydantic-types">Avro schemas with pydantic types</h2>
+<p>Most of <code>pydantic</code> types are supported and from them it is possible to generate <code>avro fields</code>. Because <code>pydantic</code> types are not native <code>python types</code>
+the end result will contain extra metadata so the end users will have more context at the moment of using the schema. The extra <code>metadata</code> is specified
+using the key <code>pydantic-class</code>.</p>
+<h3 id="supported-fields">Supported fields</h3>
+<table>
+<thead>
+<tr>
+<th>Avro Type</th>
+<th>Pydantic Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>string</td>
+<td>pydantic.FilePath</td>
+</tr>
+<tr>
+<td>string</td>
+<td>pydantic.DirectoryPath</td>
+</tr>
+<tr>
+<td>string</td>
+<td>pydantic.EmailStr</td>
+</tr>
+<tr>
+<td>string</td>
+<td>pydantic.NameEmail</td>
+</tr>
+<tr>
+<td>string</td>
+<td>pydantic.AnyUrl</td>
+</tr>
+<tr>
+<td>string</td>
+<td>pydantic.AnyHttpUrl</td>
+</tr>
+<tr>
+<td>string</td>
+<td>pydantic.HttpUrl</td>
+</tr>
+<tr>
+<td>string</td>
+<td>pydantic.FileUrl</td>
+</tr>
+<tr>
+<td>string</td>
+<td>pydantic.PostgresDsn</td>
+</tr>
+<tr>
+<td>string</td>
+<td>pydantic.CockroachDsn</td>
+</tr>
+<tr>
+<td>string</td>
+<td>pydantic.AmqpDsn</td>
+</tr>
+<tr>
+<td>string</td>
+<td>pydantic.RedisDsn</td>
+</tr>
+<tr>
+<td>string</td>
+<td>pydantic.MongoDsn</td>
+</tr>
+<tr>
+<td>string</td>
+<td>pydantic.KafkaDsn</td>
+</tr>
+<tr>
+<td>string</td>
+<td>pydantic.SecretStr</td>
+</tr>
+<tr>
+<td>string</td>
+<td>pydantic.IPvAnyAddress</td>
+</tr>
+<tr>
+<td>string</td>
+<td>pydantic.IPvAnyInterface</td>
+</tr>
+<tr>
+<td>string</td>
+<td>pydantic.IPvAnyNetwork</td>
+</tr>
+<tr>
+<td>double</td>
+<td>pydantic.NegativeFloat</td>
+</tr>
+<tr>
+<td>double</td>
+<td>pydantic.PositiveFloat</td>
+</tr>
+<tr>
+<td>long</td>
+<td>pydantic.NegativeInt</td>
+</tr>
+<tr>
+<td>long</td>
+<td>pydantic.PositiveIntstr</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Avro Type</th>
+<th>Logical type</th>
+<th>Pydantic Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>string</td>
+<td>uuid</td>
+<td>pydantic.UUID1</td>
+</tr>
+<tr>
+<td>string</td>
+<td>uuid</td>
+<td>pydantic.UUID3</td>
+</tr>
+<tr>
+<td>string</td>
+<td>uuid</td>
+<td>pydantic.UUID4</td>
+</tr>
+<tr>
+<td>string</td>
+<td>uuid</td>
+<td>pydantic.UUID5</td>
+</tr>
+<tr>
+<td>int</td>
+<td>date</td>
+<td>pydantic.PastDate</td>
+</tr>
+<tr>
+<td>int</td>
+<td>date</td>
+<td>pydantic.FutureDate</td>
+</tr>
+<tr>
+<td>long</td>
+<td>timestamp-millis</td>
+<td>pydantic.PastDatetime</td>
+</tr>
+<tr>
+<td>long</td>
+<td>timestamp-millis</td>
+<td>pydantic.FutureDatetime</td>
+</tr>
+<tr>
+<td>long</td>
+<td>timestamp-millis</td>
+<td>pydantic.AwareDatetime</td>
+</tr>
+<tr>
+<td>long</td>
+<td>timestamp-millis</td>
+<td>pydantic.NaiveDatetime</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">pydantic</span>
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema.pydantic</span> <span class="kn">import</span> <span class="n">AvroBaseModel</span>
+
+
+<span class="k">class</span> <span class="nc">Infrastructure</span><span class="p">(</span><span class="n">AvroBaseModel</span><span class="p">):</span>
+    <span class="n">email</span><span class="p">:</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">EmailStr</span>
+    <span class="n">postgres_dsn</span><span class="p">:</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">PostgresDsn</span>
+    <span class="n">cockroach_dsn</span><span class="p">:</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">CockroachDsn</span>
+    <span class="n">amqp_dsn</span><span class="p">:</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">AmqpDsn</span>
+    <span class="n">redis_dsn</span><span class="p">:</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">RedisDsn</span>
+    <span class="n">mongo_dsn</span><span class="p">:</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">MongoDsn</span>
+    <span class="n">kafka_url</span><span class="p">:</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">KafkaDsn</span>
+    <span class="n">total_nodes</span><span class="p">:</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">PositiveInt</span>
+
+
+<span class="n">Infrastructure</span><span class="o">.</span><span class="n">avro_schema</span><span class="p">()</span>
+
+<span class="p">{</span>
+    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;record&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Infrastructure&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;email&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span> <span class="s2">&quot;pydantic-class&quot;</span><span class="p">:</span> <span class="s2">&quot;EmailStr&quot;</span><span class="p">}},</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;postgres_dsn&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span> <span class="s2">&quot;pydantic-class&quot;</span><span class="p">:</span> <span class="s2">&quot;PostgresDsn&quot;</span><span class="p">}},</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;cockroach_dsn&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span> <span class="s2">&quot;pydantic-class&quot;</span><span class="p">:</span> <span class="s2">&quot;CockroachDsn&quot;</span><span class="p">}},</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;amqp_dsn&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span> <span class="s2">&quot;pydantic-class&quot;</span><span class="p">:</span> <span class="s2">&quot;AmqpDsn&quot;</span><span class="p">}},</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;redis_dsn&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span> <span class="s2">&quot;pydantic-class&quot;</span><span class="p">:</span> <span class="s2">&quot;RedisDsn&quot;</span><span class="p">}},</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;mongo_dsn&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span> <span class="s2">&quot;pydantic-class&quot;</span><span class="p">:</span> <span class="s2">&quot;MongoDsn&quot;</span><span class="p">}},</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;kafka_url&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span> <span class="s2">&quot;pydantic-class&quot;</span><span class="p">:</span> <span class="s2">&quot;KafkaDsn&quot;</span><span class="p">}},</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;total_nodes&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;long&quot;</span><span class="p">,</span> <span class="s2">&quot;pydantic-class&quot;</span><span class="p">:</span> <span class="s2">&quot;PositiveInt&quot;</span><span class="p">}}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><em>(This script is complete, it should run "as is")</em></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The key <code>pydantic-class</code> has been added as <code>metadata</code> to have more context when using the schema</p>
+</div>
+<h2 id="model-generation">Model generation</h2>
+<p>If is possible to generate <a href="https://marcosschroh.github.io/dataclasses-avroschema/model_generator/#render-pydantic-models">pydantic models</a> when <code>pydantic types</code> have been used. If a field has the matadata key <code>pydantic-class</code>
+then the proper pydantic types will be used.</p>
+<p>Schema example:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">ModelGenerator</span><span class="p">,</span> <span class="n">ModelType</span>
+
+<span class="n">model_generator</span> <span class="o">=</span> <span class="n">ModelGenerator</span><span class="p">()</span>
+
+<span class="n">schema</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;record&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Infrastructure&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;email&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span> <span class="s2">&quot;pydantic-class&quot;</span><span class="p">:</span> <span class="s2">&quot;EmailStr&quot;</span><span class="p">}},</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;kafka_url&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span> <span class="s2">&quot;pydantic-class&quot;</span><span class="p">:</span> <span class="s2">&quot;KafkaDsn&quot;</span><span class="p">}},</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;total_nodes&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;long&quot;</span><span class="p">,</span> <span class="s2">&quot;pydantic-class&quot;</span><span class="p">:</span> <span class="s2">&quot;PositiveInt&quot;</span><span class="p">}},</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;event_id&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span> <span class="s2">&quot;logicalType&quot;</span><span class="p">:</span> <span class="s2">&quot;uuid&quot;</span><span class="p">,</span> <span class="s2">&quot;pydantic-class&quot;</span><span class="p">:</span> <span class="s2">&quot;UUID1&quot;</span><span class="p">}},</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;landing_zone_nodes&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span> <span class="s2">&quot;items&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;long&quot;</span><span class="p">,</span> <span class="s2">&quot;pydantic-class&quot;</span><span class="p">:</span> <span class="s2">&quot;PositiveInt&quot;</span><span class="p">},</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;landing_zone_node&quot;</span><span class="p">}},</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;total_nodes_in_aws&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;long&quot;</span><span class="p">,</span> <span class="s2">&quot;pydantic-class&quot;</span><span class="p">:</span> <span class="s2">&quot;PositiveInt&quot;</span><span class="p">},</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;optional_kafka_url&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;null&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span> <span class="s2">&quot;pydantic-class&quot;</span><span class="p">:</span> <span class="s2">&quot;KafkaDsn&quot;</span><span class="p">}],</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">model_generator</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="n">ModelType</span><span class="o">.</span><span class="n">AVRODANTIC</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;models.py&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;+w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</code></pre></div>
+<p>and then render the result:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">dataclasses_avroschema.pydantic</span> <span class="kn">import</span> <span class="n">AvroBaseModel</span>
+<span class="kn">import</span> <span class="nn">typing</span>
+<span class="kn">import</span> <span class="nn">pydantic</span>
+
+
+<span class="k">class</span> <span class="nc">Infrastructure</span><span class="p">(</span><span class="n">AvroBaseModel</span><span class="p">):</span>
+    <span class="n">email</span><span class="p">:</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">EmailStr</span>
+    <span class="n">kafka_url</span><span class="p">:</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">KafkaDsn</span>
+    <span class="n">total_nodes</span><span class="p">:</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">PositiveInt</span>
+    <span class="n">event_id</span><span class="p">:</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">UUID1</span>
+    <span class="n">landing_zone_nodes</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="n">pydantic</span><span class="o">.</span><span class="n">PositiveInt</span><span class="p">]</span>
+    <span class="n">total_nodes_in_aws</span><span class="p">:</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">PositiveInt</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="n">optional_kafka_url</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">pydantic</span><span class="o">.</span><span class="n">KafkaDsn</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+</code></pre></div>
+<p><em>(This script is complete, it should run "as is")</em></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In order to render the pydantic types the base class must be <code>AVRO_BASE_MODEL</code> or <code>PYDANTIC_MODEL</code></p>
+</div>
+<h3 id="mapping-avro-fields-to-pydantic-types">Mapping <code>avro fields</code> to <code>pydantic types</code></h3>
+<table>
+<thead>
+<tr>
+<th>Avro Type</th>
+<th>Metadata</th>
+<th>Pydantic Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>string</td>
+<td>"pydantic-class": "DirectoryPath"</td>
+<td>pydantic.FilePath</td>
+</tr>
+<tr>
+<td>string</td>
+<td>"pydantic-class": "DirectoryPath"</td>
+<td>pydantic.DirectoryPath</td>
+</tr>
+<tr>
+<td>string</td>
+<td>"pydantic-class": "EmailStr"</td>
+<td>pydantic.EmailStr</td>
+</tr>
+<tr>
+<td>string</td>
+<td>"pydantic-class": "NameEmail"</td>
+<td>pydantic.NameEmail</td>
+</tr>
+<tr>
+<td>string</td>
+<td>"pydantic-class": "AnyUrl"</td>
+<td>pydantic.AnyUrl</td>
+</tr>
+<tr>
+<td>string</td>
+<td>"pydantic-class": "AnyHttpUrl"</td>
+<td>pydantic.AnyHttpUrl</td>
+</tr>
+<tr>
+<td>string</td>
+<td>"pydantic-class": "HttpUrl"</td>
+<td>pydantic.HttpUrl</td>
+</tr>
+<tr>
+<td>string</td>
+<td>"pydantic-class": "FileUrl"</td>
+<td>pydantic.FileUrl</td>
+</tr>
+<tr>
+<td>string</td>
+<td>"pydantic-class": "PostgresDsn"</td>
+<td>pydantic.PostgresDsn</td>
+</tr>
+<tr>
+<td>string</td>
+<td>"pydantic-class": "CockroachDsn</td>
+<td>pydantic.CockroachDsn</td>
+</tr>
+<tr>
+<td>string</td>
+<td>"pydantic-class": "AmqpDsn"</td>
+<td>pydantic.AmqpDsn</td>
+</tr>
+<tr>
+<td>string</td>
+<td>"pydantic-class": "RedisDsn"</td>
+<td>pydantic.RedisDsn</td>
+</tr>
+<tr>
+<td>string</td>
+<td>"pydantic-class": "MongoDsn"</td>
+<td>pydantic.MongoDsn</td>
+</tr>
+<tr>
+<td>string</td>
+<td>"pydantic-class": "KafkaDsn"</td>
+<td>pydantic.KafkaDsn</td>
+</tr>
+<tr>
+<td>string</td>
+<td>"pydantic-class": "SecretStr"</td>
+<td>pydantic.SecretStr</td>
+</tr>
+<tr>
+<td>string</td>
+<td>"pydantic-class": "IPvAnyAddress"</td>
+<td>pydantic.IPvAnyAddress</td>
+</tr>
+<tr>
+<td>string</td>
+<td>"pydantic-class": "IPvAnyInterface"</td>
+<td>pydantic.IPvAnyInterface</td>
+</tr>
+<tr>
+<td>string</td>
+<td>"pydantic-class": "IPvAnyNetwork"</td>
+<td>pydantic.IPvAnyNetwork</td>
+</tr>
+<tr>
+<td>double</td>
+<td>"pydantic-class": "NegativeFloat"</td>
+<td>pydantic.NegativeFloat</td>
+</tr>
+<tr>
+<td>double</td>
+<td>"pydantic-class": "PositiveFloat"</td>
+<td>pydantic.PositiveFloat</td>
+</tr>
+<tr>
+<td>long</td>
+<td>"pydantic-class": "NegativeInt"</td>
+<td>pydantic.NegativeInt</td>
+</tr>
+<tr>
+<td>long</td>
+<td>"pydantic-class": "PositiveInt"</td>
+<td>pydantic.PositiveInt</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Avro Type</th>
+<th>Logical Type</th>
+<th>Metadata</th>
+<th>Pydantic Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>string</td>
+<td>uuid</td>
+<td>"pydantic-class": "UUID1"</td>
+<td>pydantic.UUID1</td>
+</tr>
+<tr>
+<td>string</td>
+<td>uuid</td>
+<td>"pydantic-class": "UUID3"</td>
+<td>pydantic.UUID3</td>
+</tr>
+<tr>
+<td>string</td>
+<td>uuid</td>
+<td>"pydantic-class": "UUID4"</td>
+<td>pydantic.UUID4</td>
+</tr>
+<tr>
+<td>string</td>
+<td>uuid</td>
+<td>"pydantic-class": "UUID5"</td>
+<td>pydantic.UUID5</td>
+</tr>
+</tbody>
+</table>
+<h2 id="pydantic-and-dataclasses_avroschema-batteries">Pydantic and dataclasses_avroschema batteries</h2>
+<h3 id="to-dict-to-json-and-serialization">To dict, to json and serialization</h3>
+<div class="highlight"><span class="filename">getting dict and json</span><pre><span></span><code><span class="n">user</span> <span class="o">=</span> <span class="n">UserAdvance</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;bond&quot;</span><span class="p">,</span> <span class="n">age</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+
+<span class="c1"># to_json from dataclasses-avroschema is the same that json from pydantic</span>
+<span class="k">assert</span> <span class="n">user</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">separators</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">,</span><span class="s2">&quot;:&quot;</span><span class="p">,))</span> <span class="o">==</span> <span class="n">user</span><span class="o">.</span><span class="n">model_dump_json</span><span class="p">()</span>
+
+<span class="c1"># to_dict from dataclasses-avroschema is the same that dict from pydantic</span>
+<span class="k">assert</span> <span class="n">user</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="o">==</span> <span class="n">user</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span>
+</code></pre></div>
+<div class="highlight"><span class="filename">serialization</span><pre><span></span><code><span class="n">event</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">serialize</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+<span class="c1"># &gt;&gt;&gt; b&#39;\x08bondd\x04\x06dog\x06cat\x00\x02\x06key\x02\x00\x00\x00\x12Argentina\x00&#39;</span>
+
+<span class="n">UserAdvance</span><span class="o">.</span><span class="n">deserialize</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">event</span><span class="p">)</span>
+<span class="c1"># &gt;&gt;&gt; UserAdvance(name=&#39;bond&#39;, age=50, pets=[&#39;dog&#39;, &#39;cat&#39;], accounts={&#39;key&#39;: 1}, has_car=False, favorite_colors=&lt;FavoriteColor.BLUE: &#39;BLUE&#39;&gt;, country=&#39;Argentina&#39;, address=None)</span>
+</code></pre></div>
+<h3 id="parsing-objects">Parsing Objects</h3>
+<div class="highlight"><span class="filename">parse_obj usage</span><pre><span></span><code><span class="kn">import</span> <span class="nn">typing</span>
+
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema.pydantic</span> <span class="kn">import</span> <span class="n">AvroBaseModel</span>
+
+
+<span class="k">class</span> <span class="nc">Address</span><span class="p">(</span><span class="n">AvroBaseModel</span><span class="p">):</span>
+    <span class="s2">&quot;An Address&quot;</span>
+    <span class="n">street</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">street_number</span><span class="p">:</span> <span class="nb">int</span>
+
+
+<span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">AvroBaseModel</span><span class="p">):</span>
+    <span class="s2">&quot;User with multiple Address&quot;</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">addresses</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="n">Address</span><span class="p">]</span>
+
+<span class="n">data_user</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;john&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;age&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+    <span class="s2">&quot;addresses&quot;</span><span class="p">:</span> <span class="p">[{</span>
+        <span class="s2">&quot;street&quot;</span><span class="p">:</span> <span class="s2">&quot;test&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;street_number&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="p">}],</span>
+    <span class="p">}</span>
+
+<span class="n">user</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">parse_obj</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data_user</span><span class="p">)</span>
+<span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">addresses</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">is</span> <span class="n">Address</span>
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The method <code>parse_obj</code> is defined by <code>dataclasses_avroschemas</code> which internally is calling <code>model_validate</code> (introduced in pydantic v2)</p>
+</div>
+<p><em>(This script is complete, it should run "as is")</em></p>
+<div class="highlight"><span class="filename">validate_python usage</span><pre><span></span><code><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">TypeAdapter</span>
+
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema.pydantic</span> <span class="kn">import</span> <span class="n">AvroBaseModel</span>
+
+
+<span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">AvroBaseModel</span><span class="p">):</span>
+    <span class="s2">&quot;User with multiple Address&quot;</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
+
+
+<span class="n">data</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;bond&quot;</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">:</span> <span class="mi">50</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;bond2&quot;</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">:</span> <span class="mi">60</span><span class="p">}]</span>
+<span class="n">UserListValidator</span> <span class="o">=</span> <span class="n">TypeAdapter</span><span class="p">(</span><span class="n">List</span><span class="p">[</span><span class="n">User</span><span class="p">])</span>
+<span class="n">users</span> <span class="o">=</span> <span class="n">UserListValidator</span><span class="o">.</span><span class="n">validate_python</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+<span class="n">users</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">avro_schema</span><span class="p">()</span>
+<span class="c1"># &#39;{&quot;type&quot;: &quot;record&quot;, &quot;name&quot;: &quot;User&quot;, &quot;fields&quot;: [{&quot;name&quot;: &quot;name&quot;, &quot;type&quot;: &quot;string&quot;}, {&quot;name&quot;: &quot;age&quot;, &quot;type&quot;: &quot;long&quot;}], &quot;doc&quot;: &quot;User with multiple Address&quot;}&#39;</span>
+</code></pre></div>
+<p><em>(This script is complete, it should run "as is")</em></p>
+<h3 id="fake">Fake</h3>
+<p>It is also possible to create <code>fake</code> instances with <code>pydantic</code> models:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">typing</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">Field</span>
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema.pydantic</span> <span class="kn">import</span> <span class="n">AvroBaseModel</span>
+
+
+<span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">AvroBaseModel</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">birthday</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span>
+    <span class="n">pets</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;dog&quot;</span><span class="p">,</span> <span class="s2">&quot;cat&quot;</span><span class="p">])</span>
+    <span class="n">accounts</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+    <span class="n">has_car</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">fake</span><span class="p">())</span>
+<span class="c1"># &gt;&gt;&gt; User(name=&#39;qWTLkqcIVmSBxpWMpFyR&#39;, age=2608, birthday=datetime.date(1982, 3, 30), pets=[&#39;wqoEXcJRYjcnJmnIvtiI&#39;], accounts={&#39;JueNdHdzIhHIDsjlHJLc&#39;: 779}, has_car=True)</span>
+</code></pre></div>
+<p><em>(This script is complete, it should run "as is")</em></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>All pydantic supported fields can be used with fake</p>
+</div>
+<h3 id="excluding-fields">Excluding fields</h3>
+<p>Pydantic Fields can be excluded when <code>dict</code>, <code>json</code> or <code>copy</code> methods are called. This meaans that the exclusion is only for <a href="https://docs.pydantic.dev/latest/concepts/fields/#exclude">exporting models</a> but not excluded in the instance creations, then the <code>avro serialization</code> will include all the class attributes.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">typing</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">Field</span>
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema.pydantic</span> <span class="kn">import</span> <span class="n">AvroBaseModel</span>
+
+
+<span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">AvroBaseModel</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">pets</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;dog&quot;</span><span class="p">,</span> <span class="s2">&quot;cat&quot;</span><span class="p">],</span> <span class="n">exclude</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">accounts</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span> <span class="n">exclude</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">has_car</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="n">user</span> <span class="o">=</span> <span class="n">User</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;bond&quot;</span><span class="p">,</span> <span class="n">age</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">has_car</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+<span class="c1"># &gt;&gt;&gt; User(name=&#39;bond&#39;, age=50, pets=[&#39;dog&#39;, &#39;cat&#39;], accounts={&#39;key&#39;: 1}, has_car=True)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">model_dump</span><span class="p">())</span>
+<span class="c1"># &gt;&gt;&gt; {&#39;name&#39;: &#39;bond&#39;, &#39;age&#39;: 50, &#39;has_car&#39;: True} Excludes pets and accounts !!!</span>
+
+<span class="n">event</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">serialize</span><span class="p">()</span>
+<span class="k">assert</span> <span class="n">user</span> <span class="o">==</span> <span class="n">User</span><span class="o">.</span><span class="n">deserialize</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+</code></pre></div>
+<p><em>(This script is complete, it should run "as is")</em></p>
+<h2 id="model-config">Model Config</h2>
+<p>With <code>AvroBaseModel</code> you can use the same <a href="https://docs.pydantic.dev/latest/usage/model_config/">Model Config</a> that <code>pydantic</code> provides,
+for example:</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Not use Enum values</label><label for="__tabbed_1_2">Use Enum values</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">enum</span>
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema.pydantic</span> <span class="kn">import</span> <span class="n">AvroBaseModel</span>
+
+<span class="k">class</span> <span class="nc">Color</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="n">BLUE</span> <span class="o">=</span> <span class="s2">&quot;BLUE&quot;</span>
+    <span class="n">RED</span> <span class="o">=</span> <span class="s2">&quot;RED&quot;</span>
+
+
+<span class="k">class</span> <span class="nc">Bus</span><span class="p">(</span><span class="n">AvroBaseModel</span><span class="p">):</span>
+    <span class="n">driver</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">color</span><span class="p">:</span> <span class="n">Color</span>
+
+<span class="n">bus</span> <span class="o">=</span>  <span class="n">Bus</span><span class="p">(</span><span class="n">driver</span><span class="o">=</span><span class="s2">&quot;bond&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">Color</span><span class="o">.</span><span class="n">RED</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">bus</span><span class="o">.</span><span class="n">dict</span><span class="p">())</span>
+<span class="c1"># &gt;&gt;&gt; {&#39;driver&#39;: &#39;bond&#39;, &#39;color&#39;: &lt;Color.RED: &#39;RED&#39;&gt;}</span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">enum</span>
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema.pydantic</span> <span class="kn">import</span> <span class="n">AvroBaseModel</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">ConfigDict</span>
+
+
+<span class="k">class</span> <span class="nc">Color</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="n">BLUE</span> <span class="o">=</span> <span class="s2">&quot;BLUE&quot;</span>
+    <span class="n">RED</span> <span class="o">=</span> <span class="s2">&quot;RED&quot;</span>
+
+
+<span class="k">class</span> <span class="nc">Bus</span><span class="p">(</span><span class="n">AvroBaseModel</span><span class="p">):</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">use_enum_values</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">driver</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">color</span><span class="p">:</span> <span class="n">Color</span>
+
+<span class="n">bus</span> <span class="o">=</span>  <span class="n">Bus</span><span class="p">(</span><span class="n">driver</span><span class="o">=</span><span class="s2">&quot;bond&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">Color</span><span class="o">.</span><span class="n">RED</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">busmodel_dump</span><span class="p">())</span>
+<span class="c1"># &gt;&gt;&gt; {&#39;driver&#39;: &#39;bond&#39;, &#39;color&#39;: &#39;RED&#39;}</span>
+</code></pre></div>
+</div>
+</div>
+</div>
+<h2 id="adding-custom-field-level-attributes">Adding Custom Field-level Attributes</h2>
+<p>To add <code>custom field attributes</code> the <code>metadata</code> attribute must be set in <code>pydantic.Field</code>. For more info check <a href="https://marcosschroh.github.io/dataclasses-avroschema/fields_specification/#adding-custom-field-level-attributes">adding-custom-field-level-attributes</a> section for <code>dataclasses</code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Make sure that <code>pydantic.Field</code> is used and <em>NOT</em> <code>dataclasses.field</code></p>
+</div>
+<h3 id="custom-data-types-as-fields">Custom Data Types as Fields</h3>
+<p>If needed, you can annotate fields with <a href="https://docs.pydantic.dev/latest/concepts/types/#customizing-validation-with-getpydanticcoreschema">custom classes</a> that define validators.</p>
+<h3 id="classes-with-__get_pydantic_core_schema__">Classes with <code>__get_pydantic_core_schema__</code></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The conversion mapping of a custom class to its <a href="../fields_specification/#avro-field-and-python-types-summary">supported type</a> must be defined in the model's <a href="https://docs.pydantic.dev/1.10/usage/exporting_models/#json_encoders"><code>json_encoders</code></a> config.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><a href="#Model-generation">Generating models</a> from avro schemas that were generated by classes containing Custom Class fields is not supported.</p>
+</div>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
+
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema.pydantic</span> <span class="kn">import</span> <span class="n">AvroBaseModel</span>
+
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">ConfigDict</span><span class="p">,</span> <span class="n">GetCoreSchemaHandler</span>
+<span class="kn">from</span> <span class="nn">pydantic_core</span> <span class="kn">import</span> <span class="n">core_schema</span>
+
+
+<span class="k">class</span> <span class="nc">CustomClass</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">__get_pydantic_core_schema__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">source_type</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">handler</span><span class="p">:</span> <span class="n">GetCoreSchemaHandler</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">CustomClass</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">value</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Value must be a string or CustomClass - not </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="n">from_str_schema</span> <span class="o">=</span> <span class="n">core_schema</span><span class="o">.</span><span class="n">chain_schema</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">core_schema</span><span class="o">.</span><span class="n">str_schema</span><span class="p">(),</span>
+                <span class="n">core_schema</span><span class="o">.</span><span class="n">no_info_plain_validator_function</span><span class="p">(</span><span class="n">validate</span><span class="p">),</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">core_schema</span><span class="o">.</span><span class="n">json_or_python_schema</span><span class="p">(</span>
+            <span class="n">json_schema</span><span class="o">=</span><span class="n">from_str_schema</span><span class="p">,</span>
+            <span class="n">python_schema</span><span class="o">=</span><span class="n">core_schema</span><span class="o">.</span><span class="n">union_schema</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="c1"># check if it&#39;s an instance first before doing any further work</span>
+                    <span class="n">core_schema</span><span class="o">.</span><span class="n">is_instance_schema</span><span class="p">(</span><span class="n">CustomClass</span><span class="p">),</span>
+                    <span class="n">from_str_schema</span><span class="p">,</span>
+                <span class="p">]</span>
+            <span class="p">),</span>
+            <span class="n">serialization</span><span class="o">=</span><span class="n">core_schema</span><span class="o">.</span><span class="n">plain_serializer_function_ser_schema</span><span class="p">(</span><span class="k">lambda</span> <span class="n">instance</span><span class="p">:</span> <span class="n">instance</span><span class="o">.</span><span class="n">x</span><span class="p">),</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span>
+
+
+<span class="k">class</span> <span class="nc">MyModel</span><span class="p">(</span><span class="n">AvroBaseModel</span><span class="p">):</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">json_encoders</span><span class="o">=</span><span class="p">{</span><span class="n">CustomClass</span><span class="p">:</span> <span class="nb">str</span><span class="p">},</span> <span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">my_id</span><span class="p">:</span> <span class="n">CustomClass</span>
+
+
+<span class="nb">print</span><span class="p">(</span><span class="n">MyModel</span><span class="o">.</span><span class="n">avro_schema_to_python</span><span class="p">())</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">{</span>
+<span class="sd">  &quot;type&quot;: &quot;record&quot;,</span>
+<span class="sd">  &quot;name&quot;: &quot;MyModel&quot;,</span>
+<span class="sd">  &quot;fields&quot;: [</span>
+<span class="sd">    {</span>
+<span class="sd">      &quot;name&quot;: &quot;my_id&quot;,</span>
+<span class="sd">      &quot;type&quot;: &quot;string&quot;</span>
+<span class="sd">    }</span>
+<span class="sd">  ]</span>
+<span class="sd">}</span>
+<span class="sd">&quot;&quot;&quot;</span>
+</code></pre></div>
+<p><em>(This script is complete, it should run "as is")</em></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var tab,labels=set.querySelector(".tabbed-labels");for(tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["search.suggest", "search.highlight", "content.tabs.link", "content.code.annotate"], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.bd41221c.min.js"></script>
+      
+    
+  </body>
+</html>
