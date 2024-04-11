@@ -4,19 +4,20 @@ import decimal
 import enum
 import inspect
 import random
+import re
 import typing
 import uuid
 
 from typing_extensions import get_args, get_origin
 
 from dataclasses_avroschema import (
+    exceptions,
     schema_generator,
     serialization,
     types,
     utils,
     version,
 )
-from dataclasses_avroschema.exceptions import InvalidMap
 from dataclasses_avroschema.faker import fake
 from dataclasses_avroschema.utils import is_pydantic_model
 
@@ -243,7 +244,7 @@ class DictField(ContainerField):
         key_type = self.type.__args__[0]
 
         if not issubclass(key_type, str):
-            raise InvalidMap(self.name, key_type)
+            raise exceptions.InvalidMap(self.name, key_type)
 
     @property
     def avro_type(self) -> types.JsonDict:
@@ -436,6 +437,14 @@ class FixedField(BytesField):
 
 @dataclasses.dataclass
 class EnumField(Field):
+    SYMBOL_REGEX: typing.ClassVar = re.compile(r"[A-Za-z_][A-Za-z0-9_]*")
+    symbols: typing.List[str] = dataclasses.field(init=False)
+
+    def __post_init__(self) -> None:
+        super().__post_init__()
+        self.symbols = self.get_symbols()
+        self.validate_symbols()
+
     def _get_meta_class_attributes(self) -> typing.Dict[str, typing.Any]:
         # get Enum members
         members = self.type.__members__
@@ -458,6 +467,13 @@ class EnumField(Field):
     def get_symbols(self) -> typing.List[str]:
         return [member.value for member in self.type if member.name != "Meta"]
 
+    def validate_symbols(self) -> bool:
+        for symbol in self.symbols:
+            if not isinstance(symbol, str) or not self.SYMBOL_REGEX.fullmatch(symbol):
+                raise exceptions.InvalidSymbol(field_name=self.name, symbol=symbol)
+
+        return True
+
     def get_avro_type(self) -> typing.Union[str, types.JsonDict]:
         metadata = self._get_meta_class_attributes()
         name = self.type.__name__
@@ -468,7 +484,7 @@ class EnumField(Field):
             return {
                 "type": field_utils.ENUM,
                 "name": name,
-                "symbols": self.get_symbols(),
+                "symbols": self.symbols,
                 **metadata,
             }
         else:
