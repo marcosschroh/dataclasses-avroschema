@@ -21,12 +21,10 @@ JsonDict = typing.Dict[str, typing.Any]
 AvroTypeRepr = typing.Union[JsonDict, typing.List, str]
 
 
-class FieldInfo:
-    ...
+class FieldInfo: ...
 
 
-class Fixed:
-    ...
+class Fixed: ...
 
 
 class DecimalFieldInfo(FieldInfo):

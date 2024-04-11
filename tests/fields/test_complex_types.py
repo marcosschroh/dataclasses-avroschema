@@ -483,16 +483,19 @@ def test_union_as_optional_with_primitives(primitive_type, avro_type) -> None:
 
 
 def test_union_type_with_records():
+    @dataclasses.dataclass
     class User(AvroModel):
         "User"
 
         first_name: str
 
+    @dataclasses.dataclass
     class Car(AvroModel):
         "Car"
 
         engine_name: str
 
+    @dataclasses.dataclass
     class UnionRecord(AvroModel):
         an_union_field: typing.Union[User, Car]
 
@@ -667,8 +670,7 @@ def test_enum_type():
             namespace = "my_enum"
             aliases = ["enum", "first enum"]
 
-    python_type = CardType
-    field = AvroField(name, python_type, default=CardType.CLUBS, parent=parent)
+    field = AvroField(name, CardType, default=CardType.CLUBS, parent=parent)
     symbols = ["SPADES", "HEARTS", "DIAMONDS", "CLUBS"]
 
     expected = {
@@ -694,8 +696,7 @@ def test_enum_type():
         class Meta:
             namespace = "my_enum"
 
-    python_type = CardType
-    field = AvroField(name, python_type, parent=parent)
+    field = AvroField(name, CardType, parent=parent)
 
     expected = {
         "name": name,
@@ -715,8 +716,7 @@ def test_enum_type():
         DIAMONDS = "DIAMONDS"
         CLUBS = "CLUBS"
 
-    python_type = CardType
-    field = AvroField(name, python_type, default=None, parent=parent)
+    field = AvroField(name, CardType, default=None, parent=parent)
 
     expected = {
         "name": name,
@@ -730,9 +730,8 @@ def test_enum_type():
 
     assert expected == field.to_dict()
 
-    python_type = typing.Optional[CardType]
     parent._user_defined_types = set()
-    field = AvroField(name, python_type, default=None, parent=parent)
+    field = AvroField(name, typing.Optional[CardType], default=None, parent=parent)
 
     expected = {
         "name": name,
@@ -760,9 +759,23 @@ def test_enum_type():
         class RandomType(enum.Enum):
             SOMETHING = "SOMETHING"
 
-        python_type = CardType
-        field = AvroField(name, python_type, default=RandomType.SOMETHING, parent=parent)
+        field = AvroField(name, CardType, default=RandomType.SOMETHING, parent=parent)
         field.to_dict()
+
+
+def test_invalid_enum_symbol():
+    class TestEnum(enum.Enum):
+        ONE = "1_one"
+
+    @dataclasses.dataclass
+    class Model(AvroModel):
+        my_enum: TestEnum
+
+    with pytest.raises(exceptions.InvalidSymbol) as excinfo:
+        assert Model.avro_schema()
+
+    msg = "Symbol 1_one does not match the regular expression [A-Za-z_][A-Za-z0-9_]*"
+    assert msg == str(excinfo.value)
 
 
 def test_enum_field():
