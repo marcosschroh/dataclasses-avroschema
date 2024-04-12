@@ -7,6 +7,7 @@ import pydantic
 import pytest
 from typing_extensions import Annotated
 
+from dataclasses_avroschema import types
 from dataclasses_avroschema.fields import field_utils
 
 PY_VER = sys.version_info
@@ -21,6 +22,10 @@ PRIMITIVE_TYPES = (
     (bytes, field_utils.BYTES),
     (None, field_utils.NULL),
     (type(None), field_utils.NULL),
+    (types.Int32, field_utils.INT),
+    (Annotated[types.Int32, "ExtraAnnotation"], field_utils.INT),
+    (types.Float32, field_utils.FLOAT),
+    (Annotated[types.Float32, "ExtraAnnotation"], field_utils.FLOAT),
     (Annotated[str, "string"], field_utils.STRING),
     (Annotated[int, "integer"], field_utils.LONG),
     (Annotated[bool, "boolean"], field_utils.BOOLEAN),
@@ -83,6 +88,8 @@ PRIMITIVE_TYPES_AND_DEFAULTS = (
     (bytes, b"test"),
     (None, None),
     (type(None), None),
+    (types.Int32, 10),
+    (types.Float32, 10.7),
     (Annotated[str, "string"], "test"),
     (Annotated[int, "int"], 1),
     (Annotated[bool, "boolean"], True),
@@ -105,7 +112,9 @@ PRIMITIVE_TYPES_AND_INVALID_DEFAULTS = (
 LOGICAL_TYPES = (
     (datetime.date, field_utils.LOGICAL_DATE, now.date()),
     (datetime.time, field_utils.LOGICAL_TIME_MILIS, now.time()),
+    (types.TimeMicro, field_utils.LOGICAL_TIME_MICROS, now.time()),
     (datetime.datetime, field_utils.LOGICAL_DATETIME_MILIS, now),
+    (types.DateTimeMicro, field_utils.LOGICAL_DATETIME_MICROS, now),
     (uuid.UUID, field_utils.LOGICAL_UUID, uuid.uuid4()),
     (Annotated[datetime.date, "date"], field_utils.LOGICAL_DATE, now.date()),
     (Annotated[datetime.time, "time"], field_utils.LOGICAL_TIME_MILIS, now.time()),
@@ -399,14 +408,15 @@ MAPPING_LOGICAL_TYPES = [
 # Represent the logical types
 # (python_type, avro_type)
 LOGICAL_TYPES = (
-    (datetime.date, {"type": field_utils.INT, "logicalType": field_utils.DATE}),
-    (datetime.time, {"type": field_utils.INT, "logicalType": field_utils.TIME_MILLIS}),
+    (datetime.date, field_utils.LOGICAL_DATE),
+    (datetime.time, field_utils.LOGICAL_TIME_MILIS),
+    (types.TimeMicro, field_utils.LOGICAL_TIME_MICROS),
     (
         datetime.datetime,
-        {"type": field_utils.LONG, "logicalType": field_utils.TIMESTAMP_MILLIS},
+        field_utils.LOGICAL_DATETIME_MILIS,
     ),
-    (uuid.uuid4, {"type": field_utils.STRING, "logicalType": field_utils.UUID}),
-    (uuid.UUID, {"type": field_utils.STRING, "logicalType": field_utils.UUID}),
+    (uuid.uuid4, field_utils.LOGICAL_UUID),
+    (uuid.UUID, field_utils.LOGICAL_UUID),
 )
 
 LOGICAL_TYPES_AND_INVALID_DEFAULTS = (

@@ -51,6 +51,18 @@ class FixedFieldInfo(FieldInfo):
         return f"FixedFieldInfo(size={self.size}, aliases={self.aliases}, namespace={self.namespace})"
 
 
+class Int32FieldInfo(FieldInfo): ...
+
+
+class Float32FieldInfo(FieldInfo): ...
+
+
+class TimeMicroFieldInfo(FieldInfo): ...
+
+
+class DateTimeMicro2FieldInfo(FieldInfo): ...
+
+
 def confixed(
     *,
     size,
@@ -67,10 +79,10 @@ def condecimal(*, max_digits: int, decimal_places: int) -> typing.Type[decimal.D
     ]  # type: ignore[return-value]
 
 
-Int32 = Annotated[int, "Int32"]
-Float32 = Annotated[float, "Float32"]
-TimeMicro = Annotated[datetime.time, "TimeMicro"]
-DateTimeMicro = Annotated[datetime.datetime, "DateTimeMicro"]
+Int32 = Annotated[int, Int32FieldInfo()]
+Float32 = Annotated[float, Float32FieldInfo()]
+TimeMicro = Annotated[datetime.time, TimeMicroFieldInfo()]
+DateTimeMicro = Annotated[datetime.datetime, DateTimeMicro2FieldInfo()]
 
 CUSTOM_TYPES = (
     Int32,
