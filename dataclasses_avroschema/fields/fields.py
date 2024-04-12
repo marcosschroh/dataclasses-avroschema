@@ -845,12 +845,18 @@ def field_factory(
     if native_type is None:
         native_type = type(None)
 
-    if utils.is_annotated(native_type) and native_type not in ALL_TYPES_FIELD_CLASSES:
+    if utils.is_annotated(native_type):
         a_type, *extra_args = get_args(native_type)
         field_info = next((arg for arg in extra_args if isinstance(arg, types.FieldInfo)), None)
-        # it means that it is a custom type defined by us `Int32`, `Float32`,`TimeMicro` or `DateTimeMicro`
-        # or a known type Annotated with the end user
-        native_type = a_type
+
+        if field_info is not None:
+            # it means that it is a custom type defined by us `Int32`, `Float32`,`TimeMicro`, `DateTimeMicro`
+            # confixed or condecimal
+            native_type = utils.rebuild_annotation(a_type, field_info)
+
+        if native_type not in ALL_TYPES_FIELD_CLASSES:
+            # type Annotated with the end user
+            native_type = a_type
 
     if native_type in IMMUTABLE_FIELDS_CLASSES:
         klass = IMMUTABLE_FIELDS_CLASSES[native_type]

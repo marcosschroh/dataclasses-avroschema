@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 
 from typing_extensions import Annotated, get_origin
 
-from .types import JsonDict
+from .types import FieldInfo, JsonDict
 
 try:
     import pydantic  # pragma: no cover
@@ -62,6 +62,10 @@ def is_self_referenced(a_type: type, parent: type) -> bool:
 def is_annotated(a_type: typing.Any) -> bool:
     origin = get_origin(a_type)
     return origin is not None and isinstance(origin, type) and issubclass(origin, Annotated)  # type: ignore[arg-type]
+
+
+def rebuild_annotation(a_type: typing.Any, field_info: FieldInfo) -> typing.Type:
+    return Annotated[a_type, field_info]  # type: ignore[return-value]
 
 
 def standardize_custom_type(value: typing.Any) -> typing.Any:
