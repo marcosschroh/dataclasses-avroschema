@@ -1,3 +1,9 @@
+## 0.58.2 (2024-04-12)
+
+### Fix
+
+- custom types with extra annotation. Closes #598 (#601)
+
 ## 0.58.1 (2024-04-11)
 
 ### Fix
