@@ -27,7 +27,7 @@ jobs:
         poetry run mkdocs build
 
     - name: Push doc to Github Page
-      uses: peaceiris/actions-gh-pages@v3
+      uses: peaceiris/actions-gh-pages@v4
       with:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         PUBLISH_BRANCH: gh-pages
