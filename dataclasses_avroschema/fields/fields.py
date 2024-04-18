@@ -361,7 +361,7 @@ class UnionField(Field):
 
 @dataclasses.dataclass
 class LiteralField(Field):
-    avro_field: typing.Optional[Field] = None
+    avro_field: Field = dataclasses.field(init=False)
 
     def __post_init__(self) -> None:
         """
@@ -369,9 +369,15 @@ class LiteralField(Field):
         """
         super().__post_init__()
         args = get_args(self.type)
+
         # always convert to an Union. If there is Literal has 1 argument then
         # the Union will handle it properly.
         native_type = typing.Union[tuple(type(a) for a in args)]  # type: ignore
+
+        if native_type is str and self.model_metadata.convert_literal_to_enum:
+            # if all args are string then we use a `StrEnum` as native type
+            native_type = enum.Enum(self.name, {member: member for member in args})  # type: ignore
+
         self.avro_field = AvroField(
             name=self.name,
             native_type=native_type,
@@ -382,13 +388,13 @@ class LiteralField(Field):
         )
 
     def get_avro_type(self) -> types.JsonDict:
-        return self.avro_field.get_avro_type()  # type: ignore
+        return self.avro_field.get_avro_type()
 
     def default_to_avro(self, default: typing.Any):
-        return self.avro_field.default_to_avro(default)  # type: ignore
+        return self.avro_field.default_to_avro(default)
 
     def validate_default(self, default: typing.Any) -> bool:
-        return self.avro_field.validate_default(default)  # type: ignore
+        return self.avro_field.validate_default(default)
 
     def fake(self) -> typing.Any:
         return random.choice(get_args(self.type))
@@ -442,6 +448,7 @@ class EnumField(Field):
 
     def __post_init__(self) -> None:
         super().__post_init__()
+        self.extra_default_types_allowed = (str,)
         self.symbols = self.get_symbols()
         self.validate_symbols()
 
@@ -495,6 +502,8 @@ class EnumField(Field):
                 return f"{namespace}.{name}"
 
     def default_to_avro(self, default: typing.Any) -> typing.Any:
+        if isinstance(default, str):
+            return default
         return default.value
 
     def fake(self) -> typing.Any:
@@ -837,6 +846,9 @@ def field_factory(
     model_metadata: typing.Optional[utils.SchemaMetadata] = None,
 ) -> Field:
     from dataclasses_avroschema import AvroModel
+
+    if model_metadata is None:
+        model_metadata = utils.SchemaMetadata()
 
     if metadata is None:
         metadata = {}

@@ -93,9 +93,10 @@ class SchemaMetadata:
     dacite_config: typing.Optional[JsonDict] = None
     field_order: typing.Optional[typing.List[str]] = None
     exclude: typing.List[str] = dataclasses.field(default_factory=list)
+    convert_literal_to_enum: bool = False
 
     @classmethod
-    def create(cls: typing.Type["SchemaMetadata"], klass: type) -> typing.Any:
+    def create(cls: typing.Type["SchemaMetadata"], klass: type) -> "SchemaMetadata":
         return cls(
             schema_name=getattr(klass, "schema_name", None),
             schema_doc=getattr(klass, "schema_doc", True),
@@ -105,6 +106,7 @@ class SchemaMetadata:
             dacite_config=getattr(klass, "dacite_config", None),
             field_order=getattr(klass, "field_order", None),
             exclude=getattr(klass, "exclude", []),
+            convert_literal_to_enum=getattr(klass, "convert_literal_to_enum", False),
         )
 
     def get_alias_nested_items(self, name: str) -> typing.Optional[str]:

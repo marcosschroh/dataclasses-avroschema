@@ -45,7 +45,7 @@ User.avro_schema()
 
 ## Class Meta
 
-The `class Meta` is used to specify schema attributes that are not represented by the class fields like `namespace`, `aliases` and whether to include the `schema documentation`. Also custom schema name (the default is the class' name) via `schema_name` attribute, `alias_nested_items` when you have nested items and you want to use custom naming for them, `custom dacite` configuration can be provided, `field_order` and `exclude`.
+The `class Meta` is used to specify schema attributes that are not represented by the class fields like `namespace`, `aliases` and whether to include the `schema documentation`. Also custom schema name (the default is the class' name) via `schema_name` attribute, `alias_nested_items` when you have nested items and you want to use custom naming for them, `custom dacite` configuration can be provided, `field_order`, `exclude` and `convert_literal_to_enum`.
 
 ```python title="Class Meta description"
 class Meta:
@@ -56,6 +56,7 @@ class Meta:
     alias_nested_items = {"address": "Address"}
     field_order = ["age", "name",]
     exclude = ["last_name",]
+    convert_literal_to_enum = False
     dacite_config = {
         "strict_unions_match": True,
         "strict": True,
@@ -70,9 +71,11 @@ class Meta:
 
 `alias_nested_items Optional[Dict[str, str]]`: Nested items names
 
-`field_order Optiona[List[str]]`: List of field names to specify their order to the output schema
+`field_order Optional[List[str]]`: List of field names to specify their order to the output schema
 
-`exclude Optiona[List[str]]`: List of field names to be excluded in the output schema
+`exclude Optional[List[str]]`: List of field names to be excluded in the output schema
+
+`convert_literal_to_enum Optional[bool]`: Whether convert `Literal string` to `enum`
 
 ## Record to json and dict
 

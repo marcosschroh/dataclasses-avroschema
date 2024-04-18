@@ -147,6 +147,7 @@ class AvroModel:
             serialization_type=serialization_type,
             writer_schema=writer_schema,  # type: ignore
         )
+
         obj = cls.parse_obj(payload)
 
         if not create_instance:

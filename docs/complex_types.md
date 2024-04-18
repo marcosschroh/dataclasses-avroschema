@@ -4,7 +4,7 @@ The following list represent the avro complex types mapped to python types:
 
 | Avro Type          | Python Type                                                        |
 | ------------------ | ------------------------------------------------------------------ |
-| enums              | enum.Enum                                                          |
+| enums              | enum.Enum, typing.Literal[str]                                     |
 | arrays             | typing.List, typing.Tuple, typing.Sequence, typing.MutableSequence |
 | maps               | typing.Dict, typing.Mapping, typing.MutableMapping                 |
 | fixed              | types.confixed                                                     |
@@ -71,6 +71,60 @@ User.avro_schema()
 
 !!! info
     There are not restriction about `enum` names but is is highly recommended to use `pascalcase`
+
+### Enums from typing.Literal of strigns
+
+`typing.Literal[...]` can be used to indicate to type checkers that the annotated object has a value equivalent to one of the provided literals. If all `Literal arguments` are `string`, then for some use cases an `avro enum` as representation would make more sense in order to preserve the constraints (`Literal arguments` to `enum symbols`).
+
+For this behaviour the attribute `convert_literal_to_enum` must be set to `True`
+
+=== "Literal as avro enum"
+    ```python
+    import dataclasses
+    import typing
+    from dataclasses_avroschema import AvroModel
+
+    @dataclasses.dataclass
+    class MyModel(AvroModel):
+        options: typing.Literal["four_4", "five_5"] = "four_4"
+        optional_field: typing.Optional[typing.Literal["four_4", "five_5"]] = None
+
+        class Meta:
+            convert_literal_to_enum = True
+
+    print(MyModel.avro_schema())
+
+    {
+      "type": "record",
+      "name": "MyModel", "fields": [
+        {"name": "options", "type": {"type": "enum", "name": "options", "symbols": ["four_4", "five_5"]}, "default": "four_4"},
+        {"name": "optional_field", "type": ["null", {"type": "enum", "name": "optional_field", "symbols": ["four_4", "five_5"]}], "default": null}]
+    }
+    ```
+
+=== "Literal as avro string"
+    ```python
+    import dataclasses
+    import typing
+    from dataclasses_avroschema import AvroModel
+
+    @dataclasses.dataclass
+    class MyModel(AvroModel):
+        options: typing.Literal["four_4", "five_5"] = "four_4"
+        optional_field: typing.Optional[typing.Literal["four_4", "five_5"]] = None
+
+    print(MyModel.avro_schema())
+
+    {
+      "type": "record",
+      "name": "MyModel",
+      "fields": [
+        {"name": "options", "type": "string", "default": "four_4"},
+        {"name": "optional_field", "type": ["null", "string"], "default": null}
+      ]
+    }
+
+    ```
 
 ### Repeated Enums
 
