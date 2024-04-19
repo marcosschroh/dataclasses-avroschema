@@ -1,3 +1,9 @@
+## 0.59.0 (2024-04-19)
+
+### Feat
+
+- convert_literal_to_enum option added. Closes #596 (#608)
+
 ## 0.58.2 (2024-04-12)
 
 ### Fix
