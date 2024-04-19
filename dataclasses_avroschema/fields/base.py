@@ -32,11 +32,10 @@ class Field:
     exclude_default: bool = False
     inner_name: typing.Optional[str] = None
     metadata: typing.Dict = dataclasses.field(default_factory=dict)
-    model_metadata: typing.Optional[utils.SchemaMetadata] = None
+    model_metadata: utils.SchemaMetadata = dataclasses.field(default_factory=utils.SchemaMetadata)
     extra_default_types_allowed: typing.Tuple = dataclasses.field(default_factory=tuple)
 
     def __post_init__(self) -> None:
-        self.model_metadata = self.model_metadata or utils.SchemaMetadata()  # type: ignore
         self.exclude_default = self.metadata.pop("exclude_default", False)  # type: ignore
         self.inner_name = self.metadata.pop("inner_name", None)  # type: ignore
 

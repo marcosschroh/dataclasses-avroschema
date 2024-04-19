@@ -332,12 +332,12 @@ def test_literal_fields():
 
     @dataclasses.dataclass
     class TestModel(AvroModel):
-        single_literal_1: typing.Literal["1st_literal"]
+        single_literal_1: typing.Literal["first_1_literal"]
         multi_literal_1: typing.Literal["1", 1, True, b"one", TestEnum.ONE]
         nested_model: NestedTestModel
 
     example = TestModel(
-        single_literal_1="1st_literal",
+        single_literal_1="first_1_literal",
         multi_literal_1=b"one",
         nested_model=NestedTestModel(
             single_literal_2=TestEnum.TWO,
@@ -346,7 +346,7 @@ def test_literal_fields():
     )
 
     expected_data = {
-        "single_literal_1": "1st_literal",
+        "single_literal_1": "first_1_literal",
         "multi_literal_1": b"one",
         "nested_model": {
             "single_literal_2": TestEnum.TWO.value,
@@ -355,7 +355,7 @@ def test_literal_fields():
     }
     expected_json = json.dumps(
         {
-            "single_literal_1": "1st_literal",
+            "single_literal_1": "first_1_literal",
             "multi_literal_1": "one",
             "nested_model": {
                 "single_literal_2": TestEnum.TWO.value,

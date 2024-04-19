@@ -817,32 +817,67 @@ def test_enum_field_default():
     assert enum_field4.get_default_value() == Color.GREEN
 
 
-@pytest.mark.parametrize("value", [4, "4", True, b"four", Color.BLUE, None])
+@pytest.mark.parametrize("value", [4, "four", True, b"four", None])
 def test_literal_field_with_single_parameter(value):
     """
     When the type is typing.Literal, the Avro field type should be the
     encapsulated value type (i.e. int, string, etc.)
     """
     name = "test_field"
-    python_type = typing.Literal[value]  # type: ignore
-    # Required for enums
-    parent = AvroModel()
-    parent._user_defined_types.clear()
+    python_type = typing.Literal[value]
+    field = AvroField(name, python_type)
 
-    field = AvroField(name, python_type, parent)
-    result = field.to_dict()
+    assert field.to_dict() == {"name": name, "type": field.get_avro_type()}
 
-    # Verify the correct type conversion. Schema structure of resulting types
-    # is validated by tests in this file that are specific to those types
-    if isinstance(value, enum.Enum):
-        assert result["type"]["type"] == field_utils.ENUM
-    else:
-        builtin_type = type(value)
-        avro_type = field_utils.PYTHON_TYPE_TO_AVRO[builtin_type]
-        assert result["type"] == avro_type
 
-    # Reset the class variable
-    parent._user_defined_types.clear()
+def test_literal_field_with_single_parameter_enum():
+    @dataclasses.dataclass
+    class MyModel(AvroModel):
+        option: typing.Literal[Color.GREEN]
+
+    assert MyModel.avro_schema_to_python() == {
+        "fields": [
+            {
+                "name": "option",
+                "type": {
+                    "aliases": [
+                        "one",
+                        "two",
+                    ],
+                    "doc": "colors",
+                    "name": "Color",
+                    "namespace": "some.name.space",
+                    "symbols": [
+                        "Blue",
+                        "Green",
+                        "Yellow",
+                    ],
+                    "type": "enum",
+                },
+            },
+        ],
+        "name": "MyModel",
+        "type": "record",
+    }
+
+
+def test_literal_string_field_with_single_parameter_as_enum():
+    """
+    When the type is typing.Literal[str], the Avro field type should be `enum`
+    """
+
+    @dataclasses.dataclass
+    class MyAvroModel(AvroModel):
+        options: typing.Literal["one", "two"]
+
+        class Meta:
+            convert_literal_to_enum = True
+
+    assert MyAvroModel.avro_schema_to_python() == {
+        "type": "record",
+        "name": "MyAvroModel",
+        "fields": [{"name": "options", "type": {"type": "enum", "name": "options", "symbols": ["one", "two"]}}],
+    }
 
 
 def test_literal_field_with_multiple_parameters():
@@ -856,7 +891,7 @@ def test_literal_field_with_multiple_parameters():
     parent = AvroModel()
     parent._user_defined_types.clear()
 
-    field = AvroField(name, python_type, parent)
+    field = AvroField(name, python_type, parent=parent)
 
     assert field.to_dict() == {
         "name": name,
@@ -881,9 +916,9 @@ def test_literal_field_with_multiple_parameters():
     "python_type, avro_type, expected_default",
     [
         (typing.Literal[4], field_utils.LONG, 4),
-        (typing.Literal["4"], field_utils.STRING, "4"),
         (typing.Literal[True], field_utils.BOOLEAN, True),
         (typing.Literal[b"four"], field_utils.BYTES, "four"),
+        (typing.Literal["four_4", "five_5"], field_utils.STRING, "four_4"),
         (
             typing.Literal[Suit.DIAMONDS],
             {
@@ -913,13 +948,60 @@ def test_literal_field_with_single_parameter_with_default(python_type, avro_type
     AvroModel._user_defined_types.clear()
 
 
+def test_convert_literal_string_to_enum_field_with_single_parameter_with_default():
+    @dataclasses.dataclass
+    class MyModel(AvroModel):
+        options: typing.Literal["four_4", "five_5"] = "four_4"
+        optional_field: typing.Optional[typing.Literal["four_4", "five_5"]] = None
+
+        class Meta:
+            convert_literal_to_enum = True
+
+    assert MyModel.avro_schema_to_python() == {
+        "name": "MyModel",
+        "type": "record",
+        "fields": [
+            {
+                "name": "options",
+                "type": {
+                    "name": "options",
+                    "type": "enum",
+                    "symbols": [
+                        "four_4",
+                        "five_5",
+                    ],
+                },
+                "default": "four_4",
+            },
+            {
+                "name": "optional_field",
+                "type": [
+                    "null",
+                    {
+                        "name": "optional_field",
+                        "type": "enum",
+                        "symbols": [
+                            "four_4",
+                            "five_5",
+                        ],
+                    },
+                ],
+                "default": None,
+            },
+        ],
+    }
+
+
 @pytest.mark.parametrize(
     "python_type, avro_type, default",
     [
         (typing.Optional[typing.Literal[4]], [field_utils.LONG, field_utils.NULL], 4),
         (
-            typing.Optional[typing.Literal["4"]],
-            [field_utils.NULL, field_utils.STRING],
+            typing.Optional[typing.Literal["four_4"]],
+            [
+                field_utils.NULL,
+                field_utils.STRING,
+            ],
             None,
         ),
     ],
@@ -977,7 +1059,7 @@ def test_literal_field_with_multiple_parameters_with_default():
 
 @pytest.mark.parametrize(
     "arg, default",
-    [(4, "3"), ("4", 3), (b"four", "four"), (Color.YELLOW, Suit.SPADES)],
+    [(4, "3"), (True, 3), (b"four", "four"), (Color.YELLOW, Suit.SPADES)],
 )
 def test_literal_field_with_invalid_default(arg, default):
     """
