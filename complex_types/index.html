@@ -393,6 +393,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#enums-from-typingliteral-of-strigns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Enums from typing.Literal of strigns
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#repeated-enums" class="md-nav__link">
     <span class="md-ellipsis">
       Repeated Enums
@@ -786,6 +795,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#enums-from-typingliteral-of-strigns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Enums from typing.Literal of strigns
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#repeated-enums" class="md-nav__link">
     <span class="md-ellipsis">
       Repeated Enums
@@ -904,7 +922,7 @@
 <tbody>
 <tr>
 <td>enums</td>
-<td>enum.Enum</td>
+<td>enum.Enum, typing.Literal[str]</td>
 </tr>
 <tr>
 <td>arrays</td>
@@ -989,6 +1007,58 @@
 <div class="admonition info">
 <p class="admonition-title">Info</p>
 <p>There are not restriction about <code>enum</code> names but is is highly recommended to use <code>pascalcase</code></p>
+</div>
+<h3 id="enums-from-typingliteral-of-strigns">Enums from typing.Literal of strigns</h3>
+<p><code>typing.Literal[...]</code> can be used to indicate to type checkers that the annotated object has a value equivalent to one of the provided literals. If all <code>Literal arguments</code> are <code>string</code>, then for some use cases an <code>avro enum</code> as representation would make more sense in order to preserve the constraints (<code>Literal arguments</code> to <code>enum symbols</code>).</p>
+<p>For this behaviour the attribute <code>convert_literal_to_enum</code> must be set to <code>True</code></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Literal as avro enum</label><label for="__tabbed_1_2">Literal as avro string</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">dataclasses</span>
+<span class="kn">import</span> <span class="nn">typing</span>
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
+
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span> <span class="nc">MyModel</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
+    <span class="n">options</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;four_4&quot;</span><span class="p">,</span> <span class="s2">&quot;five_5&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;four_4&quot;</span>
+    <span class="n">optional_field</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;four_4&quot;</span><span class="p">,</span> <span class="s2">&quot;five_5&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">convert_literal_to_enum</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">MyModel</span><span class="o">.</span><span class="n">avro_schema</span><span class="p">())</span>
+
+<span class="p">{</span>
+  <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;record&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;MyModel&quot;</span><span class="p">,</span> <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;options&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;enum&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;options&quot;</span><span class="p">,</span> <span class="s2">&quot;symbols&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;four_4&quot;</span><span class="p">,</span> <span class="s2">&quot;five_5&quot;</span><span class="p">]},</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="s2">&quot;four_4&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;optional_field&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;null&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;enum&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;optional_field&quot;</span><span class="p">,</span> <span class="s2">&quot;symbols&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;four_4&quot;</span><span class="p">,</span> <span class="s2">&quot;five_5&quot;</span><span class="p">]}],</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">}]</span>
+<span class="p">}</span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">dataclasses</span>
+<span class="kn">import</span> <span class="nn">typing</span>
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
+
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span> <span class="nc">MyModel</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
+    <span class="n">options</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;four_4&quot;</span><span class="p">,</span> <span class="s2">&quot;five_5&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;four_4&quot;</span>
+    <span class="n">optional_field</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;four_4&quot;</span><span class="p">,</span> <span class="s2">&quot;five_5&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">MyModel</span><span class="o">.</span><span class="n">avro_schema</span><span class="p">())</span>
+
+<span class="p">{</span>
+  <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;record&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;MyModel&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;options&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="s2">&quot;four_4&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;optional_field&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;null&quot;</span><span class="p">,</span> <span class="s2">&quot;string&quot;</span><span class="p">],</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+</div>
+</div>
 </div>
 <h3 id="repeated-enums">Repeated Enums</h3>
 <p>Sometimes we have cases where an <code>Enum</code> is used more than once with a particular class, for those cases the same <code>type</code> is used in order to generate a valid schema.
@@ -1180,7 +1250,7 @@ It is a good practice but <em>NOT</em> neccesary to a define the <code>namespace
   <span class="s1">&#39;doc&#39;</span><span class="p">:</span> <span class="s1">&#39;UserAdvance(name: str, md5: dataclasses_avroschema.types.Fixed = 16)&#39;</span><span class="p">}</span>
 </code></pre></div>
 <h2 id="unions">Unions</h2>
-<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">python &lt;= 3.9</label><label for="__tabbed_1_2">python3.10</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">python &lt;= 3.9</label><label for="__tabbed_2_2">python3.10</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">typing</span>
@@ -1239,7 +1309,7 @@ It is a good practice but <em>NOT</em> neccesary to a define the <code>namespace
 <span class="p">}</span>
 </code></pre></div>
 <h3 id="union-with-records">Union with Records</h3>
-<div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">python &lt;= 3.9</label><label for="__tabbed_2_2">python3.10</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:2"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">python &lt;= 3.9</label><label for="__tabbed_3_2">python3.10</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">dataclasses</span>
@@ -1370,7 +1440,7 @@ It is a good practice but <em>NOT</em> neccesary to a define the <code>namespace
 <h3 id="unions-with-typingoptional">Unions with typing.Optional</h3>
 <p><code>typing.Optional[Any]</code> is translated as an optional Union: <code>typing.Union[Any, NoneType]</code> where <code>NoneType</code>
 is always at the end</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="3:2"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">python &lt;= 3.9</label><label for="__tabbed_3_2">python3.10</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="4:2"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">python &lt;= 3.9</label><label for="__tabbed_4_2">python3.10</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">typing</span>

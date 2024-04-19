@@ -925,7 +925,7 @@
 </code></pre></div>
 <p><em>(This script is complete, it should run "as is")</em></p>
 <h2 id="class-meta">Class Meta</h2>
-<p>The <code>class Meta</code> is used to specify schema attributes that are not represented by the class fields like <code>namespace</code>, <code>aliases</code> and whether to include the <code>schema documentation</code>. Also custom schema name (the default is the class' name) via <code>schema_name</code> attribute, <code>alias_nested_items</code> when you have nested items and you want to use custom naming for them, <code>custom dacite</code> configuration can be provided, <code>field_order</code> and <code>exclude</code>.</p>
+<p>The <code>class Meta</code> is used to specify schema attributes that are not represented by the class fields like <code>namespace</code>, <code>aliases</code> and whether to include the <code>schema documentation</code>. Also custom schema name (the default is the class' name) via <code>schema_name</code> attribute, <code>alias_nested_items</code> when you have nested items and you want to use custom naming for them, <code>custom dacite</code> configuration can be provided, <code>field_order</code>, <code>exclude</code> and <code>convert_literal_to_enum</code>.</p>
 <div class="highlight"><span class="filename">Class Meta description</span><pre><span></span><code><span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
     <span class="n">schema_name</span> <span class="o">=</span> <span class="s2">&quot;Name other than the class name&quot;</span>
     <span class="n">schema_doc</span> <span class="o">=</span> <span class="kc">False</span>
@@ -934,6 +934,7 @@
     <span class="n">alias_nested_items</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;address&quot;</span><span class="p">:</span> <span class="s2">&quot;Address&quot;</span><span class="p">}</span>
     <span class="n">field_order</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,]</span>
     <span class="n">exclude</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;last_name&quot;</span><span class="p">,]</span>
+    <span class="n">convert_literal_to_enum</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">dacite_config</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;strict_unions_match&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
         <span class="s2">&quot;strict&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
@@ -943,8 +944,9 @@
 <p><code>namespace Optional[str]</code>: Schema namespace. Default <code>None</code></p>
 <p><code>aliases Optional[List[str]]</code>: Schema aliases. Default <code>None</code></p>
 <p><code>alias_nested_items Optional[Dict[str, str]]</code>: Nested items names</p>
-<p><code>field_order Optiona[List[str]]</code>: List of field names to specify their order to the output schema</p>
-<p><code>exclude Optiona[List[str]]</code>: List of field names to be excluded in the output schema</p>
+<p><code>field_order Optional[List[str]]</code>: List of field names to specify their order to the output schema</p>
+<p><code>exclude Optional[List[str]]</code>: List of field names to be excluded in the output schema</p>
+<p><code>convert_literal_to_enum Optional[bool]</code>: Whether convert <code>Literal string</code> to <code>enum</code></p>
 <h2 id="record-to-json-and-dict">Record to json and dict</h2>
 <p>You can get the <code>json</code> and <code>dict</code> representation of your instance using <code>to_json</code> and <code>to_dict</code> methods:</p>
 <div class="highlight"><span class="filename">Json and Dict example</span><pre><span></span><code><span class="kn">import</span> <span class="nn">dataclasses</span>
