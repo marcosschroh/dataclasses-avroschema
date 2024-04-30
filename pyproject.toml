@@ -23,7 +23,7 @@ classifiers = [
 python = "^3.8"
 fastavro = "^1.7.3"
 dacite = "^1.8.0"
-faker = {version = ">=18.3.1,<25.0.0", optional = true}
+faker = {version = ">=18.3.1,<26.0.0", optional = true}
 inflector = "^3.1.1"
 faust-streaming = {version = ">=0.10.11,<0.12.0", optional = true}
 casefy = "^0.1.7"
