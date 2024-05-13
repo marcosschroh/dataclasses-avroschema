@@ -40,7 +40,7 @@ types-pytz = ">=2023,<2025"
 [tool.poetry.group.docs.dependencies]
 mkdocs = "^1"
 mkdocs-material = "^9"
-mkdocstrings = {version = "^0.24.0", extras = ["python"]}
+mkdocstrings = {version = ">=0.24,<0.26", extras = ["python"]}
 
 [tool.poetry.group.cli.dependencies]
 dc-avro = ">=0.6.4,<0.9.0"
