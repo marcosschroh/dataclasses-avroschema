@@ -1,3 +1,9 @@
+## 0.59.1 (2024-05-24)
+
+### Fix
+
+- generate proper python identifiers when generating model from schemas. Related to #628 (#639)
+
 ## 0.59.0 (2024-04-19)
 
 ### Feat
