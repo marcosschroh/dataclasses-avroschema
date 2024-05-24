@@ -36,6 +36,30 @@ class User(AvroModel):
     assert result.strip() == expected_result.strip()
 
 
+def test_schema_with_invalid_python_identifiers(schema_with_invalid_python_identifiers: types.JsonDict) -> None:
+    expected_result = """
+from dataclasses_avroschema import AvroModel
+import dataclasses
+
+
+@dataclasses.dataclass
+class Address(AvroModel):
+    \"""
+    An Address
+    \"""
+    street_name: str
+    street_number: int
+    ValidIdentifier: str
+    anotherIdentifier: str
+    _private: str
+
+
+"""
+    model_generator = ModelGenerator()
+    result = model_generator.render(schema=schema_with_invalid_python_identifiers)
+    assert result.strip() == expected_result.strip()
+
+
 def test_model_generator_primitive_types_as_defined_types(
     schema_primitive_types_as_defined_types: types.JsonDict,
 ) -> None:

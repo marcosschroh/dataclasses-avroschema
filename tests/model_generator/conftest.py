@@ -45,6 +45,22 @@ def schema_2() -> Dict:
 
 
 @pytest.fixture
+def schema_with_invalid_python_identifiers() -> Dict:
+    return {
+        "type": "record",
+        "name": "Address",
+        "fields": [
+            {"name": "street-name", "type": "string"},
+            {"name": "street-number", "type": "long"},
+            {"name": "ValidIdentifier", "type": "string"},
+            {"name": "anotherIdentifier", "type": "string"},
+            {"name": "_private", "type": "string"},
+        ],
+        "doc": "An Address",
+    }
+
+
+@pytest.fixture
 def schema_primitive_types_as_defined_types() -> Dict:
     return {
         "type": "record",
