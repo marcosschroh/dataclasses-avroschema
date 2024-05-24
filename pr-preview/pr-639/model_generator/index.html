@@ -568,6 +568,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#schema-with-invalid-python-identifiers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Schema with invalid python identifiers
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#field-order" class="md-nav__link">
     <span class="md-ellipsis">
       Field order
@@ -788,6 +797,15 @@
   <a href="#malformed-schemas" class="md-nav__link">
     <span class="md-ellipsis">
       Malformed schemas
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#schema-with-invalid-python-identifiers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Schema with invalid python identifiers
     </span>
   </a>
   
@@ -1234,6 +1252,42 @@ exactly the same name as the record <code>Address</code>.</p>
 <span class="nb">print</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">fake</span><span class="p">())</span>
 <span class="c1"># &gt;&gt;&gt; User(name=&#39;JBZdhEWdXwFLQitWCjkc&#39;, age=3406, address=Address(name=&#39;AhlQsvXnkpcPZJvRSXLr&#39;))</span>
 </code></pre></div>
+<h2 id="schema-with-invalid-python-identifiers">Schema with invalid python identifiers</h2>
+<p>Sometimes <code>avro schemas</code> contains field names that are not valid <code>python identifiers</code>, for example <code>street-name</code>. If we have the following <code>avro schema</code> the <code>python model</code> generated from it will generate <code>valid identifiers</code>, in this case and <code>street-name</code>  and <code>street-number</code></p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">ModelGenerator</span>
+
+
+<span class="n">schema</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;record&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Address&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;street-name&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;street-number&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;long&quot;</span><span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+
+<span class="n">model_generator</span> <span class="o">=</span> <span class="n">ModelGenerator</span><span class="p">()</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">model_generator</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">)</span>
+
+<span class="c1"># save the result in a file</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;models.py&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;+w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</code></pre></div>
+<p>Then the result will be:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># models.py</span>
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
+<span class="kn">import</span> <span class="nn">dataclasses</span>
+
+
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span> <span class="nc">Address</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
+    <span class="n">street_name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">street_number</span><span class="p">:</span> <span class="nb">int</span>
+</code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If you try to generate the <code>schema</code> from the model, both schemas won't match. You might have to use the <a href="https://marcosschroh.github.io/dataclasses-avroschema/case/">case</a> functionality</p>
+</div>
 <h2 id="field-order">Field order</h2>
 <p>Sometimes we have to work with schemas that were created by a third party and we do not have control over them. Those schemas can contain optional fields
 declared before required fields, which means that and invalid model will be generated. To avoid this problem the <code>field_order</code> property is used in the generation process.
