@@ -1253,7 +1253,7 @@ exactly the same name as the record <code>Address</code>.</p>
 <span class="c1"># &gt;&gt;&gt; User(name=&#39;JBZdhEWdXwFLQitWCjkc&#39;, age=3406, address=Address(name=&#39;AhlQsvXnkpcPZJvRSXLr&#39;))</span>
 </code></pre></div>
 <h2 id="schema-with-invalid-python-identifiers">Schema with invalid python identifiers</h2>
-<p><code>avro schemas</code> could contain field names that are not valid <code>python identifiers</code>, for example <code>street-name</code>. If we have the following <code>avro schema</code> the <code>python model</code> generated from it will generate <code>valid identifiers</code>, in this case and <code>street-name</code>  and <code>street-number</code></p>
+<p><code>avro schemas</code> could contain field names that are not valid <code>python identifiers</code>, for example <code>street-name</code>. If we have the following <code>avro schema</code> the <code>python model</code> generated from it will generate <code>valid identifiers</code>, in this case and <code>street_name</code>  and <code>street_number</code></p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">ModelGenerator</span>
 
 
