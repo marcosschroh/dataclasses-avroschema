@@ -360,6 +360,48 @@ print(User.fake())
 # >>> User(name='JBZdhEWdXwFLQitWCjkc', age=3406, address=Address(name='AhlQsvXnkpcPZJvRSXLr'))
 ```
 
+## Schema with invalid python identifiers
+
+`avro schemas` could contain field names that are not valid `python identifiers`, for example `street-name`. If we have the following `avro schema` the `python model` generated from it will generate `valid identifiers`, in this case and `street_name`  and `street_number`
+
+```python
+from dataclasses_avroschema import ModelGenerator
+
+
+schema = {
+    "type": "record",
+    "name": "Address",
+    "fields": [
+        {"name": "street-name", "type": "string"},
+        {"name": "street-number", "type": "long"}
+    ]
+}
+
+model_generator = ModelGenerator()
+result = model_generator.render(schema=schema)
+
+# save the result in a file
+with open("models.py", mode="+w") as f:
+    f.write(result)
+```
+
+Then the result will be:
+
+```python
+# models.py
+from dataclasses_avroschema import AvroModel
+import dataclasses
+
+
+@dataclasses.dataclass
+class Address(AvroModel):
+    street_name: str
+    street_number: int
+```
+
+!!! warning
+    If you try to generate the `schema` from the model, both schemas won't match. You might have to use the [case](https://marcosschroh.github.io/dataclasses-avroschema/case/) functionality
+
 ## Field order
 
 Sometimes we have to work with schemas that were created by a third party and we do not have control over them. Those schemas can contain optional fields
@@ -462,7 +504,6 @@ class UnitMultiPlayer(enum.Enum):
 @dataclasses.dataclass
 class User(AvroModel):
     unit_multi_player: UnitMultiPlayer
-
 ```
 
 As the example shows the second enum member `UnitMultiPlayer.p` is not in uppercase otherwise will collide with the first member `UnitMultiPlayer.P`

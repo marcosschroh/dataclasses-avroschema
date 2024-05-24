@@ -186,7 +186,7 @@ class BaseGenerator:
         3. If the field is a LogicalType, it may not have the
             the `name` property and the type is a `native` one
         """
-        name = field.get("name", "")
+        name = self.generate_field_name(field.get("name", ""))
         type: AvroTypeRepr = field["type"]
         default = field.get("default", dataclasses.MISSING)
         field_metadata = self.get_field_metadata(field)
@@ -254,6 +254,12 @@ class BaseGenerator:
                 has_default = True
 
         return FieldRepresentation(name=name, string_representation=result, has_default=has_default)
+
+    @staticmethod
+    def generate_field_name(field_name: str) -> str:
+        if field_name and not field_name.isidentifier():
+            return casefy.snakecase(field_name)
+        return field_name
 
     @staticmethod
     def is_logical_type(*, field: JsonDict) -> bool:
