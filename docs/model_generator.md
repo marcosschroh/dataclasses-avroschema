@@ -26,7 +26,7 @@ The rendered result is a string that contains the proper identation, so the resu
 | array     | typing.List |
 | map       | typing.Dict |
 | fixed     | types.confixed |
-| enum      | enum.Enum   |
+| enum      | str, enum.Enum   |
 | int       | types.Int32 |
 | float     | types.Float32|
 | union     | typing.Union|
@@ -496,7 +496,7 @@ import dataclasses
 import enum
 
 
-class UnitMultiPlayer(enum.Enum):
+class UnitMultiPlayer(str, enum.Enum):
     Q = "Q"
     q = "q"
 

@@ -43,7 +43,7 @@ import dataclasses
 from dataclasses_avroschema import AvroModel
 
 
-class FavoriteColor(enum.Enum):
+class FavoriteColor(str, enum.Enum):
     BLUE = "Blue"
     YELLOW = "Yellow"
     GREEN = "Green"

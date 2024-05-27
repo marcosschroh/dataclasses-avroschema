@@ -17,7 +17,7 @@ from dataclasses_avroschema.pydantic import AvroBaseModel
 from pydantic import Field
 
 
-class FavoriteColor(str, enum.Enum):
+class FavoriteColor(str, str, enum.Enum):
     BLUE = "BLUE"
     YELLOW = "YELLOW"
     GREEN = "GREEN"
@@ -407,7 +407,7 @@ for example:
     import enum
     from dataclasses_avroschema.pydantic import AvroBaseModel
 
-    class Color(str, enum.Enum):
+    class Color(str, str, enum.Enum):
         BLUE = "BLUE"
         RED = "RED"
 
@@ -428,7 +428,7 @@ for example:
     from pydantic import ConfigDict
 
 
-    class Color(str, enum.Enum):
+    class Color(str, str, enum.Enum):
         BLUE = "BLUE"
         RED = "RED"
 

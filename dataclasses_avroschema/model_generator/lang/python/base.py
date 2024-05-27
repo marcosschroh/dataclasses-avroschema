@@ -88,7 +88,7 @@ class BaseGenerator:
         return "".join([extra for extra in self.extras])
 
     def render_metaclass(
-        self, *, schema: JsonDict, field_order: typing.Optional[typing.List[str]] = None
+        self, *, schema: JsonDict, field_order: typing.Optional[typing.List[str]] = None, decorator: str = ""
     ) -> typing.Optional[str]:
         """
         Render Class Meta that contains the schema matadata
@@ -116,12 +116,14 @@ class BaseGenerator:
 
         if properties:
             # some formating to remove identation at the end of the Class Meta to make it more compatible with black
-            return (
-                self.field_identation.join(
-                    [line for line in templates.metaclass_template.safe_substitute(properties=properties).split("\n")]
-                ).rstrip(self.field_identation)
-                + "\n"
-            )
+            return self.field_identation.join(
+                [
+                    line
+                    for line in templates.metaclass_template.safe_substitute(
+                        properties=properties, decorator=decorator
+                    ).split("\n")
+                ]
+            ).rstrip(self.field_identation)
         return None
 
     def render_docstring(self, *, docstring: typing.Optional[str]) -> str:
@@ -416,7 +418,7 @@ class BaseGenerator:
 
         docstring = self.render_docstring(docstring=field.get("doc"))
         enum_class = templates.enum_template.safe_substitute(name=enum_name, symbols=symbols_repr, docstring=docstring)
-        metaclass = self.render_metaclass(schema=field)
+        metaclass = self.render_metaclass(schema=field, decorator="@enum.nonmember")
 
         if metaclass:
             enum_class += metaclass

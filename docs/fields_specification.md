@@ -124,7 +124,7 @@ Python Type | Avro Type   | Logical Type |
 | typing.Mapping      | map         | do not apply |
 | typing.MutableMapping      | map         | do not apply |
 | types.Fixed      | fixed         | do not apply |
-| enum.Enum      | enum         | do not apply |
+| str, enum.Enum      | enum         | do not apply |
 | types.Int32  | int | do not apply |
 | types.Float32 | float| do not apply |
 | typing.Union| union     | do not apply |
@@ -151,7 +151,7 @@ import typing
 from dataclasses_avroschema import AvroModel
 
  
-class FavoriteColor(str, enum.Enum):
+class FavoriteColor(str, str, enum.Enum):
     BLUE = "BLUE"
     YELLOW = "YELLOW"
     GREEN = "GREEN"
@@ -205,7 +205,7 @@ import typing
 from dataclasses import dataclass
 from dataclasses_avroschema import AvroModel
 
-class E(enum.Enum):
+class E(str, enum.Enum):
     ONE = "one"
 
 @dataclass
