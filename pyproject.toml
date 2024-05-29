@@ -36,6 +36,7 @@ ruff = ">=0.1,<0.5"
 pytest = ">=7,<9"
 pytest-cov = ">=4,<6"
 types-pytz = ">=2023,<2025"
+types-python-dateutil = "^2.9.0.20240316"
 
 [tool.poetry.group.docs.dependencies]
 mkdocs = "^1"
