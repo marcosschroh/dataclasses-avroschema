@@ -1,3 +1,9 @@
+## 0.60.0 (2024-05-29)
+
+### Feat
+
+- missing dacite hooks added in order to parse_obj in a proper way. Related to #638 (#643)
+
 ## 0.59.1 (2024-05-24)
 
 ### Fix
