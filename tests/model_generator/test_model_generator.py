@@ -76,7 +76,7 @@ class Address(AvroModel):
     name: typing.Optional[str]
     weight: types.Int32 = dataclasses.field(metadata={'unit': 'kg'})
     pet_age: types.Int32 = 1
-    expirience: types.Int32 = dataclasses.field(metadata={'unit': 'years'}) = 10
+    expirience: types.Int32 = dataclasses.field(metadata={'unit': 'years'}, default=10)
 
 """
     model_generator = ModelGenerator()
