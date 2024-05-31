@@ -925,10 +925,21 @@
 </tr>
 </tbody>
 </table>
-<p>Since Python does not have native <code>int32</code> or <code>float32</code> types, use the
-<code>dataclasses_avroschema.types.Int32</code> and <code>dataclasses_avroschema.types.Float32</code>
-types to annotate your classes. These types are simple wrappers around Python's
-default <code>int</code> and <code>float</code> types.</p>
+<p>Since Python does not have native <code>int32</code> or <code>float32</code> types, use the <code>dataclasses_avroschema.types.Int32</code> and <code>dataclasses_avroschema.types.Float32</code>
+types to annotate your classes. These types are simple wrappers around Python's default <code>int</code> and <code>float</code> types.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Primitive type names are also defined type names. Thus, for example, the schema “string” is equivalent to: <code>{"type": "string"}</code></p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If you have to defined an <code>avro schema</code> with primitive type as defined type then set all the properties like <code>default</code>, <code>aliases</code>, etc in the <code>defined type</code></p>
+</div>
+<div class="highlight"><span class="filename">Primitive type as defined type</span><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;expirience&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;int&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;years&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
 <h2 id="complex-types">Complex Types</h2>
 <p>Avro supports six kinds of complex types: enums, arrays, maps, fixed, unions and records.</p>
 <table>
