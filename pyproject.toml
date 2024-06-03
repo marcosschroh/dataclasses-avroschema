@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dataclasses-avroschema"
-version = "0.59.1"
+version = "0.60.1"
 description = "Generate Avro Schemas from Python classes. Serialize/Deserialize python instances with avro schemas"
 authors = ["Marcos Schroh <schrohm@gmail.com>"]
 license = "MIT"
@@ -29,6 +29,7 @@ faust-streaming = {version = ">=0.10.11,<0.12.0", optional = true}
 casefy = "^0.1.7"
 typing-extensions = "^4.2.0"
 pydantic = {version = "^2.4.2", optional = true, extras = ["email"]}
+python-dateutil = "^2.9.0.post0"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.8.0"
@@ -36,6 +37,7 @@ ruff = ">=0.1,<0.5"
 pytest = ">=7,<9"
 pytest-cov = ">=4,<6"
 types-pytz = ">=2023,<2025"
+types-python-dateutil = "^2.9.0.20240316"
 
 [tool.poetry.group.docs.dependencies]
 mkdocs = "^1"
@@ -98,7 +100,7 @@ unfixable = []
 "tests/model_generator/test_model_generator.py" = ["E501"]
 
 [tool.commitizen]
-version = "0.59.1"
+version = "0.60.1"
 tag_format = "$version"
 version_files = [
     "pyproject.toml:version",
