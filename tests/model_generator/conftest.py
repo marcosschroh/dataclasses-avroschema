@@ -72,8 +72,7 @@ def schema_primitive_types_as_defined_types() -> Dict:
             {"name": "pet_age", "type": {"type": "int"}, "default": 1},
             {
                 "name": "expirience",
-                "type": {"type": "int", "unit": "years"},
-                "default": 10,
+                "type": {"type": "int", "unit": "years", "default": 10},
             },
         ],
     }

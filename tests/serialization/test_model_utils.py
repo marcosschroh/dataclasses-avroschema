@@ -18,6 +18,8 @@ def test_to_dict_to_json(klass, data, avro_binary, avro_json, instance_json, pyt
 
     assert instance.to_dict() == python_dict
     assert instance.to_json() == json.dumps(instance_json)
+    assert instance == klass.parse_obj(data)
+    assert instance == klass.parse_obj(json.loads(json.dumps(instance_json)))
 
 
 def test_dacite_config():

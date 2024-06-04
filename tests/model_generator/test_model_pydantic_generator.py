@@ -107,6 +107,54 @@ class User(AvroBaseModel):
     assert result.strip() == expected_result.strip()
 
 
+def test_avro_pydantic_primitive_types_as_defined_types(
+    schema_primitive_types_as_defined_types: types.JsonDict,
+) -> None:
+    expected_result = """
+from dataclasses_avroschema import types
+from dataclasses_avroschema.pydantic import AvroBaseModel
+from pydantic import Field
+import typing
+
+
+
+class Address(AvroBaseModel):
+    street: str
+    name: typing.Optional[str]
+    weight: types.Int32 = Field(metadata={'unit': 'kg'})
+    pet_age: types.Int32 = 1
+    expirience: types.Int32 = Field(metadata={'unit': 'years'}, default=10)
+
+"""
+    model_generator = ModelGenerator()
+    result = model_generator.render(
+        schema=schema_primitive_types_as_defined_types, model_type=ModelType.AVRODANTIC.value
+    )
+    assert result.strip() == expected_result.strip()
+
+
+def test_avro_pydantic_with_fields_with_metadata(
+    with_fields_with_metadata: types.JsonDict,
+) -> None:
+    expected_result = """
+from dataclasses_avroschema.pydantic import AvroBaseModel
+from pydantic import Field
+
+
+
+class Message(AvroBaseModel):
+    someotherfield: int = Field(metadata={'aliases': ['oldname'], 'doc': 'test'})
+    fieldwithdefault: str = "some default value"
+
+    class Meta:
+        field_order = ['fieldwithdefault', 'someotherfield']
+
+"""
+    model_generator = ModelGenerator()
+    result = model_generator.render(schema=with_fields_with_metadata, model_type=ModelType.AVRODANTIC.value)
+    assert result.strip() == expected_result.strip()
+
+
 def test_decimal_field(schema_with_decimal_field: types.JsonDict) -> None:
     expected_result = """
 from dataclasses_avroschema import types

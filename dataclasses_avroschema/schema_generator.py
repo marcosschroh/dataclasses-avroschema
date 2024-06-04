@@ -1,14 +1,14 @@
 import dataclasses
-import enum
 import inspect
 import json
 from collections import OrderedDict
-from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Type, TypeVar, Union
+from typing import Any, Callable, Dict, List, Optional, Set, Type, TypeVar, Union
 
-from dacite import Config, from_dict
+from dacite import from_dict
 from fastavro.validation import validate
 
 from . import case, serialization
+from .dacite_config import generate_dacite_config
 from .fields.base import Field
 from .parser import Parser
 from .types import JsonDict
@@ -156,7 +156,7 @@ class AvroModel:
 
     @classmethod
     def parse_obj(cls: Type[CT], data: Dict) -> CT:
-        return from_dict(data_class=cls, data=data, config=cls.dacite_config())
+        return from_dict(data_class=cls, data=data, config=generate_dacite_config(cls))
 
     def validate(self) -> bool:
         schema = self.avro_schema_to_python()
@@ -172,34 +172,6 @@ class AvroModel:
         return json.dumps(data, **kwargs)
 
     @classmethod
-    def dacite_config(cls: Type[CT]) -> Config:
-        """
-        Get the default config for dacite and always include the self reference
-        """
-        # We need to make sure that the `avro schemas` has been generated, otherwise cls._klass is empty
-        # It won't affect the performance because the rendered schema will be store in cls._rendered_schema
-        cls.generate_schema()
-        dacite_user_config = cls._metadata.dacite_config  # type: ignore
-
-        dacite_config = {
-            "check_types": False,
-            "cast": [],
-            "forward_references": {
-                cls._klass.__name__: cls._klass,  # type: ignore
-            },
-        }
-
-        if dacite_user_config is not None:
-            dacite_config.update(dacite_user_config)
-
-        config = Config(**dacite_config)  # type: ignore
-
-        # we always need to have this values regardless
-        # the user config
-        config.cast.extend([Tuple, tuple, enum.Enum])  # type: ignore
-        return config
-
-    @classmethod
     def fake(cls: Type[CT], **data: Any) -> CT:
         """
         Creates a fake instance of the model.
@@ -212,4 +184,4 @@ class AvroModel:
         payload = {field.name: field.fake() for field in cls.get_fields() if field.name not in data.keys()}
         payload.update(data)
 
-        return from_dict(data_class=cls, data=payload, config=cls.dacite_config())
+        return from_dict(data_class=cls, data=payload, config=generate_dacite_config(cls))

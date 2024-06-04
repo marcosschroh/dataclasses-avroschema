@@ -28,10 +28,21 @@ So, the previous types can be matched to:
 | int          | types.Int32  |
 | float        | types.Float32|
 
-Since Python does not have native `int32` or `float32` types, use the
-`dataclasses_avroschema.types.Int32` and `dataclasses_avroschema.types.Float32`
-types to annotate your classes. These types are simple wrappers around Python's
-default `int` and `float` types.
+Since Python does not have native `int32` or `float32` types, use the `dataclasses_avroschema.types.Int32` and `dataclasses_avroschema.types.Float32`
+types to annotate your classes. These types are simple wrappers around Python's default `int` and `float` types.
+
+!!! note
+    Primitive type names are also defined type names. Thus, for example, the schema “string” is equivalent to: `{"type": "string"}`
+
+!!! warning
+    If you have to defined an `avro schema` with primitive type as defined type then set all the properties like `default`, `aliases`, etc in the `defined type`
+
+```json title="Primitive type as defined type"
+{
+  "name": "expirience",
+  "type": {"type": "int", "unit": "years", "default": 10}
+}
+```
 
 ## Complex Types
 
