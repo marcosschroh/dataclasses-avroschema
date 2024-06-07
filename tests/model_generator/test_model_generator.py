@@ -47,8 +47,10 @@ class Address(AvroModel):
     \"""
     An Address
     \"""
-    street_name: str
-    street_number: int
+    street_name: str = dataclasses.field(metadata={'aliases': ['street-name']})
+    street_number: int = dataclasses.field(metadata={'aliases': ['street-number']})
+    street_zipcode: str = dataclasses.field(metadata={'aliases': ['zipcode', 'street-zipcode']})
+    city_name: str = dataclasses.field(metadata={'aliases': ['city-name']})
     ValidIdentifier: str
     anotherIdentifier: str
     _private: str

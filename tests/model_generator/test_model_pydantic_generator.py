@@ -85,6 +85,34 @@ class User(AvroBaseModel):
     assert result.strip() == expected_result.strip()
 
 
+def test_avro_pydantic_invalid_python_identifiers(schema_with_invalid_python_identifiers: types.JsonDict) -> None:
+    expected_result = """
+from dataclasses_avroschema.pydantic import AvroBaseModel
+from pydantic import Field
+
+
+
+class Address(AvroBaseModel):
+    \"""
+    An Address
+    \"""
+    street_name: str = Field(metadata={'aliases': ['street-name']})
+    street_number: int = Field(metadata={'aliases': ['street-number']})
+    street_zipcode: str = Field(metadata={'aliases': ['zipcode', 'street-zipcode']})
+    city_name: str = Field(metadata={'aliases': ['city-name']})
+    ValidIdentifier: str
+    anotherIdentifier: str
+    _private: str
+
+
+"""
+    model_generator = ModelGenerator()
+    result = model_generator.render(
+        schema=schema_with_invalid_python_identifiers, model_type=ModelType.AVRODANTIC.value
+    )
+    assert result.strip() == expected_result.strip()
+
+
 def test_avro_pydantic_model_with_meta_fields(
     schema_one_to_self_relationship: types.JsonDict,
 ) -> None:

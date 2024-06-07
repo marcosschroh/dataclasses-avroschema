@@ -52,6 +52,8 @@ def schema_with_invalid_python_identifiers() -> Dict:
         "fields": [
             {"name": "street-name", "type": "string"},
             {"name": "street-number", "type": "long"},
+            {"name": "street-zipcode", "type": "string", "aliases": ["zipcode"]},
+            {"name": "city_name", "type": "string", "aliases": ["city-name"]},
             {"name": "ValidIdentifier", "type": "string"},
             {"name": "anotherIdentifier", "type": "string"},
             {"name": "_private", "type": "string"},
