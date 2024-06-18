@@ -4,7 +4,7 @@ import json
 from collections import OrderedDict
 from typing import Any, Callable, Dict, List, Optional, Set, Type, TypeVar, Union
 
-from dacite import from_dict
+from dacite import Config, from_dict
 from fastavro.validation import validate
 
 from . import case, serialization
@@ -19,6 +19,10 @@ AVRO_JSON = "avro-json"
 
 
 CT = TypeVar("CT", bound="AvroModel")
+
+
+_schemas_cache: dict[Type['AvroModel'], dict] = {}
+_dacite_config_cache: dict[Type['AvroModel'], Config] = {}
 
 
 class AvroModel:
@@ -120,7 +124,11 @@ class AvroModel:
         return dataclasses.asdict(self)  # type: ignore
 
     def serialize(self, serialization_type: str = AVRO) -> bytes:
-        schema = self.avro_schema_to_python()
+        klass = type(self)
+        schema = _schemas_cache.get(klass)
+        if schema is None:
+            schema = self.avro_schema_to_python()
+            _schemas_cache[klass] = schema
 
         return serialization.serialize(
             self.asdict(standardize_factory=standardize_custom_type),
@@ -136,27 +144,41 @@ class AvroModel:
         create_instance: bool = True,
         writer_schema: Optional[Union[JsonDict, Type[CT]]] = None,
     ) -> Union[JsonDict, CT]:
+        payload = cls.deserialize_to_python(data, serialization_type, writer_schema)
+        obj = cls.parse_obj(payload)
+        if not create_instance:
+            return obj.asdict()
+        return obj
+
+    @classmethod
+    def deserialize_to_python(  # This can be used straight with a pydantic dataclass to bypass dacite
+        cls: Type[CT],
+        data: bytes,
+        serialization_type: str = AVRO,
+        writer_schema: Union[JsonDict, Type[CT], None] = None,
+    ) -> dict:
         if inspect.isclass(writer_schema) and issubclass(writer_schema, AvroModel):
-            # mypy does not undersdtand redefinitions
+            # mypy does not understand redefinitions
             writer_schema: JsonDict = writer_schema.avro_schema_to_python()  # type: ignore
 
-        schema = cls.avro_schema_to_python()
-        payload = serialization.deserialize(
+        schema = _schemas_cache.get(cls)
+        if schema is None:
+            schema = cls.avro_schema_to_python()
+            _schemas_cache[cls] = schema
+        return serialization.deserialize(
             data,
             schema,
             serialization_type=serialization_type,
             writer_schema=writer_schema,  # type: ignore
         )
 
-        obj = cls.parse_obj(payload)
-
-        if not create_instance:
-            return obj.asdict()
-        return obj
-
     @classmethod
     def parse_obj(cls: Type[CT], data: Dict) -> CT:
-        return from_dict(data_class=cls, data=data, config=generate_dacite_config(cls))
+        config = _dacite_config_cache.get(cls)
+        if config is None:
+            config = generate_dacite_config(cls)
+            _dacite_config_cache[cls] = config
+        return from_dict(data_class=cls, data=data, config=config)
 
     def validate(self) -> bool:
         schema = self.avro_schema_to_python()

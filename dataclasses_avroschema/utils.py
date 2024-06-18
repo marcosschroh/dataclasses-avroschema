@@ -2,6 +2,7 @@ import dataclasses
 import enum
 import typing
 from datetime import datetime, timezone
+from functools import lru_cache
 
 from typing_extensions import Annotated, get_origin
 
@@ -14,6 +15,7 @@ except ImportError:  # type: ignore # pragma: no cover
     pydantic = None  # type: ignore # pragma: no cover
 
 
+@lru_cache(maxsize=None)
 def is_pydantic_model(klass: type) -> bool:
     if pydantic is not None:
         return issubclass(klass, v1.BaseModel) or issubclass(klass, pydantic.BaseModel)
@@ -75,7 +77,7 @@ def standardize_custom_type(value: typing.Any) -> typing.Any:
         return [standardize_custom_type(v) for v in value]
     elif isinstance(value, tuple):
         return tuple(standardize_custom_type(v) for v in value)
-    elif issubclass(type(value), enum.Enum):
+    elif isinstance(value, enum.Enum):
         return value.value
     elif is_pydantic_model(type(value)):
         return standardize_custom_type(value.asdict())
