@@ -4,7 +4,7 @@ The following list represent the avro complex types mapped to python types:
 
 | Avro Type          | Python Type                                                        |
 | ------------------ | ------------------------------------------------------------------ |
-| enums              | enum.Enum, typing.Literal[str]                                     |
+| enums              | str, enum.Enum, typing.Literal[str]                                |
 | arrays             | typing.List, typing.Tuple, typing.Sequence, typing.MutableSequence |
 | maps               | typing.Dict, typing.Mapping, typing.MutableMapping                 |
 | fixed              | types.confixed                                                     |
@@ -21,7 +21,7 @@ import dataclasses
 from dataclasses_avroschema import AvroModel
 
 
-class FavoriteColor(enum.Enum):
+class FavoriteColor(str, enum.Enum):
     BLUE = "Blue"
     YELLOW = "Yellow"
     GREEN = "Green"
@@ -139,7 +139,7 @@ import typing
 from dataclasses_avroschema import AvroModel
 
 
-class TripDistance(enum.Enum):
+class TripDistance(str, enum.Enum):
     CLOSE = "Close"
     FAR = "Far"
 

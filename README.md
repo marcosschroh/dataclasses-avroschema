@@ -48,7 +48,7 @@ import typing
 from dataclasses_avroschema import AvroModel, types
 
 
-class FavoriteColor(enum.Enum):
+class FavoriteColor(str, enum.Enum):
     BLUE = "BLUE"
     YELLOW = "YELLOW"
     GREEN = "GREEN"

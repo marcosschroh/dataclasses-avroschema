@@ -174,6 +174,7 @@ class Message(AvroBaseModel):
     someotherfield: int = Field(metadata={'aliases': ['oldname'], 'doc': 'test'})
     fieldwithdefault: str = "some default value"
 
+    
     class Meta:
         field_order = ['fieldwithdefault', 'someotherfield']
 

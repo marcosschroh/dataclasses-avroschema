@@ -33,7 +33,7 @@ it is explicit.
 
 ## Migration from previous versions to 0.27.0
 
-- `types.Enum` was replaced with `enum.Enum`. You must create your custom enum, example:
+- `types.Enum` was replaced with `str, enum.Enum`. You must create your custom enum, example:
 
 ```python
 import dataclasses
@@ -55,7 +55,7 @@ from dataclasses_avroschema import AvroModel
 
 
 # New enum!!
-class FavoriteColor(enum.Enum):
+class FavoriteColor(str, enum.Enum):
     BLUE = "BLUE"
     YELLOW = "YELLOW"
     GREEN = "GREEN"

@@ -25,7 +25,7 @@ DECIMAL_TYPE_TEMPLATE = "types.condecimal(max_digits=$precision, decimal_places=
 ENUM_SYMBOL_TEMPLATE = "$key = $value"
 ENUM_TEMPLATE = """
 
-class $name(enum.Enum):$docstring
+class $name(str, enum.Enum):$docstring
     $symbols
 """
 
@@ -38,6 +38,7 @@ class $name($base_class):$docstring
 INSTANCE_TEMPLATE = "$type($properties)"
 
 METACLASS_TEMPLATE = """
+$decorator
 class Meta:
     $properties
 """
