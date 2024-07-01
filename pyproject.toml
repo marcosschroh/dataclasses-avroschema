@@ -33,7 +33,7 @@ python-dateutil = "^2.9.0.post0"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.8.0"
-ruff = ">=0.1,<0.5"
+ruff = ">=0.5.0,<0.6"
 pytest = ">=7,<9"
 pytest-cov = ">=4,<6"
 types-pytz = ">=2023,<2025"
