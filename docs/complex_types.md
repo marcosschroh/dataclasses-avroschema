@@ -2,72 +2,146 @@
 
 The following list represent the avro complex types mapped to python types:
 
-| Avro Type          | Python Type                                                        |
-| ------------------ | ------------------------------------------------------------------ |
-| enums              | enum.Enum, typing.Literal[str]                                     |
-| arrays             | typing.List, typing.Tuple, typing.Sequence, typing.MutableSequence |
-| maps               | typing.Dict, typing.Mapping, typing.MutableMapping                 |
-| fixed              | types.confixed                                                     |
-| unions             | typing.Union                                                       |
-| unions with `null` | typing.Optional                                                    |
-| records            | Python Class                                                       |
+=== "python <= 3.10"
+
+    | Avro Type          | Python Type                                                        |
+    | ------------------ | ------------------------------------------------------------------ |
+    | enums              | enum.Enum, typing.Literal[str]                                |
+    | arrays             | typing.List, typing.Tuple, typing.Sequence, typing.MutableSequence |
+    | maps               | typing.Dict, typing.Mapping, typing.MutableMapping                 |
+    | fixed              | types.confixed                                                     |
+    | unions             | typing.Union                                                       |
+    | unions with `null` | typing.Optional                                                    |
+    | records            | Python Class                                                       |
+
+=== "python >= 3.11"
+
+    | Avro Type          | Python Type                                                        |
+    | ------------------ | ------------------------------------------------------------------ |
+    | enums              | str, enum.Enum, typing.Literal[str]                                |
+    | arrays             | typing.List, typing.Tuple, typing.Sequence, typing.MutableSequence |
+    | maps               | typing.Dict, typing.Mapping, typing.MutableMapping                 |
+    | fixed              | types.confixed                                                     |
+    | unions             | typing.Union                                                       |
+    | unions with `null` | typing.Optional                                                    |
+    | records            | Python Class                                                       |
 
 ## Enums
 
-```python title="Enum example"
-import enum
-import dataclasses
+=== "python <= 3.10"
 
-from dataclasses_avroschema import AvroModel
+    ```python title="Enum example"
+    import enum
+    import dataclasses
 
-
-class FavoriteColor(enum.Enum):
-    BLUE = "Blue"
-    YELLOW = "Yellow"
-    GREEN = "Green"
-    
-    class Meta:
-        doc = "A favorite color"
-        namespace = "some.name.space"
-        aliases = ["Color", "My favorite color"]
+    from dataclasses_avroschema import AvroModel
 
 
-@dataclasses.dataclass
-class User(AvroModel):
-    "An User"
-    favorite_color: FavoriteColor = FavoriteColor.BLUE
+    class FavoriteColor(enum.Enum):
+        BLUE = "Blue"
+        YELLOW = "Yellow"
+        GREEN = "Green"
+        
+        class Meta:
+            doc = "A favorite color"
+            namespace = "some.name.space"
+            aliases = ["Color", "My favorite color"]
 
 
-User.avro_schema()
+    @dataclasses.dataclass
+    class User(AvroModel):
+        "An User"
+        favorite_color: FavoriteColor = FavoriteColor.BLUE
 
-'{
-  "type": "record",
-  "name": "User",
-  "fields":
-  [
-    {
-      "name": "favorite_color",
-      "type":
-      {
-        "type": "enum",
-        "name": "FavoriteColor",
-        "symbols":
-        [
-          "Blue",
-          "Yellow",
-          "Green"
-        ],
-        "doc": "A favorite color",
-        "namespace": "some.name.space",
-        "aliases":
-        ["Color", "My favorite color"]
-      },
-      "default": "Blue"
-    }
-  ],
-  "doc": "An User"
-}'
-```
+
+    User.avro_schema()
+
+    '{
+      "type": "record",
+      "name": "User",
+      "fields":
+      [
+        {
+          "name": "favorite_color",
+          "type":
+          {
+            "type": "enum",
+            "name": "FavoriteColor",
+            "symbols":
+            [
+              "Blue",
+              "Yellow",
+              "Green"
+            ],
+            "doc": "A favorite color",
+            "namespace": "some.name.space",
+            "aliases":
+            ["Color", "My favorite color"]
+          },
+          "default": "Blue"
+        }
+      ],
+      "doc": "An User"
+    }'
+    ```
+
+=== "python >= 3.11"
+
+    ```python title="Enum example"
+    import enum
+    import dataclasses
+
+    from dataclasses_avroschema import AvroModel
+
+
+    class FavoriteColor(str, enum.Enum):
+        BLUE = "Blue"
+        YELLOW = "Yellow"
+        GREEN = "Green"
+        
+        @enum.nonmember
+        class Meta:
+            doc = "A favorite color"
+            namespace = "some.name.space"
+            aliases = ["Color", "My favorite color"]
+
+
+    @dataclasses.dataclass
+    class User(AvroModel):
+        "An User"
+        favorite_color: FavoriteColor = FavoriteColor.BLUE
+
+
+    User.avro_schema()
+
+    '{
+      "type": "record",
+      "name": "User",
+      "fields":
+      [
+        {
+          "name": "favorite_color",
+          "type":
+          {
+            "type": "enum",
+            "name": "FavoriteColor",
+            "symbols":
+            [
+              "Blue",
+              "Yellow",
+              "Green"
+            ],
+            "doc": "A favorite color",
+            "namespace": "some.name.space",
+            "aliases":
+            ["Color", "My favorite color"]
+          },
+          "default": "Blue"
+        }
+      ],
+      "doc": "An User"
+    }'
+    ```
 
 !!! info
     There are not restriction about `enum` names but is is highly recommended to use `pascalcase`
@@ -131,31 +205,62 @@ For this behaviour the attribute `convert_literal_to_enum` must be set to `True`
 Sometimes we have cases where an `Enum` is used more than once with a particular class, for those cases the same `type` is used in order to generate a valid schema.
 It is a good practice but *NOT* neccesary to a define the `namespace` on the repeated `type`.
 
-```python
-import enum
-import dataclasses
-import typing
+=== "python <= 3.10"
 
-from dataclasses_avroschema import AvroModel
+    ```python
+    import enum
+    import dataclasses
+    import typing
 
-
-class TripDistance(enum.Enum):
-    CLOSE = "Close"
-    FAR = "Far"
-
-    class Meta:
-        doc = "Distance of the trip"
-        namespace = "trip"
+    from dataclasses_avroschema import AvroModel
 
 
-@dataclasses.dataclass
-class User(AvroModel):
-    trip_distance: TripDistance
-    optional_distance: typing.Optional[TripDistance] = None
+    class TripDistance(enum.Enum):
+        CLOSE = "Close"
+        FAR = "Far"
+
+        class Meta:
+            doc = "Distance of the trip"
+            namespace = "trip"
 
 
-print(User.avro_schema())
-```
+    @dataclasses.dataclass
+    class User(AvroModel):
+        trip_distance: TripDistance
+        optional_distance: typing.Optional[TripDistance] = None
+
+
+    print(User.avro_schema())
+    ```
+
+=== "python >= 3.11"
+
+    ```python
+    import enum
+    import dataclasses
+    import typing
+
+    from dataclasses_avroschema import AvroModel
+
+
+    class TripDistance(str, enum.Enum):
+        CLOSE = "Close"
+        FAR = "Far"
+
+        @enum.nonmember
+        class Meta:
+            doc = "Distance of the trip"
+            namespace = "trip"
+
+
+    @dataclasses.dataclass
+    class User(AvroModel):
+        trip_distance: TripDistance
+        optional_distance: typing.Optional[TripDistance] = None
+
+
+    print(User.avro_schema())
+    ```
 
 resulting in
 

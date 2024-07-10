@@ -33,39 +33,76 @@ it is explicit.
 
 ## Migration from previous versions to 0.27.0
 
-- `types.Enum` was replaced with `enum.Enum`. You must create your custom enum, example:
+=== "python <= 3.10"
 
-```python
-import dataclasses
-from dataclasses_avroschema import AvroModel, types
+    - `types.Enum` was replaced with `enum.Enum`. You must create your custom enum, example:
 
-
-class UserAdvance(AvroModel):
-    name: str
-    age: int
-    favorite_colors: types.Enum = types.Enum(["BLUE", "YELLOW", "GREEN"], default="BLUE")  # --> replace with field!!!
-```
-
-should be replaced by:
-
-```python
-import enum
-import dataclasses
-from dataclasses_avroschema import AvroModel
+    ```python
+    import dataclasses
+    from dataclasses_avroschema import AvroModel, types
 
 
-# New enum!!
-class FavoriteColor(enum.Enum):
-    BLUE = "BLUE"
-    YELLOW = "YELLOW"
-    GREEN = "GREEN"
+    class UserAdvance(AvroModel):
+        name: str
+        age: int
+        favorite_colors: types.Enum = types.Enum(["BLUE", "YELLOW", "GREEN"], default="BLUE")  # --> replace with field!!!
+    ```
+
+    should be replaced by:
+
+    ```python
+    import enum
+    import dataclasses
+    from dataclasses_avroschema import AvroModel
 
 
-class UserAdvance:
-    name: str
-    age: int
-    favorite_colors: FavoriteColor = FavoriteColor.BLUE  # --> field updated!!!
-```
+    class FavoriteColor(enum.Enum):
+        BLUE = "BLUE"
+        YELLOW = "YELLOW"
+        GREEN = "GREEN"
+
+
+    class UserAdvance:
+        name: str
+        age: int
+        favorite_colors: FavoriteColor = FavoriteColor.BLUE  # --> field updated!!!
+    ```
+
+=== "python >= 3.11"
+
+    - `types.Enum` was replaced with `str, enum.Enum`. You must create your custom enum, example:
+
+    ```python
+    import dataclasses
+    from dataclasses_avroschema import AvroModel, types
+
+
+    class UserAdvance(AvroModel):
+        name: str
+        age: int
+        favorite_colors: types.Enum = types.Enum(["BLUE", "YELLOW", "GREEN"], default="BLUE")  # --> replace with field!!!
+    ```
+
+    should be replaced by:
+
+    ```python
+    import enum
+    import dataclasses
+    from dataclasses_avroschema import AvroModel
+
+
+    # New enum!!
+    class FavoriteColor(str, enum.Enum):
+        BLUE = "BLUE"
+        YELLOW = "YELLOW"
+        GREEN = "GREEN"
+
+
+    class UserAdvance:
+        name: str
+        age: int
+        favorite_colors: FavoriteColor = FavoriteColor.BLUE  # --> field updated!!!
+    ```
 
 ## Migration from previous versions to 0.23.0
 

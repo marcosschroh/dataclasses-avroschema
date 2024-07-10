@@ -2,6 +2,7 @@ from dataclasses_avroschema import ModelGenerator, ModelType, types
 from dataclasses_avroschema.fields import field_utils
 from dataclasses_avroschema.model_generator.lang.python.avro_to_python_utils import (
     render_datetime,
+    templates,
 )
 
 
@@ -27,6 +28,7 @@ class User(AvroModel):
     is_student: bool = True
     encoded: bytes = b"Hi"
 
+    
     class Meta:
         namespace = "test"
         aliases = ['schema', 'test-schema']
@@ -197,14 +199,14 @@ class User(AvroModel):
 
 
 def test_schema_with_enum_types(schema_with_enum_types: types.JsonDict) -> None:
-    expected_result = """
+    expected_result = f"""
 from dataclasses_avroschema import AvroModel
 import dataclasses
 import enum
 import typing
 
 
-class FavoriteColor(enum.Enum):
+class FavoriteColor({templates.ENUM_PYTHON_VERSION}):
     \"""
     A favorite color
     \"""
@@ -212,18 +214,18 @@ class FavoriteColor(enum.Enum):
     YELLOW = "Yellow"
     GREEN = "Green"
 
+    {templates.METACLASS_DECORATOR}
     class Meta:
         namespace = "some.name.space"
         aliases = ['Color', 'My favorite color']
 
-
-class Superheros(enum.Enum):
+class Superheros({templates.ENUM_PYTHON_VERSION}):
     BATMAN = "batman"
     SUPERMAN = "superman"
     SPIDERMAN = "spiderman"
 
 
-class Cars(enum.Enum):
+class Cars({templates.ENUM_PYTHON_VERSION}):
     BMW = "bmw"
     FERRARY = "ferrary"
     DUNA = "duna"
@@ -258,6 +260,7 @@ class DeliveryBatch(AvroModel):
     teammates: typing.Dict[str, str] = dataclasses.field(metadata={'inner_name': 'my_teammate'}, default_factory=dict)
     a_fixed: types.confixed(size=16) = dataclasses.field(metadata={'inner_name': 'my_fixed'}, default=b"u00ffffffffffffx")
 
+    
     class Meta:
         namespace = "app.delivery.email"
 
@@ -270,13 +273,13 @@ class DeliveryBatch(AvroModel):
 def test_schema_with_enum_types_case_sensitivity(
     schema_with_enum_types_case_sensitivity: types.JsonDict,
 ) -> None:
-    expected_result = """
+    expected_result = f"""
 from dataclasses_avroschema import AvroModel
 import dataclasses
 import enum
 
 
-class unit_multi_player(enum.Enum):
+class unit_multi_player({templates.ENUM_PYTHON_VERSION}):
     q = "q"
     Q = "Q"
 
@@ -292,14 +295,14 @@ class User(AvroModel):
 
 
 def test_enum_types_with_no_pascal_case(schema_with_enum_types_no_pascal_case) -> None:
-    expected_result = '''
+    expected_result = f'''
 from dataclasses_avroschema import AvroModel
 import dataclasses
 import enum
 import typing
 
 
-class my_favorite_color(enum.Enum):
+class my_favorite_color({templates.ENUM_PYTHON_VERSION}):
     """
     A favorite color
     """
@@ -307,18 +310,18 @@ class my_favorite_color(enum.Enum):
     YELLOW = "Yellow"
     GREEN = "Green"
 
+    {templates.METACLASS_DECORATOR}
     class Meta:
         namespace = "some.name.space"
         aliases = ['Color', 'My favorite color']
 
-
-class super_heros(enum.Enum):
+class super_heros({templates.ENUM_PYTHON_VERSION}):
     BATMAN = "batman"
     SUPERMAN = "superman"
     SPIDERMAN = "spiderman"
 
 
-class cars(enum.Enum):
+class cars({templates.ENUM_PYTHON_VERSION}):
     BMW = "bmw"
     FERRARY = "ferrary"
     DUNA = "duna"
@@ -540,6 +543,7 @@ class LogicalTypes(AvroModel):
     event_uuid: uuid.UUID = "ad0677ab-bd1c-4383-9d45-e46c56bcc5c9"
     explicit_with_default: types.condecimal(max_digits=3, decimal_places=2) = decimal.Decimal('3.14')
 
+    
     class Meta:
         field_order = ['uuid_1', 'meeting_date', 'release_date', 'meeting_time', 'release_time', 'release_time_micro', 'meeting_datetime', 'birthday', 'birthday_time', 'birthday_datetime', 'release_datetime', 'release_datetime_micro', 'uuid_2', 'event_uuid', 'explicit_with_default', 'money']
 """
@@ -570,10 +574,10 @@ class User(AvroModel):
     is_student: bool = True
     encoded: bytes = b"Hi"
 
+    
     class Meta:
         namespace = "test"
         aliases = ['schema', 'test-schema']
-
 
 @dataclasses.dataclass
 class Address(AvroModel):
@@ -602,6 +606,7 @@ class Message(AvroModel):
     someotherfield: int = dataclasses.field(metadata={'aliases': ['oldname'], 'doc': 'test'})
     fieldwithdefault: str = "some default value"
 
+    
     class Meta:
         field_order = ['fieldwithdefault', 'someotherfield']
 
@@ -628,9 +633,9 @@ class Address(AvroModel):
     street: str
     street_number: int
 
+    
     class Meta:
         original_schema = '{"type": "record", "name": "Address", "fields": [{"name": "street", "type": "string"}, {"name": "street_number", "type": "long"}], "doc": "An Address"}'
-
 
 @dataclasses.dataclass
 class User(AvroModel):
@@ -640,6 +645,7 @@ class User(AvroModel):
     crazy_union: typing.Union[str, typing.List[Address]]
     optional_addresses: typing.Optional[typing.List[Address]] = None
 
+    
     class Meta:
         original_schema = '{"type": "record", "name": "User", "fields": [{"name": "name", "type": "string"}, {"name": "age", "type": "long"}, {"name": "addresses", "type": {"type": "array", "items": {"type": "record", "name": "Address", "fields": [{"name": "street", "type": "string"}, {"name": "street_number", "type": "long"}], "doc": "An Address"}, "name": "address"}}, {"name": "crazy_union", "type": ["string", {"type": "array", "items": "Address", "name": "optional_address"}]}, {"name": "optional_addresses", "type": ["null", {"type": "array", "items": "Address", "name": "optional_address"}], "default": null}]}'
 """

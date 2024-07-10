@@ -455,15 +455,19 @@ class EnumField(Field):
     def _get_meta_class_attributes(self) -> typing.Dict[str, typing.Any]:
         # get Enum members
         members = self.type.__members__
-        meta = members.get("Meta")
+        meta = members.get("Meta") or getattr(self.type, "Meta", None)
+
         doc: typing.Optional[str] = self.type.__doc__
 
         # On python < 3.11 Enums have a default documentation so we remove it
         if version.PY_VERSION < (3, 11) and doc == "An enumeration.":
             doc = None
 
-        if meta is not None:
-            meta = meta.value
+        try:
+            if meta is not None:
+                meta = meta.value
+        except AttributeError:
+            pass
 
         metadata = utils.FieldMetadata.create(meta)
         if doc is not None:
