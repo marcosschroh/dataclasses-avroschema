@@ -38,7 +38,7 @@ jobs:
         run: ./scripts/test
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4.4.1
+        uses: codecov/codecov-action@v4.5.0
         with:
           env_vars: OS,PYTHON
           fail_ci_if_error: true

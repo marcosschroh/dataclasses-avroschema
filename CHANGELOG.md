@@ -1,3 +1,9 @@
+## 0.60.2 (2024-06-07)
+
+### Fix
+
+- add aliases to field when field name is not a valid identifier. Related to #628 (#654)
+
 ## 0.60.1 (2024-05-30)
 
 ### Fix

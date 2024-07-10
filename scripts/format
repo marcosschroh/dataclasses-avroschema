@@ -6,4 +6,4 @@ if [ -d '.venv' ] ; then
 fi
 
 ${PREFIX}ruff format dataclasses_avroschema tests
-${PREFIX}ruff dataclasses_avroschema tests --fix
+${PREFIX}ruff check dataclasses_avroschema tests --fix
