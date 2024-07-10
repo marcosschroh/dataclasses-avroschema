@@ -24,7 +24,7 @@ def color_enum():
 
 @pytest.fixture
 def user_type_enum():
-    class UserType(enum.Enum):
+    class UserType(str, enum.Enum):
         BASIC = "BASIC"
         PREMIUM = "PREMIUM"
 

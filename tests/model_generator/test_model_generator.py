@@ -2,6 +2,7 @@ from dataclasses_avroschema import ModelGenerator, ModelType, types
 from dataclasses_avroschema.fields import field_utils
 from dataclasses_avroschema.model_generator.lang.python.avro_to_python_utils import (
     render_datetime,
+    templates,
 )
 
 
@@ -196,14 +197,14 @@ class User(AvroModel):
 
 
 def test_schema_with_enum_types(schema_with_enum_types: types.JsonDict) -> None:
-    expected_result = """
+    expected_result = f"""
 from dataclasses_avroschema import AvroModel
 import dataclasses
 import enum
 import typing
 
 
-class FavoriteColor(str, enum.Enum):
+class FavoriteColor({templates.ENUM_PYTHON_VERSION}):
     \"""
     A favorite color
     \"""
@@ -211,18 +212,18 @@ class FavoriteColor(str, enum.Enum):
     YELLOW = "Yellow"
     GREEN = "Green"
 
-    @enum.nonmember
+    {templates.METACLASS_DECORATOR}
     class Meta:
         namespace = "some.name.space"
         aliases = ['Color', 'My favorite color']
 
-class Superheros(str, enum.Enum):
+class Superheros({templates.ENUM_PYTHON_VERSION}):
     BATMAN = "batman"
     SUPERMAN = "superman"
     SPIDERMAN = "spiderman"
 
 
-class Cars(str, enum.Enum):
+class Cars({templates.ENUM_PYTHON_VERSION}):
     BMW = "bmw"
     FERRARY = "ferrary"
     DUNA = "duna"
@@ -270,13 +271,13 @@ class DeliveryBatch(AvroModel):
 def test_schema_with_enum_types_case_sensitivity(
     schema_with_enum_types_case_sensitivity: types.JsonDict,
 ) -> None:
-    expected_result = """
+    expected_result = f"""
 from dataclasses_avroschema import AvroModel
 import dataclasses
 import enum
 
 
-class unit_multi_player(str, enum.Enum):
+class unit_multi_player({templates.ENUM_PYTHON_VERSION}):
     q = "q"
     Q = "Q"
 
@@ -292,14 +293,14 @@ class User(AvroModel):
 
 
 def test_enum_types_with_no_pascal_case(schema_with_enum_types_no_pascal_case) -> None:
-    expected_result = '''
+    expected_result = f'''
 from dataclasses_avroschema import AvroModel
 import dataclasses
 import enum
 import typing
 
 
-class my_favorite_color(str, enum.Enum):
+class my_favorite_color({templates.ENUM_PYTHON_VERSION}):
     """
     A favorite color
     """
@@ -307,18 +308,18 @@ class my_favorite_color(str, enum.Enum):
     YELLOW = "Yellow"
     GREEN = "Green"
 
-    @enum.nonmember
+    {templates.METACLASS_DECORATOR}
     class Meta:
         namespace = "some.name.space"
         aliases = ['Color', 'My favorite color']
 
-class super_heros(str, enum.Enum):
+class super_heros({templates.ENUM_PYTHON_VERSION}):
     BATMAN = "batman"
     SUPERMAN = "superman"
     SPIDERMAN = "spiderman"
 
 
-class cars(str, enum.Enum):
+class cars({templates.ENUM_PYTHON_VERSION}):
     BMW = "bmw"
     FERRARY = "ferrary"
     DUNA = "duna"

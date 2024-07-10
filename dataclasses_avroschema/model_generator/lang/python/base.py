@@ -418,7 +418,7 @@ class BaseGenerator:
 
         docstring = self.render_docstring(docstring=field.get("doc"))
         enum_class = templates.enum_template.safe_substitute(name=enum_name, symbols=symbols_repr, docstring=docstring)
-        metaclass = self.render_metaclass(schema=field, decorator="@enum.nonmember")
+        metaclass = self.render_metaclass(schema=field, decorator=templates.METACLASS_DECORATOR)
 
         if metaclass:
             enum_class += metaclass
