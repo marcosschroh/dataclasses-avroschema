@@ -815,6 +815,9 @@ it is explicit.</p>
 </li>
 </ul>
 <h2 id="migration-from-previous-versions-to-0270">Migration from previous versions to 0.27.0</h2>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">python &lt;= 3.10</label><label for="__tabbed_1_2">python &gt;= 3.11</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
 <ul>
 <li><code>types.Enum</code> was replaced with <code>enum.Enum</code>. You must create your custom enum, example:</li>
 </ul>
@@ -833,7 +836,6 @@ it is explicit.</p>
 <span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
 
 
-<span class="c1"># New enum!!</span>
 <span class="k">class</span> <span class="nc">FavoriteColor</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
     <span class="n">BLUE</span> <span class="o">=</span> <span class="s2">&quot;BLUE&quot;</span>
     <span class="n">YELLOW</span> <span class="o">=</span> <span class="s2">&quot;YELLOW&quot;</span>
@@ -845,6 +847,41 @@ it is explicit.</p>
     <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
     <span class="n">favorite_colors</span><span class="p">:</span> <span class="n">FavoriteColor</span> <span class="o">=</span> <span class="n">FavoriteColor</span><span class="o">.</span><span class="n">BLUE</span>  <span class="c1"># --&gt; field updated!!!</span>
 </code></pre></div>
+</div>
+<div class="tabbed-block">
+<ul>
+<li><code>types.Enum</code> was replaced with <code>str, enum.Enum</code>. You must create your custom enum, example:</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">dataclasses</span>
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span><span class="p">,</span> <span class="n">types</span>
+
+
+<span class="k">class</span> <span class="nc">UserAdvance</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">favorite_colors</span><span class="p">:</span> <span class="n">types</span><span class="o">.</span><span class="n">Enum</span> <span class="o">=</span> <span class="n">types</span><span class="o">.</span><span class="n">Enum</span><span class="p">([</span><span class="s2">&quot;BLUE&quot;</span><span class="p">,</span> <span class="s2">&quot;YELLOW&quot;</span><span class="p">,</span> <span class="s2">&quot;GREEN&quot;</span><span class="p">],</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;BLUE&quot;</span><span class="p">)</span>  <span class="c1"># --&gt; replace with field!!!</span>
+</code></pre></div>
+<p>should be replaced by:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">enum</span>
+<span class="kn">import</span> <span class="nn">dataclasses</span>
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
+
+
+<span class="c1"># New enum!!</span>
+<span class="k">class</span> <span class="nc">FavoriteColor</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="n">BLUE</span> <span class="o">=</span> <span class="s2">&quot;BLUE&quot;</span>
+    <span class="n">YELLOW</span> <span class="o">=</span> <span class="s2">&quot;YELLOW&quot;</span>
+    <span class="n">GREEN</span> <span class="o">=</span> <span class="s2">&quot;GREEN&quot;</span>
+
+
+<span class="k">class</span> <span class="nc">UserAdvance</span><span class="p">:</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">favorite_colors</span><span class="p">:</span> <span class="n">FavoriteColor</span> <span class="o">=</span> <span class="n">FavoriteColor</span><span class="o">.</span><span class="n">BLUE</span>  <span class="c1"># --&gt; field updated!!!</span>
+</code></pre></div>
+</div>
+</div>
+</div>
 <h2 id="migration-from-previous-versions-to-0230">Migration from previous versions to 0.23.0</h2>
 <ol>
 <li>Now the name for Nested record uses the <code>class.__name__</code> instead of <code>`class.__name__.lower()_record</code>.</li>

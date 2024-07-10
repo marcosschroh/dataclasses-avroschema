@@ -1091,6 +1091,9 @@ Dataclasses-avroschema will automatically generate the appropriate array if a de
 </tbody>
 </table>
 <h3 id="avro-field-and-python-types-summary">Avro Field and Python Types Summary</h3>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">python &lt;= 3.10</label><label for="__tabbed_1_2">python &gt;= 3.11</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
 <table>
 <thead>
 <tr>
@@ -1242,6 +1245,162 @@ Dataclasses-avroschema will automatically generate the appropriate array if a de
 </tr>
 </tbody>
 </table>
+</div>
+<div class="tabbed-block">
+<table>
+<thead>
+<tr>
+<th>Python Type</th>
+<th>Avro Type</th>
+<th>Logical Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>str</td>
+<td>string</td>
+<td>do not apply</td>
+</tr>
+<tr>
+<td>long</td>
+<td>int</td>
+<td>do not apply</td>
+</tr>
+<tr>
+<td>bool</td>
+<td>boolean</td>
+<td>do not apply</td>
+</tr>
+<tr>
+<td>double</td>
+<td>float</td>
+<td>do not apply</td>
+</tr>
+<tr>
+<td>None</td>
+<td>null</td>
+<td>do not apply</td>
+</tr>
+<tr>
+<td>bytes</td>
+<td>bytes</td>
+<td>do not apply</td>
+</tr>
+<tr>
+<td>typing.List</td>
+<td>array</td>
+<td>do not apply</td>
+</tr>
+<tr>
+<td>typing.Tuple</td>
+<td>array</td>
+<td>do not apply</td>
+</tr>
+<tr>
+<td>typing.Sequence</td>
+<td>array</td>
+<td>do not apply</td>
+</tr>
+<tr>
+<td>typing.MutableSequence</td>
+<td>array</td>
+<td>do not apply</td>
+</tr>
+<tr>
+<td>typing.Dict</td>
+<td>map</td>
+<td>do not apply</td>
+</tr>
+<tr>
+<td>typing.Mapping</td>
+<td>map</td>
+<td>do not apply</td>
+</tr>
+<tr>
+<td>typing.MutableMapping</td>
+<td>map</td>
+<td>do not apply</td>
+</tr>
+<tr>
+<td>types.Fixed</td>
+<td>fixed</td>
+<td>do not apply</td>
+</tr>
+<tr>
+<td>str, enum.Enum</td>
+<td>enum</td>
+<td>do not apply</td>
+</tr>
+<tr>
+<td>types.Int32</td>
+<td>int</td>
+<td>do not apply</td>
+</tr>
+<tr>
+<td>types.Float32</td>
+<td>float</td>
+<td>do not apply</td>
+</tr>
+<tr>
+<td>typing.Union</td>
+<td>union</td>
+<td>do not apply</td>
+</tr>
+<tr>
+<td>typing.Optional</td>
+<td>union (with <code>null</code>)</td>
+<td>do not apply</td>
+</tr>
+<tr>
+<td>Python class</td>
+<td>record</td>
+<td>do not apply</td>
+</tr>
+<tr>
+<td>datetime.date</td>
+<td>int</td>
+<td>date</td>
+</tr>
+<tr>
+<td>datetime.time</td>
+<td>int</td>
+<td>time-millis</td>
+</tr>
+<tr>
+<td>types.TimeMicro</td>
+<td>long</td>
+<td>time-micros</td>
+</tr>
+<tr>
+<td>datetime.datetime</td>
+<td>long</td>
+<td>timestamp-millis</td>
+</tr>
+<tr>
+<td>types.DateTimeMicro</td>
+<td>long</td>
+<td>timestamp-micros</td>
+</tr>
+<tr>
+<td>decimal.Decimal</td>
+<td>bytes</td>
+<td>decimal</td>
+</tr>
+<tr>
+<td>uuid.uuid4</td>
+<td>string</td>
+<td>uuid</td>
+</tr>
+<tr>
+<td>uuid.UUID</td>
+<td>string</td>
+<td>uuid</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
 <h2 id="typingannotated">typing.Annotated</h2>
 <p>All the types can be <a href="https://docs.python.org/3/library/typing.html#typing.Annotated">Annotated</a> so <code>metadata</code> can be added to the fields. This library will use the <code>python type</code> to generate the <code>avro field</code> and it will ignore the extra <code>metadata</code>.</p>
 <div class="highlight"><span class="filename">Annotated</span><pre><span></span><code><span class="kn">import</span> <span class="nn">dataclasses</span>
@@ -1292,6 +1451,9 @@ Dataclasses-avroschema will automatically generate the appropriate array if a de
 <p><em>(This script is complete, it should run "as is")</em></p>
 <h2 id="typingliteral">typing.Literal</h2>
 <p>Fields can be annotated with <code>typing.Literal</code> in accordance with <a href="https://peps.python.org/pep-0586/">PEP 586</a>. Note that a literal field with multiple arguments (i.e. of the form <code>typing.Literal[v1, v2, v3]</code>) is interpreted as a union of literals (i.e. <code>typing.Union[typing.Literal[v1], typing.Literal[v2], typing.Literal[v3]]</code>) in line with the PEP.</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">python &lt;= 3.10</label><label for="__tabbed_2_2">python &gt;= 3.11</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">enum</span>
 <span class="kn">import</span> <span class="nn">typing</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
@@ -1331,6 +1493,50 @@ Dataclasses-avroschema will automatically generate the appropriate array if a de
 <span class="sd">}</span>
 <span class="sd">&quot;&quot;&quot;</span>
 </code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">enum</span>
+<span class="kn">import</span> <span class="nn">typing</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
+
+<span class="k">class</span> <span class="nc">E</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="n">ONE</span> <span class="o">=</span> <span class="s2">&quot;one&quot;</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">T</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
+    <span class="n">f</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Literal</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="n">E</span><span class="o">.</span><span class="n">ONE</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">T</span><span class="o">.</span><span class="n">avro_schema</span><span class="p">())</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">{</span>
+<span class="sd">  &quot;type&quot;: &quot;record&quot;,</span>
+<span class="sd">  &quot;name&quot;: &quot;T&quot;,</span>
+<span class="sd">  &quot;fields&quot;: [</span>
+<span class="sd">    {</span>
+<span class="sd">      &quot;name&quot;: &quot;f&quot;,</span>
+<span class="sd">      &quot;type&quot;: [</span>
+<span class="sd">        &quot;null&quot;,</span>
+<span class="sd">        &quot;long&quot;,</span>
+<span class="sd">        &quot;string&quot;,</span>
+<span class="sd">        &quot;boolean&quot;,</span>
+<span class="sd">        &quot;bytes&quot;,</span>
+<span class="sd">        {</span>
+<span class="sd">          &quot;type&quot;: &quot;enum&quot;,</span>
+<span class="sd">          &quot;name&quot;: &quot;E&quot;,</span>
+<span class="sd">          &quot;symbols&quot;: [</span>
+<span class="sd">            &quot;one&quot;</span>
+<span class="sd">          ]</span>
+<span class="sd">        }</span>
+<span class="sd">      ]</span>
+<span class="sd">    }</span>
+<span class="sd">  ]</span>
+<span class="sd">}</span>
+<span class="sd">&quot;&quot;&quot;</span>
+</code></pre></div>
+</div>
+</div>
+</div>
 <p><em>(This script is complete, it should run "as is")</em></p>
 <h2 id="adding-custom-field-level-attributes">Adding Custom Field-level Attributes</h2>
 <p>You may want to add field-level attributes which are not automatically populated according to the typing semantics
@@ -1387,7 +1593,7 @@ In order to add custom fields, you can use the <code>field</code> descriptor of 
 <h2 id="exclude-default-value-from-schema">Exclude default value from schema</h2>
 <p>Sometimes it is useful to exclude <code>default</code> values in the final <code>avro schema</code>, for example when default values are dynamically generated. In the following example, we have an User with fields <code>id</code> and <code>created_at</code>, their default are generated when an instance is created. Because the defaults are dynamic then the <code>avro schema</code> will change every time that is generated. 
 It is possible to <code>exclude</code> the <code>default</code> value using the <code>exclude_default</code> in the <code>metadata</code>. This is applicable when using <code>default</code> or <code>default_factory</code></p>
-<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Schema with dynamic defaults</label><label for="__tabbed_1_2">Exlude default from schema</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:2"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">Schema with dynamic defaults</label><label for="__tabbed_3_2">Exlude default from schema</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">dataclasses</span>
