@@ -1,9 +1,13 @@
+import sys
 from string import Template
+
+PYTHON_VERSION_GE_311 = sys.version_info.major == 3 and sys.version_info.minor >= 11
 
 FIELD_TYPE_TEMPLATE = "$name: $type"
 METACLASS_FIELD_TEMPLATE = '$name = "$value"'
 METACLASS_ALIAS_FIELD = "$name = $value"
 METACLASS_SCHEMA_FIELD = "$name = '$schema'"
+METACLASS_DECORATOR = "@enum.nonmember" if PYTHON_VERSION_GE_311 else ""
 FIELD_DEFAULT_TEMPLATE = " = $default"
 OPTIONAL_TEMPLATE = "typing.Optional[$type]"
 UNION_TEMPLATE = "typing.Union[$type]"
@@ -23,9 +27,10 @@ DECIMAL_TEMPLATE = "decimal.Decimal('$value')"
 DECIMAL_TYPE_TEMPLATE = "types.condecimal(max_digits=$precision, decimal_places=$scale)"
 
 ENUM_SYMBOL_TEMPLATE = "$key = $value"
-ENUM_TEMPLATE = """
+ENUM_PYTHON_VERSION = "str, enum.Enum" if PYTHON_VERSION_GE_311 else "enum.Enum"
+ENUM_TEMPLATE = f"""
 
-class $name(enum.Enum):$docstring
+class $name({ENUM_PYTHON_VERSION}):$docstring
     $symbols
 """
 
@@ -38,6 +43,7 @@ class $name($base_class):$docstring
 INSTANCE_TEMPLATE = "$type($properties)"
 
 METACLASS_TEMPLATE = """
+$decorator
 class Meta:
     $properties
 """

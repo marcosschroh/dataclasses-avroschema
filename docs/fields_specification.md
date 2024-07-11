@@ -119,36 +119,71 @@ Language implementations must ignore unknown logical types when reading, and sho
 
 ### Avro Field and Python Types Summary
 
-Python Type | Avro Type   | Logical Type |
-|-----------|-------------|--------------|
-| str       | string      | do not apply |
-| long      | int         | do not apply |
-| bool      | boolean     | do not apply |
-| double    | float       | do not apply |
-| None      | null        | do not apply |
-| bytes     | bytes       | do not apply |
-| typing.List      | array       | do not apply |
-| typing.Tuple     | array       | do not apply |
-| typing.Sequence      | array       | do not apply |
-| typing.MutableSequence      | array       | do not apply |
-| typing.Dict      | map         | do not apply |
-| typing.Mapping      | map         | do not apply |
-| typing.MutableMapping      | map         | do not apply |
-| types.Fixed      | fixed         | do not apply |
-| enum.Enum      | enum         | do not apply |
-| types.Int32  | int | do not apply |
-| types.Float32 | float| do not apply |
-| typing.Union| union     | do not apply |
-| typing.Optional| union (with `null`)    | do not apply |
-| Python class | record  | do not apply |
-| datetime.date | int     |  date        |
-| datetime.time | int     |  time-millis |
-| types.TimeMicro | long     |  time-micros |
-| datetime.datetime| long  |  timestamp-millis |
-| types.DateTimeMicro| long  |  timestamp-micros |
-| decimal.Decimal | bytes | decimal      |
-| uuid.uuid4  | string    |  uuid        |
-| uuid.UUID    |  string        | uuid |
+=== "python <= 3.10"
+
+    Python Type | Avro Type   | Logical Type |
+    |-----------|-------------|--------------|
+    | str       | string      | do not apply |
+    | long      | int         | do not apply |
+    | bool      | boolean     | do not apply |
+    | double    | float       | do not apply |
+    | None      | null        | do not apply |
+    | bytes     | bytes       | do not apply |
+    | typing.List      | array       | do not apply |
+    | typing.Tuple     | array       | do not apply |
+    | typing.Sequence      | array       | do not apply |
+    | typing.MutableSequence      | array       | do not apply |
+    | typing.Dict      | map         | do not apply |
+    | typing.Mapping      | map         | do not apply |
+    | typing.MutableMapping      | map         | do not apply |
+    | types.Fixed      | fixed         | do not apply |
+    | enum.Enum      | enum         | do not apply |
+    | types.Int32  | int | do not apply |
+    | types.Float32 | float| do not apply |
+    | typing.Union| union     | do not apply |
+    | typing.Optional| union (with `null`)    | do not apply |
+    | Python class | record  | do not apply |
+    | datetime.date | int     |  date        |
+    | datetime.time | int     |  time-millis |
+    | types.TimeMicro | long     |  time-micros |
+    | datetime.datetime| long  |  timestamp-millis |
+    | types.DateTimeMicro| long  |  timestamp-micros |
+    | decimal.Decimal | bytes | decimal      |
+    | uuid.uuid4  | string    |  uuid        |
+    | uuid.UUID    |  string        | uuid |
+
+=== "python >= 3.11"
+
+    Python Type | Avro Type   | Logical Type |
+    |-----------|-------------|--------------|
+    | str       | string      | do not apply |
+    | long      | int         | do not apply |
+    | bool      | boolean     | do not apply |
+    | double    | float       | do not apply |
+    | None      | null        | do not apply |
+    | bytes     | bytes       | do not apply |
+    | typing.List      | array       | do not apply |
+    | typing.Tuple     | array       | do not apply |
+    | typing.Sequence      | array       | do not apply |
+    | typing.MutableSequence      | array       | do not apply |
+    | typing.Dict      | map         | do not apply |
+    | typing.Mapping      | map         | do not apply |
+    | typing.MutableMapping      | map         | do not apply |
+    | types.Fixed      | fixed         | do not apply |
+    | str, enum.Enum      | enum         | do not apply |
+    | types.Int32  | int | do not apply |
+    | types.Float32 | float| do not apply |
+    | typing.Union| union     | do not apply |
+    | typing.Optional| union (with `null`)    | do not apply |
+    | Python class | record  | do not apply |
+    | datetime.date | int     |  date        |
+    | datetime.time | int     |  time-millis |
+    | types.TimeMicro | long     |  time-micros |
+    | datetime.datetime| long  |  timestamp-millis |
+    | types.DateTimeMicro| long  |  timestamp-micros |
+    | decimal.Decimal | bytes | decimal      |
+    | uuid.uuid4  | string    |  uuid        |
+    | uuid.UUID    |  string        | uuid |
 
 ## typing.Annotated
 
@@ -210,46 +245,91 @@ resulting in
 
 Fields can be annotated with `typing.Literal` in accordance with [PEP 586](https://peps.python.org/pep-0586/). Note that a literal field with multiple arguments (i.e. of the form `typing.Literal[v1, v2, v3]`) is interpreted as a union of literals (i.e. `typing.Union[typing.Literal[v1], typing.Literal[v2], typing.Literal[v3]]`) in line with the PEP.
 
-```python
-import enum
-import typing
-from dataclasses import dataclass
-from dataclasses_avroschema import AvroModel
+=== "python <= 3.10"
 
-class E(enum.Enum):
-    ONE = "one"
+    ```python
+    import enum
+    import typing
+    from dataclasses import dataclass
+    from dataclasses_avroschema import AvroModel
 
-@dataclass
-class T(AvroModel):
-    f: typing.Literal[None, 1, "1", True, b"1", E.ONE]
+    class E(enum.Enum):
+        ONE = "one"
 
-print(T.avro_schema())
-"""
-{
-  "type": "record",
-  "name": "T",
-  "fields": [
+    @dataclass
+    class T(AvroModel):
+        f: typing.Literal[None, 1, "1", True, b"1", E.ONE]
+
+    print(T.avro_schema())
+    """
     {
-      "name": "f",
-      "type": [
-        "null",
-        "long",
-        "string",
-        "boolean",
-        "bytes",
+      "type": "record",
+      "name": "T",
+      "fields": [
         {
-          "type": "enum",
-          "name": "E",
-          "symbols": [
-            "one"
+          "name": "f",
+          "type": [
+            "null",
+            "long",
+            "string",
+            "boolean",
+            "bytes",
+            {
+              "type": "enum",
+              "name": "E",
+              "symbols": [
+                "one"
+              ]
+            }
           ]
         }
       ]
     }
-  ]
-}
-"""
-```
+    """
+    ```
+
+=== "python >= 3.11"
+
+    ```python
+    import enum
+    import typing
+    from dataclasses import dataclass
+    from dataclasses_avroschema import AvroModel
+
+    class E(str, enum.Enum):
+        ONE = "one"
+
+    @dataclass
+    class T(AvroModel):
+        f: typing.Literal[None, 1, "1", True, b"1", E.ONE]
+
+    print(T.avro_schema())
+    """
+    {
+      "type": "record",
+      "name": "T",
+      "fields": [
+        {
+          "name": "f",
+          "type": [
+            "null",
+            "long",
+            "string",
+            "boolean",
+            "bytes",
+            {
+              "type": "enum",
+              "name": "E",
+              "symbols": [
+                "one"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+    """
+    ```
 
 *(This script is complete, it should run "as is")*
 
