@@ -1,3 +1,9 @@
+## 0.62.0 (2024-07-19)
+
+### Feat
+
+- enum type level default intruduced. Closes #665 (#682)
+
 ## 0.61.0 (2024-07-10)
 
 ### Feat
