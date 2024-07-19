@@ -37,6 +37,7 @@ class BaseGenerator:
             # doc is not included because it is rendered as docstrings
             "namespace": "namespace",
             "aliases": "aliases",
+            "default": "default",
         }
     )
     metadata_field_templates: typing.Dict[str, Template] = field(
@@ -45,6 +46,7 @@ class BaseGenerator:
             "doc": templates.metaclass_field_template,
             "aliases": templates.metaclass_alias_field_template,
             "original_schema": templates.metaclass_schema_field_template,
+            "default": templates.metaclass_field_template,
         }
     )
     # represent the decorator to add in the base class
@@ -217,6 +219,10 @@ class BaseGenerator:
         elif type == field_utils.ENUM:
             is_complex_type = True
             language_type = self.parse_enum(field=field)
+            # We must set the default Enums type level default to dataclasses.MISSING
+            # as it is set in the Meta class.
+            # Check https://github.com/marcosschroh/dataclasses-avroschema/issues/665
+            default = dataclasses.MISSING
         elif type == field_utils.FIXED:
             is_complex_type = True
             language_type = self.parse_fixed(field=field)

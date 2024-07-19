@@ -264,6 +264,51 @@ def schema_with_enum_types() -> Dict:
 
 
 @pytest.fixture
+def schema_with_enum_types_with_inner_default() -> Dict:
+    return {
+        "type": "record",
+        "name": "User",
+        "fields": [
+            {
+                "name": "favorite_color",
+                "type": {
+                    "type": "enum",
+                    "name": "FavoriteColor",
+                    "symbols": ["Blue", "Yellow", "Green"],
+                    "doc": "A favorite color",
+                    "namespace": "some.name.space",
+                    "aliases": ["Color", "My favorite color"],
+                    "default": "Blue",
+                },
+            },
+            {
+                "name": "superheros",
+                "type": {
+                    "type": "enum",
+                    "name": "Superheros",
+                    "symbols": ["batman", "superman", "spiderman"],
+                    "default": "batman",
+                },
+                "default": "batman",
+            },
+            {
+                "name": "cars",
+                "type": [
+                    "null",
+                    {
+                        "type": "enum",
+                        "name": "Cars",
+                        "symbols": ["bmw", "ferrary", "duna"],
+                        "default": "ferrary",
+                    },
+                ],
+                "default": None,
+            },
+        ],
+    }
+
+
+@pytest.fixture
 def schema_with_enum_types_case_sensitivity() -> Dict:
     return {
         "type": "record",

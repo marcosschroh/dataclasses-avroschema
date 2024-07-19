@@ -243,6 +243,57 @@ class User(AvroModel):
     assert result.strip() == expected_result.strip()
 
 
+def test_schema_with_enum_types_with_inner_default(schema_with_enum_types_with_inner_default: types.JsonDict) -> None:
+    expected_result = f"""
+from dataclasses_avroschema import AvroModel
+import dataclasses
+import enum
+import typing
+
+
+class FavoriteColor({templates.ENUM_PYTHON_VERSION}):
+    \"""
+    A favorite color
+    \"""
+    BLUE = "Blue"
+    YELLOW = "Yellow"
+    GREEN = "Green"
+
+    {templates.METACLASS_DECORATOR}
+    class Meta:
+        namespace = "some.name.space"
+        aliases = ['Color', 'My favorite color']
+        default = "Blue"
+
+class Superheros({templates.ENUM_PYTHON_VERSION}):
+    BATMAN = "batman"
+    SUPERMAN = "superman"
+    SPIDERMAN = "spiderman"
+
+    {templates.METACLASS_DECORATOR}
+    class Meta:
+        default = "batman"
+
+class Cars({templates.ENUM_PYTHON_VERSION}):
+    BMW = "bmw"
+    FERRARY = "ferrary"
+    DUNA = "duna"
+
+    {templates.METACLASS_DECORATOR}
+    class Meta:
+        default = "ferrary"
+
+@dataclasses.dataclass
+class User(AvroModel):
+    favorite_color: FavoriteColor
+    superheros: Superheros = Superheros.BATMAN
+    cars: typing.Optional[Cars] = None
+"""
+    model_generator = ModelGenerator()
+    result = model_generator.render(schema=schema_with_enum_types_with_inner_default)
+    assert result.strip() == expected_result.strip()
+
+
 def test_schema_with_custom_inner_names(schema_with_custom_inner_names: types.JsonDict) -> None:
     expected_result = """
 from dataclasses_avroschema import AvroModel
