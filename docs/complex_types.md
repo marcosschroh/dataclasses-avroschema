@@ -197,7 +197,6 @@ For this behaviour the attribute `convert_literal_to_enum` must be set to `True`
         {"name": "optional_field", "type": ["null", "string"], "default": null}
       ]
     }
-
     ```
 
 ### Repeated Enums
@@ -294,6 +293,93 @@ resulting in
   "doc": "User(trip_distance: __main__.TripDistance, optional_distance: Optional[__main__.TripDistance] = None)"
 }
 ```
+
+### Enums type level default
+
+From `avro 1.9.0` it is possible to set `enum type level default`: *Enum type level default value is to deal with newly added symbols that the reader does not know about. This is for forward compatibility*.
+
+```json title="Example"
+{
+  "type": "record",
+  "name": "MyRecord",
+  "fields": [
+    {
+      "name": "my_field",
+      "type": {
+        "type": "enum",
+        "name": "MyEnum",
+        "symbols": [
+          "A",
+          "B",
+          "Unknown"
+        ],
+        /* 
+         * Symbol default - for forward compatibility - 
+         * new in Avro 1.9.0
+         */
+         "default": "Unknown"  
+      },
+      /*
+       * Field default - for handle backwards compatibility
+       */ 
+      "default": "Unknown"    
+    }
+  ]
+}
+```
+
+The question is: how can we set a `enum type level default`?. The answer is using the `class Meta`
+
+=== "python <= 3.10"
+
+    ```python
+    import enum
+    import dataclasses
+
+    from dataclasses_avroschema import AvroModel
+
+
+    class MyEnum(enum.Enum):
+        A = "A"
+        B = "B"
+        UNKNOWN = "Unknown"
+
+        class Meta:
+            default = "Unknown"
+
+
+    @dataclass
+    class MyRecord(AvroModel):
+        my_field: MyEnum = MyEnum.UNKNOWN
+    ```
+
+=== "python >= 3.11"
+
+    ```python
+    import enum
+    import dataclasses
+
+    from dataclasses_avroschema import AvroModel
+
+
+    class MyEnum(str, enum.Enum):
+        A = "A"
+        B = "B"
+        UNKNOWN = "Unknown"
+
+        @enum.nonmember
+        class Meta:
+            default = "Unknown"
+
+
+    @dataclass
+    class User(AvroModel):
+        my_field: MyEnum = MyEnum.UNKNOWN
+    ```
+
+!!! warning
+    This is great because we achieve avro `FULL COMPATIBILITY`, however this can lead to confusing scenarios.
+    Check the [discussion](https://github.com/marcosschroh/dataclasses-avroschema/issues/665#issuecomment-2225293099) for more insight
 
 ## Arrays
 

@@ -115,6 +115,7 @@ class SchemaMetadata:
 
 @dataclasses.dataclass
 class FieldMetadata:
+    default: typing.Any
     aliases: typing.List[str] = dataclasses.field(default_factory=list)
     doc: typing.Optional[str] = None
     namespace: typing.Optional[str] = None
@@ -125,10 +126,16 @@ class FieldMetadata:
             aliases=getattr(klass, "aliases", []),
             doc=getattr(klass, "doc", None),
             namespace=getattr(klass, "namespace", None),
+            default=getattr(klass, "default", dataclasses.MISSING),
         )
 
     def to_dict(self) -> typing.Dict[str, typing.Union[typing.List[str], str]]:
-        return {key: value for key, value in vars(self).items() if value}
+        dict_repr = {key: value for key, value in vars(self).items() if value and key != "default"}
+
+        if self.default is not dataclasses.MISSING:
+            dict_repr["default"] = self.default
+
+        return dict_repr
 
 
 class UserDefinedType(typing.NamedTuple):

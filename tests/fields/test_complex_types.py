@@ -656,8 +656,34 @@ def test_enum_type():
     with symbols attribute present.
     """
     name = "an_enum_field"
+    symbols = ["SPADES", "HEARTS", "DIAMONDS", "CLUBS"]
+    parent = AvroModel()
+
+    class CardType(enum.Enum):
+        SPADES = "SPADES"
+        HEARTS = "HEARTS"
+        DIAMONDS = "DIAMONDS"
+        CLUBS = "CLUBS"
+
+    field = AvroField(name, CardType, parent=parent)
+
+    expected = {
+        "name": name,
+        "type": {
+            "type": "enum",
+            "name": "CardType",
+            "symbols": symbols,
+        },
+    }
+
+    assert expected == field.to_dict()
+
+
+def test_enum_type_metadata():
+    name = "an_enum_field"
     namespace = "my_enum"
     aliases = ["enum", "first enum"]
+    symbols = ["SPADES", "HEARTS", "DIAMONDS", "CLUBS"]
     parent = AvroModel()
 
     class CardType(enum.Enum):
@@ -670,8 +696,7 @@ def test_enum_type():
             namespace = "my_enum"
             aliases = ["enum", "first enum"]
 
-    field = AvroField(name, CardType, default=CardType.CLUBS, parent=parent)
-    symbols = ["SPADES", "HEARTS", "DIAMONDS", "CLUBS"]
+    field = AvroField(name, CardType, parent=parent)
 
     expected = {
         "name": name,
@@ -682,10 +707,15 @@ def test_enum_type():
             "namespace": namespace,
             "aliases": aliases,
         },
-        "default": CardType.CLUBS.value,
     }
 
     assert expected == field.to_dict()
+
+
+def test_enum_type_field_level_default():
+    name = "an_enum_field"
+    symbols = ["SPADES", "HEARTS", "DIAMONDS", "CLUBS"]
+    parent = AvroModel()
 
     class CardType(enum.Enum):
         SPADES = "SPADES"
@@ -693,10 +723,7 @@ def test_enum_type():
         DIAMONDS = "DIAMONDS"
         CLUBS = "CLUBS"
 
-        class Meta:
-            namespace = "my_enum"
-
-    field = AvroField(name, CardType, parent=parent)
+    field = AvroField(name, CardType, default=CardType.CLUBS, parent=parent)
 
     expected = {
         "name": name,
@@ -704,8 +731,8 @@ def test_enum_type():
             "type": "enum",
             "name": "CardType",
             "symbols": symbols,
-            "namespace": namespace,
         },
+        "default": CardType.CLUBS.value,
     }
 
     assert expected == field.to_dict()
@@ -761,6 +788,107 @@ def test_enum_type():
 
         field = AvroField(name, CardType, default=RandomType.SOMETHING, parent=parent)
         field.to_dict()
+
+
+def test_enum_level_default():
+    name = "an_enum_field"
+    symbols = [
+        "SPADES",
+        "HEARTS",
+        "DIAMONDS",
+        "CLUBS",
+        "UNKNOWN",
+    ]
+    parent = AvroModel()
+
+    class CardType(enum.Enum):
+        SPADES = "SPADES"
+        HEARTS = "HEARTS"
+        DIAMONDS = "DIAMONDS"
+        CLUBS = "CLUBS"
+        UNKNOWN = "UNKNOWN"
+
+        class Meta:
+            default = "UNKNOWN"
+
+    field = AvroField(name, CardType, parent=parent)
+
+    expected = {
+        "name": name,
+        "type": {
+            "type": "enum",
+            "name": "CardType",
+            "symbols": symbols,
+            "default": CardType.UNKNOWN.value,
+        },
+    }
+
+    assert expected == field.to_dict()
+
+
+def test_enum_level_default_with_field_level_default():
+    name = "an_enum_field"
+    symbols = [
+        "SPADES",
+        "HEARTS",
+        "DIAMONDS",
+        "CLUBS",
+        "UNKNOWN",
+    ]
+    parent = AvroModel()
+
+    class CardType(enum.Enum):
+        SPADES = "SPADES"
+        HEARTS = "HEARTS"
+        DIAMONDS = "DIAMONDS"
+        CLUBS = "CLUBS"
+        UNKNOWN = "UNKNOWN"
+
+        class Meta:
+            default = "UNKNOWN"
+
+    field = AvroField(name, typing.Optional[CardType], default=None, parent=parent)
+
+    expected = {
+        "name": name,
+        "type": [
+            "null",
+            {
+                "type": "enum",
+                "name": "CardType",
+                "symbols": symbols,
+                "default": CardType.UNKNOWN.value,
+            },
+        ],
+        "default": None,
+    }
+
+    assert expected == field.to_dict()
+
+    class CardType(enum.Enum):
+        SPADES = "SPADES"
+        HEARTS = "HEARTS"
+        DIAMONDS = "DIAMONDS"
+        CLUBS = "CLUBS"
+        UNKNOWN = "UNKNOWN"
+
+        class Meta:
+            default = "UNKNOWN"
+
+    field = AvroField(name, CardType, default=CardType.CLUBS, parent=parent)
+
+    expected = {
+        "name": name,
+        "type": {
+            "type": "enum",
+            "name": "CardType",
+            "symbols": symbols,
+            "default": CardType.UNKNOWN.value,
+        },
+        "default": CardType.CLUBS.value,
+    }
+
+    assert expected == field.to_dict()
 
 
 def test_invalid_enum_symbol():
