@@ -410,6 +410,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#enums-type-level-default" class="md-nav__link">
+    <span class="md-ellipsis">
+      Enums type level default
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -807,6 +816,15 @@
   <a href="#repeated-enums" class="md-nav__link">
     <span class="md-ellipsis">
       Repeated Enums
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enums-type-level-default" class="md-nav__link">
+    <span class="md-ellipsis">
+      Enums type level default
     </span>
   </a>
   
@@ -1258,6 +1276,89 @@ It is a good practice but <em>NOT</em> neccesary to a define the <code>namespace
 <span class="w">  </span><span class="nt">&quot;doc&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;User(trip_distance: __main__.TripDistance, optional_distance: Optional[__main__.TripDistance] = None)&quot;</span>
 <span class="p">}</span>
 </code></pre></div>
+<h3 id="enums-type-level-default">Enums type level default</h3>
+<p>From <code>avro 1.9.0</code> it is possible to set <code>enum type level default</code>: <em>Enum type level default value is to deal with newly added symbols that the reader does not know about. This is for forward compatibility</em>.</p>
+<div class="highlight"><span class="filename">Example</span><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;record&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MyRecord&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;fields&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;my_field&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;enum&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MyEnum&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;symbols&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">          </span><span class="s2">&quot;A&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="s2">&quot;B&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="s2">&quot;Unknown&quot;</span>
+<span class="w">        </span><span class="p">],</span>
+<span class="w">        </span><span class="cm">/* </span>
+<span class="cm">         * Symbol default - for forward compatibility - </span>
+<span class="cm">         * new in Avro 1.9.0</span>
+<span class="cm">         */</span>
+<span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Unknown&quot;</span><span class="w">  </span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="cm">/*</span>
+<span class="cm">       * Field default - for handle backwards compatibility</span>
+<span class="cm">       */</span><span class="w"> </span>
+<span class="w">      </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Unknown&quot;</span><span class="w">    </span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>The question is: how can we set a <code>enum type level default</code>?. The answer is using the <code>class Meta</code></p>
+<div class="tabbed-set tabbed-alternate" data-tabs="5:2"><input checked="checked" id="__tabbed_5_1" name="__tabbed_5" type="radio" /><input id="__tabbed_5_2" name="__tabbed_5" type="radio" /><div class="tabbed-labels"><label for="__tabbed_5_1">python &lt;= 3.10</label><label for="__tabbed_5_2">python &gt;= 3.11</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">enum</span>
+<span class="kn">import</span> <span class="nn">dataclasses</span>
+
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
+
+
+<span class="k">class</span> <span class="nc">MyEnum</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="s2">&quot;A&quot;</span>
+    <span class="n">B</span> <span class="o">=</span> <span class="s2">&quot;B&quot;</span>
+    <span class="n">UNKNOWN</span> <span class="o">=</span> <span class="s2">&quot;Unknown&quot;</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">default</span> <span class="o">=</span> <span class="s2">&quot;Unknown&quot;</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">MyRecord</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
+    <span class="n">my_field</span><span class="p">:</span> <span class="n">MyEnum</span> <span class="o">=</span> <span class="n">MyEnum</span><span class="o">.</span><span class="n">UNKNOWN</span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">enum</span>
+<span class="kn">import</span> <span class="nn">dataclasses</span>
+
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
+
+
+<span class="k">class</span> <span class="nc">MyEnum</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="s2">&quot;A&quot;</span>
+    <span class="n">B</span> <span class="o">=</span> <span class="s2">&quot;B&quot;</span>
+    <span class="n">UNKNOWN</span> <span class="o">=</span> <span class="s2">&quot;Unknown&quot;</span>
+
+    <span class="nd">@enum</span><span class="o">.</span><span class="n">nonmember</span>
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">default</span> <span class="o">=</span> <span class="s2">&quot;Unknown&quot;</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
+    <span class="n">my_field</span><span class="p">:</span> <span class="n">MyEnum</span> <span class="o">=</span> <span class="n">MyEnum</span><span class="o">.</span><span class="n">UNKNOWN</span>
+</code></pre></div>
+</div>
+</div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This is great because we achieve avro <code>FULL COMPATIBILITY</code>, however this can lead to confusing scenarios.
+Check the <a href="https://github.com/marcosschroh/dataclasses-avroschema/issues/665#issuecomment-2225293099">discussion</a> for more insight</p>
+</div>
 <h2 id="arrays">Arrays</h2>
 <div class="highlight"><span class="filename">Array example</span><pre><span></span><code><span class="kn">import</span> <span class="nn">dataclasses</span>
 <span class="kn">import</span> <span class="nn">typing</span>
@@ -1391,7 +1492,7 @@ It is a good practice but <em>NOT</em> neccesary to a define the <code>namespace
   <span class="s1">&#39;doc&#39;</span><span class="p">:</span> <span class="s1">&#39;UserAdvance(name: str, md5: dataclasses_avroschema.types.Fixed = 16)&#39;</span><span class="p">}</span>
 </code></pre></div>
 <h2 id="unions">Unions</h2>
-<div class="tabbed-set tabbed-alternate" data-tabs="5:2"><input checked="checked" id="__tabbed_5_1" name="__tabbed_5" type="radio" /><input id="__tabbed_5_2" name="__tabbed_5" type="radio" /><div class="tabbed-labels"><label for="__tabbed_5_1">python &lt;= 3.9</label><label for="__tabbed_5_2">python3.10</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="6:2"><input checked="checked" id="__tabbed_6_1" name="__tabbed_6" type="radio" /><input id="__tabbed_6_2" name="__tabbed_6" type="radio" /><div class="tabbed-labels"><label for="__tabbed_6_1">python &lt;= 3.9</label><label for="__tabbed_6_2">python3.10</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">typing</span>
@@ -1450,7 +1551,7 @@ It is a good practice but <em>NOT</em> neccesary to a define the <code>namespace
 <span class="p">}</span>
 </code></pre></div>
 <h3 id="union-with-records">Union with Records</h3>
-<div class="tabbed-set tabbed-alternate" data-tabs="6:2"><input checked="checked" id="__tabbed_6_1" name="__tabbed_6" type="radio" /><input id="__tabbed_6_2" name="__tabbed_6" type="radio" /><div class="tabbed-labels"><label for="__tabbed_6_1">python &lt;= 3.9</label><label for="__tabbed_6_2">python3.10</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="7:2"><input checked="checked" id="__tabbed_7_1" name="__tabbed_7" type="radio" /><input id="__tabbed_7_2" name="__tabbed_7" type="radio" /><div class="tabbed-labels"><label for="__tabbed_7_1">python &lt;= 3.9</label><label for="__tabbed_7_2">python3.10</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">dataclasses</span>
@@ -1581,7 +1682,7 @@ It is a good practice but <em>NOT</em> neccesary to a define the <code>namespace
 <h3 id="unions-with-typingoptional">Unions with typing.Optional</h3>
 <p><code>typing.Optional[Any]</code> is translated as an optional Union: <code>typing.Union[Any, NoneType]</code> where <code>NoneType</code>
 is always at the end</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="7:2"><input checked="checked" id="__tabbed_7_1" name="__tabbed_7" type="radio" /><input id="__tabbed_7_2" name="__tabbed_7" type="radio" /><div class="tabbed-labels"><label for="__tabbed_7_1">python &lt;= 3.9</label><label for="__tabbed_7_2">python3.10</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="8:2"><input checked="checked" id="__tabbed_8_1" name="__tabbed_8" type="radio" /><input id="__tabbed_8_2" name="__tabbed_8" type="radio" /><div class="tabbed-labels"><label for="__tabbed_8_1">python &lt;= 3.9</label><label for="__tabbed_8_2">python3.10</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">typing</span>
