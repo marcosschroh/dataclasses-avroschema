@@ -21,8 +21,8 @@ AVRO_JSON = "avro-json"
 CT = TypeVar("CT", bound="AvroModel")
 
 
-_schemas_cache: dict['Type[AvroModel]', dict] = {}
-_dacite_config_cache: dict['Type[AvroModel]', Config] = {}
+_schemas_cache: Dict['Type[AvroModel]', dict] = {}
+_dacite_config_cache: Dict['Type[AvroModel]', Config] = {}
 
 
 class AvroModel:
