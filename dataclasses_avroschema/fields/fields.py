@@ -995,7 +995,7 @@ def field_factory(
     # See if this is a pydantic "Custom Class"
     elif (
         inspect.isclass(native_type)
-        and not is_pydantic_model(native_type)
+        and not is_pydantic_model(native_type)  # type: ignore[arg-type]
         and any(method_name in dir(native_type) for method_name in PYDANTIC_CUSTOM_CLASS_METHOD_NAMES)
     ):
         if getattr(parent, "__config__", None):
