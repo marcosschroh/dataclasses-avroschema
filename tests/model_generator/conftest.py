@@ -309,6 +309,19 @@ def schema_with_enum_types_with_inner_default() -> Dict:
 
 
 @pytest.fixture
+def schema_enum_in_isolation() -> Dict:
+    return {
+        "type": "enum",
+        "name": "Color",
+        "symbols": [
+            "red",
+            "blue",
+        ],
+        "default": "blue",
+    }
+
+
+@pytest.fixture
 def schema_with_enum_types_case_sensitivity() -> Dict:
     return {
         "type": "record",

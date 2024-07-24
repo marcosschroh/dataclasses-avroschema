@@ -12,7 +12,6 @@ class AvroDanticModelGenerator(BaseGenerator):
         super().__post_init__()
 
         self.base_class = "AvroBaseModel"
-        self.imports.add("from dataclasses_avroschema.pydantic import AvroBaseModel")
         self.imports_dict = {
             "dataclass_field": "from pydantic import Field",
         }
@@ -49,3 +48,6 @@ class AvroDanticModelGenerator(BaseGenerator):
     def render_dataclass_field(self, properties: str) -> str:
         self.imports.add("from pydantic import Field")
         return super().render_dataclass_field(properties=properties)
+
+    def add_class_imports(self) -> None:
+        self.imports.add("from dataclasses_avroschema.pydantic import AvroBaseModel")

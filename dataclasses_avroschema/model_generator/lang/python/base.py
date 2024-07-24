@@ -64,8 +64,21 @@ class BaseGenerator:
         self.avro_type_to_lang = avro_to_python_utils.AVRO_TYPE_TO_PYTHON
         self.logical_types_imports = avro_to_python_utils.LOGICAL_TYPES_IMPORTS
 
+    def add_class_imports(self) -> None: ...
+
+    def _resolve_type_from_metadata(self, *, field: JsonDict) -> typing.Optional[str]: ...
+
     def render(self, schemas: typing.List[JsonDict]) -> str:
-        classes = "\n".join(self.render_class(schema=schema) for schema in schemas)
+        result = []
+
+        for schema in schemas:
+            if "fields" in schema:
+                result.append(self.render_class(schema=schema))
+            else:
+                # If is not a Record then it is an Enum
+                self.render_field(field=schema, model_name="")
+
+        classes = "\n".join(result)
         imports = self.render_imports()
         extras = self.render_extras()
 
@@ -145,6 +158,7 @@ class BaseGenerator:
         """
         name: str = casefy.pascalcase(schema["name"])
         record_fields: typing.List[JsonDict] = schema["fields"]
+        self.add_class_imports()
 
         # Sort the fields according whether it has a default value
         fields_representation: typing.List[FieldRepresentation] = [
@@ -415,7 +429,6 @@ class BaseGenerator:
         We need a template for it in order to create the Enum
         """
         self.imports.add("import enum")
-
         enum_name: str = field["name"]
 
         symbols_map = {}
@@ -511,9 +524,6 @@ class BaseGenerator:
             )
 
         return {name: value for name, value in field.items() if name not in keys_to_ignore}
-
-    def _resolve_type_from_metadata(self, *, field: JsonDict) -> typing.Optional[str]:
-        return None
 
     def get_field_default(
         self,

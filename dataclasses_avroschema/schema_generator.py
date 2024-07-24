@@ -21,8 +21,8 @@ AVRO_JSON = "avro-json"
 CT = TypeVar("CT", bound="AvroModel")
 
 
-_schemas_cache: Dict['Type[AvroModel]', dict] = {}
-_dacite_config_cache: Dict['Type[AvroModel]', Config] = {}
+_schemas_cache: Dict["Type[AvroModel]", dict] = {}
+_dacite_config_cache: Dict["Type[AvroModel]", Config] = {}
 
 
 class AvroModel:
@@ -34,19 +34,19 @@ class AvroModel:
     _rendered_schema: OrderedDict = dataclasses.field(default_factory=OrderedDict)
 
     @classmethod
-    def generate_dataclass(cls: 'Type[CT]') -> 'Type[CT]':
+    def generate_dataclass(cls: "Type[CT]") -> "Type[CT]":
         if dataclasses.is_dataclass(cls):
             return cls  # type: ignore
         return dataclasses.dataclass(cls)
 
     @classmethod
-    def generate_metadata(cls: 'Type[CT]') -> SchemaMetadata:
+    def generate_metadata(cls: "Type[CT]") -> SchemaMetadata:
         meta = getattr(cls._klass, "Meta", type)
 
         return SchemaMetadata.create(meta)
 
     @classmethod
-    def generate_schema(cls: 'Type[CT]', schema_type: str = "avro") -> Optional[OrderedDict]:
+    def generate_schema(cls: "Type[CT]", schema_type: str = "avro") -> Optional[OrderedDict]:
         if cls._parser is None or cls.__mro__[1] != AvroModel:
             # Generate dataclass and metadata
             cls._klass = cls.generate_dataclass()
@@ -63,17 +63,17 @@ class AvroModel:
         return cls._rendered_schema
 
     @classmethod
-    def _generate_parser(cls: 'Type[CT]') -> Parser:
+    def _generate_parser(cls: "Type[CT]") -> Parser:
         cls._metadata = cls.generate_metadata()
         return Parser(type=cls._klass, metadata=cls._metadata, parent=cls._parent or cls)
 
     @classmethod
-    def avro_schema(cls: 'Type[CT]', case_type: Optional[str] = None, **kwargs) -> str:
+    def avro_schema(cls: "Type[CT]", case_type: Optional[str] = None, **kwargs) -> str:
         return json.dumps(cls.avro_schema_to_python(case_type=case_type), **kwargs)
 
     @classmethod
     def avro_schema_to_python(
-        cls: 'Type[CT]',
+        cls: "Type[CT]",
         parent: Optional["AvroModel"] = None,
         case_type: Optional[str] = None,
     ) -> Dict[str, Any]:
@@ -101,13 +101,13 @@ class AvroModel:
         return json.loads(json.dumps(avro_schema))
 
     @classmethod
-    def get_fields(cls: 'Type[CT]') -> List[Field]:
+    def get_fields(cls: "Type[CT]") -> List[Field]:
         if cls._parser is None:
             cls.generate_schema()
         return cls._parser.fields  # type: ignore
 
     @classmethod
-    def _reset_parser(cls: 'Type[CT]') -> None:
+    def _reset_parser(cls: "Type[CT]") -> None:
         """
         Reset all the values to original state.
         """
@@ -138,11 +138,11 @@ class AvroModel:
 
     @classmethod
     def deserialize(
-        cls: 'Type[CT]',
+        cls: "Type[CT]",
         data: bytes,
         serialization_type: str = AVRO,
         create_instance: bool = True,
-        writer_schema: Optional[Union[JsonDict, 'Type[CT]']] = None,
+        writer_schema: Optional[Union[JsonDict, "Type[CT]"]] = None,
     ) -> Union[JsonDict, CT]:
         payload = cls.deserialize_to_python(data, serialization_type, writer_schema)
         obj = cls.parse_obj(payload)
@@ -152,10 +152,10 @@ class AvroModel:
 
     @classmethod
     def deserialize_to_python(  # This can be used straight with a pydantic dataclass to bypass dacite
-        cls: 'Type[CT]',
+        cls: "Type[CT]",
         data: bytes,
         serialization_type: str = AVRO,
-        writer_schema: Union[JsonDict, 'Type[CT]', None] = None,
+        writer_schema: Union[JsonDict, "Type[CT]", None] = None,
     ) -> dict:
         if inspect.isclass(writer_schema) and issubclass(writer_schema, AvroModel):
             # mypy does not understand redefinitions
@@ -173,7 +173,7 @@ class AvroModel:
         )
 
     @classmethod
-    def parse_obj(cls: 'Type[CT]', data: Dict) -> CT:
+    def parse_obj(cls: "Type[CT]", data: Dict) -> CT:
         config = _dacite_config_cache.get(cls)
         if config is None:
             config = generate_dacite_config(cls)
@@ -194,7 +194,7 @@ class AvroModel:
         return json.dumps(data, **kwargs)
 
     @classmethod
-    def fake(cls: 'Type[CT]', **data: Any) -> CT:
+    def fake(cls: "Type[CT]", **data: Any) -> CT:
         """
         Creates a fake instance of the model.
 

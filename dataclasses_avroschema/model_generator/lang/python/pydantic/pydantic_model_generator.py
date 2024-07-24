@@ -12,7 +12,6 @@ class PydanticModelGenerator(BaseGenerator):
         super().__post_init__()
 
         self.base_class = "BaseModel"
-        self.imports.add("from pydantic import BaseModel")
         self.imports_dict = {
             "dataclass_field": "from pydantic import Field",
         }
@@ -49,3 +48,6 @@ class PydanticModelGenerator(BaseGenerator):
     def render_dataclass_field(self, properties: str) -> str:
         self.imports.add("from pydantic import Field")
         return super().render_dataclass_field(properties=properties)
+
+    def add_class_imports(self) -> None:
+        self.imports.add("from pydantic import BaseModel")

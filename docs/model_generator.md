@@ -2,10 +2,11 @@
 
 This section describe how to convert `python classes` from an `avro schema` (avsc files). This is the inverse process that the library aims to.
 
-**`Avro schema` --> `Python class`**
-
-In order to create the models, we should use the `ModelGenerator` class. This class will be in charge of render all the python types in a proper way.
-The rendered result is a string that contains the proper identation, so the result can be saved in a file and it will be ready to use.
+::: dataclasses_avroschema.ModelGenerator
+    options:
+        show_source: false
+        members:
+          -  
 
 !!! note
     In future releases it will be possible to generate models for other programming langagues like `java` and `rust`
@@ -66,51 +67,6 @@ The rendered result is a string that contains the proper identation, so the resu
     | timestamp-micros| types.DateTimeMicro|
     | decimal | types.condecimal|
     | uuid | uuid.UUID    |
-
-## Usage
-
-```python
-from dataclasses_avroschema import ModelGenerator, ModelType
-
-model_generator = ModelGenerator()
-
-schema = {
-    "type": "record",
-    "namespace": "com.kubertenes",
-    "name": "AvroDeployment",
-    "fields": [
-        {"name": "image", "type": "string"},
-        {"name": "replicas", "type": "int"},
-        {"name": "port", "type": "int"},
-    ],
-}
-
-result = model_generator.render(schema=schema, model_type=ModelType.DATACLASS.value)
-
-# save the result in a file
-with open("models.py", mode="+w") as f:
-    f.write(result)
-```
-
-Then, the end result is:
-
-```python
-# models.py
-import dataclasses
-
-from dataclasses_avroschema import AvroModel
-from dataclasses_avroschema import types
-
-
-@dataclasses.dataclass
-class AvroDeployment(AvroModel):
-    image: str
-    replicas: types.Int32
-    port: types.Int32
-
-    class Meta:
-        namespace = "com.kubertenes"
-```
 
 ## Render a Python module
 
@@ -437,7 +393,7 @@ declared before required fields, which means that and invalid model will be gene
 For example the following schema contains the field `has_pets` (optional) before required fields:
 
 ```python
-from dataclasses_avroschema import ModelGenerator, ModelType
+from dataclasses_avroschema import ModelGenerator
 
 
 schema = {
@@ -453,7 +409,7 @@ schema = {
 }
 
 model_generator = ModelGenerator()
-result = model_generator.render(schema=schema, model_type=ModelType.DATACLASS.value)
+result = model_generator.render(schema=schema)
 
 # save the result in a file
 with open("models.py", mode="+w") as f:
@@ -482,7 +438,60 @@ class User(AvroModel):
         field_order = ['has_pets', 'name', 'age', 'money']
 ```
 
-## Enums and case sensitivity
+## Rendering Enums
+
+Because `avro enums` are represented by a python class, it is also possible to render them in isolation, for example:
+
+```python
+from dataclasses_avroschema import ModelGenerator
+
+
+enum_schema = {
+    "type": "enum",
+    "name": "Color",
+    "symbols": [
+        "red",
+        "blue",
+    ],
+    "default": "blue",
+}
+
+model_generator = ModelGenerator()
+result = model_generator.render(schema=schema)
+
+print(result)
+```
+
+Resulting in
+
+=== "python <= 3.10"
+    ```python
+    import enum
+
+
+    class Color(enum.Enum):
+        RED = "red"
+        BLUE = "blue"
+
+        class Meta:
+            default = "blue"
+    ```
+
+=== "python >= 3.11"
+    ```python
+    import enum
+
+
+    class Color(str, enum.Enum):
+        RED = "red"
+        BLUE = "blue"
+
+        @enum.nonmember
+        class Meta:
+            default = "blue"
+    ```
+
+### Enums and case sensitivity
 
 Sometimes there are schemas that contains the `symbols` which are case sensivity, for example `"symbols": ["P", "p"]`.
 Having something like that is NOT reccomended at all because it is meaninless, really hard to undestand the intention of it. Avoid it!!!
