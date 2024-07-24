@@ -294,6 +294,24 @@ class User(AvroModel):
     assert result.strip() == expected_result.strip()
 
 
+def test_enum_in_isolation(schema_enum_in_isolation: types.JsonDict) -> None:
+    expected_result = f"""
+import enum
+
+
+class Color({templates.ENUM_PYTHON_VERSION}):
+    RED = "red"
+    BLUE = "blue"
+
+    {templates.METACLASS_DECORATOR}
+    class Meta:
+        default = "blue"
+"""
+    model_generator = ModelGenerator()
+    result = model_generator.render(schema=schema_enum_in_isolation)
+    assert result.strip() == expected_result.strip()
+
+
 def test_schema_with_custom_inner_names(schema_with_custom_inner_names: types.JsonDict) -> None:
     expected_result = """
 from dataclasses_avroschema import AvroModel

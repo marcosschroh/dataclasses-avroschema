@@ -29,6 +29,59 @@ class ModelType(str, enum.Enum):
 
 @dataclass
 class ModelGenerator:
+    """
+    ModelGenerator converts an avro schema to classes
+
+    **`Avro schema` --> `Python class`**
+
+    This class will be in charge of render all the python types in a proper way.
+    The rendered result is a string that contains proper identation, decorators, imports
+    and any extras so the result can be saved in a file and it will be ready to use.
+
+    !!! Example
+        ```python
+        from dataclasses_avroschema import ModelGenerator
+
+        model_generator = ModelGenerator()
+
+        schema = {
+            "type": "record",
+            "namespace": "com.kubertenes",
+            "name": "AvroDeployment",
+            "fields": [
+                {"name": "image", "type": "string"},
+                {"name": "replicas", "type": "int"},
+                {"name": "port", "type": "int"},
+            ],
+        }
+
+        result = model_generator.render(schema=schema)
+
+        # save the result in a file
+        with open("models.py", mode="+w") as f:
+            f.write(result)
+        ```
+
+    Then explore the module `models.py`, the result must be
+
+    ```python title="Code generated"
+    import dataclasses
+
+    from dataclasses_avroschema import AvroModel
+    from dataclasses_avroschema import types
+
+
+    @dataclasses.dataclass
+    class AvroDeployment(AvroModel):
+        image: str
+        replicas: types.Int32
+        port: types.Int32
+
+        class Meta:
+            namespace = "com.kubertenes"
+    ```
+    """
+
     base_class: str = BaseClassEnum.AVRO_MODEL.value
     include_original_schema: bool = False
     model_type_mapper: typing.Dict[str, BaseGenerator] = field(init=False)
