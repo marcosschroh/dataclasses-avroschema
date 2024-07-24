@@ -523,18 +523,18 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#mapping-avro-fields-to-python-fields-summary" class="md-nav__link">
+  <a href="#dataclasses_avroschema.ModelGenerator" class="md-nav__link">
     <span class="md-ellipsis">
-      Mapping avro fields to python fields summary
+      ModelGenerator
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#usage" class="md-nav__link">
+  <a href="#mapping-avro-fields-to-python-fields-summary" class="md-nav__link">
     <span class="md-ellipsis">
-      Usage
+      Mapping avro fields to python fields summary
     </span>
   </a>
   
@@ -586,11 +586,26 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#rendering-enums" class="md-nav__link">
+    <span class="md-ellipsis">
+      Rendering Enums
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Rendering Enums">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#enums-and-case-sensitivity" class="md-nav__link">
     <span class="md-ellipsis">
       Enums and case sensitivity
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -758,18 +773,18 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#mapping-avro-fields-to-python-fields-summary" class="md-nav__link">
+  <a href="#dataclasses_avroschema.ModelGenerator" class="md-nav__link">
     <span class="md-ellipsis">
-      Mapping avro fields to python fields summary
+      ModelGenerator
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#usage" class="md-nav__link">
+  <a href="#mapping-avro-fields-to-python-fields-summary" class="md-nav__link">
     <span class="md-ellipsis">
-      Usage
+      Mapping avro fields to python fields summary
     </span>
   </a>
   
@@ -821,11 +836,26 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#rendering-enums" class="md-nav__link">
+    <span class="md-ellipsis">
+      Rendering Enums
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Rendering Enums">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#enums-and-case-sensitivity" class="md-nav__link">
     <span class="md-ellipsis">
       Enums and case sensitivity
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -858,10 +888,83 @@
 
 <h1 id="model-generator">Model Generator</h1>
 <p>This section describe how to convert <code>python classes</code> from an <code>avro schema</code> (avsc files). This is the inverse process that the library aims to.</p>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<a id="dataclasses_avroschema.ModelGenerator"></a>
+  <div class="doc doc-contents first">
+
+  
+      <p>ModelGenerator converts an avro schema to classes</p>
 <p><strong><code>Avro schema</code> --&gt; <code>Python class</code></strong></p>
-<p>In order to create the models, we should use the <code>ModelGenerator</code> class. This class will be in charge of render all the python types in a proper way.
-The rendered result is a string that contains the proper identation, so the result can be saved in a file and it will be ready to use.</p>
-<div class="admonition note">
+<p>This class will be in charge of render all the python types in a proper way.
+The rendered result is a string that contains proper identation, decorators, imports
+and any extras so the result can be saved in a file and it will be ready to use.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">ModelGenerator</span>
+
+<span class="n">model_generator</span> <span class="o">=</span> <span class="n">ModelGenerator</span><span class="p">()</span>
+
+<span class="n">schema</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;record&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;namespace&quot;</span><span class="p">:</span> <span class="s2">&quot;com.kubertenes&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;AvroDeployment&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;image&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;replicas&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;int&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;port&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;int&quot;</span><span class="p">},</span>
+    <span class="p">],</span>
+<span class="p">}</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">model_generator</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">)</span>
+
+<span class="c1"># save the result in a file</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;models.py&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;+w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</code></pre></div>
+</div>
+<p>Then explore the module <code>models.py</code>, the result must be</p>
+<div class="highlight"><span class="filename">Code generated</span><pre><span></span><code><span class="kn">import</span> <span class="nn">dataclasses</span>
+
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">types</span>
+
+
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span> <span class="nc">AvroDeployment</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
+    <span class="n">image</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">replicas</span><span class="p">:</span> <span class="n">types</span><span class="o">.</span><span class="n">Int32</span>
+    <span class="n">port</span><span class="p">:</span> <span class="n">types</span><span class="o">.</span><span class="n">Int32</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">namespace</span> <span class="o">=</span> <span class="s2">&quot;com.kubertenes&quot;</span>
+</code></pre></div>
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+  </div>
+
+
+</div><div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>In future releases it will be possible to generate models for other programming langagues like <code>java</code> and <code>rust</code></p>
 </div>
@@ -1066,45 +1169,6 @@ The rendered result is a string that contains the proper identation, so the resu
 </div>
 </div>
 </div>
-<h2 id="usage">Usage</h2>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">ModelGenerator</span><span class="p">,</span> <span class="n">ModelType</span>
-
-<span class="n">model_generator</span> <span class="o">=</span> <span class="n">ModelGenerator</span><span class="p">()</span>
-
-<span class="n">schema</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;record&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;namespace&quot;</span><span class="p">:</span> <span class="s2">&quot;com.kubertenes&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;AvroDeployment&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">[</span>
-        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;image&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">},</span>
-        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;replicas&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;int&quot;</span><span class="p">},</span>
-        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;port&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;int&quot;</span><span class="p">},</span>
-    <span class="p">],</span>
-<span class="p">}</span>
-
-<span class="n">result</span> <span class="o">=</span> <span class="n">model_generator</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="n">ModelType</span><span class="o">.</span><span class="n">DATACLASS</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
-
-<span class="c1"># save the result in a file</span>
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;models.py&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;+w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
-</code></pre></div>
-<p>Then, the end result is:</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># models.py</span>
-<span class="kn">import</span> <span class="nn">dataclasses</span>
-
-<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
-<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">types</span>
-
-
-<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
-<span class="k">class</span> <span class="nc">AvroDeployment</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
-    <span class="n">image</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">replicas</span><span class="p">:</span> <span class="n">types</span><span class="o">.</span><span class="n">Int32</span>
-    <span class="n">port</span><span class="p">:</span> <span class="n">types</span><span class="o">.</span><span class="n">Int32</span>
-
-    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
-        <span class="n">namespace</span> <span class="o">=</span> <span class="s2">&quot;com.kubertenes&quot;</span>
-</code></pre></div>
 <h2 id="render-a-python-module">Render a Python module</h2>
 <p>It's also possible to generate a Python module containing classes from multiple schemas using <code>render_module</code>.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">ModelGenerator</span><span class="p">,</span> <span class="n">ModelType</span>
@@ -1394,7 +1458,7 @@ exactly the same name as the record <code>Address</code>.</p>
 <p>Sometimes we have to work with schemas that were created by a third party and we do not have control over them. Those schemas can contain optional fields
 declared before required fields, which means that and invalid model will be generated. To avoid this problem the <code>field_order</code> property is used in the generation process.
 For example the following schema contains the field <code>has_pets</code> (optional) before required fields:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">ModelGenerator</span><span class="p">,</span> <span class="n">ModelType</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">ModelGenerator</span>
 
 
 <span class="n">schema</span> <span class="o">=</span> <span class="p">{</span>
@@ -1410,7 +1474,7 @@ For example the following schema contains the field <code>has_pets</code> (optio
 <span class="p">}</span>
 
 <span class="n">model_generator</span> <span class="o">=</span> <span class="n">ModelGenerator</span><span class="p">()</span>
-<span class="n">result</span> <span class="o">=</span> <span class="n">model_generator</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="n">ModelType</span><span class="o">.</span><span class="n">DATACLASS</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">model_generator</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">)</span>
 
 <span class="c1"># save the result in a file</span>
 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;models.py&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;+w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
@@ -1435,7 +1499,57 @@ For example the following schema contains the field <code>has_pets</code> (optio
     <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
         <span class="n">field_order</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;has_pets&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;age&#39;</span><span class="p">,</span> <span class="s1">&#39;money&#39;</span><span class="p">]</span>
 </code></pre></div>
-<h2 id="enums-and-case-sensitivity">Enums and case sensitivity</h2>
+<h2 id="rendering-enums">Rendering Enums</h2>
+<p>Because <code>avro enums</code> are represented by a python class, it is also possible to render them in isolation, for example:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">ModelGenerator</span>
+
+
+<span class="n">enum_schema</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;enum&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Color&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;symbols&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;red&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;blue&quot;</span><span class="p">,</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="s2">&quot;blue&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">model_generator</span> <span class="o">=</span> <span class="n">ModelGenerator</span><span class="p">()</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">model_generator</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</code></pre></div>
+<p>Resulting in</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:2"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">python &lt;= 3.10</label><label for="__tabbed_3_2">python &gt;= 3.11</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">enum</span>
+
+
+<span class="k">class</span> <span class="nc">Color</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="n">RED</span> <span class="o">=</span> <span class="s2">&quot;red&quot;</span>
+    <span class="n">BLUE</span> <span class="o">=</span> <span class="s2">&quot;blue&quot;</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">default</span> <span class="o">=</span> <span class="s2">&quot;blue&quot;</span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">enum</span>
+
+
+<span class="k">class</span> <span class="nc">Color</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="n">RED</span> <span class="o">=</span> <span class="s2">&quot;red&quot;</span>
+    <span class="n">BLUE</span> <span class="o">=</span> <span class="s2">&quot;blue&quot;</span>
+
+    <span class="nd">@enum</span><span class="o">.</span><span class="n">nonmember</span>
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">default</span> <span class="o">=</span> <span class="s2">&quot;blue&quot;</span>
+</code></pre></div>
+</div>
+</div>
+</div>
+<h3 id="enums-and-case-sensitivity">Enums and case sensitivity</h3>
 <p>Sometimes there are schemas that contains the <code>symbols</code> which are case sensivity, for example <code>"symbols": ["P", "p"]</code>.
 Having something like that is NOT reccomended at all because it is meaninless, really hard to undestand the intention of it. Avoid it!!!</p>
 <p>When the schema generator encounter this situation it can not generated the proper <code>enum</code> with <code>uppercases</code> key so it will use the <code>symbol</code> without any transformation</p>
@@ -1464,7 +1578,7 @@ Having something like that is NOT reccomended at all because it is meaninless, r
     <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 </code></pre></div>
 <p>Then the result will be:</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="3:2"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">python &lt;= 3.10</label><label for="__tabbed_3_2">python &gt;= 3.11</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="4:2"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">python &lt;= 3.10</label><label for="__tabbed_4_2">python &gt;= 3.11</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="highlight"><pre><span></span><code><span class="c1"># models.py</span>
