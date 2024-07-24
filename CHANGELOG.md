@@ -1,3 +1,9 @@
+## 0.62.2 (2024-07-24)
+
+### Fix
+
+- render avro enums in isolation. Closes #664 (#690)
+
 ## 0.62.1 (2024-07-22)
 
 ### Fix
