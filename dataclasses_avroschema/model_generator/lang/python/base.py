@@ -429,7 +429,7 @@ class BaseGenerator:
         We need a template for it in order to create the Enum
         """
         self.imports.add("import enum")
-        enum_name: str = field["name"]
+        enum_name: str = casefy.pascalcase(field["name"])
 
         symbols_map = {}
         symbols: typing.List[str] = field["symbols"]
@@ -490,7 +490,7 @@ class BaseGenerator:
             # it means the type points to the an already specified type so it contains the type name
             # with optional namespaces, e.g. my_namespace.users.User
             # In this case we should return the last part of the string
-            return type.split(".")[-1]
+            return casefy.pascalcase(type.split(".")[-1])
         elif default is not None:
             return str(self.avro_type_to_lang.get(type, default))
         else:
@@ -577,7 +577,7 @@ class BaseGenerator:
         ):
             default_repr = f'b"{default}"'
         elif field_type == field_utils.ENUM:
-            default_repr = f"{name}.{casefy.uppercase(default)}"
+            default_repr = f"{casefy.pascalcase(name)}.{casefy.uppercase(default)}"
         elif isinstance(field_type, list):
             # union type
             default_repr = self.get_field_default(field_type=field_type[0], default=default, name=name)
