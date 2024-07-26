@@ -344,6 +344,12 @@ Trip.avro_schema()
 or with `arrays` or `maps`:
 
 ```python
+import dataclasses
+import typing
+
+from dataclasses_avroschema import AvroModel
+
+
 @dataclasses.dataclass
 class Location(AvroModel):
     latitude: float
@@ -403,6 +409,12 @@ Trip.avro_schema()
 ```
 
 ```python
+import dataclasses
+import typing
+
+from dataclasses_avroschema import AvroModel
+
+
 @dataclasses.dataclass
 class Location(AvroModel):
     latitude: float

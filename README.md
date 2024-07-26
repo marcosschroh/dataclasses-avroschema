@@ -45,7 +45,7 @@ import enum
 
 import typing
 
-from dataclasses_avroschema import AvroModel, types
+from dataclasses_avroschema import AvroModel
 
 
 class FavoriteColor(str, enum.Enum):
@@ -63,34 +63,33 @@ class User(AvroModel):
     accounts: typing.Dict[str, int]
     favorite_colors: FavoriteColor
     country: str = "Argentina"
-    address: str = None
+    address: typing.Optional[str] = None
 
     class Meta:
         namespace = "User.v1"
         aliases = ["user-v1", "super user"]
 
-User.avro_schema()
 
-'{
-    "type": "record",
-    "name": "User",
-    "doc": "An User",
-    "namespace": "User.v1",
-    "aliases": ["user-v1", "super user"],
-    "fields": [
-        {"name": "name", "type": "string"},
-        {"name": "age", "type": "long"},
-        {"name": "pets", "type": "array", "items": "string"},
-        {"name": "accounts", "type": "map", "values": "long"},
-        {"name": "favorite_color", "type": {"type": "enum", "name": "FavoriteColor", "symbols": ["Blue", "Yellow", "Green"]}}
-        {"name": "country", "type": "string", "default": "Argentina"},
-        {"name": "address", "type": ["null", "string"], "default": null}
-    ]
-}'
+print(User.avro_schema())
 
-User.avro_schema_to_python()
+# {
+#    "type": "record",
+#    "name": "User",
+#    "fields": [
+#        {"name": "name", "type": "string"},
+#        {"name": "age", "type": "long"},
+#        {"name": "pets", "type": {"type": "array", "items": "string", "name": "pet"}},
+#        {"name": "accounts", "type": {"type": "map", "values": "long", "name": "account"}},
+#        {"name": "favorite_colors", "type": {"type": "enum", "name": "FavoriteColor", "symbols": ["BLUE", "YELLOW", "GREEN"]}},
+#        {"name": "country", "type": "string", "default": "Argentina"},
+#        {"name": "address", "type": ["null", "string"], "default": null}
+#    ], 
+#    "doc": "An User",
+#    "namespace": "User.v1", 
+#    "aliases": ["user-v1", "super user"]
+# }
 
-{
+assert User.avro_schema_to_python() == {
     "type": "record",
     "name": "User",
     "doc": "An User",
@@ -151,20 +150,24 @@ data_user = {
 # create an User instance
 user = User(**data_user)
 
-user.serialize()
-# >>> b"\x08john(\x02\x08test\x14\x00"
+# serialization
+assert user.serialize() == b"\x08john(\x02\x08test\x14\x00"
 
-user.serialize(serialization_type="avro-json")
-# >>> b'{"name": "john", "age": 20, "addresses": [{"street": "test", "street_number": 10}]}'
+assert user.serialize(
+    serialization_type="avro-json"
+) == b'{"name": "john", "age": 20, "addresses": [{"street": "test", "street_number": 10}]}'
 
-# Get the json from the instance
-user.to_json()
-# >>> '{"name": "john", "age": 20, "addresses": [{"street": "test", "street_number": 10}]}'
+# # Get the json from the instance
+assert user.to_json() == '{"name": "john", "age": 20, "addresses": [{"street": "test", "street_number": 10}]}'
 
-# Get a python dict
-user.to_dict()
-# >>> {"name": "john", "age": 20, "addresses": [{"street": "test", "street_number": 10}]}
-
+# # Get a python dict
+assert user.to_dict() == {
+    "name": "john", 
+    "age": 20, 
+    "addresses": [
+        {"street": "test", "street_number": 10}
+    ]
+}
 ```
 
 ### Deserialization
@@ -195,20 +198,34 @@ avro_binary = b"\x08john(\x02\x08test\x14\x00"
 avro_json_binary = b'{"name": "john", "age": 20, "addresses": [{"street": "test", "street_number": 10}]}'
 
 # return a new class instance!!
-User.deserialize(avro_binary)
-# >>>> User(name='john', age=20, addresses=[Address(street='test', street_number=10)])
+assert User.deserialize(avro_binary) == User(
+    name='john', 
+    age=20,
+    addresses=[Address(street='test', street_number=10)]
+)
 
 # return a python dict
-User.deserialize(avro_binary, create_instance=False)
-# >>> {"name": "john", "age": 20, "addresses": [{"street": "test", "street_number": 10}]}
+assert User.deserialize(avro_binary, create_instance=False) == {
+    "name": "john",
+    "age": 20,
+    "addresses": [
+        {"street": "test", "street_number": 10}
+    ]
+}
 
 # return a new class instance!!
-User.deserialize(avro_json_binary, serialization_type="avro-json")
-# >>>> User(name='john', age=20, addresses=[Address(street='test', street_number=10)])
+assert User.deserialize(avro_json_binary, serialization_type="avro-json") == User(
+    name='john',
+    age=20,
+    addresses=[Address(street='test', street_number=10)]
+)
 
 # return a python dict
-User.deserialize(avro_json_binary, serialization_type="avro-json", create_instance=False)
-# >>> {"name": "john", "age": 20, "addresses": [{"street": "test", "street_number": 10}]}
+assert User.deserialize(
+    avro_json_binary,
+    serialization_type="avro-json",
+    create_instance=False
+) == {"name": "john", "age": 20, "addresses": [{"street": "test", "street_number": 10}]}
 ```
 
 ## Pydantic integration
@@ -218,11 +235,10 @@ To add `dataclasses-avroschema` functionality to `pydantic` you only need to rep
 ```python
 import typing
 import enum
-import dataclasses
 
 from dataclasses_avroschema.pydantic import AvroBaseModel
 
-from pydantic import Field
+from pydantic import Field, ValidationError
 
 
 class FavoriteColor(str, enum.Enum):
@@ -231,7 +247,6 @@ class FavoriteColor(str, enum.Enum):
     GREEN = "GREEN"
 
 
-@dataclasses.dataclass
 class UserAdvance(AvroBaseModel):
     name: str
     age: int
@@ -240,15 +255,13 @@ class UserAdvance(AvroBaseModel):
     has_car: bool = False
     favorite_colors: FavoriteColor = FavoriteColor.BLUE
     country: str = "Argentina"
-    address: str = None
+    address: typing.Optional[str] = None
 
     class Meta:
         schema_doc = False
 
 
-# Avro schema
-UserAdvance.avro_schema()
-'{
+assert UserAdvance.avro_schema_to_python() == {
     "type": "record",
     "name": "UserAdvance",
     "fields": [
@@ -256,56 +269,69 @@ UserAdvance.avro_schema()
         {"name": "age", "type": "long"},
         {"name": "pets", "type": {"type": "array", "items": "string", "name": "pet"}, "default": ["dog", "cat"]},
         {"name": "accounts", "type": {"type": "map", "values": "long", "name": "account"}, "default": {"key": 1}},
-        {"name": "has_car", "type": "boolean", "default": false},
-        {"name": "favorite_colors", "type": {"type": "enum", "name": "favorite_color", "symbols": ["BLUE", "YELLOW", "GREEN"]}, "default": "BLUE"},
-        {"name": "country", "type": "string", "default": "Argentina"},
-        {"name": "address", "type": ["null", "string"], "default": null}
+        {"name": "has_car", "type": "boolean", "default": False},{"name": "favorite_colors", "type": {"type": "enum", "name": "FavoriteColor", "symbols": ["BLUE", "YELLOW", "GREEN"]}, "default": "BLUE"},
+        {"name": "country", "type": "string", "default": "Argentina"}, {"name": "address", "type": ["null", "string"], "default": None}
     ]
-}'
-
-# Json schema
-UserAdvance.json_schema()
-
-{
-    "title": "UserAdvance",
-    "description": "UserAdvance(*, name: str, age: int, pets: List[str] = None, ...",
-    "type": "object",
-    "properties": {
-        "name": {"title": "Name", "type": "string"},
-        "age": {"title": "Age", "type": "integer"},
-        "pets": {"title": "Pets", "type": "array", "items": {"type": "string"}},
-        "accounts": {"title": "Accounts", "type": "object", "additionalProperties": {"type": "integer"}},
-        "has_car": {"title": "Has Car", "default": false, "type": "boolean"},
-        "favorite_colors": {"default": "BLUE", "allOf": [{"$ref": "#/definitions/FavoriteColor"}]},
-        "country": {"title": "Country", "default": "Argentina", "type": "string"},
-        "address": {"title": "Address", "type": "string"}}, "required": ["name", "age"], "definitions": {"FavoriteColor": {"title": "FavoriteColor", "description": "An enumeration.", "enum": ["BLUE", "YELLOW", "GREEN"], "type": "string"}}
 }
+
+print(UserAdvance.json_schema())
+
+# {
+#   "$defs": {"FavoriteColor": {"enum": ["BLUE", "YELLOW", "GREEN"], "title": "FavoriteColor", "type": "string"}},
+#   "properties": {
+#       "name": {"title": "Name", "type": "string"},
+#       "age": {"title": "Age", "type": "integer"},
+#       "pets": {"items": {"type": "string"}, "title": "Pets", "type": "array"},
+#       "accounts": {"additionalProperties": {"type": "integer"}, "title": "Accounts", "type": "object"},
+#       "has_car": {"default": false, "title": "Has Car", "type": "boolean"},
+#       "favorite_colors": {"allOf": [{"$ref": "#/$defs/FavoriteColor"}], "default": "BLUE"},
+#       "country": {"default": "Argentina", "title": "Country", "type": "string"},
+#       "address": {"anyOf": [{"type": "string"}, {"type": "null"}], "default": null, "title": "Address"}
+#   }, 
+#   "required": ["name", "age"],
+#   "title": "UserAdvance",
+#   "type": "object"
+# }"""
 
 user = UserAdvance(name="bond", age=50)
 
 # pydantic
-user.dict()
-# >>> {'name': 'bond', 'age': 50, 'pets': ['dog', 'cat'], 'accounts': {'key': 1}, 'has_car': False, 'favorite_colors': <FavoriteColor.BLUE: 'BLUE'>, 'country': 'Argentina', 'address': None}
+assert user.dict() == {
+    'name': 'bond',
+    'age': 50,
+    'pets': ['dog', 'cat'],
+    'accounts': {'key': 1},
+    'has_car': False,
+    'favorite_colors': FavoriteColor.BLUE,
+    'country': 'Argentina',
+    'address': None
+}
 
 # pydantic
-user.json()
-# >>> '{"name": "bond", "age": 50, "pets": ["dog", "cat"], "accounts": {"key": 1}, "has_car": false, "favorite_colors": "BLUE", "country": "Argentina", "address": null}'
+print(user.json())
+
+assert user.json() == '{"name":"bond","age":50,"pets":["dog","cat"],"accounts":{"key":1},"has_car":false,"favorite_colors":"BLUE","country":"Argentina","address":null}'
 
 # pydantic
-user = UserAdvance(name="bond")
-
-# ValidationError: 1 validation error for UserAdvance
-# age
-# field required (type=value_error.missing)
-
+try:
+    user = UserAdvance(name="bond")
+except ValidationError as exc:
+    assert exc.errors() == [{'type': 'missing', 'loc': ('age',), 'msg': 'Field required', 'input': {'name': 'bond'}, 'url': 'https://errors.pydantic.dev/2.8/v/missing'}]
 
 # dataclasses-avroschema
 event = user.serialize()
-print(event)
-# >>> b'\x08bondd\x04\x06dog\x06cat\x00\x02\x06key\x02\x00\x00\x00\x12Argentina\x00'
+assert event == b'\x08bondd\x04\x06dog\x06cat\x00\x02\x06key\x02\x00\x00\x00\x12Argentina\x00'
 
-UserAdvance.deserialize(data=event)
-# >>> UserAdvance(name='bond', age=50, pets=['dog', 'cat'], accounts={'key': 1}, has_car=False, favorite_colors=<FavoriteColor.BLUE: 'BLUE'>, country='Argentina', address=None)
+assert UserAdvance.deserialize(data=event) == UserAdvance(
+    name='bond',
+    age=50, 
+    pets=['dog', 'cat'],
+    accounts={'key': 1},
+    has_car=False, 
+    favorite_colors=FavoriteColor.BLUE,
+    country='Argentina', 
+    address=None
+)
 ```
 
 ## Examples with python streaming drivers (kafka and redis)
@@ -319,7 +345,6 @@ Also, there are two `redis` examples using `redis streams` with [walrus](https:/
 [Dataclasses Avro Schema](https://github.com/marcosschroh/dataclasses-avroschema) also includes a `factory` feature, so you can generate `fast` python instances and use them, for example, to test your data streaming pipelines. Instances can be generated using the `fake` method.
 
 *Note*: This feature is not enabled by default and requires you have the `faker` extra installed. You may install it with `pip install 'dataclasses-avroschema[faker]'`
-
 
 ```python
 import typing
@@ -352,23 +377,23 @@ User.fake()
 
 ## Features
 
-* [x] Primitive types: int, long, double, float, boolean, string and null support
-* [x] Complex types: enum, array, map, fixed, unions and records support
-* [x] `typing.Annotated` supported
-* [x] `typing.Literal` supported
-* [x] Logical Types: date, time (millis and micro), datetime (millis and micro), uuid support
-* [X] Schema relations (oneToOne, oneToMany)
-* [X] Recursive Schemas
-* [X] Generate Avro Schemas from `faust.Record`
-* [X] Instance serialization correspondent to `avro schema` generated
-* [X] Data deserialization. Return python dict or class instance
-* [X] Generate json from python class instance
-* [X] Case Schemas
-* [X] Generate models from `avsc` files
-* [X] Examples of integration with `kafka` drivers: [aiokafka](https://github.com/aio-libs/aiokafka), [kafka-python](https://github.com/dpkp/kafka-python)
-* [X] Example of integration  with `redis` drivers: [walrus](https://github.com/coleifer/walrus) and [redisgears-py](https://github.com/RedisGears/redisgears-py)
-* [X] Factory instances
-* [X] [Pydantic](https://pydantic-docs.helpmanual.io/) integration
+[x] Primitive types: int, long, double, float, boolean, string and null support
+[x] Complex types: enum, array, map, fixed, unions and records support
+[x] `typing.Annotated` supported
+[x] `typing.Literal` supported
+[x] Logical Types: date, time (millis and micro), datetime (millis and micro), uuid support
+[X] Schema relations (oneToOne, oneToMany)
+[X] Recursive Schemas
+[X] Generate Avro Schemas from `faust.Record`
+[X] Instance serialization correspondent to `avro schema` generated
+[X] Data deserialization. Return python dict or class instance
+[X] Generate json from python class instance
+[X] Case Schemas
+[X] Generate models from `avsc` files
+[X] Examples of integration with `kafka` drivers: [aiokafka](https://github.com/aio-libs/aiokafka), [kafka-python](https://github.com/dpkp/kafka-python)
+[X] Example of integration  with `redis` drivers: [walrus](https://github.com/coleifer/walrus) and [redisgears-py](https://github.com/RedisGears/redisgears-py)
+[X] Factory instances
+[X] [Pydantic](https://pydantic-docs.helpmanual.io/) integration
 
 ## Development
 
@@ -377,5 +402,6 @@ User.fake()
 1. Install dependencies: `poetry install --all-extras`
 2. Code linting: `./scripts/format`
 3. Run tests: `./scripts/test`
+4. Tests documentation: `./scripts/test-documentation`
 
 For commit messages we use [commitizen](https://commitizen-tools.github.io/commitizen/) in order to standardize a way of committing rules

@@ -62,7 +62,7 @@ Avro supports six kinds of complex types: enums, arrays, maps, fixed, unions and
   2. namespace: a JSON string that qualifies the name;
   3. aliases: a JSON array of strings, providing alternate names for this enum (optional).
   4. doc: a JSON string providing documentation to the user of this schema (optional).
-  5. symbols: a JSON array, listing symbols, as JSON strings (required). All symbols in an enum must be unique; duplicates are prohibited. Every symbol must match the regular expression [A-Za-z_][A-Za-z0-9_]* (the same requirement as for names).
+  5. symbols: a JSON array, listing symbols, as JSON strings (required). All symbols in an enum must be unique; duplicates are prohibited. Every symbol must match the regular expression *[A-Za-z_][A-Za-z0-9_]* (the same requirement as for names).
 
 When we want to define a `enum` type we should specify a default value because we need to define the `symbols`
 In future version we will have a custom enum type to avoid this
@@ -399,88 +399,89 @@ Sometimes it is useful to exclude `default` values in the final `avro schema`, f
 It is possible to `exclude` the `default` value using the `exclude_default` in the `metadata`. This is applicable when using `default` or `default_factory`
 
 === "Schema with dynamic defaults"
-    ```python
-    import dataclasses
-    import datetime
-    from uuid import UUID, uuid4
+  ```python
+  import dataclasses
+  import datetime
+  from uuid import UUID, uuid4
 
-    from dataclasses_avroschema import AvroModel
-
-
-    @dataclasses.dataclass
-    class User(AvroModel):
-        id: UUID = dataclasses.field(default_factory=uuid4)
-        created_at: datetime.datetime = dataclasses.field(
-            default_factory=lambda: datetime.datetime.now(tz=datetime.timezone.utc)
-        )
-
-    User.avro_schema_to_python()
+  from dataclasses_avroschema import AvroModel
 
 
-    {
-      'type': 'record', 
-      'name': 'User', 
-      'fields': [
-        {
-          'name': 'uuid', 
-          'type': {
-            'type': 'string', 
-            'logicalType': 'uuid'
-          }, 
-          'default': '3f70bc2f-f533-434e-ab9b-982477626419'  # IT WILL CHANGE EVERY TIME!!!
-        }, 
-        {
-          'name': 'created_at', 
-          'type': {
-            'type': 'long', 
-            'logicalType': 'timestamp-millis'
-          }, 
-          'default': 1705154403499  # IT WILL CHANGE EVERY TIME!!!
-        }
-      ]
-    }
-    ```
-=== "Exlude default from schema"
-    ```python
-    import dataclasses
-    import datetime
-    from uuid import UUID, uuid4
-
-    from dataclasses_avroschema import AvroModel
-
-
-    @dataclasses.dataclass
-    class User(AvroModel):
-        id: UUID = dataclasses.field(default_factory=uuid4, metadata={"exclude_default": True})
-        created_at: datetime.datetime = dataclasses.field(
-          default_factory=lambda: datetime.datetime.now(tz=datetime.timezone.utc),
-          metadata={"exclude_default": True}
+  @dataclasses.dataclass
+  class User(AvroModel):
+      id: UUID = dataclasses.field(default_factory=uuid4)
+      created_at: datetime.datetime = dataclasses.field(
+          default_factory=lambda: datetime.datetime.now(tz=datetime.timezone.utc)
       )
 
-    User.avro_schema_to_python()
+  User.avro_schema_to_python()
 
 
-    {
-      'type': 'record', 
-      'name': 'User', 
-      'fields': [
-        {
-          'name': 'uuid', 
-          'type': {
-            'type': 'string', 
-            'logicalType': 'uuid'
-          }
+  {
+    'type': 'record', 
+    'name': 'User', 
+    'fields': [
+      {
+        'name': 'uuid', 
+        'type': {
+          'type': 'string', 
+          'logicalType': 'uuid'
         }, 
-        {
-          'name': 'created_at', 
-          'type': {
-            'type': 'long', 
-            'logicalType': 'timestamp-millis'
-          }
+        'default': '3f70bc2f-f533-434e-ab9b-982477626419'  # IT WILL CHANGE EVERY TIME!!!
+      }, 
+      {
+        'name': 'created_at', 
+        'type': {
+          'type': 'long', 
+          'logicalType': 'timestamp-millis'
+        }, 
+        'default': 1705154403499  # IT WILL CHANGE EVERY TIME!!!
+      }
+    ]
+  }
+  ```
+
+=== "Exlude default from schema"
+  ```python
+  import dataclasses
+  import datetime
+  from uuid import UUID, uuid4
+
+  from dataclasses_avroschema import AvroModel
+
+
+  @dataclasses.dataclass
+  class User(AvroModel):
+      id: UUID = dataclasses.field(default_factory=uuid4, metadata={"exclude_default": True})
+      created_at: datetime.datetime = dataclasses.field(
+        default_factory=lambda: datetime.datetime.now(tz=datetime.timezone.utc),
+        metadata={"exclude_default": True}
+    )
+
+  User.avro_schema_to_python()
+
+
+  {
+    'type': 'record', 
+    'name': 'User', 
+    'fields': [
+      {
+        'name': 'uuid', 
+        'type': {
+          'type': 'string', 
+          'logicalType': 'uuid'
         }
-      ]
-    }
-    ```
+      }, 
+      {
+        'name': 'created_at', 
+        'type': {
+          'type': 'long', 
+          'logicalType': 'timestamp-millis'
+        }
+      }
+    ]
+  }
+  ```
 
 !!! note
     This is also applicable for `AvroBaseModel` (pydantic)
@@ -500,7 +501,7 @@ import typing
 class DeliveryBatch(AvroModel):
     receivers_payload: typing.List[str] = dataclasses.field(metadata={'inner_name': 'my_custom_name'})
     accounts: typing.Dict[str, str] = dataclasses.field(metadata={'inner_name': 'my_account'})
-    md5: types.confixed(size=16, namespace="md5", aliases=['md5', 'hash']) = dataclasses.field(metadata={'inner_name': 'my_md5'}
+    md5: types.confixed(size=16, namespace="md5", aliases=['md5', 'hash']) = dataclasses.field(metadata={'inner_name': 'my_md5'})
 ```
 
 which will produce the following schema:
