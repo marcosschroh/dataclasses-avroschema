@@ -982,7 +982,7 @@ types to annotate your classes. These types are simple wrappers around Python's 
 <li>namespace: a JSON string that qualifies the name;</li>
 <li>aliases: a JSON array of strings, providing alternate names for this enum (optional).</li>
 <li>doc: a JSON string providing documentation to the user of this schema (optional).</li>
-<li>symbols: a JSON array, listing symbols, as JSON strings (required). All symbols in an enum must be unique; duplicates are prohibited. Every symbol must match the regular expression [A-Za-z_][A-Za-z0-9_]* (the same requirement as for names).</li>
+<li>symbols: a JSON array, listing symbols, as JSON strings (required). All symbols in an enum must be unique; duplicates are prohibited. Every symbol must match the regular expression <em>[A-Za-z_][A-Za-z0-9_]</em> (the same requirement as for names).</li>
 </ul>
 <p>When we want to define a <code>enum</code> type we should specify a default value because we need to define the <code>symbols</code>
 In future version we will have a custom enum type to avoid this</p>
@@ -1593,9 +1593,11 @@ In order to add custom fields, you can use the <code>field</code> descriptor of 
 <h2 id="exclude-default-value-from-schema">Exclude default value from schema</h2>
 <p>Sometimes it is useful to exclude <code>default</code> values in the final <code>avro schema</code>, for example when default values are dynamically generated. In the following example, we have an User with fields <code>id</code> and <code>created_at</code>, their default are generated when an instance is created. Because the defaults are dynamic then the <code>avro schema</code> will change every time that is generated. 
 It is possible to <code>exclude</code> the <code>default</code> value using the <code>exclude_default</code> in the <code>metadata</code>. This is applicable when using <code>default</code> or <code>default_factory</code></p>
-<div class="tabbed-set tabbed-alternate" data-tabs="3:2"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">Schema with dynamic defaults</label><label for="__tabbed_3_2">Exlude default from schema</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:1"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">Schema with dynamic defaults</label></div>
 <div class="tabbed-content">
-<div class="tabbed-block">
+<div class="tabbed-block"></div>
+</div>
+</div>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">dataclasses</span>
 <span class="kn">import</span> <span class="nn">datetime</span>
 <span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">uuid4</span>
@@ -1636,8 +1638,11 @@ It is possible to <code>exclude</code> the <code>default</code> value using the 
   <span class="p">]</span>
 <span class="p">}</span>
 </code></pre></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="4:1"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">Exlude default from schema</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block"></div>
 </div>
-<div class="tabbed-block">
+</div>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">dataclasses</span>
 <span class="kn">import</span> <span class="nn">datetime</span>
 <span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">uuid4</span>
@@ -1677,9 +1682,6 @@ It is possible to <code>exclude</code> the <code>default</code> value using the 
   <span class="p">]</span>
 <span class="p">}</span>
 </code></pre></div>
-</div>
-</div>
-</div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>This is also applicable for <code>AvroBaseModel</code> (pydantic)</p>
@@ -1696,7 +1698,7 @@ It is possible to <code>exclude</code> the <code>default</code> value using the 
 <span class="k">class</span> <span class="nc">DeliveryBatch</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
     <span class="n">receivers_payload</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;inner_name&#39;</span><span class="p">:</span> <span class="s1">&#39;my_custom_name&#39;</span><span class="p">})</span>
     <span class="n">accounts</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;inner_name&#39;</span><span class="p">:</span> <span class="s1">&#39;my_account&#39;</span><span class="p">})</span>
-    <span class="n">md5</span><span class="p">:</span> <span class="n">types</span><span class="o">.</span><span class="n">confixed</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s2">&quot;md5&quot;</span><span class="p">,</span> <span class="n">aliases</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;md5&#39;</span><span class="p">,</span> <span class="s1">&#39;hash&#39;</span><span class="p">])</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;inner_name&#39;</span><span class="p">:</span> <span class="s1">&#39;my_md5&#39;</span><span class="p">}</span>
+    <span class="n">md5</span><span class="p">:</span> <span class="n">types</span><span class="o">.</span><span class="n">confixed</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="s2">&quot;md5&quot;</span><span class="p">,</span> <span class="n">aliases</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;md5&#39;</span><span class="p">,</span> <span class="s1">&#39;hash&#39;</span><span class="p">])</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;inner_name&#39;</span><span class="p">:</span> <span class="s1">&#39;my_md5&#39;</span><span class="p">})</span>
 </code></pre></div>
 <p>which will produce the following schema:</p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>

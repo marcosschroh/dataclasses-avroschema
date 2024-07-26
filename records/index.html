@@ -909,19 +909,19 @@
 
 <span class="n">User</span><span class="o">.</span><span class="n">avro_schema</span><span class="p">()</span>
 
-<span class="s1">&#39;{</span>
-  <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;record&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;User&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">[</span>
-    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">},</span>
-    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;age&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;long&quot;</span><span class="p">},</span>
-    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;has_pets&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;boolean&quot;</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">},</span>
-    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;money&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;double&quot;</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="mf">100.3</span><span class="p">}</span>
-  <span class="p">],</span>
-  <span class="s2">&quot;doc&quot;</span><span class="p">:</span> <span class="s2">&quot;My User Class&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;namespace&quot;</span><span class="p">:</span> <span class="s2">&quot;test.com.ar/user/v1&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;aliases&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;User&quot;</span><span class="p">,</span> <span class="s2">&quot;My favorite User&quot;</span><span class="p">]</span>
-<span class="p">}</span><span class="s1">&#39;</span>
+<span class="sd">&quot;&quot;&quot;{</span>
+<span class="sd">  &quot;type&quot;: &quot;record&quot;,</span>
+<span class="sd">  &quot;name&quot;: &quot;User&quot;,</span>
+<span class="sd">  &quot;fields&quot;: [</span>
+<span class="sd">    {&quot;name&quot;: &quot;name&quot;, &quot;type&quot;: &quot;string&quot;},</span>
+<span class="sd">    {&quot;name&quot;: &quot;age&quot;, &quot;type&quot;: &quot;long&quot;},</span>
+<span class="sd">    {&quot;name&quot;: &quot;has_pets&quot;, &quot;type&quot;: &quot;boolean&quot;, &quot;default&quot;: false},</span>
+<span class="sd">    {&quot;name&quot;: &quot;money&quot;, &quot;type&quot;: &quot;double&quot;, &quot;default&quot;: 100.3}</span>
+<span class="sd">  ],</span>
+<span class="sd">  &quot;doc&quot;: &quot;My User Class&quot;,</span>
+<span class="sd">  &quot;namespace&quot;: &quot;test.com.ar/user/v1&quot;,</span>
+<span class="sd">  &quot;aliases&quot;: [&quot;User&quot;, &quot;My favorite User&quot;]</span>
+<span class="sd">}&quot;&quot;&quot;</span>
 </code></pre></div>
 <p><em>(This script is complete, it should run "as is")</em></p>
 <h2 id="class-meta">Class Meta</h2>
@@ -1190,19 +1190,9 @@ thus will be set at the end of the init, not causing an inheritance problem.</p>
     <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
         <span class="n">schema_doc</span> <span class="o">=</span> <span class="kc">False</span>
 
-<span class="n">Child2</span><span class="o">.</span><span class="n">avro_schema</span><span class="p">()</span>
 
-<span class="s1">&#39;{</span>
-  <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;record&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Child2&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">[</span>
-    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">},</span>
-    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;age&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;long&quot;</span><span class="p">},</span>
-    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;has_pets&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;boolean&quot;</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">},</span>
-    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;money&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;double&quot;</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="mf">100.3</span><span class="p">},</span>
-    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;encoded&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;bytes&quot;</span><span class="p">}</span>
-  <span class="p">]</span>
-<span class="p">}</span><span class="s1">&#39;</span>
+<span class="n">child_schema</span> <span class="o">=</span> <span class="n">Child</span><span class="o">.</span><span class="n">avro_schema_to_python</span><span class="p">()</span>
+<span class="n">child_2_schema</span> <span class="o">=</span> <span class="n">Child2</span><span class="o">.</span><span class="n">avro_schema_to_python</span><span class="p">()</span>
 
 
 <span class="k">assert</span> <span class="n">child_schema</span><span class="p">[</span><span class="s2">&quot;fields&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">child_2_schema</span><span class="p">[</span><span class="s2">&quot;fields&quot;</span><span class="p">]</span>

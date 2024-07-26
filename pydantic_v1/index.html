@@ -1210,7 +1210,7 @@ using the key <code>pydantic-class</code>.</p>
 </tr>
 </tbody>
 </table>
-<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">pydantic</span>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">v1</span> <span class="k">as</span> <span class="n">pydantic</span>
 <span class="kn">from</span> <span class="nn">dataclasses_avroschema.pydantic.v1</span> <span class="kn">import</span> <span class="n">AvroBaseModel</span>
 
 
@@ -1276,7 +1276,7 @@ then the proper pydantic types will be used.</p>
 </code></pre></div>
 <p>and then render the result:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">dataclasses_avroschema.pydantic.v1</span> <span class="kn">import</span> <span class="n">AvroBaseModel</span>
-<span class="kn">import</span> <span class="nn">pydantic</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">v1</span> <span class="k">as</span> <span class="n">pydantic</span>
 <span class="kn">import</span> <span class="nn">typing</span>
 
 
@@ -1529,7 +1529,7 @@ then the proper pydantic types will be used.</p>
 <p>It is also possible to create <code>fake</code> instances with <code>pydantic</code> models:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">typing</span>
 <span class="kn">import</span> <span class="nn">datetime</span>
-<span class="kn">from</span> <span class="nn">pydanti.v1</span> <span class="kn">import</span> <span class="n">Field</span>
+<span class="kn">from</span> <span class="nn">pydantic.v1</span> <span class="kn">import</span> <span class="n">Field</span>
 <span class="kn">from</span> <span class="nn">dataclasses_avroschema.pydantic.v1</span> <span class="kn">import</span> <span class="n">AvroBaseModel</span>
 
 

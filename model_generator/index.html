@@ -1337,7 +1337,8 @@ exactly the same name as the record <code>Address</code>.</p>
   <span class="p">]</span>
 <span class="p">}</span>
 </code></pre></div>
-<p>If we try to generate the python models that correspond with the previous schema we end up with the following result:</p>
+<p>If we try to generate the python models that correspond with the previous schema we end up with the following models.
+The result is correct because it translate to python what the schema represents, but if we checked the <code>annotations</code> we see that <code>Address</code> is <code>overshadowed</code></p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
 <span class="kn">import</span> <span class="nn">dataclasses</span>
 <span class="kn">import</span> <span class="nn">typing</span>
@@ -1353,9 +1354,9 @@ exactly the same name as the record <code>Address</code>.</p>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
     <span class="n">Address</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">Address</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-</code></pre></div>
-<p>The result is correct because it translate to python what the schema represents, but if we checked the <code>annotations</code> we see that <code>Address</code> is <code>overshadowed</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="vm">__annotations__</span><span class="p">)</span>
+
+<span class="c1"># Address` is `overshadowed` !!!</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="vm">__annotations__</span><span class="p">)</span>
 <span class="c1"># &gt;&gt;&gt; {&#39;name&#39;: str, &#39;age&#39;: int, &#39;Address&#39;: NoneType}</span>
 
 <span class="c1"># We do not want this!!!</span>
@@ -1515,7 +1516,7 @@ For example the following schema contains the field <code>has_pets</code> (optio
 <span class="p">}</span>
 
 <span class="n">model_generator</span> <span class="o">=</span> <span class="n">ModelGenerator</span><span class="p">()</span>
-<span class="n">result</span> <span class="o">=</span> <span class="n">model_generator</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">model_generator</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">schema</span><span class="o">=</span><span class="n">enum_schema</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 </code></pre></div>

@@ -601,6 +601,8 @@
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
+        
+      
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
           
@@ -629,21 +631,14 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
       Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#migration-from-previous-versions-to-0510" class="md-nav__link">
-    <span class="md-ellipsis">
-      Migration from previous versions to 0.51.0
-    </span>
-  </a>
-  
-</li>
       
         <li class="md-nav__item">
   <a href="#migration-from-previous-versions-to-0451" class="md-nav__link">
@@ -678,6 +673,21 @@
       Migration from previous versions to 0.14.0
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Migration from previous versions to 0.14.0">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#new-version" class="md-nav__link">
+    <span class="md-ellipsis">
+      new version
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -706,21 +716,14 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
       Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#migration-from-previous-versions-to-0510" class="md-nav__link">
-    <span class="md-ellipsis">
-      Migration from previous versions to 0.51.0
-    </span>
-  </a>
-  
-</li>
       
         <li class="md-nav__item">
   <a href="#migration-from-previous-versions-to-0451" class="md-nav__link">
@@ -756,6 +759,21 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Migration from previous versions to 0.14.0">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#new-version" class="md-nav__link">
+    <span class="md-ellipsis">
+      new version
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -776,9 +794,7 @@
   
 
 
-  <h1>Migration Guide</h1>
-
-<h2 id="migration-from-previous-versions-to-0510">Migration from previous versions to 0.51.0</h2>
+<h1 id="migration-from-previous-versions-to-0510">Migration from previous versions to 0.51.0</h1>
 <ul>
 <li>
 <p>In this version was introduced the namespace <code>dataclasses_avroschema.pydantic</code> and the nanespace <code>dataclasses_avroschema.avrodantic</code> was removed. To make use of <code>AvroBaseModel</code> then
@@ -791,28 +807,45 @@ it is explicit.</p>
 </ul>
 <h2 id="migration-from-previous-versions-to-0451">Migration from previous versions to 0.45.1</h2>
 <ul>
-<li>
-<p>Previously <code>Unions</code> that had <code>default_factory</code> where force to return a <code>callable</code> which the return type must be <code>list</code> or <code>dict</code>, now is not the case any more. If you use <code>default_factory</code> makes sure that it is a <code>callable</code>, that's it. This new fix also will be complain with type checkers.</p>
-<div class="highlight"><pre><span></span><code><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<li>Previously <code>Unions</code> that had <code>default_factory</code> where force to return a <code>callable</code> which the return type must be <code>list</code> or <code>dict</code>, now is not the case any more. If you use <code>default_factory</code> makes sure that it is a <code>callable</code>, that's it. This new fix also will be complain with type checkers.</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">dataclasses</span>
+
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
+
+
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span> <span class="nc">Bus</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
+    <span class="s2">&quot;A Bus&quot;</span>
     <span class="n">engine_name</span><span class="p">:</span> <span class="nb">str</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">namespace</span> <span class="o">=</span> <span class="s2">&quot;types&quot;</span>
+
 
 <span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span> <span class="nc">Car</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
+    <span class="s2">&quot;A Car&quot;</span>
     <span class="n">engine_name</span><span class="p">:</span> <span class="nb">str</span>
 
-<span class="n">mountain_trip</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">Bus</span><span class="p">,</span> <span class="n">Car</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;engine_name&quot;</span><span class="p">:</span> <span class="s2">&quot;honda&quot;</span><span class="p">})</span>
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">namespace</span> <span class="o">=</span> <span class="s2">&quot;types&quot;</span>
+
+
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span> <span class="nc">UnionSchema</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
+  <span class="s2">&quot;Some Unions&quot;</span>
+  <span class="n">lake_trip</span><span class="p">:</span> <span class="n">Bus</span> <span class="o">|</span> <span class="n">Car</span>
+  <span class="n">river_trip</span><span class="p">:</span> <span class="n">Bus</span> <span class="o">|</span> <span class="n">Car</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+  <span class="n">mountain_trip</span><span class="p">:</span> <span class="n">Bus</span> <span class="o">|</span> <span class="n">Car</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">field</span><span class="p">(</span>
+      <span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">Bus</span><span class="p">(</span><span class="n">engine_name</span><span class="o">=</span><span class="s2">&quot;honda&quot;</span><span class="p">))</span>
+  <span class="c1"># mountain_trip: Bus | Car = dataclasses.field(default_factory=lambda: {&quot;engine_name&quot;: &quot;honda&quot;}) # OLD WAY</span>
+
+<span class="n">UnionSchema</span><span class="o">.</span><span class="n">avro_schema</span><span class="p">()</span>
 </code></pre></div>
-<p>and migrate to:</p>
-<div class="highlight"><pre><span></span><code><span class="n">mountain_trip</span><span class="p">:</span> <span class="n">Bus</span> <span class="o">|</span> <span class="n">Car</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">Bus</span><span class="p">(</span><span class="n">engine_name</span><span class="o">=</span><span class="s2">&quot;honda&quot;</span><span class="p">))</span>  <span class="c1"># now it returns a proper type</span>
-</code></pre></div>
-</li>
-<li>
-<p><code>Field</code> internal api updated:</p>
 <ul>
+<li><code>Field</code> internal api updated:</li>
 <li><code>to_avro</code> was renamed to <code>default_to_avro</code> and is an instance method</li>
-</ul>
-</li>
 </ul>
 <h2 id="migration-from-previous-versions-to-0270">Migration from previous versions to 0.27.0</h2>
 <div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">python &lt;= 3.10</label><label for="__tabbed_1_2">python &gt;= 3.11</label></div>
@@ -874,7 +907,8 @@ it is explicit.</p>
     <span class="n">GREEN</span> <span class="o">=</span> <span class="s2">&quot;GREEN&quot;</span>
 
 
-<span class="k">class</span> <span class="nc">UserAdvance</span><span class="p">:</span>
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span> <span class="nc">UserAdvance</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
     <span class="n">favorite_colors</span><span class="p">:</span> <span class="n">FavoriteColor</span> <span class="o">=</span> <span class="n">FavoriteColor</span><span class="o">.</span><span class="n">BLUE</span>  <span class="c1"># --&gt; field updated!!!</span>
@@ -887,7 +921,12 @@ it is explicit.</p>
 <li>Now the name for Nested record uses the <code>class.__name__</code> instead of <code>`class.__name__.lower()_record</code>.</li>
 </ol>
 <p>having this schemas:</p>
-<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Address</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">typing</span>
+
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
+
+
+<span class="k">class</span> <span class="nc">Address</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
     <span class="s2">&quot;An Address&quot;</span>
     <span class="n">street</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">street_number</span><span class="p">:</span> <span class="nb">int</span>
@@ -956,13 +995,22 @@ it is explicit.</p>
 <ol>
 <li>Now we use <code>namespaces</code> when same types are referenced multiple times (DRY), so you <em>MUST</em> define the property <code>namespace</code>:</li>
 </ol>
-<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Location</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">dataclasses</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
+
+
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span> <span class="nc">Location</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
     <span class="n">latitude</span><span class="p">:</span> <span class="nb">float</span>
     <span class="n">longitude</span><span class="p">:</span> <span class="nb">float</span>
 
     <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
         <span class="n">namespace</span> <span class="o">=</span> <span class="s2">&quot;types.location_type&quot;</span>  <span class="c1"># REQUIRED!!!!</span>
 
+
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span> <span class="nc">Trip</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
     <span class="n">start_time</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span>
     <span class="n">start_location</span><span class="p">:</span> <span class="n">Location</span>
@@ -1003,9 +1051,8 @@ it is explicit.</p>
 <h2 id="migration-from-previous-versions-to-0140">Migration from previous versions to 0.14.0</h2>
 <p>Now all the dataclasses should inheritance from <code>AvroModel</code> and not use anymore the <code>SchemaGenerator</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># Versions &lt; 0.14.0</span>
-
+<span class="kn">import</span> <span class="nn">dataclasses</span>
 <span class="kn">import</span> <span class="nn">typing</span>
-
 <span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">SchemaGenerator</span><span class="p">,</span> <span class="n">types</span>
 
 
@@ -1020,11 +1067,14 @@ it is explicit.</p>
     <span class="n">address</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
 
 <span class="n">SchemaGenerator</span><span class="p">(</span><span class="n">User</span><span class="p">)</span><span class="o">.</span><span class="n">avro_schema</span><span class="p">()</span>
-
-<span class="c1"># New versions</span>
+</code></pre></div>
+<h3 id="new-version">new version</h3>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">dataclasses</span>
+<span class="kn">import</span> <span class="nn">typing</span>
 <span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span><span class="p">,</span> <span class="n">types</span>
 
 
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
     <span class="s2">&quot;An User&quot;</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
@@ -1035,10 +1085,17 @@ it is explicit.</p>
     <span class="n">country</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Argentina&quot;</span>
     <span class="n">address</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
 
+
 <span class="n">User</span><span class="o">.</span><span class="n">avro_schema</span><span class="p">()</span>
 </code></pre></div>
 <p>Another changes introduced was the way that extra avro attributes are represented, like <code>namespace</code>, <code>aliases</code> and whether to include <code>avro documentation</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">User</span><span class="p">:</span>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">dataclasses</span>
+<span class="kn">import</span> <span class="nn">typing</span>
+
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
+
+
+<span class="k">class</span> <span class="nc">User</span><span class="p">:</span>
     <span class="s2">&quot;My User Class&quot;</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
@@ -1055,6 +1112,7 @@ it is explicit.</p>
 
 <span class="c1"># Now is perform using a Meta class</span>
 
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
     <span class="s2">&quot;My User Class&quot;</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>

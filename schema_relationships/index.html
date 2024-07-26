@@ -1101,7 +1101,13 @@ In those cases, the <code>predifne</code> type is used in order to generate a va
 </code></pre></div>
 <p><em>(This script is complete, it should run "as is")</em></p>
 <p>or with <code>arrays</code> or <code>maps</code>:</p>
-<div class="highlight"><pre><span></span><code><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">dataclasses</span>
+<span class="kn">import</span> <span class="nn">typing</span>
+
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
+
+
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span> <span class="nc">Location</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
     <span class="n">latitude</span><span class="p">:</span> <span class="nb">float</span>
     <span class="n">longitude</span><span class="p">:</span> <span class="nb">float</span>
@@ -1156,7 +1162,13 @@ In those cases, the <code>predifne</code> type is used in order to generate a va
 <span class="w">  </span><span class="p">]</span>
 <span class="p">}</span><span class="err">&#39;</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">dataclasses</span>
+<span class="kn">import</span> <span class="nn">typing</span>
+
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
+
+
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span> <span class="nc">Location</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
     <span class="n">latitude</span><span class="p">:</span> <span class="nb">float</span>
     <span class="n">longitude</span><span class="p">:</span> <span class="nb">float</span>
