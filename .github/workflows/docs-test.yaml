@@ -1,0 +1,33 @@
+name: Test Documentation
+
+on:
+  push:
+    branches: ["master"]
+  pull_request:
+    branches: ["*"]
+  workflow_dispatch:
+    inputs:
+      release:
+        description: "Release package"
+        required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup python
+        uses: actions/setup-python@v5
+        with:
+          cache: "pip"
+          architecture: x64
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install -U pip poetry
+          poetry --version
+          poetry config --local virtualenvs.in-project true
+          poetry install --extras "pydantic faust faker"
+
+      - name: Test Documentation
+        run: ./scripts/test-documentation

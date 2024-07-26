@@ -251,7 +251,8 @@ exactly the same name as the record `Address`.
 }
 ```
 
-If we try to generate the python models that correspond with the previous schema we end up with the following result:
+If we try to generate the python models that correspond with the previous schema we end up with the following models.
+The result is correct because it translate to python what the schema represents, but if we checked the `annotations` we see that `Address` is `overshadowed`
 
 ```python
 from dataclasses_avroschema import AvroModel
@@ -269,11 +270,8 @@ class User(AvroModel):
     name: str
     age: int
     Address: typing.Optional[Address] = None
-```
 
-The result is correct because it translate to python what the schema represents, but if we checked the `annotations` we see that `Address` is `overshadowed`:
-
-```python
+# Address` is `overshadowed` !!!
 print(User.__annotations__)
 # >>> {'name': str, 'age': int, 'Address': NoneType}
 
@@ -457,7 +455,7 @@ enum_schema = {
 }
 
 model_generator = ModelGenerator()
-result = model_generator.render(schema=schema)
+result = model_generator.render(schema=enum_schema)
 
 print(result)
 ```

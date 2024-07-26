@@ -13,6 +13,13 @@ As examples you will find how to `serialize/deserialize` python dataclasses usin
 The model is for the examples is the following:
 
 ```python
+from dataclasses import dataclass
+import typing
+import enum
+
+from dataclasses_avroschema import AvroModel
+
+
 class FavoriteColor(enum.Enum):
     BLUE = "BLUE"
     YELLOW = "YELLOW"
@@ -26,7 +33,7 @@ class UserModel(AvroModel):
     age: int
     favorite_colors: FavoriteColor = FavoriteColor.BLUE
     country: str = "Argentina"
-    address: Optional[str] = None
+    address: typing.Optional[str] = None
 
     class Meta:
         namespace = "User.v1"

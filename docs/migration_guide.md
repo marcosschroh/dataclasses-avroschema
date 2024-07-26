@@ -1,4 +1,4 @@
-## Migration from previous versions to 0.51.0
+# Migration from previous versions to 0.51.0
 
 - In this version was introduced the namespace `dataclasses_avroschema.pydantic` and the nanespace `dataclasses_avroschema.avrodantic` was removed. To make use of `AvroBaseModel` then
 replade the import `from dataclasses_avroschema.avrodantic import AvroBaseModel` by `from dataclasses_avroschema.pydantic import AvroBaseModel`
@@ -10,26 +10,44 @@ it is explicit.
 
 - Previously `Unions` that had `default_factory` where force to return a `callable` which the return type must be `list` or `dict`, now is not the case any more. If you use `default_factory` makes sure that it is a `callable`, that's it. This new fix also will be complain with type checkers.
 
-    ```python
-    @dataclasses.dataclass
-    class Bus(AvroModel):
-        engine_name: str
+```python
+import dataclasses
 
-    @dataclasses.dataclass
-    class Car(AvroModel):
-        engine_name: str
+from dataclasses_avroschema import AvroModel
 
-    mountain_trip: typing.Union[Bus, Car] = dataclasses.field(default_factory=lambda: {"engine_name": "honda"})
-    ```
 
-    and migrate to:
+@dataclasses.dataclass
+class Bus(AvroModel):
+    "A Bus"
+    engine_name: str
 
-    ```python
-    mountain_trip: Bus | Car = dataclasses.field(default_factory=lambda: Bus(engine_name="honda"))  # now it returns a proper type
-    ```
+    class Meta:
+        namespace = "types"
+
+
+@dataclasses.dataclass
+class Car(AvroModel):
+    "A Car"
+    engine_name: str
+
+    class Meta:
+        namespace = "types"
+
+
+@dataclasses.dataclass
+class UnionSchema(AvroModel):
+  "Some Unions"
+  lake_trip: Bus | Car
+  river_trip: Bus | Car | None = None
+  mountain_trip: Bus | Car = dataclasses.field(
+      default_factory=lambda: Bus(engine_name="honda"))
+  # mountain_trip: Bus | Car = dataclasses.field(default_factory=lambda: {"engine_name": "honda"}) # OLD WAY
+
+UnionSchema.avro_schema()
+```
 
 - `Field` internal api updated:
-    - `to_avro` was renamed to `default_to_avro` and is an instance method
+  - `to_avro` was renamed to `default_to_avro` and is an instance method
 
 ## Migration from previous versions to 0.27.0
 
@@ -98,7 +116,8 @@ it is explicit.
         GREEN = "GREEN"
 
 
-    class UserAdvance:
+    @dataclasses.dataclass
+    class UserAdvance(AvroModel):
         name: str
         age: int
         favorite_colors: FavoriteColor = FavoriteColor.BLUE  # --> field updated!!!
@@ -111,6 +130,11 @@ it is explicit.
 having this schemas:
 
 ```python
+import typing
+
+from dataclasses_avroschema import AvroModel
+
+
 class Address(AvroModel):
     "An Address"
     street: str
@@ -181,6 +205,13 @@ User.avro_schema()
 2. Now we use `namespaces` when same types are referenced multiple times (DRY), so you *MUST* define the property `namespace`:
 
 ```python
+import dataclasses
+import datetime
+
+from dataclasses_avroschema import AvroModel
+
+
+@dataclasses.dataclass
 class Location(AvroModel):
     latitude: float
     longitude: float
@@ -188,6 +219,8 @@ class Location(AvroModel):
     class Meta:
         namespace = "types.location_type"  # REQUIRED!!!!
 
+
+@dataclasses.dataclass
 class Trip(AvroModel):
     start_time: datetime.datetime
     start_location: Location
@@ -232,11 +265,10 @@ Trip.avro_schema_to_python()
 
 Now all the dataclasses should inheritance from `AvroModel` and not use anymore the `SchemaGenerator`:
 
-```python
+```py
 # Versions < 0.14.0
-
+import dataclasses
 import typing
-
 from dataclasses_avroschema import SchemaGenerator, types
 
 
@@ -251,11 +283,17 @@ class User:
     address: str = None
 
 SchemaGenerator(User).avro_schema()
+```
 
-# New versions
+### new version
+
+```py
+import dataclasses
+import typing
 from dataclasses_avroschema import AvroModel, types
 
 
+@dataclasses.dataclass
 class User(AvroModel):
     "An User"
     name: str
@@ -266,12 +304,19 @@ class User(AvroModel):
     country: str = "Argentina"
     address: str = None
 
+
 User.avro_schema()
 ```
 
 Another changes introduced was the way that extra avro attributes are represented, like `namespace`, `aliases` and whether to include `avro documentation`:
 
-```python
+```py
+import dataclasses
+import typing
+
+from dataclasses_avroschema import AvroModel
+
+
 class User:
     "My User Class"
     name: str
@@ -289,6 +334,7 @@ SchemaGenerator(User, include_schema_doc=False).avro_schema()
 
 # Now is perform using a Meta class
 
+@dataclasses.dataclass
 class User(AvroModel):
     "My User Class"
     name: str
