@@ -122,7 +122,7 @@ using the key `pydantic-class`.
 | string       | uuid         | pydantic.UUID5 |
 
 ```python
-import pydantic
+from pydantic import v1 as pydantic
 from dataclasses_avroschema.pydantic.v1 import AvroBaseModel
 
 
@@ -196,7 +196,7 @@ and then render the result:
 
 ```python
 from dataclasses_avroschema.pydantic.v1 import AvroBaseModel
-import pydantic
+from pydantic import v1 as pydantic
 import typing
 
 
@@ -338,7 +338,7 @@ It is also possible to create `fake` instances with `pydantic` models:
 ```python
 import typing
 import datetime
-from pydanti.v1 import Field
+from pydantic.v1 import Field
 from dataclasses_avroschema.pydantic.v1 import AvroBaseModel
 
 

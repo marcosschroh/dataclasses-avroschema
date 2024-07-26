@@ -1310,6 +1310,19 @@ griffe = ">=0.37"
 mkdocstrings = ">=0.20"
 
 [[package]]
+name = "mktestdocs"
+version = "0.2.2"
+description = ""
+optional = false
+python-versions = "*"
+files = [
+    {file = "mktestdocs-0.2.2-py2.py3-none-any.whl", hash = "sha256:b0eea09c14cb9df7bf112f848c3d5069713519eddb3b0b2223211699246c3f1d"},
+]
+
+[package.extras]
+test = ["pytest (>=4.0.2)"]
+
+[[package]]
 name = "mode-streaming"
 version = "0.4.0"
 description = "AsyncIO Service-based programming"
@@ -2443,4 +2456,4 @@ pydantic = ["pydantic"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "59eceb44f31221f6e00eda65d57a8c4e981b34e99da668636c3a35dcb9f6e1af"
+content-hash = "af4bef4f3300ca37fd9d437c0592f5077772ab2d63b8da117dd3652ff94c1e18"

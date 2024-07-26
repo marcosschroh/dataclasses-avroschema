@@ -26,7 +26,7 @@ class User(AvroModel):
 
 User.avro_schema()
 
-'{
+"""{
   "type": "record",
   "name": "User",
   "fields": [
@@ -38,7 +38,7 @@ User.avro_schema()
   "doc": "My User Class",
   "namespace": "test.com.ar/user/v1",
   "aliases": ["User", "My favorite User"]
-}'
+}"""
 ```
 
 *(This script is complete, it should run "as is")*
@@ -112,7 +112,7 @@ user.to_dict()
 It is possible to create `python instances` from a `dictionary` using the `parse_obj` method. If you are familiar with `pydantic`, this functionality does the same.
 Under the hood `dataclasses-avroschema` uses [dacite](https://github.com/konradhalas/dacite) with a default configuration:
 
-```python
+```py
 "check_types": False,
 "forward_references": {
     Model.__name__: Model,
@@ -350,19 +350,9 @@ class Child2(Parent, AvroModel):
     class Meta:
         schema_doc = False
 
-Child2.avro_schema()
 
-'{
-  "type": "record",
-  "name": "Child2",
-  "fields": [
-    {"name": "name", "type": "string"},
-    {"name": "age", "type": "long"},
-    {"name": "has_pets", "type": "boolean", "default": false},
-    {"name": "money", "type": "double", "default": 100.3},
-    {"name": "encoded", "type": "bytes"}
-  ]
-}'
+child_schema = Child.avro_schema_to_python()
+child_2_schema = Child2.avro_schema_to_python()
 
 
 assert child_schema["fields"] == child_2_schema["fields"]
