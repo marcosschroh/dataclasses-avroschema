@@ -723,20 +723,24 @@ zstandard = ["zstandard"]
 
 [[package]]
 name = "faust-streaming"
-version = "0.11.0"
+version = "0.11.1"
 description = "Python Stream Processing. A Faust fork"
 optional = true
 python-versions = ">=3.8.0"
 files = [
-    {file = "faust-streaming-0.11.0.tar.gz", hash = "sha256:7b86dfb822a0e18583ded20106832d79aabf45c6592a5d7c7fba181f7dd9883e"},
-    {file = "faust_streaming-0.11.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:c383c1c0302dfa7944a40fcf21e20ce327be90d766c2c92266400ac5b85a1bd5"},
-    {file = "faust_streaming-0.11.0-cp310-cp310-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a1e040ba4e80490e39925db4273a7a7da3c3b365019146fa3dd12d02d641f13c"},
-    {file = "faust_streaming-0.11.0-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:e0a526955452d96b219b32c341c241db6efeaf6cea3fc67b2075aa611a2e47fd"},
-    {file = "faust_streaming-0.11.0-cp311-cp311-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:dde5fa70d9c4db27e405a97e823e7a33966606c395a24b228980247a0e7df416"},
-    {file = "faust_streaming-0.11.0-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:34244670a3e7dc94ea45e86d32246bd7cbfbede1a690c18a1607baa3f15f61f1"},
-    {file = "faust_streaming-0.11.0-cp38-cp38-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:3f205900b52abb6468edf8b50ca89613d8e7fd1f834e1696f23a82e0af1346fd"},
-    {file = "faust_streaming-0.11.0-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:ced68a8cca723f812143388c3e04e28fba861b6e1f138f494e2b5b3b3a9fb580"},
-    {file = "faust_streaming-0.11.0-cp39-cp39-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:4292420801a99ecb750321435d66aff24a83a3f8f3f257995e135654065886ea"},
+    {file = "faust-streaming-0.11.1.tar.gz", hash = "sha256:0b8b08e5388dc9fd4ecdb72cc8a51a9b996b60291777fb52183f65f2ed9962c4"},
+    {file = "faust_streaming-0.11.1-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:0d71380688510988392e544211f012bfe45d8c33afd04b1e05622502bbd25757"},
+    {file = "faust_streaming-0.11.1-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:ab3bc2832040b9c4af46e4ee81d1a754fda96467a4de17c50e156bc53d7284a6"},
+    {file = "faust_streaming-0.11.1-cp310-cp310-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:548429c07bdc3390519f28dfcc8acbe71822e46e4b8c02b6e20762b4d918dd43"},
+    {file = "faust_streaming-0.11.1-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:913f03c53ea876125503fa8d21954edcce65f9ec1dce79565bde1a17d873f998"},
+    {file = "faust_streaming-0.11.1-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:5fb92f2e9bf166234029feaffeae66b098b4d257c923df00eccbca55d2ba3059"},
+    {file = "faust_streaming-0.11.1-cp311-cp311-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:74ce646e9288f8aecd824d98113c472801b04c4e52207445aa0a25bc05d5b455"},
+    {file = "faust_streaming-0.11.1-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:74a4dc34c179ff002c7c2a05a48718fff40fa326d1700df98fd0f3ea85aba8b5"},
+    {file = "faust_streaming-0.11.1-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:47740457b2e3be0bfea2ccd3589b1acd899dd1fef99fd7f93493605a87bab96a"},
+    {file = "faust_streaming-0.11.1-cp38-cp38-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:89acd63bcd9ba43a962d220ea19581d758141045ce31a5dc81b6d9681534c5ff"},
+    {file = "faust_streaming-0.11.1-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:a1164d96e68bca16a1d3510356cb05e9c6ac604fe5bfae4cbb6cbe85ff55e728"},
+    {file = "faust_streaming-0.11.1-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:bc3560c7d8215486d075ee4f461214f9634e519ceebe30b0f7d49d9270bc9713"},
+    {file = "faust_streaming-0.11.1-cp39-cp39-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:53034f7bb9ebd4b4feefa96fe8227be5f6f2c0b1fc10eec6029005bad6398fdb"},
 ]
 
 [package.dependencies]
