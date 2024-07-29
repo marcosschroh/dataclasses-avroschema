@@ -27,7 +27,7 @@ jobs:
           python -m pip install -U pip poetry
           poetry --version
           poetry config --local virtualenvs.in-project true
-          poetry install --extras "pydantic faust faker"
+          poetry install --all-extras --no-ansi
 
       - name: Test Documentation
         run: ./scripts/test-documentation

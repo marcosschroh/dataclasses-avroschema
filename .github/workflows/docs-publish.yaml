@@ -20,7 +20,7 @@ jobs:
         python -m pip install -U pip poetry
         poetry --version
         poetry config --local virtualenvs.in-project true
-        poetry install --only docs
+        poetry install --only docs --no-ansi
 
     - name: Build docs
       run: |
