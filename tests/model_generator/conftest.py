@@ -235,7 +235,7 @@ def schema_with_enum_types() -> Dict:
                 },
             },
             {
-                "name": "primaty_color",
+                "name": "primary_color",
                 "type": "some.name.space.FavoriteColor",
             },
             {
@@ -356,7 +356,7 @@ def schema_with_enum_types_no_pascal_case() -> Dict:
                     "aliases": ["Color", "My favorite color"],
                 },
             },
-            {"name": "primaty_color", "type": "some.name.space.my_favorite_color"},
+            {"name": "primary_color", "type": "some.name.space.my_favorite_color"},
             {
                 "name": "superheros",
                 "type": {"type": "enum", "name": "super_heros", "symbols": ["batman", "superman", "spiderman"]},

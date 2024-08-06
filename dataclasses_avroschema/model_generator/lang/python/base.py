@@ -47,6 +47,7 @@ class BaseGenerator:
             "aliases": templates.metaclass_alias_field_template,
             "original_schema": templates.metaclass_schema_field_template,
             "default": templates.metaclass_field_template,
+            "schema_name": templates.metaclass_field_template,
         }
     )
     # represent the decorator to add in the base class
@@ -103,7 +104,12 @@ class BaseGenerator:
         return "".join([extra for extra in self.extras])
 
     def render_metaclass(
-        self, *, schema: JsonDict, field_order: typing.Optional[typing.List[str]] = None, decorator: str = ""
+        self,
+        *,
+        schema: JsonDict,
+        field_order: typing.Optional[typing.List[str]] = None,
+        decorator: str = "",
+        add_schema_name: bool = False,
     ) -> typing.Optional[str]:
         """
         Render Class Meta that contains the schema matadata
@@ -126,6 +132,9 @@ class BaseGenerator:
                     value=field_order,
                 )
             )
+
+        if add_schema_name:
+            metadata.append(self.metadata_field_templates["schema_name"].safe_substitute(name="schema_name", value=schema["name"]))
 
         properties = self.field_identation.join(metadata)
 
@@ -185,7 +194,8 @@ class BaseGenerator:
             docstring=docstring,
         )
 
-        class_metadata = self.render_metaclass(schema=schema, field_order=field_order)
+        add_schema_name = not name == schema["name"]
+        class_metadata = self.render_metaclass(schema=schema, field_order=field_order, add_schema_name=add_schema_name)
         if class_metadata is not None:
             rendered_class += class_metadata
 
@@ -448,7 +458,8 @@ class BaseGenerator:
 
         docstring = self.render_docstring(docstring=field.get("doc"))
         enum_class = templates.enum_template.safe_substitute(name=enum_name, symbols=symbols_repr, docstring=docstring)
-        metaclass = self.render_metaclass(schema=field, decorator=templates.METACLASS_DECORATOR)
+        add_schema_name = not enum_name == field["name"]
+        metaclass = self.render_metaclass(schema=field, decorator=templates.METACLASS_DECORATOR, add_schema_name=add_schema_name)
 
         if metaclass:
             enum_class += metaclass

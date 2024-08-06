@@ -488,6 +488,10 @@ class EnumField(Field):
     def get_avro_type(self) -> typing.Union[str, types.JsonDict]:
         metadata = self._get_meta_class_attributes()
         name = self.type.__name__
+        # If the enum name in avro schema different than the python enum class name, use the schema_name.
+        if "schema_name" in metadata:
+            name = metadata.get("schema_name")
+            metadata.pop("schema_name")
 
         if not self.exist_type():
             user_defined_type = utils.UserDefinedType(name=name, type=self.type)
