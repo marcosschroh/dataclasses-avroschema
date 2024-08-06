@@ -134,7 +134,9 @@ class BaseGenerator:
             )
 
         if add_schema_name:
-            metadata.append(self.metadata_field_templates["schema_name"].safe_substitute(name="schema_name", value=schema["name"]))
+            metadata.append(
+                self.metadata_field_templates["schema_name"].safe_substitute(name="schema_name", value=schema["name"])
+            )
 
         properties = self.field_identation.join(metadata)
 
@@ -459,7 +461,11 @@ class BaseGenerator:
         docstring = self.render_docstring(docstring=field.get("doc"))
         enum_class = templates.enum_template.safe_substitute(name=enum_name, symbols=symbols_repr, docstring=docstring)
         add_schema_name = not enum_name == field["name"]
-        metaclass = self.render_metaclass(schema=field, decorator=templates.METACLASS_DECORATOR, add_schema_name=add_schema_name)
+        metaclass = self.render_metaclass(
+            schema=field,
+            decorator=templates.METACLASS_DECORATOR,
+            add_schema_name=add_schema_name,
+        )
 
         if metaclass:
             enum_class += metaclass
