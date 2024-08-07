@@ -196,7 +196,7 @@ class BaseGenerator:
             docstring=docstring,
         )
 
-        add_schema_name = not name == schema["name"]
+        add_schema_name = name != schema["name"]
         class_metadata = self.render_metaclass(schema=schema, field_order=field_order, add_schema_name=add_schema_name)
         if class_metadata is not None:
             rendered_class += class_metadata
@@ -460,7 +460,7 @@ class BaseGenerator:
 
         docstring = self.render_docstring(docstring=field.get("doc"))
         enum_class = templates.enum_template.safe_substitute(name=enum_name, symbols=symbols_repr, docstring=docstring)
-        add_schema_name = not enum_name == field["name"]
+        add_schema_name = enum_name != field["name"]
         metaclass = self.render_metaclass(
             schema=field,
             decorator=templates.METACLASS_DECORATOR,

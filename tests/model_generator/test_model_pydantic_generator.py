@@ -2,7 +2,6 @@ from dataclasses_avroschema import ModelGenerator, ModelType, types
 from dataclasses_avroschema.fields import field_utils
 from dataclasses_avroschema.model_generator.lang.python.avro_to_python_utils import (
     render_datetime,
-    templates,
 )
 
 
@@ -186,7 +185,7 @@ class Message(AvroBaseModel):
 
 
 def test_decimal_field(schema_with_decimal_field: types.JsonDict) -> None:
-    expected_result = f"""
+    expected_result = """
 from dataclasses_avroschema import types
 from dataclasses_avroschema.pydantic import AvroBaseModel
 
@@ -195,7 +194,7 @@ from dataclasses_avroschema.pydantic import AvroBaseModel
 class Demo(AvroBaseModel):
     foo: types.condecimal(max_digits=10, decimal_places=3)
 
-    {templates.METACLASS_DECORATOR}
+    
     class Meta:
         schema_name = "demo"
 """
