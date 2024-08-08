@@ -1,0 +1,53 @@
+{
+    "type": "record",
+    "name": "UserDetails",
+    "fields": [
+        {
+            "name": "address",
+            "type": {
+                "type": "record",
+                "name": "address",
+                "fields": [
+                    {
+                        "name": "streetaddress",
+                        "type": "string"
+                    },
+                    {
+                        "name": "city",
+                        "type": {
+                            "type": "record",
+                            "name": "city",
+                            "fields": [
+                                {
+                                    "name": "city_name",
+                                    "type": "string"
+                                },
+                                {
+                                    "name": "zip_code",
+                                    "type": "int"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "work_location",
+            "type": {
+                "type": "record",
+                "name": "work_location",
+                "fields": [
+                    {
+                        "name": "company_name",
+                        "type": "string"
+                    },
+                    {
+                        "name": "city",
+                        "type": "city"
+                    }
+                ]
+            }
+        }
+    ]
+}

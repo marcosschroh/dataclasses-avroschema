@@ -129,7 +129,7 @@ class Field:
         same_types = [
             field.type
             for field in self.parent._user_defined_types
-            if field.type == self.type and field.name != self.name
+            if field.type == self.type
         ]
 
         # If length > 0, means that it is the first appearance
