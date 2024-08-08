@@ -193,6 +193,10 @@ from dataclasses_avroschema.pydantic import AvroBaseModel
 
 class Demo(AvroBaseModel):
     foo: types.condecimal(max_digits=10, decimal_places=3)
+
+    
+    class Meta:
+        schema_name = "demo"
 """
     model_generator = ModelGenerator()
     result = model_generator.render(schema=schema_with_decimal_field, model_type=ModelType.AVRODANTIC.value)

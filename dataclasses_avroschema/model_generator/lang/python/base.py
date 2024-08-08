@@ -47,6 +47,7 @@ class BaseGenerator:
             "aliases": templates.metaclass_alias_field_template,
             "original_schema": templates.metaclass_schema_field_template,
             "default": templates.metaclass_field_template,
+            "schema_name": templates.metaclass_field_template,
         }
     )
     # represent the decorator to add in the base class
@@ -103,7 +104,12 @@ class BaseGenerator:
         return "".join([extra for extra in self.extras])
 
     def render_metaclass(
-        self, *, schema: JsonDict, field_order: typing.Optional[typing.List[str]] = None, decorator: str = ""
+        self,
+        *,
+        schema: JsonDict,
+        field_order: typing.Optional[typing.List[str]] = None,
+        decorator: str = "",
+        add_schema_name: bool = False,
     ) -> typing.Optional[str]:
         """
         Render Class Meta that contains the schema matadata
@@ -125,6 +131,11 @@ class BaseGenerator:
                     name="field_order",
                     value=field_order,
                 )
+            )
+
+        if add_schema_name:
+            metadata.append(
+                self.metadata_field_templates["schema_name"].safe_substitute(name="schema_name", value=schema["name"])
             )
 
         properties = self.field_identation.join(metadata)
@@ -185,7 +196,8 @@ class BaseGenerator:
             docstring=docstring,
         )
 
-        class_metadata = self.render_metaclass(schema=schema, field_order=field_order)
+        add_schema_name = name != schema["name"]
+        class_metadata = self.render_metaclass(schema=schema, field_order=field_order, add_schema_name=add_schema_name)
         if class_metadata is not None:
             rendered_class += class_metadata
 
@@ -429,7 +441,7 @@ class BaseGenerator:
         We need a template for it in order to create the Enum
         """
         self.imports.add("import enum")
-        enum_name: str = field["name"]
+        enum_name: str = casefy.pascalcase(field["name"])
 
         symbols_map = {}
         symbols: typing.List[str] = field["symbols"]
@@ -448,7 +460,12 @@ class BaseGenerator:
 
         docstring = self.render_docstring(docstring=field.get("doc"))
         enum_class = templates.enum_template.safe_substitute(name=enum_name, symbols=symbols_repr, docstring=docstring)
-        metaclass = self.render_metaclass(schema=field, decorator=templates.METACLASS_DECORATOR)
+        add_schema_name = enum_name != field["name"]
+        metaclass = self.render_metaclass(
+            schema=field,
+            decorator=templates.METACLASS_DECORATOR,
+            add_schema_name=add_schema_name,
+        )
 
         if metaclass:
             enum_class += metaclass
@@ -490,7 +507,7 @@ class BaseGenerator:
             # it means the type points to the an already specified type so it contains the type name
             # with optional namespaces, e.g. my_namespace.users.User
             # In this case we should return the last part of the string
-            return type.split(".")[-1]
+            return casefy.pascalcase(type.split(".")[-1])
         elif default is not None:
             return str(self.avro_type_to_lang.get(type, default))
         else:
@@ -577,7 +594,7 @@ class BaseGenerator:
         ):
             default_repr = f'b"{default}"'
         elif field_type == field_utils.ENUM:
-            default_repr = f"{name}.{casefy.uppercase(default)}"
+            default_repr = f"{casefy.pascalcase(name)}.{casefy.uppercase(default)}"
         elif isinstance(field_type, list):
             # union type
             default_repr = self.get_field_default(field_type=field_type[0], default=default, name=name)

@@ -121,6 +121,7 @@ class FieldMetadata:
     aliases: typing.List[str] = dataclasses.field(default_factory=list)
     doc: typing.Optional[str] = None
     namespace: typing.Optional[str] = None
+    schema_name: typing.Optional[str] = None
 
     @classmethod
     def create(cls: typing.Type["FieldMetadata"], klass: typing.Optional[type]) -> "FieldMetadata":
@@ -129,6 +130,7 @@ class FieldMetadata:
             doc=getattr(klass, "doc", None),
             namespace=getattr(klass, "namespace", None),
             default=getattr(klass, "default", dataclasses.MISSING),
+            schema_name=getattr(klass, "schema_name", None),
         )
 
     def to_dict(self) -> typing.Dict[str, typing.Union[typing.List[str], str]]:

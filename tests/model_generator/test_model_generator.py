@@ -234,7 +234,7 @@ class Cars({templates.ENUM_PYTHON_VERSION}):
 @dataclasses.dataclass
 class User(AvroModel):
     favorite_color: FavoriteColor
-    primaty_color: FavoriteColor
+    primary_color: FavoriteColor
     superheros: Superheros = Superheros.BATMAN
     cars: typing.Optional[Cars] = None
 """
@@ -348,14 +348,17 @@ import dataclasses
 import enum
 
 
-class unit_multi_player({templates.ENUM_PYTHON_VERSION}):
+class UnitMultiPlayer({templates.ENUM_PYTHON_VERSION}):
     q = "q"
     Q = "Q"
 
+    {templates.METACLASS_DECORATOR}
+    class Meta:
+        schema_name = "unit_multi_player"
 
 @dataclasses.dataclass
 class User(AvroModel):
-    unit_multi_player: unit_multi_player
+    unit_multi_player: UnitMultiPlayer
 
 """
     model_generator = ModelGenerator()
@@ -371,7 +374,7 @@ import enum
 import typing
 
 
-class my_favorite_color({templates.ENUM_PYTHON_VERSION}):
+class MyFavoriteColor({templates.ENUM_PYTHON_VERSION}):
     """
     A favorite color
     """
@@ -383,25 +386,32 @@ class my_favorite_color({templates.ENUM_PYTHON_VERSION}):
     class Meta:
         namespace = "some.name.space"
         aliases = ['Color', 'My favorite color']
+        schema_name = "my_favorite_color"
 
-class super_heros({templates.ENUM_PYTHON_VERSION}):
+class SuperHeros({templates.ENUM_PYTHON_VERSION}):
     BATMAN = "batman"
     SUPERMAN = "superman"
     SPIDERMAN = "spiderman"
 
+    {templates.METACLASS_DECORATOR}
+    class Meta:
+        schema_name = "super_heros"
 
-class cars({templates.ENUM_PYTHON_VERSION}):
+class Cars({templates.ENUM_PYTHON_VERSION}):
     BMW = "bmw"
     FERRARY = "ferrary"
     DUNA = "duna"
 
+    {templates.METACLASS_DECORATOR}
+    class Meta:
+        schema_name = "cars"
 
 @dataclasses.dataclass
 class User(AvroModel):
-    favorite_color: my_favorite_color
-    primaty_color: my_favorite_color
-    superheros: super_heros = super_heros.BATMAN
-    my_cars: typing.Optional[cars] = None
+    favorite_color: MyFavoriteColor
+    primary_color: MyFavoriteColor
+    superheros: SuperHeros = SuperHeros.BATMAN
+    my_cars: typing.Optional[Cars] = None
 '''
     model_generator = ModelGenerator()
     result = model_generator.render(schema=schema_with_enum_types_no_pascal_case)
@@ -534,6 +544,11 @@ import dataclasses
 @dataclasses.dataclass
 class Demo(AvroModel):
     foo: types.condecimal(max_digits=10, decimal_places=3)
+
+    
+    class Meta:
+        schema_name = "demo"
+
 """
     model_generator = ModelGenerator()
     result = model_generator.render(schema=schema_with_decimal_field)
