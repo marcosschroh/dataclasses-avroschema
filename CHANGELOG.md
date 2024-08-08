@@ -1,3 +1,9 @@
+## 0.62.3 (2024-08-08)
+
+### Fix
+
+- incorrect casing when rendering fields and enums  (#694). Closes #693 and #692
+
 ## 0.62.2 (2024-07-24)
 
 ### Fix
