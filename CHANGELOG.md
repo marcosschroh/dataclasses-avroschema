@@ -1,3 +1,9 @@
+## 0.62.4 (2024-08-09)
+
+### Fix
+
+- Always reuse the rendered type when type is same (#710). Closes #709
+
 ## 0.62.3 (2024-08-08)
 
 ### Fix
