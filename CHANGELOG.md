@@ -1,3 +1,9 @@
+## 0.62.5 (2024-08-13)
+
+### Fix
+
+- extra option with cli added in pyproject. Requirements fixed. Closes #711 (#718)
+
 ## 0.62.4 (2024-08-09)
 
 ### Fix
