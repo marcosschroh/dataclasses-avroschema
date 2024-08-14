@@ -5,12 +5,10 @@ import logging
 import typing
 from collections import OrderedDict
 
-from inflector import Inflector
+import inflection
 from typing_extensions import get_args
 
 from dataclasses_avroschema import utils
-
-p = Inflector()
 
 logger = logging.getLogger(__name__)
 
@@ -52,7 +50,7 @@ class Field:
 
     @staticmethod
     def get_singular_name(name: str) -> str:
-        return p.singularize(name)
+        return inflection.singularize(name)
 
     def get_metadata(self) -> typing.List[typing.Tuple[str, str]]:
         return [(name, value) for name, value in self.metadata.items()]
@@ -126,11 +124,7 @@ class Field:
 
     def exist_type(self) -> int:
         # filter by the same field types
-        same_types = [
-            field.type
-            for field in self.parent._user_defined_types
-            if field.type == self.type
-        ]
+        same_types = [field.type for field in self.parent._user_defined_types if field.type == self.type]
 
         # If length > 0, means that it is the first appearance
         # of this type, otherwise exist already.
