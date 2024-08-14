@@ -1,3 +1,9 @@
+## 0.62.6 (2024-08-14)
+
+### Fix
+
+- inflector dependency replaced by inflection. First steps to publish library to Conda. Related to #706 (#719)
+
 ## 0.62.5 (2024-08-13)
 
 ### Fix
