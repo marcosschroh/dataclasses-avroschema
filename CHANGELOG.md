@@ -1,3 +1,9 @@
+## 0.62.7 (2024-08-15)
+
+### Fix
+
+- python-dateutil dependency updated in pyproject (#720)
+
 ## 0.62.6 (2024-08-14)
 
 ### Fix
