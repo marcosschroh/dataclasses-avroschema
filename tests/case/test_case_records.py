@@ -227,6 +227,58 @@ CASE_TO_DATA_COMPLEX_FIELDS_NESTED = [
 ]
 
 
+CASE_TO_DATA_WITH_UNION = [
+    (
+        case.CAMELCASE,
+        '{"type": "record", "name": "Animal", "fields": [{"name": "tigerAnimal", "type": ["null", {"type": "record", "name": "Cat", "fields": [{"name": "name", "type": "string"}, {"name": "createdBy", "type": "string"}]}], "default": null}, {"name": "whaleFish", "type": ["null", {"type": "record", "name": "Fish", "fields": [{"name": "name", "type": "string"}, {"name": "finsCount", "type": "long"}]}], "default": null}, {"name": "lionAnimal", "type": ["null", "Cat"], "default": null}]}',  # noqa
+    ),
+    (
+        case.CAPITALCASE,
+        '{"type": "record", "name": "Animal", "fields": [{"name": "Tiger_animal", "type": ["null", {"type": "record", "name": "Cat", "fields": [{"name": "Name", "type": "string"}, {"name": "Created_by", "type": "string"}]}], "default": null}, {"name": "Whale_fish", "type": ["null", {"type": "record", "name": "Fish", "fields": [{"name": "Name", "type": "string"}, {"name": "Fins_count", "type": "long"}]}], "default": null}, {"name": "Lion_animal", "type": ["null", "Cat"], "default": null}]}',  # noqa
+    ),
+    (
+        case.CONSTCASE,
+        '{"type": "record", "name": "Animal", "fields": [{"name": "TIGER_ANIMAL", "type": ["null", {"type": "record", "name": "Cat", "fields": [{"name": "NAME", "type": "string"}, {"name": "CREATED_BY", "type": "string"}]}], "default": null}, {"name": "WHALE_FISH", "type": ["null", {"type": "record", "name": "Fish", "fields": [{"name": "NAME", "type": "string"}, {"name": "FINS_COUNT", "type": "long"}]}], "default": null}, {"name": "LION_ANIMAL", "type": ["null", "Cat"], "default": null}]}',  # noqa
+    ),
+    (
+        case.LOWERCASE,
+        '{"type": "record", "name": "Animal", "fields": [{"name": "tiger_animal", "type": ["null", {"type": "record", "name": "Cat", "fields": [{"name": "name", "type": "string"}, {"name": "created_by", "type": "string"}]}], "default": null}, {"name": "whale_fish", "type": ["null", {"type": "record", "name": "Fish", "fields": [{"name": "name", "type": "string"}, {"name": "fins_count", "type": "long"}]}], "default": null}, {"name": "lion_animal", "type": ["null", "Cat"], "default": null}]}',  # noqa
+    ),
+    (
+        case.PASCALCASE,
+        '{"type": "record", "name": "Animal", "fields": [{"name": "TigerAnimal", "type": ["null", {"type": "record", "name": "Cat", "fields": [{"name": "Name", "type": "string"}, {"name": "CreatedBy", "type": "string"}]}], "default": null}, {"name": "WhaleFish", "type": ["null", {"type": "record", "name": "Fish", "fields": [{"name": "Name", "type": "string"}, {"name": "FinsCount", "type": "long"}]}], "default": null}, {"name": "LionAnimal", "type": ["null", "Cat"], "default": null}]}',  # noqa
+    ),
+    (
+        case.PATHCASE,
+        '{"type": "record", "name": "Animal", "fields": [{"name": "tiger/animal", "type": ["null", {"type": "record", "name": "Cat", "fields": [{"name": "name", "type": "string"}, {"name": "created/by", "type": "string"}]}], "default": null}, {"name": "whale/fish", "type": ["null", {"type": "record", "name": "Fish", "fields": [{"name": "name", "type": "string"}, {"name": "fins/count", "type": "long"}]}], "default": null}, {"name": "lion/animal", "type": ["null", "Cat"], "default": null}]}',  # noqa
+    ),
+    (
+        case.SNAKECASE,
+        '{"type": "record", "name": "Animal", "fields": [{"name": "tiger_animal", "type": ["null", {"type": "record", "name": "Cat", "fields": [{"name": "name", "type": "string"}, {"name": "created_by", "type": "string"}]}], "default": null}, {"name": "whale_fish", "type": ["null", {"type": "record", "name": "Fish", "fields": [{"name": "name", "type": "string"}, {"name": "fins_count", "type": "long"}]}], "default": null}, {"name": "lion_animal", "type": ["null", "Cat"], "default": null}]}',  # noqa
+    ),
+    (
+        case.SPINALCASE,
+        '{"type": "record", "name": "Animal", "fields": [{"name": "tiger-animal", "type": ["null", {"type": "record", "name": "Cat", "fields": [{"name": "name", "type": "string"}, {"name": "created-by", "type": "string"}]}], "default": null}, {"name": "whale-fish", "type": ["null", {"type": "record", "name": "Fish", "fields": [{"name": "name", "type": "string"}, {"name": "fins-count", "type": "long"}]}], "default": null}, {"name": "lion-animal", "type": ["null", "Cat"], "default": null}]}',  # noqa
+    ),
+    (
+        case.UPPERSPINALCASE,
+        '{"type": "record", "name": "Animal", "fields": [{"name": "TIGER-ANIMAL", "type": ["null", {"type": "record", "name": "Cat", "fields": [{"name": "NAME", "type": "string"}, {"name": "CREATED-BY", "type": "string"}]}], "default": null}, {"name": "WHALE-FISH", "type": ["null", {"type": "record", "name": "Fish", "fields": [{"name": "NAME", "type": "string"}, {"name": "FINS-COUNT", "type": "long"}]}], "default": null}, {"name": "LION-ANIMAL", "type": ["null", "Cat"], "default": null}]}',  # noqa
+    ),
+    (
+        case.TRIMCASE,
+        '{"type": "record", "name": "Animal", "fields": [{"name": "tiger_animal", "type": ["null", {"type": "record", "name": "Cat", "fields": [{"name": "name", "type": "string"}, {"name": "created_by", "type": "string"}]}], "default": null}, {"name": "whale_fish", "type": ["null", {"type": "record", "name": "Fish", "fields": [{"name": "name", "type": "string"}, {"name": "fins_count", "type": "long"}]}], "default": null}, {"name": "lion_animal", "type": ["null", "Cat"], "default": null}]}',  # noqa
+    ),
+    (
+        case.UPPERCASE,
+        '{"type": "record", "name": "Animal", "fields": [{"name": "TIGER_ANIMAL", "type": ["null", {"type": "record", "name": "Cat", "fields": [{"name": "NAME", "type": "string"}, {"name": "CREATED_BY", "type": "string"}]}], "default": null}, {"name": "WHALE_FISH", "type": ["null", {"type": "record", "name": "Fish", "fields": [{"name": "NAME", "type": "string"}, {"name": "FINS_COUNT", "type": "long"}]}], "default": null}, {"name": "LION_ANIMAL", "type": ["null", "Cat"], "default": null}]}',  # noqa
+    ),
+    (
+        case.ALPHANUMCASE,
+        '{"type": "record", "name": "Animal", "fields": [{"name": "tigeranimal", "type": ["null", {"type": "record", "name": "Cat", "fields": [{"name": "name", "type": "string"}, {"name": "createdby", "type": "string"}]}], "default": null}, {"name": "whalefish", "type": ["null", {"type": "record", "name": "Fish", "fields": [{"name": "name", "type": "string"}, {"name": "finscount", "type": "long"}]}], "default": null}, {"name": "lionanimal", "type": ["null", "Cat"], "default": null}]}',  # noqa
+    ),
+]
+
+
 @pytest.mark.parametrize("case_type, schema", CASE_TO_DATA)
 def test_case_record(case_type, schema):
     class Event(AvroModel):
@@ -301,3 +353,31 @@ def test_case_complex_fields_nested(case_type, schema):
 
     assert schema == UserAdvance.avro_schema(case_type=case_type)
     assert json.loads(schema) == UserAdvance.avro_schema_to_python(case_type=case_type)
+
+
+@pytest.mark.parametrize("case_type, schema", CASE_TO_DATA_WITH_UNION)
+def test_case_with_union(case_type, schema):
+    class Cat(AvroModel):
+        name: str
+        created_by: str
+
+        class Meta:
+            schema_doc = False
+
+    class Fish(AvroModel):
+        name: str
+        fins_count: int
+
+        class Meta:
+            schema_doc = False
+
+    class Animal(AvroModel):
+        tiger_animal: typing.Optional[Cat] = None
+        whale_fish: typing.Optional[Fish] = None
+        lion_animal: typing.Optional[Cat] = None
+
+        class Meta:
+            schema_doc = False
+
+    assert schema == Animal.avro_schema(case_type=case_type)
+    assert json.loads(schema) == Animal.avro_schema_to_python(case_type=case_type)
