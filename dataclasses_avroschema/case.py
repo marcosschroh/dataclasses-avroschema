@@ -58,6 +58,10 @@ def case_item(item: typing.Dict, case_type: str) -> typing.Dict:
             # means that it is a complex type with a record
             new_record = case_record(value, case_type=case_type)
             new_field[key] = new_record
+        elif isinstance(value, list):
+            new_field[key] = [
+                case_record(element, case_type=case_type) if isinstance(element, dict) else element for element in value
+            ]
         else:
             new_field[key] = value
 
