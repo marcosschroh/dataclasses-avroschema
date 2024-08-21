@@ -372,23 +372,23 @@ User.fake()
 
 ## Features
 
-[x] Primitive types: int, long, double, float, boolean, string and null support
-[x] Complex types: enum, array, map, fixed, unions and records support
-[x] `typing.Annotated` supported
-[x] `typing.Literal` supported
-[x] Logical Types: date, time (millis and micro), datetime (millis and micro), uuid support
-[X] Schema relations (oneToOne, oneToMany)
-[X] Recursive Schemas
-[X] Generate Avro Schemas from `faust.Record`
-[X] Instance serialization correspondent to `avro schema` generated
-[X] Data deserialization. Return python dict or class instance
-[X] Generate json from python class instance
-[X] Case Schemas
-[X] Generate models from `avsc` files
-[X] Examples of integration with `kafka` drivers: [aiokafka](https://github.com/aio-libs/aiokafka), [kafka-python](https://github.com/dpkp/kafka-python)
-[X] Example of integration  with `redis` drivers: [walrus](https://github.com/coleifer/walrus) and [redisgears-py](https://github.com/RedisGears/redisgears-py)
-[X] Factory instances
-[X] [Pydantic](https://pydantic-docs.helpmanual.io/) integration
+- [x] Primitive types: int, long, double, float, boolean, string and null support
+- [x] Complex types: enum, array, map, fixed, unions and records support
+- [x] `typing.Annotated` supported
+- [x] `typing.Literal` supported
+- [x] Logical Types: date, time (millis and micro), datetime (millis and micro), uuid support
+- [x] Schema relations (oneToOne, oneToMany)
+- [x] Recursive Schemas
+- [x] Generate Avro Schemas from `faust.Record`
+- [x] Instance serialization correspondent to `avro schema` generated
+- [x] Data deserialization. Return python dict or class instance
+- [x] Generate json from python class instance
+- [x] Case Schemas
+- [x] Generate models from `avsc` files
+- [x] Examples of integration with `kafka` drivers: [aiokafka](https://github.com/aio-libs/aiokafka), [kafka-python](https://github.com/dpkp/kafka-python)
+- [x] Example of integration  with `redis` drivers: [walrus](https://github.com/coleifer/walrus) and [redisgears-py](https://github.com/RedisGears/redisgears-py)
+- [x] Factory instances
+- [x] [Pydantic](https://pydantic-docs.helpmanual.io/) integration
 
 ## Development
 
