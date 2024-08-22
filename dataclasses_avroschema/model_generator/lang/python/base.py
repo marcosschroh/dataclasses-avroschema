@@ -327,6 +327,9 @@ class BaseGenerator:
         elif logical_type == field_utils.DECIMAL:
             # this is a special case for logical types
             type = self.parse_decimal(field=field, default=default)
+        elif logical_type not in self.logical_types_imports:
+            # Then it is a custom logicalType, so we default to the native type
+            type = self.get_language_type(type=field["type"])
         else:
             # add the logical type import
             self.imports.add(self.logical_types_imports[logical_type])

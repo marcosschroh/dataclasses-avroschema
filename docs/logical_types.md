@@ -13,6 +13,9 @@ The following list represent the avro logical types mapped to python types:
 | string    |  uuid        | uuid.UUID |
 | bytes     | decimal      | types.condecimal |
 
+!!! note
+    Custom `logicalTypes` are not supported
+
 ## Date
 
 ```python title="Date example"

@@ -760,6 +760,26 @@ def schema_with_logical_types_field_order() -> JsonDict:
 
 
 @pytest.fixture
+def schema_with_unknown_logical_types() -> JsonDict:
+    return {
+        "type": "record",
+        "name": "TestEvent",
+        "namespace": "com.example",
+        "fields": [
+            {"name": "occurredAt", "type": {"type": "long", "logicalType": "timestamp-millis"}, "doc": "Event time"},
+            {
+                "name": "previous",
+                "type": {
+                    "type": "record",
+                    "name": "urls",
+                    "fields": [{"name": "regular", "type": {"type": "string", "logicalType": "url"}, "doc": "Urls"}],
+                },
+            },
+        ],
+    }
+
+
+@pytest.fixture
 def schema_with_pydantic_fields() -> JsonDict:
     return {
         "type": "record",
