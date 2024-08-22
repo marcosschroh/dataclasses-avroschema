@@ -1,3 +1,9 @@
+## 0.62.9 (2024-08-22)
+
+### Fix
+
+- fallback to native types if custom logicalTypes are defined when rendering Model. Closes #707 and closes #209 (#724)
+
 ## 0.62.8 (2024-08-21)
 
 ### Fix
