@@ -550,6 +550,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#logicaltypes" class="md-nav__link">
+    <span class="md-ellipsis">
+      LogicalTypes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#render-pydantic-models" class="md-nav__link">
     <span class="md-ellipsis">
       Render Pydantic models
@@ -794,6 +803,15 @@
   <a href="#render-a-python-module" class="md-nav__link">
     <span class="md-ellipsis">
       Render a Python module
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#logicaltypes" class="md-nav__link">
+    <span class="md-ellipsis">
+      LogicalTypes
     </span>
   </a>
   
@@ -1216,6 +1234,42 @@ and any extras so the result can be saved in a file and it will be ready to use.
     <span class="n">street_number</span><span class="p">:</span> <span class="nb">int</span>
 </code></pre></div>
 <p>Generating a single module from multiple schemas is useful for example to group schemas that belong to the same namespace.</p>
+<h2 id="logicaltypes">LogicalTypes</h2>
+<p>Native <code>logicalTypes</code> are supported by <code>dataclasses-avroschema</code> but custom ones are not. If you defined a custom <code>logicalType</code> then
+the fallback is used when generating the field. In the next example we have a <code>logicalType</code> defined as <code>url</code>, which is not a native one,
+then the model generated will use <code>string</code></p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">ModelGenerator</span><span class="p">,</span> <span class="n">ModelType</span>
+
+<span class="n">model_generator</span> <span class="o">=</span> <span class="n">ModelGenerator</span><span class="p">()</span>
+
+
+<span class="n">schema</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;record&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;TestEvent&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;regular&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;logicalType&quot;</span><span class="p">:</span> <span class="s2">&quot;url&quot;</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;doc&quot;</span><span class="p">:</span> <span class="s2">&quot;Urls&quot;</span>
+        <span class="p">}</span>
+    <span class="p">],</span>
+<span class="p">}</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">model_generator</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">))</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">from dataclasses_avroschema import AvroModel</span>
+<span class="sd">import dataclasses</span>
+
+
+<span class="sd">@dataclasses.dataclass</span>
+<span class="sd">class TestEvent(AvroModel):</span>
+<span class="sd">    regular: str = dataclasses.field(metadata={&#39;doc&#39;: &#39;Urls&#39;})</span>
+<span class="sd">&quot;&quot;&quot;</span>
+</code></pre></div>
 <h2 id="render-pydantic-models">Render Pydantic models</h2>
 <p>It is also possible to render <code>BaseModel</code> (pydantic) and <code>AvroBaseModel</code> (avro + pydantic) models as well.
 The end result will also include the necessaty imports and the use of <code>pydantic.Field</code> in case that it is needed:</p>
