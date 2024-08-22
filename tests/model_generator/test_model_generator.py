@@ -594,6 +594,36 @@ class LogicalTypes(AvroModel):
     assert result.strip() == expected_result.strip()
 
 
+def test_schema_with_unknown_logical_types(schema_with_unknown_logical_types: types.JsonDict) -> None:
+    expected_result = """
+from dataclasses_avroschema import AvroModel
+import dataclasses
+import datetime
+
+
+@dataclasses.dataclass
+class Urls(AvroModel):
+    regular: str = dataclasses.field(metadata={'doc': 'Urls'})
+
+    
+    class Meta:
+        schema_name = "urls"
+
+@dataclasses.dataclass
+class TestEvent(AvroModel):
+    occurredAt: datetime.datetime = dataclasses.field(metadata={'doc': 'Event time'})
+    previous: Urls
+
+    
+    class Meta:
+        namespace = "com.example"
+
+"""
+    model_generator = ModelGenerator()
+    result = model_generator.render(schema=schema_with_unknown_logical_types)
+    assert result.strip() == expected_result.strip()
+
+
 def test_field_order(schema_with_logical_types_field_order: types.JsonDict) -> None:
     release_datetime = render_datetime(value=1570903062000, format=field_utils.TIMESTAMP_MILLIS)
     release_datetime_micro = render_datetime(value=1570903062000000, format=field_utils.TIMESTAMP_MICROS)

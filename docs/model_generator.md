@@ -123,6 +123,46 @@ class Address(AvroModel):
 
 Generating a single module from multiple schemas is useful for example to group schemas that belong to the same namespace.
 
+## LogicalTypes
+
+Native `logicalTypes` are supported by `dataclasses-avroschema` but custom ones are not. If you defined a custom `logicalType` then
+the fallback is used when generating the field. In the next example we have a `logicalType` defined as `url`, which is not a native one,
+then the model generated will use `string`
+
+```python
+from dataclasses_avroschema import ModelGenerator, ModelType
+
+model_generator = ModelGenerator()
+
+
+schema = {
+    "type": "record",
+    "name": "TestEvent",
+    "fields": [
+        {
+            "name": "regular",
+            "type": {
+                "type": "string",
+                "logicalType": "url"
+            },
+            "doc": "Urls"
+        }
+    ],
+}
+
+print(model_generator.render(schema=schema))
+
+"""
+from dataclasses_avroschema import AvroModel
+import dataclasses
+
+
+@dataclasses.dataclass
+class TestEvent(AvroModel):
+    regular: str = dataclasses.field(metadata={'doc': 'Urls'})
+"""
+```
+
 ## Render Pydantic models
 
 It is also possible to render `BaseModel` (pydantic) and `AvroBaseModel` (avro + pydantic) models as well.
