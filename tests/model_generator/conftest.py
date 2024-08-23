@@ -468,7 +468,7 @@ def schema_one_to_many_array_relationship() -> JsonDict:
                             {"name": "street", "type": "string"},
                             {"name": "street_number", "type": "long"},
                         ],
-                        "doc": "An Address",
+                        "doc": "Peter's Address",
                     },
                     "name": "address",
                 },

@@ -6,7 +6,7 @@ PYTHON_VERSION_GE_311 = sys.version_info.major == 3 and sys.version_info.minor >
 FIELD_TYPE_TEMPLATE = "$name: $type"
 METACLASS_FIELD_TEMPLATE = '$name = "$value"'
 METACLASS_ALIAS_FIELD = "$name = $value"
-METACLASS_SCHEMA_FIELD = "$name = '$schema'"
+METACLASS_SCHEMA_FIELD = '$name = """$schema"""'
 METACLASS_DECORATOR = "@enum.nonmember" if PYTHON_VERSION_GE_311 else ""
 FIELD_DEFAULT_TEMPLATE = " = $default"
 OPTIONAL_TEMPLATE = "typing.Optional[$type]"
