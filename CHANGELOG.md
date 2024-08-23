@@ -1,3 +1,9 @@
+## 0.62.10 (2024-08-23)
+
+### Fix
+
+- scaped apostrophe when original_schema is render in model. Closes #725 (#728)
+
 ## 0.62.9 (2024-08-22)
 
 ### Fix
