@@ -115,7 +115,7 @@ class User(AvroModel):
 
 
 def test_model_generator_primitive_types_with_unions(
-    schema_with_unions: types.JsonDict,
+        schema_with_unions: types.JsonDict,
 ) -> None:
     expected_result = """
 from dataclasses_avroschema import AvroModel
@@ -340,7 +340,7 @@ class DeliveryBatch(AvroModel):
 
 
 def test_schema_with_enum_types_case_sensitivity(
-    schema_with_enum_types_case_sensitivity: types.JsonDict,
+        schema_with_enum_types_case_sensitivity: types.JsonDict,
 ) -> None:
     expected_result = f"""
 from dataclasses_avroschema import AvroModel
@@ -419,7 +419,7 @@ class User(AvroModel):
 
 
 def test_schema_one_to_one_relationship(
-    schema_one_to_one_relationship: types.JsonDict,
+        schema_one_to_one_relationship: types.JsonDict,
 ) -> None:
     expected_result = """
 from dataclasses_avroschema import AvroModel
@@ -451,7 +451,7 @@ class User(AvroModel):
 
 
 def test_schema_one_to_many_array_relationship(
-    schema_one_to_many_array_relationship: types.JsonDict,
+        schema_one_to_many_array_relationship: types.JsonDict,
 ) -> None:
     expected_result = """
 from dataclasses_avroschema import AvroModel
@@ -482,7 +482,7 @@ class User(AvroModel):
 
 
 def test_schema_one_to_many_map_relationship(
-    schema_one_to_many_map_relationship: types.JsonDict,
+        schema_one_to_many_map_relationship: types.JsonDict,
 ) -> None:
     expected_result = """
 from dataclasses_avroschema import AvroModel
@@ -513,7 +513,7 @@ class User(AvroModel):
 
 
 def test_schema_one_to_self_relationship(
-    schema_one_to_self_relationship: types.JsonDict,
+        schema_one_to_self_relationship: types.JsonDict,
 ) -> None:
     expected_result = """
 from dataclasses_avroschema import AvroModel
@@ -708,7 +708,7 @@ class Address(AvroModel):
 
 
 def test_model_generator_with_fields_with_metadata(
-    with_fields_with_metadata: types.JsonDict,
+        with_fields_with_metadata: types.JsonDict,
 ) -> None:
     expected_result = """
 from dataclasses_avroschema import AvroModel
@@ -731,7 +731,7 @@ class Message(AvroModel):
 
 
 def test_schema_with_schema_meta_field(
-    schema_one_to_many_array_relationship: types.JsonDict,
+        schema_one_to_many_array_relationship: types.JsonDict,
 ) -> None:
     expected_result = """
 from dataclasses_avroschema import AvroModel
@@ -765,4 +765,21 @@ class User(AvroModel):
 """
     model_generator = ModelGenerator()
     result = model_generator.render(schema=schema_one_to_many_array_relationship, include_original_schema=True)
+    assert result.strip() == expected_result.strip()
+
+
+def test_schema_with_logical_types_not_nested(logical_types_not_nested: types.JsonDict) -> None:
+    expected_result = """
+from dataclasses_avroschema import AvroModel
+import dataclasses
+import datetime
+
+
+@dataclasses.dataclass
+class LogicalTypesNotNested(AvroModel):
+    occurrence_date: datetime.datetime
+    """
+
+    model_generator = ModelGenerator()
+    result = model_generator.render(schema=logical_types_not_nested)
     assert result.strip() == expected_result.strip()
