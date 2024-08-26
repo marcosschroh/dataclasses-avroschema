@@ -1,3 +1,9 @@
+## 0.62.11 (2024-08-26)
+
+### Fix
+
+- Implemented nested logicalType check (#734)
+
 ## 0.62.10 (2024-08-23)
 
 ### Fix

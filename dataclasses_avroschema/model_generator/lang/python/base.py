@@ -317,7 +317,7 @@ class BaseGenerator:
     def parse_logical_type(self, *, field: JsonDict) -> str:
         field_name = field.get("name")
         default = field.get("default")
-        field = field if field_name is None else field["type"]
+        field = field if field_name is None or field.get("logicalType") else field["type"]
         logical_type = field["logicalType"]
 
         type_from_metadata = self._resolve_type_from_metadata(field=field)
