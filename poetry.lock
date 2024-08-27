@@ -735,24 +735,24 @@ zstandard = ["zstandard"]
 
 [[package]]
 name = "faust-streaming"
-version = "0.11.2"
+version = "0.11.3"
 description = "Python Stream Processing. A Faust fork"
 optional = true
 python-versions = ">=3.8.0"
 files = [
-    {file = "faust-streaming-0.11.2.tar.gz", hash = "sha256:b5ad07033ef91a31c271ae2b854034e40701b11e135dcb5136d3eae66330e017"},
-    {file = "faust_streaming-0.11.2-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:3e6414ddd489c0dbc847b5384735aec0ce3ec972a4a7b037e8683ae321fcfd0b"},
-    {file = "faust_streaming-0.11.2-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:f6cd7240091273bcec4a7f2ade86c44f85703375cf5bae13f10a23a7342326c4"},
-    {file = "faust_streaming-0.11.2-cp310-cp310-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:516b2bb71391aa7861f455f4a86c9c65b9283d67cd2311fbc51bf0ed6f2410b0"},
-    {file = "faust_streaming-0.11.2-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:2d7ca4be1f4c2bc041f9372a5cd81e8e093f13af7e01dc4640a4c81360bbe17d"},
-    {file = "faust_streaming-0.11.2-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:6e66a7c0302c0d946dc8b60cf660efd5eb8ec3774e8185f0dd18ea8e260e9c5d"},
-    {file = "faust_streaming-0.11.2-cp311-cp311-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e7815721b912cf50aeee495702341439608f850e6e06a79111ce6d83b151ae53"},
-    {file = "faust_streaming-0.11.2-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:d5eaea086f99cfda4aa6f91ef1ec3fe38af77beb266e787d0215b1e779ece90a"},
-    {file = "faust_streaming-0.11.2-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:07edd4861cb63915a19e0ba9174b748449437ff6b4f440b3eb56aabec9d07e3f"},
-    {file = "faust_streaming-0.11.2-cp38-cp38-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:0e1125dd2bab37b8600f22753ac9dacd046247fcc7eae25e49ecc57e9dfafe93"},
-    {file = "faust_streaming-0.11.2-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:d08f444a700e4989624ba98a077f112f27cb02aff8b04a36b423c373d099c61c"},
-    {file = "faust_streaming-0.11.2-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:e65f0d3df8c090e024625ba52fafd668da76dc3186b9e68d8315e69e3d62f543"},
-    {file = "faust_streaming-0.11.2-cp39-cp39-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:133ac68be8034663fdef71eca0198cef2e60550240f576d6e67a96c60fbf22fb"},
+    {file = "faust-streaming-0.11.3.tar.gz", hash = "sha256:3488be5dec17dcd4613dfa2600bb2bf83ebadb05de4620dca791ed4a0b7bd650"},
+    {file = "faust_streaming-0.11.3-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:ce60311f1130351c86ffe42139462f182ac308b744a37f879e336c31e9661daa"},
+    {file = "faust_streaming-0.11.3-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:bd06c9f97727032a90597f92c0f06514286011c47038c1b606005449b0526033"},
+    {file = "faust_streaming-0.11.3-cp310-cp310-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:c3b112b1642c2ae952600eb1b5d873d1cb66ee568019ddd9ede6bd1e1afb15e3"},
+    {file = "faust_streaming-0.11.3-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:115d274ec3366a2b03ee85fd9b25aeeaa8389ae77dd8d029559a99e8e7a401cb"},
+    {file = "faust_streaming-0.11.3-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:c3b26283253f94b8d6e73f7184e2b91dd33c3661a35ef0111efed6e403f54f54"},
+    {file = "faust_streaming-0.11.3-cp311-cp311-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:c0eb3438bc05e77446ce5e8c0ed0929d983a3f29e4db12a58c084416041c2aea"},
+    {file = "faust_streaming-0.11.3-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:5b28eaa52f2b4ee131e8a36f451159d2d255d7583439b642e932084061b22e96"},
+    {file = "faust_streaming-0.11.3-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:1e1bb745e461ea1ff5125ff57ca3d83618b7f4fbb108dea4308ef081294ee04d"},
+    {file = "faust_streaming-0.11.3-cp38-cp38-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:989e88c8e7a267728dd20c671b5834e3bfbd67867dd32dfd7008819a3c3c011e"},
+    {file = "faust_streaming-0.11.3-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:53a05931c04a0d6db9e49faeb54afbd5bd25c4d6332eda711aaa9df1acc8446f"},
+    {file = "faust_streaming-0.11.3-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:7eace309ba7f164ef6c06bcdcda2e96b87bb658cee652f0732f9f6dc1dafc05f"},
+    {file = "faust_streaming-0.11.3-cp39-cp39-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:15f025b695981162cd4c199881bb3b0b9f0fb0e8f42575b87ada61349013055a"},
 ]
 
 [package.dependencies]
