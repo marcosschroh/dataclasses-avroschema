@@ -43,7 +43,7 @@ types-python-dateutil = "^2.9.0.20240316"
 [tool.poetry.group.docs.dependencies]
 mkdocs = "^1"
 mkdocs-material = "^9"
-mkdocstrings = {version = ">=0.24,<0.26", extras = ["python"]}
+mkdocstrings = {version = ">=0.24,<0.27", extras = ["python"]}
 mktestdocs = "^0.2.2"
 
 [tool.poetry.group.ci-publish.dependencies]
