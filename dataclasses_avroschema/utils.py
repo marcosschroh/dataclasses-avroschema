@@ -15,10 +15,23 @@ except ImportError:  # type: ignore # pragma: no cover
     pydantic = None  # type: ignore # pragma: no cover
 
 
+try:
+    import faust  # pragma: no cover
+except ImportError:  # type: ignore # pragma: no cover
+    faust = None  # type: ignore # pragma: no cover
+
+
 @lru_cache(maxsize=None)
 def is_pydantic_model(klass: type) -> bool:
     if pydantic is not None:
         return issubclass(klass, v1.BaseModel) or issubclass(klass, pydantic.BaseModel)
+    return False
+
+
+@lru_cache(maxsize=None)
+def is_faust_record(klass: type) -> bool:
+    if faust is not None:
+        return issubclass(klass, faust.Record)
     return False
 
 
@@ -79,7 +92,7 @@ def standardize_custom_type(value: typing.Any) -> typing.Any:
         return tuple(standardize_custom_type(v) for v in value)
     elif isinstance(value, enum.Enum):
         return value.value
-    elif is_pydantic_model(type(value)):  # type: ignore[arg-type]
+    elif is_pydantic_model(type(value)) or is_faust_record(type(value)):  # type: ignore[arg-type]
         return standardize_custom_type(value.asdict())
 
     return value

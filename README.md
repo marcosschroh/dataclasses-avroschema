@@ -311,7 +311,7 @@ assert user.json() == '{"name":"bond","age":50,"pets":["dog","cat"],"accounts":{
 try:
     user = UserAdvance(name="bond")
 except ValidationError as exc:
-    assert exc.errors() == [{'type': 'missing', 'loc': ('age',), 'msg': 'Field required', 'input': {'name': 'bond'}, 'url': 'https://errors.pydantic.dev/2.8/v/missing'}]
+    ...
 
 # dataclasses-avroschema
 event = user.serialize()
