@@ -146,6 +146,7 @@ class AvroModel:
     ) -> Union[JsonDict, CT]:
         payload = cls.deserialize_to_python(data, serialization_type, writer_schema)
         obj = cls.parse_obj(payload)
+
         if not create_instance:
             return obj.asdict()
         return obj
@@ -185,8 +186,6 @@ class AvroModel:
         return validate(self.asdict(), schema)
 
     def to_dict(self) -> JsonDict:
-        # Serialize using the current AVRO schema to get proper field representations
-        # and after that convert into python
         return self.asdict()
 
     def to_json(self, **kwargs: Any) -> str:

@@ -135,7 +135,7 @@ class ModelGenerator:
         self.validate_schema(schemas=schemas)
 
         if model_type is None:
-            logger.warn(
+            logger.warning(
                 "Call `render` with the `generator` option instead so you can reuse the ModelGenerator "
                 "for rendering different models. "
                 "Example: https://marcosschroh.github.io/dataclasses-avroschema/model_generator/#usage"

@@ -8,13 +8,14 @@ from dataclasses import dataclass
 import pytest
 
 from dataclasses_avroschema import AvroModel, serialization, types
+from dataclasses_avroschema.faust import AvroRecord
 from dataclasses_avroschema.pydantic import AvroBaseModel
 
 a_datetime = datetime.datetime(2019, 10, 12, 17, 57, 42, tzinfo=datetime.timezone.utc)
 
 
 parametrize_base_model = pytest.mark.parametrize(
-    "model_class, decorator", [(AvroModel, dataclass), (AvroBaseModel, lambda f: f)]
+    "model_class, decorator", [(AvroModel, dataclass), (AvroBaseModel, lambda f: f), (AvroRecord, lambda f: f)]
 )
 
 
@@ -64,6 +65,14 @@ def test_logical_types(model_class: typing.Type[AvroModel], decorator: typing.Ca
 
 @parametrize_base_model
 def test_logical_union(model_class: typing.Type[AvroModel], decorator: typing.Callable):
+    if model_class is AvroRecord:
+        pytest.skip(
+            reason=(
+                "Faust does not support Union of types "
+                "(<class 'datetime.datetime'>, <class 'datetime.date'>, <class 'uuid.UUID'>)"
+            )
+        )
+
     @decorator
     class UnionSchema(model_class):
         "Some Unions"

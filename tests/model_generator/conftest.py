@@ -953,11 +953,5 @@ def logical_types_not_nested() -> JsonDict:
     return {
         "type": "record",
         "name": "LogicalTypesNotNested",
-        "fields": [
-            {
-                "name": "occurrence_date",
-                "type": "long",
-                "logicalType": "timestamp-millis"
-            }
-        ]
+        "fields": [{"name": "occurrence_date", "type": "long", "logicalType": "timestamp-millis"}],
     }

@@ -5,11 +5,12 @@ import typing
 import pytest
 
 from dataclasses_avroschema import AvroModel
+from dataclasses_avroschema.faust import AvroRecord
 from dataclasses_avroschema.pydantic import AvroBaseModel
 
 parametrize_base_model = pytest.mark.parametrize(
     "model_class, decorator",
-    [(AvroModel, dataclasses.dataclass), (AvroBaseModel, lambda f: f)],
+    [(AvroModel, dataclasses.dataclass), (AvroBaseModel, lambda f: f), (AvroRecord, lambda f: f)],
 )
 
 
@@ -123,8 +124,6 @@ def test_one_to_many_relationship(model_class: typing.Type[AvroModel], decorator
     }
 
     assert user.serialize() == avro_binary
-
-    # Bug in fastavro
     assert user.serialize(serialization_type="avro-json") == avro_json_binary
 
     assert User.deserialize(avro_binary, create_instance=False) == expected
