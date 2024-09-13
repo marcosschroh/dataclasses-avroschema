@@ -1,3 +1,9 @@
+## 0.63.0 (2024-09-13)
+
+### Feat
+
+- add serialization support for AvroRecord (faust.Record). Closes #743 (#744)
+
 ## 0.62.11 (2024-08-26)
 
 ### Fix
