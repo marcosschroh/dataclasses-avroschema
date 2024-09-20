@@ -5,7 +5,7 @@ from dataclasses import dataclass
 
 import pytest
 
-from dataclasses_avroschema import AvroModel
+from dataclasses_avroschema import AvroModel, schema_generator
 from tests.serialization.test_serialization import CLASSES_DATA_BINARY
 
 
@@ -43,9 +43,9 @@ def test_dacite_config():
 
     # It matches a Car object because it is the first element in the `Union`
     # In order to match the proper element use `strict_unions_match` (check next test)
-    assert Trip.deserialize(serialized_val, create_instance=False) == {"transport": {"total": 10}}
+    assert Trip.deserialize(serialized_val, create_instance=False) == {"transport": {"driver": "Marcos", "total": 10}}
     instance = Trip.deserialize(serialized_val)
-    assert instance.transport == Car(total=10)
+    assert instance.transport == bus
 
 
 def test_custom_dacite_config():
@@ -94,3 +94,8 @@ def test_custom_dacite_config():
     }
     instance = Trip.deserialize(serialized_val)
     assert instance.transport == bus
+
+    dacite_config = schema_generator._dacite_config_cache[Trip]
+    assert dacite_config.strict_unions_match
+    assert dacite_config.strict
+    assert dacite_config.cast != []

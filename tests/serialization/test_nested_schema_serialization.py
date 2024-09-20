@@ -7,10 +7,16 @@ import pytest
 from dataclasses_avroschema import AvroModel
 from dataclasses_avroschema.faust import AvroRecord
 from dataclasses_avroschema.pydantic import AvroBaseModel
+from dataclasses_avroschema.pydantic.v1 import AvroBaseModel as AvroBaseModelV1
 
 parametrize_base_model = pytest.mark.parametrize(
     "model_class, decorator",
-    [(AvroModel, dataclasses.dataclass), (AvroBaseModel, lambda f: f), (AvroRecord, lambda f: f)],
+    [
+        (AvroModel, dataclasses.dataclass),
+        (AvroBaseModel, lambda f: f),
+        (AvroBaseModelV1, lambda f: f),
+        (AvroRecord, lambda f: f),
+    ],
 )
 
 
@@ -242,8 +248,8 @@ def test_nested_schemas_splitted_with_unions(model_class: typing.Type[AvroModel]
     class A(model_class):
         s: typing.Union[S1, S2]
 
-        class Meta:
-            namespace = "namespace"
+        # class Meta:
+        #     namespace = "namespace"
 
     @decorator
     class B(model_class):
@@ -307,3 +313,35 @@ def test_nested_several_layers(model_class: typing.Type[AvroModel], decorator: t
     user = User(name="Alex", friends=[Friend(name="Mr. Robot", hobbies=["fishing", "codding"])])
 
     assert User.deserialize(user.serialize()) == user
+
+
+@parametrize_base_model
+def test_union_with_multiple_records(model_class: typing.Type[AvroModel], decorator: typing.Callable):
+    @decorator
+    class EventOne(model_class):
+        name: str
+        tag: typing.Literal["EventOne"] = "EventOne"
+
+    @decorator
+    class EventTwo(model_class):
+        name: str
+        tag: typing.Literal["EventTwo"] = "EventTwo"
+
+    @decorator
+    class EventManager(model_class):
+        event: typing.Union[EventOne, EventTwo]
+        capacity: int = 100
+
+    # check union with first element
+    event = EventManager(event=EventOne(name="hello Event one"))
+    event_serialized = event.serialize()
+
+    assert event_serialized == b"\x00\x1ehello Event one\x10EventOne\xc8\x01"
+    assert EventManager.deserialize(event_serialized) == event
+
+    # check union with second element
+    event = EventManager(event=EventTwo(name="hello Event two"), capacity=150)
+    event_serialized = event.serialize()
+
+    assert event_serialized == b"\x02\x1ehello Event two\x10EventTwo\xac\x02"
+    assert EventManager.deserialize(event_serialized) == event
