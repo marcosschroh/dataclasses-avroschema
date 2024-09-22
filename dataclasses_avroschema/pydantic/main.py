@@ -20,6 +20,12 @@ CT = TypeVar("CT", bound="AvroBaseModel")
 
 class AvroBaseModel(BaseModel, AvroModel):  # type: ignore
     @classmethod
+    def model_dump(cls: Type[CT], *args: Any, **kwargs: Any) -> dict[str, Any]:
+        data = cls.model_dump(*args, **kwargs)
+        data["-type"] = cls.__name__
+        return data
+
+    @classmethod
     def generate_dataclass(cls: Type[CT]) -> Type[CT]:
         return cls
 
