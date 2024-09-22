@@ -20,9 +20,12 @@ CT = TypeVar("CT", bound="AvroBaseModel")
 
 class AvroBaseModel(BaseModel, AvroModel):  # type: ignore
     @classmethod
-    def model_dump(cls: Type[CT], *args: Any, **kwargs: Any) -> dict[str, Any]:
+    def model_dump(
+        cls: Type[CT], dataclasses_avroschema_include_type: bool = False, *args: Any, **kwargs: Any
+    ) -> dict[str, Any]:
         data = cls.model_dump(*args, **kwargs)
-        data["-type"] = cls.__name__
+        if dataclasses_avroschema_include_type:
+            data["-type"] = cls.__name__
         return data
 
     @classmethod
@@ -53,7 +56,7 @@ class AvroBaseModel(BaseModel, AvroModel):  # type: ignore
         It also doesn't provide the exclude, include, by_alias, etc.
         parameters that dict provides.
         """
-        data = self.model_dump()
+        data = self.model_dump(dataclasses_avroschema_include_type=True)
         standardize_method = standardize_factory or self.standardize_type
 
         # the standardize called can be replaced if we have a custom implementation of asdict
