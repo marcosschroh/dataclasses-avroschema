@@ -1,3 +1,9 @@
+## 0.63.1 (2024-09-24)
+
+### Fix
+
+- Explicit __all__ to make mypy happy (#757)
+
 ## 0.63.0 (2024-09-13)
 
 ### Feat
