@@ -35,7 +35,7 @@ else:
     GenericAlias = typing._GenericAlias  # type: ignore  # pragma: no cover
 
 
-__ALL__ = [
+__all__ = [
     "ImmutableField",
     "StringField",
     "IntField",
