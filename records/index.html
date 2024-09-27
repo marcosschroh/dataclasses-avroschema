@@ -456,21 +456,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Parsing objects">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#override-dacite-config" class="md-nav__link">
-    <span class="md-ellipsis">
-      Override dacite config
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
       
         <li class="md-nav__item">
@@ -806,21 +791,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Parsing objects">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#override-dacite-config" class="md-nav__link">
-    <span class="md-ellipsis">
-      Override dacite config
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
       
         <li class="md-nav__item">
@@ -947,6 +917,7 @@
 <p><code>field_order Optional[List[str]]</code>: List of field names to specify their order to the output schema</p>
 <p><code>exclude Optional[List[str]]</code>: List of field names to be excluded in the output schema</p>
 <p><code>convert_literal_to_enum Optional[bool]</code>: Whether convert <code>Literal string</code> to <code>enum</code></p>
+<p><code>dacite_config Optional[Dict]</code>: Dacite custom config</p>
 <h2 id="record-to-json-and-dict">Record to json and dict</h2>
 <p>You can get the <code>json</code> and <code>dict</code> representation of your instance using <code>to_json</code> and <code>to_dict</code> methods:</p>
 <div class="highlight"><span class="filename">Json and Dict example</span><pre><span></span><code><span class="kn">import</span> <span class="nn">dataclasses</span>
@@ -999,89 +970,10 @@ Under the hood <code>dataclasses-avroschema</code> uses <a href="https://github.
 <span class="c1"># &gt;&gt;&gt;&gt; Bus(driver=&#39;Marcos&#39;, total=10)</span>
 </code></pre></div>
 <p><em>(This script is complete, it should run "as is")</em></p>
-<h3 id="override-dacite-config">Override dacite config</h3>
-<p>There are some use cases where a custom <code>dacite</code> config is needed, so you can provide one using the <code>dacite_config</code> in the <code>class Meta</code>.</p>
-<p>For example using <a href="https://github.com/konradhalas/dacite#strict-unions-match">Strict unions match</a></p>
-<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Default dacite configuration</label><label for="__tabbed_1_2">Custom dacite configuration</label></div>
-<div class="tabbed-content">
-<div class="tabbed-block">
-<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">typing</span>
-<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
-
-<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
-
-
-<span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">Car</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
-    <span class="n">total</span><span class="p">:</span> <span class="nb">int</span>
-
-
-<span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">Bus</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
-    <span class="n">driver</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">total</span><span class="p">:</span> <span class="nb">int</span>
-
-
-<span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">Trip</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
-    <span class="n">transport</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">Car</span><span class="p">,</span> <span class="n">Bus</span><span class="p">]</span>
-
-<span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;driver&quot;</span><span class="p">:</span> <span class="s2">&quot;Marcos&quot;</span><span class="p">,</span> <span class="s2">&quot;total&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">}</span>
-<span class="n">bus</span> <span class="o">=</span> <span class="n">Bus</span><span class="o">.</span><span class="n">parse_obj</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
-
-<span class="n">serialized_val</span> <span class="o">=</span> <span class="n">Trip</span><span class="p">(</span><span class="n">transport</span><span class="o">=</span><span class="n">bus</span><span class="p">)</span><span class="o">.</span><span class="n">serialize</span><span class="p">()</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="n">Trip</span><span class="o">.</span><span class="n">deserialize</span><span class="p">(</span><span class="n">serialized_val</span><span class="p">,</span> <span class="n">create_instance</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span> 
-<span class="c1"># &gt;&gt;&gt; {&quot;transport&quot;: {&quot;driver&quot;: &quot;Marcos&quot;, &quot;total&quot;: 10}}</span>
-
-<span class="n">instance</span> <span class="o">=</span> <span class="n">Trip</span><span class="o">.</span><span class="n">deserialize</span><span class="p">(</span><span class="n">serialized_val</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">instance</span><span class="o">.</span><span class="n">transport</span><span class="p">)</span>  <span class="c1"># This is a Car but it should be a Bus!!!</span>
-<span class="c1"># &gt;&gt;&gt; Car(total=10)</span>
-</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>There are some use cases where a custom <a href="https://github.com/konradhalas/dacite">dacite</a> config is needed, so you can provide one using the <code>dacite_config</code> in the <code>class Meta</code></p>
 </div>
-<div class="tabbed-block">
-<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">typing</span>
-<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
-
-<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
-
-
-<span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">Car</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
-    <span class="n">total</span><span class="p">:</span> <span class="nb">int</span>
-
-
-<span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">Bus</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
-    <span class="n">driver</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">total</span><span class="p">:</span> <span class="nb">int</span>
-
-
-<span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">Trip</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
-    <span class="n">transport</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">Car</span><span class="p">,</span> <span class="n">Bus</span><span class="p">]</span>
-
-    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
-        <span class="n">dacite_config</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;strict_unions_match&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-            <span class="s2">&quot;strict&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="p">}</span>
-
-<span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;driver&quot;</span><span class="p">:</span> <span class="s2">&quot;Marcos&quot;</span><span class="p">,</span> <span class="s2">&quot;total&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">}</span>
-<span class="n">bus</span> <span class="o">=</span> <span class="n">Bus</span><span class="o">.</span><span class="n">parse_obj</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
-
-<span class="n">serialized_val</span> <span class="o">=</span> <span class="n">Trip</span><span class="p">(</span><span class="n">transport</span><span class="o">=</span><span class="n">bus</span><span class="p">)</span><span class="o">.</span><span class="n">serialize</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">Trip</span><span class="o">.</span><span class="n">deserialize</span><span class="p">(</span><span class="n">serialized_val</span><span class="p">,</span> <span class="n">create_instance</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
-<span class="c1"># &gt;&gt;&gt; {&quot;transport&quot;: {&quot;driver&quot;: &quot;Marcos&quot;, &quot;total&quot;: 10}}</span>
-
-<span class="n">instance</span> <span class="o">=</span> <span class="n">Trip</span><span class="o">.</span><span class="n">deserialize</span><span class="p">(</span><span class="n">serialized_val</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">instance</span><span class="o">.</span><span class="n">transport</span><span class="p">)</span>  <span class="c1"># Is it s Bus and not a Car!!!</span>
-<span class="c1"># &gt;&gt;&gt; Bus(driver=&#39;Marcos&#39;, total=10)</span>
-</code></pre></div>
-</div>
-</div>
-</div>
-<p><em>(This script is complete, it should run "as is")</em></p>
 <h2 id="validation">Validation</h2>
 <p>Python classes that inheritance from <code>AvroModel</code> has a <code>validate</code> method. This method <code>validates</code> whether the instance data matches
 the schema that it represents, for example:</p>
