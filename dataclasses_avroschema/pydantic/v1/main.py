@@ -1,4 +1,4 @@
-from typing import Any, Callable, Optional, Type, TypeVar
+from typing import Any, Dict, Type, TypeVar
 
 from fastavro.validation import validate
 
@@ -26,38 +26,38 @@ class AvroBaseModel(BaseModel, AvroModel):  # type: ignore
     def json_schema(cls: Type[CT], *args: Any, **kwargs: Any) -> str:
         return cls.schema_json(*args, **kwargs)
 
-    @classmethod
-    def standardize_type(cls: Type[CT], data: dict) -> Any:
+    def _standardize_type(self) -> Dict[str, Any]:
         """
         Standardization factory that converts data according to the
         user-defined pydantic json_encoders prior to passing values
         to the standard type conversion factory
         """
-        encoders = cls.__config__.json_encoders
+        encoders = self.__config__.json_encoders
+        data = dict(self)
+
         for k, v in data.items():
             v_type = type(v)
             if v_type in encoders:
                 encode_method = encoders[v_type]
                 data[k] = encode_method(v)
-            elif isinstance(v, dict):
-                cls.standardize_type(v)
+        return data
 
-        return standardize_custom_type(data)
-
-    def asdict(self, standardize_factory: Optional[Callable[..., Any]] = None) -> JsonDict:
+    def asdict(self) -> JsonDict:
         """
         Returns this model in dictionary form. This method differs from
         pydantic's dict by converting all values to their Avro representation.
         It also doesn't provide the exclude, include, by_alias, etc.
         parameters that dict provides.
         """
-        data = dict(self)
+        return {
+            field_name: standardize_custom_type(
+                field_name=field_name, value=value, model=self, base_class=AvroBaseModel
+            )
+            for field_name, value in self._standardize_type().items()
+        }
 
-        standardize_method = standardize_factory or self.standardize_type
-
-        # the standardize called can be replaced if we have a custom implementation of asdict
-        # for now I think is better to use the native implementation
-        return standardize_method(data)
+    def to_dict(self) -> JsonDict:
+        return dict(self)
 
     def serialize(self, serialization_type: str = AVRO) -> bytes:
         """
@@ -67,7 +67,7 @@ class AvroBaseModel(BaseModel, AvroModel):  # type: ignore
         schema = self.avro_schema_to_python()
 
         return serialization.serialize(
-            self.asdict(standardize_factory=self.standardize_type),
+            self.asdict(),
             schema,
             serialization_type=serialization_type,
         )
@@ -95,5 +95,4 @@ class AvroBaseModel(BaseModel, AvroModel):  # type: ignore
 
     @classmethod
     def _generate_parser(cls: Type[CT]) -> PydanticV1Parser:
-        cls._metadata = cls.generate_metadata()
-        return PydanticV1Parser(type=cls._klass, metadata=cls._metadata, parent=cls._parent or cls)
+        return PydanticV1Parser(type=cls._klass, metadata=cls.get_metadata(), parent=cls._parent or cls)

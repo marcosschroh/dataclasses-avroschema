@@ -26,13 +26,18 @@ class AvroRecord(Record, AvroModel):  # type: ignore
         schema = self.avro_schema_to_python()
         return validate(self.asdict(), schema)
 
-    def standardize_type(self) -> typing.Any:
+    def standardize_type(self, include_type: bool = True) -> typing.Any:
         """
         Standardization factory that converts data according to the
         user-defined pydantic json_encoders prior to passing values
         to the standard type conversion factory
         """
-        return standardize_custom_type(self)
+        return {
+            field_name: standardize_custom_type(
+                field_name=field_name, value=value, model=self, base_class=AvroRecord, include_type=include_type
+            )
+            for field_name, value in self.asdict().items()
+        }
 
     def serialize(self, serialization_type: str = AVRO) -> bytes:
         """
@@ -48,25 +53,9 @@ class AvroRecord(Record, AvroModel):  # type: ignore
             serialization_type=serialization_type,
         )
 
-    @classmethod
-    def deserialize(
-        cls: typing.Type[CT],
-        data: bytes,
-        serialization_type: str = AVRO,
-        create_instance: bool = True,
-        writer_schema: typing.Optional[typing.Union[JsonDict, typing.Type[CT]]] = None,
-    ) -> typing.Union[JsonDict, CT]:
-        payload = cls.deserialize_to_python(data, serialization_type, writer_schema)
-        obj = cls.parse_obj(payload)
-
-        if not create_instance:
-            return obj.standardize_type()
-        return obj
-
     def to_dict(self) -> JsonDict:
-        return self.standardize_type()
+        return self.standardize_type(include_type=False)
 
     @classmethod
     def _generate_parser(cls: typing.Type[CT]) -> FaustParser:
-        cls._metadata = cls.generate_metadata()
-        return FaustParser(type=cls._klass, metadata=cls._metadata, parent=cls._parent or cls)
+        return FaustParser(type=cls._klass, metadata=cls.get_metadata(), parent=cls._parent or cls)

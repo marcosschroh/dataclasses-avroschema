@@ -2,7 +2,7 @@ import dataclasses
 import inspect
 import json
 from collections import OrderedDict
-from typing import Any, Callable, Dict, List, Optional, Set, Type, TypeVar, Union
+from typing import Any, Dict, List, Optional, Set, Type, TypeVar, Union
 
 from dacite import Config, from_dict
 from fastavro.validation import validate
@@ -12,7 +12,7 @@ from .dacite_config import generate_dacite_config
 from .fields.base import Field
 from .parser import Parser
 from .types import JsonDict
-from .utils import SchemaMetadata, standardize_custom_type
+from .utils import SchemaMetadata, UserDefinedType, standardize_custom_type
 
 AVRO = "avro"
 AVRO_JSON = "avro-json"
@@ -29,7 +29,7 @@ class AvroModel:
     _parser: Optional[Parser] = None
     _klass: Optional[Type] = None
     _metadata: Optional[SchemaMetadata] = None
-    _user_defined_types: Set = set()
+    _user_defined_types: Set[UserDefinedType] = set()
     _parent: Any = None
     _rendered_schema: OrderedDict = dataclasses.field(default_factory=OrderedDict)
 
@@ -40,10 +40,11 @@ class AvroModel:
         return dataclasses.dataclass(cls)
 
     @classmethod
-    def generate_metadata(cls: "Type[CT]") -> SchemaMetadata:
-        meta = getattr(cls._klass, "Meta", type)
-
-        return SchemaMetadata.create(meta)
+    def get_metadata(cls: "Type[CT]") -> SchemaMetadata:
+        if cls._metadata is None:
+            meta = getattr(cls._klass, "Meta", type)
+            cls._metadata = SchemaMetadata.create(meta)
+        return cls._metadata
 
     @classmethod
     def generate_schema(cls: "Type[CT]", schema_type: str = "avro") -> Optional[OrderedDict]:
@@ -63,9 +64,21 @@ class AvroModel:
         return cls._rendered_schema
 
     @classmethod
+    def get_user_defined_type(cls, *, name: str) -> Optional[Type]:
+        """
+        Attributes:
+            name str: Model name to be search in the user_defined_types set
+
+        Returns:
+            Model CT
+        """
+        return next(
+            (user_type.model for user_type in cls._user_defined_types if user_type.model.__name__ == name), None
+        )
+
+    @classmethod
     def _generate_parser(cls: "Type[CT]") -> Parser:
-        cls._metadata = cls.generate_metadata()
-        return Parser(type=cls._klass, metadata=cls._metadata, parent=cls._parent or cls)
+        return Parser(type=cls._klass, metadata=cls.get_metadata(), parent=cls._parent or cls)
 
     @classmethod
     def avro_schema(cls: "Type[CT]", case_type: Optional[str] = None, **kwargs) -> str:
@@ -115,27 +128,6 @@ class AvroModel:
         cls._parser = None
         cls._parent = None
 
-    def asdict(self, standardize_factory: Optional[Callable[..., Any]] = None) -> JsonDict:
-        if standardize_factory is not None:
-            return dataclasses.asdict(
-                self,
-                dict_factory=lambda x: {key: standardize_factory(value) for key, value in x},
-            )  # type: ignore
-        return dataclasses.asdict(self)  # type: ignore
-
-    def serialize(self, serialization_type: str = AVRO) -> bytes:
-        klass = type(self)
-        schema = _schemas_cache.get(klass)
-        if schema is None:
-            schema = self.avro_schema_to_python()
-            _schemas_cache[klass] = schema
-
-        return serialization.serialize(
-            self.asdict(standardize_factory=standardize_custom_type),
-            schema,
-            serialization_type=serialization_type,
-        )
-
     @classmethod
     def deserialize(
         cls: "Type[CT]",
@@ -148,7 +140,7 @@ class AvroModel:
         obj = cls.parse_obj(payload)
 
         if not create_instance:
-            return obj.asdict()
+            return obj.to_dict()
         return obj
 
     @classmethod
@@ -167,8 +159,9 @@ class AvroModel:
             schema = cls.avro_schema_to_python()
             _schemas_cache[cls] = schema
         return serialization.deserialize(
-            data,
-            schema,
+            data=data,
+            schema=schema,
+            model=cls,
             serialization_type=serialization_type,
             writer_schema=writer_schema,  # type: ignore
         )
@@ -180,17 +173,6 @@ class AvroModel:
             config = generate_dacite_config(cls)
             _dacite_config_cache[cls] = config
         return from_dict(data_class=cls, data=data, config=config)
-
-    def validate(self) -> bool:
-        schema = self.avro_schema_to_python()
-        return validate(self.asdict(), schema)
-
-    def to_dict(self) -> JsonDict:
-        return self.asdict()
-
-    def to_json(self, **kwargs: Any) -> str:
-        data = serialization.to_json(self.asdict())
-        return json.dumps(data, **kwargs)
 
     @classmethod
     def fake(cls: "Type[CT]", **data: Any) -> CT:
@@ -206,3 +188,35 @@ class AvroModel:
         payload.update(data)
 
         return from_dict(data_class=cls, data=payload, config=generate_dacite_config(cls))
+
+    def asdict(self) -> JsonDict:
+        return {
+            field.name: standardize_custom_type(
+                field_name=field.name, value=getattr(self, field.name), model=self, base_class=AvroModel
+            )
+            for field in dataclasses.fields(self)  # type: ignore
+        }
+
+    def serialize(self, serialization_type: str = AVRO) -> bytes:
+        klass = type(self)
+        schema = _schemas_cache.get(klass)
+        if schema is None:
+            schema = self.avro_schema_to_python()
+            _schemas_cache[klass] = schema
+
+        return serialization.serialize(
+            self.asdict(),
+            schema,
+            serialization_type=serialization_type,
+        )
+
+    def validate(self) -> bool:
+        schema = self.avro_schema_to_python()
+        return validate(self.asdict(), schema)
+
+    def to_dict(self) -> JsonDict:
+        return dataclasses.asdict(self)  # type: ignore
+
+    def to_json(self, **kwargs: Any) -> str:
+        data = serialization.to_json(self.to_dict())
+        return json.dumps(data, **kwargs)

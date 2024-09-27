@@ -124,7 +124,7 @@ class Field:
 
     def exist_type(self) -> int:
         # filter by the same field types
-        same_types = [field.type for field in self.parent._user_defined_types if field.type == self.type]
+        same_types = [field.model for field in self.parent._user_defined_types if field.model == self.type]
 
         # If length > 0, means that it is the first appearance
         # of this type, otherwise exist already.

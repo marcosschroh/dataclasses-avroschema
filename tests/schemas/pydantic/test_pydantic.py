@@ -569,12 +569,11 @@ def test_exclude_field() -> None:
     assert Message.avro_schema()
 
     message = Message(internal_field="internal", public_field="public")
-    assert "internal_field" not in message.model_dump()
+    assert "internal_field" not in message.to_dict()
 
-    with pytest.raises(ValueError) as excinfo:
-        message.serialize(serialization_type="avro-json")
-
-    assert str(excinfo.value) == "no value and no default for internal_field"
+    event = message.serialize(serialization_type="avro-json")
+    assert Message.deserialize(event, serialization_type="avro-json") == message
+    assert Message.deserialize(event, serialization_type="avro-json", create_instance=False) == message.model_dump()
 
 
 def test_exclude_field_with_default() -> None:

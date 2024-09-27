@@ -9,6 +9,9 @@ import fastavro
 
 from .types import JsonDict
 
+if typing.TYPE_CHECKING:
+    from .schema_generator import CT
+
 DATETIME_STR_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
 DATE_STR_FORMAT = "%Y-%m-%d"
 TIME_STR_FORMAT = "%H:%M:%S"
@@ -36,11 +39,13 @@ def serialize(payload: typing.Dict, schema: typing.Dict, serialization_type: str
 
 
 def deserialize(
+    *,
     data: bytes,
-    schema: typing.Dict,
+    schema: JsonDict,
+    model: "CT",
     serialization_type: str = "avro",
     writer_schema: typing.Optional[JsonDict] = None,
-) -> typing.Dict:
+) -> JsonDict:
     if serialization_type == "avro":
         input_stream: typing.Union[io.BytesIO, io.StringIO] = io.BytesIO(data)
 
@@ -48,6 +53,8 @@ def deserialize(
             input_stream,
             writer_schema=writer_schema or schema,
             reader_schema=schema,
+            return_record_name=True,
+            return_record_name_override=True,
         )
 
     elif serialization_type == "avro-json":
@@ -61,7 +68,31 @@ def deserialize(
 
     input_stream.flush()
 
-    return payload  # type: ignore
+    return sanitize_unions(data=payload, model=model)  # type: ignore
+
+
+def sanitize_unions(*, data: JsonDict, model: "CT") -> JsonDict:
+    """
+    This function tries to convert cast all the cases that have
+    `unions` with a Tuple format (AvroType, payload), for example
+    (Car, {"brand": "fiat"}). This cases happens when there are
+    avro unions of records which are similar or equals among them
+    """
+    cleaned_data = {}
+    for field_name, field_value in data.items():
+        if isinstance(field_value, dict):
+            field_value = sanitize_unions(data=field_value, model=model)
+        elif isinstance(field_value, tuple) and len(field_value) == 2:
+            # the first value is the model/record name and the second
+            # is its payload
+            model_name, model_dict_value = field_value
+            avro_model = model.get_user_defined_type(name=model_name)
+            if avro_model is not None:
+                field_value = avro_model.parse_obj(model_dict_value)
+
+        cleaned_data[field_name] = field_value
+
+    return cleaned_data
 
 
 def datetime_to_str(value: datetime.datetime) -> str:

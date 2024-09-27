@@ -77,6 +77,8 @@ class Meta:
 
 `convert_literal_to_enum Optional[bool]`: Whether convert `Literal string` to `enum`
 
+`dacite_config Optional[Dict]`: Dacite custom config
+
 ## Record to json and dict
 
 You can get the `json` and `dict` representation of your instance using `to_json` and `to_dict` methods:
@@ -142,93 +144,8 @@ print(bus)
 
 *(This script is complete, it should run "as is")*
 
-### Override dacite config
-
-There are some use cases where a custom `dacite` config is needed, so you can provide one using the `dacite_config` in the `class Meta`.
-
-For example using [Strict unions match](https://github.com/konradhalas/dacite#strict-unions-match)
-
-=== "Default dacite configuration"
-
-    ```python
-    import typing
-    from dataclasses import dataclass
-
-    from dataclasses_avroschema import AvroModel
-
-
-    @dataclass
-    class Car(AvroModel):
-        total: int
-
-
-    @dataclass
-    class Bus(AvroModel):
-        driver: str
-        total: int
-
-
-    @dataclass
-    class Trip(AvroModel):
-        transport: typing.Union[Car, Bus]
-
-    data = {"driver": "Marcos", "total": 10}
-    bus = Bus.parse_obj(data=data)
-
-    serialized_val = Trip(transport=bus).serialize()
-
-    print(Trip.deserialize(serialized_val, create_instance=False)) 
-    # >>> {"transport": {"driver": "Marcos", "total": 10}}
-    
-    instance = Trip.deserialize(serialized_val)
-    print(instance.transport)  # This is a Car but it should be a Bus!!!
-    # >>> Car(total=10)
-    ```
-
-=== "Custom dacite configuration"
-
-    ```python
-    import typing
-    from dataclasses import dataclass
-
-    from dataclasses_avroschema import AvroModel
-
-
-    @dataclass
-    class Car(AvroModel):
-        total: int
-
-
-    @dataclass
-    class Bus(AvroModel):
-        driver: str
-        total: int
-
-
-    @dataclass
-    class Trip(AvroModel):
-        transport: typing.Union[Car, Bus]
-
-        class Meta:
-            dacite_config = {
-                "strict_unions_match": True,
-                "strict": True,
-            }
-
-    data = {"driver": "Marcos", "total": 10}
-    bus = Bus.parse_obj(data=data)
-
-    serialized_val = Trip(transport=bus).serialize()
-    print(Trip.deserialize(serialized_val, create_instance=False))
-    # >>> {"transport": {"driver": "Marcos", "total": 10}}
-    
-    instance = Trip.deserialize(serialized_val)
-    print(instance.transport)  # Is it s Bus and not a Car!!!
-    # >>> Bus(driver='Marcos', total=10)
-
-    ```
-
-*(This script is complete, it should run "as is")*
+!!! note
+    There are some use cases where a custom [dacite](https://github.com/konradhalas/dacite) config is needed, so you can provide one using the `dacite_config` in the `class Meta`
 
 ## Validation
 

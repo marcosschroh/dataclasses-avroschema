@@ -1,12 +1,5 @@
 from .schema_generator import AvroModel  # noqa: I001
-from .types import (
-    Int32,
-    Float32,
-    TimeMicro,
-    DateTimeMicro,
-    condecimal,
-    confixed
-)
+from .types import Int32, Float32, TimeMicro, DateTimeMicro, condecimal, confixed
 from .model_generator.generator import BaseClassEnum, ModelType, ModelGenerator
 from .fields.field_utils import (
     BOOLEAN,
