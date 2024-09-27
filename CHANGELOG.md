@@ -1,3 +1,9 @@
+## 0.63.2 (2024-09-27)
+
+### Fix
+
+- serialiaze properly unions when types are similar. Closes #749 (#751)
+
 ## 0.63.1 (2024-09-24)
 
 ### Fix
