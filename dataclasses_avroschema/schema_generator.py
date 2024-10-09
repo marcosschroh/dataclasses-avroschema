@@ -47,6 +47,29 @@ class AvroModel:
         return cls._metadata
 
     @classmethod
+    def get_fullname(cls) -> str:
+        """
+        Fullname is composed of two parts: a name and a namespace
+        separated by a dot. A namespace is a dot-separated sequence of such names.
+        The empty string may also be used as a namespace to indicate the null namespace.
+        Equality of names (including field names and enum symbols)
+        as well as fullnames is case-sensitive.
+        """
+        # we need to make sure that the schema has been generated
+        cls.generate_schema()
+        metadata = cls.get_metadata()
+
+        if metadata.namespace:
+            # if the current record has a namespace we use it
+            return f"{metadata.namespace}.{cls.__name__}"
+        elif cls._parent is not None:
+            # if the record has a parent then we try to use the parent namespace
+            parent_metadata = cls._parent.get_metadata()
+            if parent_metadata.namespace:
+                return f"{parent_metadata.namespace}.{cls.__name__}"
+        return cls.__name__
+
+    @classmethod
     def generate_schema(cls: "Type[CT]", schema_type: str = "avro") -> Optional[OrderedDict]:
         if cls._parser is None or cls.__mro__[1] != AvroModel:
             # Generate dataclass and metadata

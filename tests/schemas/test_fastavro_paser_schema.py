@@ -115,12 +115,14 @@ def test_one_to_one_schema():
     Test relationship one-to-one
     """
 
+    @dataclasses.dataclass
     class Address(AvroModel):
         "An Address"
 
         street: str
         street_number: int
 
+    @dataclasses.dataclass
     class User(AvroModel):
         "An User with Address"
 
@@ -136,6 +138,7 @@ def test_one_to_one_repeated_schema():
     Test relationship one-to-one with more than once schema
     """
 
+    @dataclasses.dataclass
     class Location(AvroModel):
         latitude: float
         longitude: float
@@ -143,6 +146,7 @@ def test_one_to_one_repeated_schema():
         class Meta:
             namespace = "types.location_type"
 
+    @dataclasses.dataclass
     class Trip(AvroModel):
         start_time: datetime.datetime
         start_location: Location
@@ -155,11 +159,13 @@ def test_one_to_one_repeated_schema():
 
 
 def test_repeated_schema_without_namespace():
+    @dataclasses.dataclass
     class Bus(AvroModel):
         "A Bus"
 
         engine_name: str
 
+    @dataclasses.dataclass
     class UnionSchema(AvroModel):
         "Some Unions"
 
@@ -174,6 +180,7 @@ def test_one_to_one_repeated_schema_in_array():
     Test relationship one-to-one with more than once schema
     """
 
+    @dataclasses.dataclass
     class Location(AvroModel):
         latitude: float
         longitude: float
@@ -181,6 +188,7 @@ def test_one_to_one_repeated_schema_in_array():
         class Meta:
             namespace = "types.location_type"
 
+    @dataclasses.dataclass
     class Trip(AvroModel):
         start_time: datetime.datetime
         start_location: Location
@@ -196,6 +204,7 @@ def test_one_to_one_repeated_schema_in_map():
     Test relationship one-to-one with more than once schema
     """
 
+    @dataclasses.dataclass
     class Location(AvroModel):
         latitude: float
         longitude: float
@@ -203,6 +212,7 @@ def test_one_to_one_repeated_schema_in_map():
         class Meta:
             namespace = "types.location_type"
 
+    @dataclasses.dataclass
     class Trip(AvroModel):
         start_time: datetime.datetime
         start_location: Location
@@ -214,6 +224,7 @@ def test_one_to_one_repeated_schema_in_map():
 
 
 def test_one_to_many_repeated_schema_in_array_and_map():
+    @dataclasses.dataclass
     class User(AvroModel):
         name: str
 
@@ -221,6 +232,7 @@ def test_one_to_many_repeated_schema_in_array_and_map():
             schema_doc = False
             namespace = "types.user"
 
+    @dataclasses.dataclass
     class UserAdvance(AvroModel):
         users: typing.List[User]
         accounts: typing.Dict[str, User]
@@ -237,12 +249,14 @@ def test_one_to_many_schema():
     Test relationship one-to-many
     """
 
+    @dataclasses.dataclass
     class Address(AvroModel):
         "An Address"
 
         street: str
         street_number: int
 
+    @dataclasses.dataclass
     class User(AvroModel):
         "User with multiple Address"
 
@@ -258,12 +272,14 @@ def test_one_to_many_with_map_schema():
     Test relationship one-to-many using a map
     """
 
+    @dataclasses.dataclass
     class Address(AvroModel):
         "An Address"
 
         street: str
         street_number: int
 
+    @dataclasses.dataclass
     class User(AvroModel):
         "User with multiple Address"
 
@@ -279,6 +295,7 @@ def test_one_to_one_self_relationship():
     Test self relationship one-to-one
     """
 
+    @dataclasses.dataclass
     class User(AvroModel):
         "User with self reference as friend"
 
@@ -294,6 +311,7 @@ def test_one_to_many_self_reference_schema():
     Test self relationship one-to-many using an array
     """
 
+    @dataclasses.dataclass
     class User(AvroModel):
         "User with self reference as friends"
 
@@ -309,6 +327,7 @@ def test_one_to_many_self_reference_map_schema():
     Test self relationship one-to-many using a map
     """
 
+    @dataclasses.dataclass
     class User(AvroModel):
         "User with self reference as friends"
 
@@ -325,6 +344,7 @@ def test_logical_types_schema():
     """
     a_datetime = datetime.datetime(2019, 10, 12, 17, 57, 42, 179133)
 
+    @dataclasses.dataclass
     class LogicalTypes(AvroModel):
         "Some logical types"
 
@@ -342,6 +362,7 @@ def test_logical_micro_types_schema():
     """
     a_datetime = datetime.datetime(2019, 10, 12, 17, 57, 42)
 
+    @dataclasses.dataclass
     class LogicalTypesMicro(AvroModel):
         "Some logical types"
 
@@ -357,6 +378,7 @@ def test_logical_micro_types_schema():
 
 
 def test_schema_with_union_types():
+    @dataclasses.dataclass
     class UnionSchema(AvroModel):
         "Some Unions"
 
@@ -398,24 +420,64 @@ def test_schema_array_with_union_types():
     assert parse_schema(ArrayUnionSchema.avro_schema_to_python())
 
 
-def test_namespaces():
-    class C(AvroModel):
-        pass
+def test_schema_fullname():
+    class B(AvroModel):
+        ...
 
+        class Meta:
+            namespace = "my.namespace"
+
+    class A(AvroModel): ...
+
+    assert A.get_fullname() == "A"
+    assert B.get_fullname() == "my.namespace.B"
+
+    # check that A is inside the `__named_schemas`
+    parsed_schema = parse_schema(A.avro_schema_to_python())
+    assert A.get_fullname() in parsed_schema["__named_schemas"].keys()
+
+    # check that B is inside the `__named_schemas`
+    parsed_schema = parse_schema(B.avro_schema_to_python())
+    assert B.get_fullname() in parsed_schema["__named_schemas"].keys()
+
+
+def test_schema_fullname_nested_records():
+    @dataclasses.dataclass
+    class C(AvroModel):
+        name: str
+        age: int
+
+    @dataclasses.dataclass
     class B(AvroModel):
         c: C
 
         class Meta:
             namespace = "my.namespace"
 
+    @dataclasses.dataclass
     class A(AvroModel):
         b1: B
         b2: B
 
-    parse_schema(A.avro_schema_to_python())
+    assert A.get_fullname() == "A"
+    assert B.get_fullname() == "my.namespace.B"
+    assert C.get_fullname() == "C"
+
+    # check that A is inside the `__named_schemas`
+    parsed_schema = parse_schema(A.avro_schema_to_python())
+    assert A.get_fullname() in parsed_schema["__named_schemas"].keys()
+
+    # check that B is inside the `__named_schemas`
+    parsed_schema = parse_schema(B.avro_schema_to_python())
+    assert B.get_fullname() in parsed_schema["__named_schemas"].keys()
+
+    # check that C is inside the `__named_schemas`
+    # parsed_schema = parse_schema(C.avro_schema_to_python())
+    assert C.get_fullname() in parsed_schema["__named_schemas"].keys()
 
 
 def test_use_of_same_type_in_nested_list():
+    @dataclasses.dataclass
     class Address(AvroModel):
         "An Address"
 
@@ -425,9 +487,11 @@ def test_use_of_same_type_in_nested_list():
         class Meta:
             namespace = "types.test"
 
+    @dataclasses.dataclass
     class PreviousAddresses(AvroModel):
         addresses: typing.List[Address]
 
+    @dataclasses.dataclass
     class User(AvroModel):
         "An User with Address and previous addresses"
 
@@ -440,6 +504,7 @@ def test_use_of_same_type_in_nested_list():
 
 
 def test_two_different_child_records():
+    @dataclasses.dataclass
     class Location(AvroModel):
         lat: float
         long: float
@@ -449,6 +514,7 @@ def test_two_different_child_records():
         class Meta:
             namespace = "test.namespace"
 
+    @dataclasses.dataclass
     class Photo(AvroModel):
         filename: str
         data: bytes
@@ -456,12 +522,14 @@ def test_two_different_child_records():
         height: int
         geo_tag: typing.Optional[Location] = None
 
+    @dataclasses.dataclass
     class Video(AvroModel):
         filename: str
         data: bytes
         duration: int
         geo_tag: typing.Optional[Location] = None
 
+    @dataclasses.dataclass
     class HolidayAlbum(AvroModel):
         album_name: str
         photos: typing.List[Photo] = dataclasses.field(default_factory=list)
@@ -479,13 +547,16 @@ def test_nested_schemas_splitted() -> None:
     used in a separate way.
     """
 
+    @dataclasses.dataclass
     class A(AvroModel):
         class Meta:
             namespace = "namespace"
 
+    @dataclasses.dataclass
     class B(AvroModel):
         a: A
 
+    @dataclasses.dataclass
     class C(AvroModel):
         b: B
         a: A
@@ -498,6 +569,7 @@ def test_nested_schemas_splitted() -> None:
 
 
 def test_nested_scheamas_splitted_with_intermediates() -> None:
+    @dataclasses.dataclass
     class A(AvroModel):
         class Meta:
             namespace = "namespace"
@@ -505,9 +577,11 @@ def test_nested_scheamas_splitted_with_intermediates() -> None:
     class B(AvroModel):
         a: A
 
+    @dataclasses.dataclass
     class C(AvroModel):
         a: A
 
+    @dataclasses.dataclass
     class D(AvroModel):
         b: B
         c: C

@@ -68,10 +68,10 @@ def deserialize(
 
     input_stream.flush()
 
-    return sanitize_unions(data=payload, model=model)  # type: ignore
+    return sanitize_payload(data=payload, model=model)  # type: ignore
 
 
-def sanitize_unions(*, data: JsonDict, model: "CT") -> JsonDict:
+def sanitize_payload(*, data: JsonDict, model: "CT") -> JsonDict:
     """
     This function tries to convert cast all the cases that have
     `unions` with a Tuple format (AvroType, payload), for example
@@ -81,18 +81,29 @@ def sanitize_unions(*, data: JsonDict, model: "CT") -> JsonDict:
     cleaned_data = {}
     for field_name, field_value in data.items():
         if isinstance(field_value, dict):
-            field_value = sanitize_unions(data=field_value, model=model)
+            field_value = sanitize_payload(data=field_value, model=model)
         elif isinstance(field_value, tuple) and len(field_value) == 2:
-            # the first value is the model/record name and the second
-            # is its payload
-            model_name, model_dict_value = field_value
-            avro_model = model.get_user_defined_type(name=model_name)
-            if avro_model is not None:
-                field_value = avro_model.parse_obj(model_dict_value)
+            field_value = sanitize_union(union=field_value, model=model)
 
         cleaned_data[field_name] = field_value
 
     return cleaned_data
+
+
+def sanitize_union(*, union: typing.Tuple, model: "CT") -> typing.Optional["CT"]:
+    # the first value is the model/record name and the second is its payload
+    model_name, model_value = union
+    if isinstance(model_value, dict):
+        # it can be a dict again so we need to sanitize
+        model_value = sanitize_payload(data=model_value, model=model)
+
+    model_name = model_name.split(".")[-1]
+
+    avro_model = model.get_user_defined_type(name=model_name)
+    if avro_model is not None:
+        return avro_model.parse_obj(model_value)
+
+    return model_value
 
 
 def datetime_to_str(value: datetime.datetime) -> str:

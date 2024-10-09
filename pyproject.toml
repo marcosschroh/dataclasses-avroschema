@@ -67,6 +67,9 @@ cli = [
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
+[tool.mypy]
+check_untyped_defs  = true
+
 [[tool.mypy.overrides]]
 module = "stringcase.*"
 ignore_missing_imports = true

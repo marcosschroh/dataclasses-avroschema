@@ -16,7 +16,7 @@ from tests.serialization.test_serialization import CLASSES_DATA_BINARY
 def test_to_dict_to_json(klass, data, avro_binary, avro_json, instance_json, python_dict):
     instance = klass(**data)
 
-    assert instance.to_dict() == python_dict
+    assert instance.to_dict() == instance.asdict() == python_dict
     assert instance.to_json() == json.dumps(instance_json)
     assert instance == klass.parse_obj(data)
     assert instance == klass.parse_obj(json.loads(json.dumps(instance_json)))
