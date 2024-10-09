@@ -1386,12 +1386,13 @@ mkdocstrings = ">=0.25"
 
 [[package]]
 name = "mktestdocs"
-version = "0.2.2"
+version = "0.2.3"
 description = ""
 optional = false
 python-versions = "*"
 files = [
-    {file = "mktestdocs-0.2.2-py2.py3-none-any.whl", hash = "sha256:b0eea09c14cb9df7bf112f848c3d5069713519eddb3b0b2223211699246c3f1d"},
+    {file = "mktestdocs-0.2.3-py2.py3-none-any.whl", hash = "sha256:c89a7e6021ae56729d9c82c9b3c8ec2472de58c8a8936e4b33697737b3ff501f"},
+    {file = "mktestdocs-0.2.3.tar.gz", hash = "sha256:12535a28e4a1793396444e1d5bd811c5f39660fe04b132c6aac1bef2630bd2ec"},
 ]
 
 [package.extras]
