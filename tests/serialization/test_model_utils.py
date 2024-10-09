@@ -5,7 +5,7 @@ from dataclasses import dataclass
 
 import pytest
 
-from dataclasses_avroschema import AvroModel, schema_generator
+from dataclasses_avroschema import AvroModel, main
 from tests.serialization.test_serialization import CLASSES_DATA_BINARY
 
 
@@ -95,7 +95,7 @@ def test_custom_dacite_config():
     instance = Trip.deserialize(serialized_val)
     assert instance.transport == bus
 
-    dacite_config = schema_generator._dacite_config_cache[Trip]
+    dacite_config = main._dacite_config_cache[Trip]
     assert dacite_config.strict_unions_match
     assert dacite_config.strict
     assert dacite_config.cast != []

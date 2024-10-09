@@ -7,8 +7,7 @@ from dataclasses import dataclass
 import pytest
 from dateutil.tz import UTC
 
-from dataclasses_avroschema import AvroModel
-from dataclasses_avroschema.schema_generator import AVRO, AVRO_JSON
+from dataclasses_avroschema import AVRO, AVRO_JSON, AvroModel
 
 a_datetime = datetime.datetime(2019, 10, 12, 17, 57, 42, tzinfo=UTC)
 

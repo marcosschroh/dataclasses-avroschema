@@ -110,7 +110,7 @@ class AvroModel:
     @classmethod
     def avro_schema_to_python(
         cls: "Type[CT]",
-        parent: Optional["AvroModel"] = None,
+        parent: Optional["CT"] = None,
         case_type: Optional[str] = None,
     ) -> Dict[str, Any]:
         if parent is not None:

@@ -13,9 +13,8 @@ from pydantic import (
 )
 from pydantic_core import core_schema
 
-from dataclasses_avroschema import types
+from dataclasses_avroschema import AVRO, AVRO_JSON, types
 from dataclasses_avroschema.pydantic import AvroBaseModel
-from dataclasses_avroschema.schema_generator import AVRO, AVRO_JSON
 
 
 class CustomClass:

@@ -10,7 +10,7 @@ import fastavro
 from .types import JsonDict
 
 if typing.TYPE_CHECKING:
-    from .schema_generator import CT
+    from .main import CT  # pragma: no cover
 
 DATETIME_STR_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
 DATE_STR_FORMAT = "%Y-%m-%d"
@@ -169,7 +169,7 @@ def prepare_bytes_decimal(data: decimal.Decimal, precision: int, scale: int = 0)
 
 
 def serialize_value(*, value: typing.Any) -> typing.Any:
-    from .schema_generator import AvroModel
+    from .main import AvroModel
 
     if isinstance(value, bytes):
         value = value.decode()

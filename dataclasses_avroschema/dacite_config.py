@@ -7,7 +7,7 @@ from dacite import Config
 from dateutil import parser
 
 if typing.TYPE_CHECKING:
-    from .schema_generator import AvroModel
+    from .main import AvroModel  # pragma: no cover
 
 
 DateTimeParseType = typing.Union[str, datetime]
