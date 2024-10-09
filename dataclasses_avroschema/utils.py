@@ -124,7 +124,7 @@ def standardize_custom_type(
             asdict = value.asdict()
 
         if is_union(model.__annotations__[field_name]) and include_type:
-            asdict["-type"] = value.__class__.__name__
+            asdict["-type"] = value.get_fullname()
         return asdict
 
     return value

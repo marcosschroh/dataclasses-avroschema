@@ -230,44 +230,6 @@ def test_nested_schemas_splitted(model_class: typing.Type[AvroModel], decorator:
 
 
 @parametrize_base_model
-def test_nested_schemas_splitted_with_unions(model_class: typing.Type[AvroModel], decorator: typing.Callable) -> None:
-    """
-    This test will cover the cases when nested schemas with Unions that are
-    used in a separate way.
-    """
-
-    @decorator
-    class S1(model_class):
-        pass
-
-    @decorator
-    class S2(model_class):
-        pass
-
-    @decorator
-    class A(model_class):
-        s: typing.Union[S1, S2]
-
-        # class Meta:
-        #     namespace = "namespace"
-
-    @decorator
-    class B(model_class):
-        a: A
-
-    @decorator
-    class C(model_class):
-        b: B
-        a: A
-
-    b = B(a=A(s=S1()))
-    c = C(b=B(a=A(s=S1())), a=A(s=S1()))
-
-    assert b.serialize() == b"\x00"
-    assert c.serialize() == b"\x00\x00"
-
-
-@parametrize_base_model
 def test_nested_schemas_splitted_with_intermediates(
     model_class: typing.Type[AvroModel], decorator: typing.Callable
 ) -> None:
@@ -296,6 +258,65 @@ def test_nested_schemas_splitted_with_intermediates(
 
     assert d.serialize() == b""
     assert c.serialize() == b""
+
+
+@parametrize_base_model
+def test_nested_schemas_splitted_with_unions(model_class: typing.Type[AvroModel], decorator: typing.Callable) -> None:
+    """
+    This test will cover the cases when nested schemas with Unions that are
+    used in a separate way.
+    """
+    if model_class == AvroBaseModelV1:
+        pytest.skip(reason="Smart Unions are not supported properly in `AvroBaseModelV1` (pydantic v1)")
+
+    @decorator
+    class S1(model_class):
+        ...
+
+        class Meta:
+            namespace = "my_namespace"
+
+    @decorator
+    class S2(model_class):
+        age: int = 10
+
+    @decorator
+    class A(model_class):
+        s: typing.Union[S1, S2]
+
+    @decorator
+    class D(model_class):
+        name: str = ""
+
+    @decorator
+    class B(model_class):
+        a: typing.Union[A, D]
+
+    @decorator
+    class C(model_class):
+        b: B
+        a: A
+
+    b = B(a=A(s=S1()))
+    c = C(b=B(a=A(s=S1())), a=A(s=S1()))
+    c2 = C(b=B(a=A(s=S1())), a=A(s=S2()))
+
+    from fastavro import parse_schema
+
+    parsed_schema = parse_schema(B.avro_schema_to_python())
+    print(parsed_schema["__named_schemas"].keys())
+
+    ser = b.serialize()
+    assert ser == b"\x00\x00"
+    assert B.deserialize(ser) == b
+
+    ser = c.serialize()
+    assert ser == b"\x00\x00\x00"
+    assert C.deserialize(ser) == c
+
+    ser = c2.serialize()
+    assert ser == b"\x00\x00\x02\x14"
+    assert C.deserialize(ser) == c2
 
 
 @parametrize_base_model
