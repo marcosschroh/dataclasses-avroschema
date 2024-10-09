@@ -1,3 +1,9 @@
+## 0.63.3 (2024-10-09)
+
+### Fix
+
+- serialization improvements for nested unions. Related to #763 (#770)
+
 ## 0.63.2 (2024-09-27)
 
 ### Fix
