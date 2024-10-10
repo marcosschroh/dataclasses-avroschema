@@ -1,3 +1,9 @@
+## 0.63.4 (2024-10-10)
+
+### Refactor
+
+- Module schema_generator renamed to main. Some type hints improvements (#773)
+
 ## 0.63.3 (2024-10-09)
 
 ### Fix
