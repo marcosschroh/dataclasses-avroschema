@@ -9,8 +9,8 @@ from typing_extensions import Annotated, get_origin
 from .types import FieldInfo, JsonDict, UnionType
 
 if typing.TYPE_CHECKING:
-    from .schema_generator import AvroModel
-
+    from .main import AvroModel  # pragma: no cover
+ 
 try:
     import pydantic  # pragma: no cover
     from pydantic import v1

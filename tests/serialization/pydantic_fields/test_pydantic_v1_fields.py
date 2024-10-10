@@ -5,9 +5,8 @@ import pytest
 from pydantic import Field, conint
 from pydantic.v1.error_wrappers import ValidationError
 
-from dataclasses_avroschema import types
+from dataclasses_avroschema import AVRO, AVRO_JSON, types
 from dataclasses_avroschema.pydantic.v1.main import AvroBaseModel
-from dataclasses_avroschema.schema_generator import AVRO, AVRO_JSON
 
 
 class CustomClass:

@@ -2,8 +2,7 @@ import typing
 
 from fastavro.validation import validate
 
-from dataclasses_avroschema import serialization
-from dataclasses_avroschema.schema_generator import AVRO, AvroModel
+from dataclasses_avroschema import AVRO, AvroModel, serialization
 from dataclasses_avroschema.types import JsonDict
 from dataclasses_avroschema.utils import standardize_custom_type
 

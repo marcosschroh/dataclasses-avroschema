@@ -12,7 +12,6 @@ from typing_extensions import get_args, get_origin
 
 from dataclasses_avroschema import (
     exceptions,
-    schema_generator,
     serialization,
     types,
     utils,
@@ -33,6 +32,10 @@ if version.PY_VERSION >= (3, 9):  # pragma: no cover
     )  # noqa: E501
 else:
     GenericAlias = typing._GenericAlias  # type: ignore  # pragma: no cover
+
+
+if typing.TYPE_CHECKING:
+    from dataclasses_avroschema import AvroModel  # pragma: no cover
 
 
 __all__ = [
@@ -814,7 +817,7 @@ class RecordField(Field):
 
         return record_type
 
-    def default_to_avro(self, value: "schema_generator.AvroModel") -> typing.Dict:
+    def default_to_avro(self, value: "AvroModel") -> typing.Dict:
         parser = value._parser or value._generate_parser()
         return {
             fieldname: field.default_to_avro(getattr(value, fieldname))
