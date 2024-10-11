@@ -147,7 +147,7 @@ The `serialization/deserialization` process is built over [fastavro](https://git
 ```python title="Custom serialization"
 import dataclasses
 
-from dataclasses_avroschema import AvroModel
+from dataclasses_avroschema import AvroModel, SerializationType
 
 
 @dataclasses.dataclass
@@ -155,7 +155,7 @@ class MyAvroModel(AvroModel):
 
     ...
 
-    def serialize(self, serialization_type: str = AVRO) -> bytes:
+    def serialize(self, serialization_type: SerializationType = "avro") -> bytes:
         # Get the schema as a python dict
         schema = self.avro_schema_to_python()
 
@@ -167,7 +167,7 @@ class MyAvroModel(AvroModel):
 
     @classmethod
     def deserialize(
-        cls, data: bytes, serialization_type: str = AVRO, create_instance: bool = True
+        cls, data: bytes, serialization_type: SerializationType = "avro", create_instance: bool = True
     ) -> typing.Union[typing.Dict, "AvroModel"]:
         # Get the schema as a python dict
         schema = cls.avro_schema_to_python()
@@ -241,3 +241,15 @@ AttributeError: 'int' object has no attribute 'popitem'
 ```
 
 *(This script is complete, it should run "as is")*
+
+## Utils
+
+The library includes two utils to serialize/deserialize using the `fastavro` as backend
+
+::: dataclasses_avroschema.serialization.serialize
+    options:
+        show_source: false
+
+::: dataclasses_avroschema.serialization.deserialize
+    options:
+        show_source: false

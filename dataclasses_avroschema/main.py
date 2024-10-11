@@ -14,10 +14,6 @@ from .parser import Parser
 from .types import JsonDict
 from .utils import SchemaMetadata, UserDefinedType, standardize_custom_type
 
-AVRO = "avro"
-AVRO_JSON = "avro-json"
-
-
 CT = TypeVar("CT", bound="AvroModel")
 
 
@@ -70,7 +66,9 @@ class AvroModel:
         return cls.__name__
 
     @classmethod
-    def generate_schema(cls: "Type[CT]", schema_type: str = "avro") -> Optional[OrderedDict]:
+    def generate_schema(
+        cls: "Type[CT]", schema_type: serialization.SerializationType = "avro"
+    ) -> Optional[OrderedDict]:
         if cls._parser is None or cls.__mro__[1] != AvroModel:
             # Generate dataclass and metadata
             cls._klass = cls.generate_dataclass()
@@ -87,17 +85,14 @@ class AvroModel:
         return cls._rendered_schema
 
     @classmethod
-    def get_user_defined_type(cls, *, name: str) -> Optional[Type]:
+    def _get_serialization_context(cls) -> JsonDict:
         """
-        Attributes:
-            name str: Model name to be search in the user_defined_types set
-
         Returns:
-            Model CT
+            Dict[str, Any] with the necesary context for the serialization/deserialization process
+            It contains at least all the AvroModel defined by the end users represented by
+            AvroModel.__name__: AvroModel entries
         """
-        return next(
-            (user_type.model for user_type in cls._user_defined_types if user_type.model.__name__ == name), None
-        )
+        return {user_type.model.__name__: user_type.model for user_type in cls._user_defined_types}
 
     @classmethod
     def _generate_parser(cls: "Type[CT]") -> Parser:
@@ -129,7 +124,7 @@ class AvroModel:
             # B should clean the data that was only valid when it was the child
             cls._reset_parser()
 
-        avro_schema = cls.generate_schema(schema_type=AVRO)
+        avro_schema = cls.generate_schema()
 
         if case_type is not None:
             avro_schema = case.case_record(cls._rendered_schema, case_type)  # type: ignore
@@ -155,7 +150,7 @@ class AvroModel:
     def deserialize(
         cls: "Type[CT]",
         data: bytes,
-        serialization_type: str = AVRO,
+        serialization_type: serialization.SerializationType = "avro",
         create_instance: bool = True,
         writer_schema: Optional[Union[JsonDict, "Type[CT]"]] = None,
     ) -> Union[JsonDict, CT]:
@@ -170,7 +165,7 @@ class AvroModel:
     def deserialize_to_python(  # This can be used straight with a pydantic dataclass to bypass dacite
         cls: "Type[CT]",
         data: bytes,
-        serialization_type: str = AVRO,
+        serialization_type: serialization.SerializationType = "avro",
         writer_schema: Union[JsonDict, "Type[CT]", None] = None,
     ) -> dict:
         if inspect.isclass(writer_schema) and issubclass(writer_schema, AvroModel):
@@ -184,8 +179,8 @@ class AvroModel:
         return serialization.deserialize(
             data=data,
             schema=schema,
-            model=cls,
             serialization_type=serialization_type,
+            context=cls._get_serialization_context(),
             writer_schema=writer_schema,  # type: ignore
         )
 
@@ -220,7 +215,7 @@ class AvroModel:
             for field in dataclasses.fields(self)  # type: ignore
         }
 
-    def serialize(self, serialization_type: str = AVRO) -> bytes:
+    def serialize(self, serialization_type: serialization.SerializationType = "avro") -> bytes:
         klass = type(self)
         schema = _schemas_cache.get(klass)
         if schema is None:

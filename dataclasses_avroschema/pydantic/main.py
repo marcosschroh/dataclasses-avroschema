@@ -3,7 +3,7 @@ from typing import Any, Dict, Type, TypeVar
 
 from fastavro.validation import validate
 
-from dataclasses_avroschema import AVRO, AvroModel, serialization
+from dataclasses_avroschema import AvroModel, serialization
 from dataclasses_avroschema.types import JsonDict
 from dataclasses_avroschema.utils import standardize_custom_type
 
@@ -63,7 +63,7 @@ class AvroBaseModel(BaseModel, AvroModel):  # type: ignore
     def to_dict(self) -> JsonDict:
         return self.model_dump()
 
-    def serialize(self, serialization_type: str = AVRO) -> bytes:
+    def serialize(self, serialization_type: serialization.SerializationType = "avro") -> bytes:
         """
         Overrides the base AvroModel's serialize method to inject this
         class's standardization factory method

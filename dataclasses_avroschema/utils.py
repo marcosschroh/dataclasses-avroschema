@@ -10,7 +10,7 @@ from .types import FieldInfo, JsonDict, UnionType
 
 if typing.TYPE_CHECKING:
     from .main import AvroModel  # pragma: no cover
- 
+
 try:
     import pydantic  # pragma: no cover
     from pydantic import v1
