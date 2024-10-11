@@ -1,3 +1,9 @@
+## 0.63.5 (2024-10-11)
+
+### Fix
+
+- make context optional during dezerialization. Serialization utils included in docs. SerializationType included (#774)
+
 ## 0.63.4 (2024-10-10)
 
 ### Refactor
