@@ -56,8 +56,9 @@ from .fields.fields import (
     UnionField,
     UUIDField,
 )
-from .main import AVRO, AVRO_JSON, AvroModel
+from .main import AvroModel
 from .model_generator.generator import BaseClassEnum, ModelGenerator, ModelType
+from .serialization import AVRO, AVRO_JSON, SerializationType, deserialize, serialize
 from .types import DateTimeMicro, Float32, Int32, TimeMicro, condecimal, confixed
 
 __all__ = [
@@ -127,4 +128,7 @@ __all__ = [
     "AvroField",
     "AVRO",
     "AVRO_JSON",
+    "SerializationType",
+    "serialize",
+    "deserialize",
 ]

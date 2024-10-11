@@ -16,17 +16,49 @@ DATETIME_STR_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
 DATE_STR_FORMAT = "%Y-%m-%d"
 TIME_STR_FORMAT = "%H:%M:%S"
 
+AVRO = "avro"
+AVRO_JSON = "avro-json"
+SerializationType = typing.Literal["avro", "avro-json"]
+
 decimal_context = decimal.Context()
 
 
-def serialize(payload: typing.Dict, schema: typing.Dict, serialization_type: str = "avro") -> bytes:
-    if serialization_type == "avro":
+def serialize(payload: JsonDict, schema: typing.Dict, serialization_type: SerializationType = "avro") -> bytes:
+    """
+    Serialize a payload into avro using `fastavro` as backend
+
+    Attributes:
+        payload typing.Dict[str, Any]: The payload to serialize
+        serialization_type SerializationType: `avro` or `avro-json`
+
+    Returns:
+        bytes encoded in avro format
+
+    !!! Example
+        ```python
+        from dataclasses_avroschema import serialize
+
+
+        payload = {'event': 'Hello world'}
+        schema = {
+            'type': 'record',
+            'name': 'MyRecord',
+            'fields': [
+                {'name': 'event', 'type': 'string', 'default': 'Hello World'}
+            ]
+        }
+
+        event = serialize(payload=payload, schema=schema)
+        assert event == b'\x16Hello world'
+        ```
+    """
+    if serialization_type == AVRO:
         file_like_output: typing.Union[io.BytesIO, io.StringIO] = io.BytesIO()
 
         fastavro.schemaless_writer(file_like_output, schema, payload)
 
         value = file_like_output.getvalue()
-    elif serialization_type == "avro-json":
+    elif serialization_type == AVRO_JSON:
         file_like_output = io.StringIO()
         fastavro.json_writer(file_like_output, schema, [payload])
         value = file_like_output.getvalue().encode("utf-8")
@@ -42,11 +74,47 @@ def deserialize(
     *,
     data: bytes,
     schema: JsonDict,
-    model: "CT",
-    serialization_type: str = "avro",
+    serialization_type: SerializationType = "avro",  # ADd enum
+    context: typing.Optional[JsonDict] = None,
     writer_schema: typing.Optional[JsonDict] = None,
 ) -> JsonDict:
-    if serialization_type == "avro":
+    """
+    Deserialize an binary `event` into a python Dict using `fastavro` as backend
+
+    Attributes:
+        data bytes: The event to deserialize
+        schema: Dict[str, Any]: The schema to use for the deserialization
+        serialization_type SerializationType: `avro` or `avro-json`
+        context Dict[str, Any] | None: Optional extra context to use.
+            Usually in includes an entry with all the extra models defined
+            by the end user by name. Example AvroModel.__name__: AvroModel
+        writer_schema Dict[str, Any] | None: The schema that was used to write
+            the event. If it is not provided it is assumed that the event was
+            written with the `schema` provided
+
+    Returns:
+        The object dezerialized python Dict
+
+    !!! Example
+        ```python
+        from dataclasses_avroschema import deserialize
+
+
+        event = b'\x16Hello world'
+        schema = {
+            'type': 'record',
+            'name': 'MyRecord',
+            'fields': [
+                {'name': 'event', 'type': 'string', 'default': 'Hello World'}
+            ]
+        }
+
+        payload = deserialize(data=event, schema=schema)
+        assert payload == {'event': 'Hello world'}
+        ```
+    """
+
+    if serialization_type == AVRO:
         input_stream: typing.Union[io.BytesIO, io.StringIO] = io.BytesIO(data)
 
         payload = fastavro.schemaless_reader(
@@ -57,7 +125,7 @@ def deserialize(
             return_record_name_override=True,
         )
 
-    elif serialization_type == "avro-json":
+    elif serialization_type == AVRO_JSON:
         input_stream = io.StringIO(data.decode())
         # This is an iterator, but not a container
         records = fastavro.json_reader(input_stream, schema)
@@ -68,10 +136,12 @@ def deserialize(
 
     input_stream.flush()
 
-    return sanitize_payload(data=payload, model=model)  # type: ignore
+    if context is not None:
+        return deserialize_from_context(data=payload, context=context)  # type: ignore
+    return payload  # type: ignore
 
 
-def sanitize_payload(*, data: JsonDict, model: "CT") -> JsonDict:
+def deserialize_from_context(*, data: JsonDict, context: JsonDict) -> JsonDict:
     """
     This function tries to convert cast all the cases that have
     `unions` with a Tuple format (AvroType, payload), for example
@@ -81,25 +151,25 @@ def sanitize_payload(*, data: JsonDict, model: "CT") -> JsonDict:
     cleaned_data = {}
     for field_name, field_value in data.items():
         if isinstance(field_value, dict):
-            field_value = sanitize_payload(data=field_value, model=model)
+            field_value = deserialize_from_context(data=field_value, context=context)
         elif isinstance(field_value, tuple) and len(field_value) == 2:
-            field_value = sanitize_union(union=field_value, model=model)
+            field_value = sanitize_union(union=field_value, context=context)
 
         cleaned_data[field_name] = field_value
 
     return cleaned_data
 
 
-def sanitize_union(*, union: typing.Tuple, model: "CT") -> typing.Optional["CT"]:
+def sanitize_union(*, union: typing.Tuple, context: JsonDict) -> typing.Optional["CT"]:
     # the first value is the model/record name and the second is its payload
     model_name, model_value = union
     if isinstance(model_value, dict):
         # it can be a dict again so we need to sanitize
-        model_value = sanitize_payload(data=model_value, model=model)
+        model_value = deserialize_from_context(data=model_value, context=context)
 
     model_name = model_name.split(".")[-1]
+    avro_model = context.get(model_name)
 
-    avro_model = model.get_user_defined_type(name=model_name)
     if avro_model is not None:
         return avro_model.parse_obj(model_value)
 
