@@ -513,6 +513,33 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#utils" class="md-nav__link">
+    <span class="md-ellipsis">
+      Utils
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dataclasses_avroschema.serialization.serialize" class="md-nav__link">
+    <span class="md-ellipsis">
+      serialize
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dataclasses_avroschema.serialization.deserialize" class="md-nav__link">
+    <span class="md-ellipsis">
+      deserialize
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -778,6 +805,33 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#utils" class="md-nav__link">
+    <span class="md-ellipsis">
+      Utils
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dataclasses_avroschema.serialization.serialize" class="md-nav__link">
+    <span class="md-ellipsis">
+      serialize
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dataclasses_avroschema.serialization.deserialize" class="md-nav__link">
+    <span class="md-ellipsis">
+      deserialize
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -927,7 +981,7 @@ In both cases we can do it with <code>avro</code> or <code>avro-json</code>.</p>
 <p>The <code>serialization/deserialization</code> process is built over <a href="https://github.com/fastavro/fastavro">fastavro</a>. If you want to use another library or a different process, you can override the base <code>AvroModel</code>:</p>
 <div class="highlight"><span class="filename">Custom serialization</span><pre><span></span><code><span class="kn">import</span> <span class="nn">dataclasses</span>
 
-<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span><span class="p">,</span> <span class="n">SerializationType</span>
 
 
 <span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
@@ -935,7 +989,7 @@ In both cases we can do it with <code>avro</code> or <code>avro-json</code>.</p>
 
     <span class="o">...</span>
 
-    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">serialization_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">AVRO</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">serialization_type</span><span class="p">:</span> <span class="n">SerializationType</span> <span class="o">=</span> <span class="s2">&quot;avro&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
         <span class="c1"># Get the schema as a python dict</span>
         <span class="n">schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">avro_schema_to_python</span><span class="p">()</span>
 
@@ -947,7 +1001,7 @@ In both cases we can do it with <code>avro</code> or <code>avro-json</code>.</p>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">deserialize</span><span class="p">(</span>
-        <span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">serialization_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">AVRO</span><span class="p">,</span> <span class="n">create_instance</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">serialization_type</span><span class="p">:</span> <span class="n">SerializationType</span> <span class="o">=</span> <span class="s2">&quot;avro&quot;</span><span class="p">,</span> <span class="n">create_instance</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Dict</span><span class="p">,</span> <span class="s2">&quot;AvroModel&quot;</span><span class="p">]:</span>
         <span class="c1"># Get the schema as a python dict</span>
         <span class="n">schema</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">avro_schema_to_python</span><span class="p">()</span>
@@ -1017,6 +1071,226 @@ This is needed because after the serialization process you need to know the <cod
 <span class="ne">AttributeError</span><span class="p">:</span> <span class="s1">&#39;int&#39;</span> <span class="nb">object</span> <span class="n">has</span> <span class="n">no</span> <span class="n">attribute</span> <span class="s1">&#39;popitem&#39;</span>
 </code></pre></div>
 <p><em>(This script is complete, it should run "as is")</em></p>
+<h2 id="utils">Utils</h2>
+<p>The library includes two utils to serialize/deserialize using the <code>fastavro</code> as backend</p>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<a id="dataclasses_avroschema.serialization.serialize"></a>
+    <div class="doc doc-contents first">
+
+      <p>Serialize a payload into avro using <code>fastavro</code> as backend</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="dataclasses_avroschema.serialization.serialize.payload">payload</span></code></td>
+            <td>
+                  <code><span title="typing.Dict">Dict</span>[str, Any]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The payload to serialize</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="dataclasses_avroschema.serialization.serialize.serialization_type">serialization_type</span></code></td>
+            <td>
+                  <code><span title="dataclasses_avroschema.serialization.SerializationType">SerializationType</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>avro</code> or <code>avro-json</code></p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>bytes</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>bytes encoded in avro format</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+      <div class="admonition example">
+<p class="admonition-title">Example</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">serialize</span>
+
+
+<span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;event&#39;</span><span class="p">:</span> <span class="s1">&#39;Hello world&#39;</span><span class="p">}</span>
+<span class="n">schema</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;record&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;MyRecord&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;fields&#39;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;event&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;string&#39;</span><span class="p">,</span> <span class="s1">&#39;default&#39;</span><span class="p">:</span> <span class="s1">&#39;Hello World&#39;</span><span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+
+<span class="n">event</span> <span class="o">=</span> <span class="n">serialize</span><span class="p">(</span><span class="n">payload</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">event</span> <span class="o">==</span> <span class="sa">b</span><span class="s1">&#39;Hello world&#39;</span>
+</code></pre></div>
+</div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+
+<a id="dataclasses_avroschema.serialization.deserialize"></a>
+    <div class="doc doc-contents first">
+
+      <p>Deserialize an binary <code>event</code> into a python Dict using <code>fastavro</code> as backend</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="dataclasses_avroschema.serialization.deserialize.data">data</span></code></td>
+            <td>
+                  <code>bytes</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The event to deserialize</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="dataclasses_avroschema.serialization.deserialize.schema">schema</span></code></td>
+            <td>
+                  <code>bytes</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Dict[str, Any]: The schema to use for the deserialization</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="dataclasses_avroschema.serialization.deserialize.serialization_type">serialization_type</span></code></td>
+            <td>
+                  <code><span title="dataclasses_avroschema.serialization.SerializationType">SerializationType</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><code>avro</code> or <code>avro-json</code></p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="dataclasses_avroschema.serialization.deserialize.context">context</span></code></td>
+            <td>
+                  <code>Dict[str, Any] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Optional extra context to use.
+Usually in includes an entry with all the extra models defined
+by the end user by name. Example AvroModel.<strong>name</strong>: AvroModel</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="dataclasses_avroschema.serialization.deserialize.writer_schema">writer_schema</span></code></td>
+            <td>
+                  <code>Dict[str, Any] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The schema that was used to write
+the event. If it is not provided it is assumed that the event was
+written with the <code>schema</code> provided</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="dataclasses_avroschema.types.JsonDict">JsonDict</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The object dezerialized python Dict</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+      <div class="admonition example">
+<p class="admonition-title">Example</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">deserialize</span>
+
+
+<span class="n">event</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;Hello world&#39;</span>
+<span class="n">schema</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;record&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;MyRecord&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;fields&#39;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;event&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;string&#39;</span><span class="p">,</span> <span class="s1">&#39;default&#39;</span><span class="p">:</span> <span class="s1">&#39;Hello World&#39;</span><span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+
+<span class="n">payload</span> <span class="o">=</span> <span class="n">deserialize</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">event</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">payload</span> <span class="o">==</span> <span class="p">{</span><span class="s1">&#39;event&#39;</span><span class="p">:</span> <span class="s1">&#39;Hello world&#39;</span><span class="p">}</span>
+</code></pre></div>
+</div>
+
+    </div>
+
+</div>
 
 
 
