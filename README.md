@@ -1,6 +1,6 @@
-# Dataclasses Avro Schema Generator
+# Dataclasses Avro Schema
 
-Generate [avro schemas](https://avro.apache.org/docs/1.8.2/spec.html) from python dataclasses. [Code generation](https://marcosschroh.github.io/dataclasses-avroschema/model_generator/) from avro schemas. [Serialize/Deserialize](https://marcosschroh.github.io/dataclasses-avroschema/serialization/) python instances with avro schemas
+Generate [avro schemas](https://avro.apache.org/docs/1.8.2/spec.html) from python dataclasses, [Pydantic](https://docs.pydantic.dev/latest/) models and [Faust](https://faust-streaming.github.io/faust/) Records. [Code generation](https://marcosschroh.github.io/dataclasses-avroschema/model_generator/) from avro schemas. [Serialize/Deserialize](https://marcosschroh.github.io/dataclasses-avroschema/serialization/) python instances with avro schemas
 
 [![Tests](https://github.com/marcosschroh/dataclasses-avroschema/actions/workflows/tests.yaml/badge.svg)](https://github.com/marcosschroh/dataclasses-avroschema/actions/workflows/tests.yaml)
 [![GitHub license](https://img.shields.io/github/license/marcosschroh/dataclasses-avroschema.svg)](https://github.com/marcosschroh/dataclasses-avroschema/blob/master/LICENSE)
