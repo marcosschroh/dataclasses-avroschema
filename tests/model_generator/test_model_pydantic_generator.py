@@ -7,12 +7,12 @@ from dataclasses_avroschema.model_generator.lang.python.avro_to_python_utils imp
 
 def test_pydantic_model(schema_one_to_many_map_relationship: types.JsonDict) -> None:
     expected_result = """
-from pydantic import BaseModel
+import pydantic
 import typing
 
 
 
-class Address(BaseModel):
+class Address(pydantic.BaseModel):
     \"""
     An Address
     \"""
@@ -21,7 +21,7 @@ class Address(BaseModel):
 
 
 
-class User(BaseModel):
+class User(pydantic.BaseModel):
     name: str
     age: int
     addresses: typing.Dict[str, Address]
@@ -37,18 +37,17 @@ def test_pydantic_model_with_meta_fields(
     schema_one_to_self_relationship: types.JsonDict,
 ) -> None:
     expected_result = """
-from pydantic import BaseModel
-from pydantic import Field
+import pydantic
 import typing
 
 
 
-class User(BaseModel):
+class User(pydantic.BaseModel):
     name: str
     age: int
     friend: typing.Optional["User"] = None
-    relatives: typing.List["User"] = Field(default_factory=list)
-    teammates: typing.Dict[str, "User"] = Field(default_factory=dict)
+    relatives: typing.List["User"] = pydantic.Field(default_factory=list)
+    teammates: typing.Dict[str, "User"] = pydantic.Field(default_factory=dict)
 """
     model_generator = ModelGenerator()
     result = model_generator.render(schema=schema_one_to_self_relationship, model_type=ModelType.PYDANTIC.value)
@@ -60,6 +59,7 @@ def test_avro_pydantic_model(
 ) -> None:
     expected_result = """
 from dataclasses_avroschema.pydantic import AvroBaseModel
+import pydantic
 import typing
 
 
@@ -88,7 +88,7 @@ class User(AvroBaseModel):
 def test_avro_pydantic_invalid_python_identifiers(schema_with_invalid_python_identifiers: types.JsonDict) -> None:
     expected_result = """
 from dataclasses_avroschema.pydantic import AvroBaseModel
-from pydantic import Field
+import pydantic
 
 
 
@@ -96,10 +96,10 @@ class Address(AvroBaseModel):
     \"""
     An Address
     \"""
-    street_name: str = Field(metadata={'aliases': ['street-name']})
-    street_number: int = Field(metadata={'aliases': ['street-number']})
-    street_zipcode: str = Field(metadata={'aliases': ['zipcode', 'street-zipcode']})
-    city_name: str = Field(metadata={'aliases': ['city-name']})
+    street_name: str = pydantic.Field(metadata={'aliases': ['street-name']})
+    street_number: int = pydantic.Field(metadata={'aliases': ['street-number']})
+    street_zipcode: str = pydantic.Field(metadata={'aliases': ['zipcode', 'street-zipcode']})
+    city_name: str = pydantic.Field(metadata={'aliases': ['city-name']})
     ValidIdentifier: str
     anotherIdentifier: str
     _private: str
@@ -118,7 +118,7 @@ def test_avro_pydantic_model_with_meta_fields(
 ) -> None:
     expected_result = """
 from dataclasses_avroschema.pydantic import AvroBaseModel
-from pydantic import Field
+import pydantic
 import typing
 
 
@@ -127,8 +127,8 @@ class User(AvroBaseModel):
     name: str
     age: int
     friend: typing.Optional["User"] = None
-    relatives: typing.List["User"] = Field(default_factory=list)
-    teammates: typing.Dict[str, "User"] = Field(default_factory=dict)
+    relatives: typing.List["User"] = pydantic.Field(default_factory=list)
+    teammates: typing.Dict[str, "User"] = pydantic.Field(default_factory=dict)
 """
     model_generator = ModelGenerator()
     result = model_generator.render(schema=schema_one_to_self_relationship, model_type=ModelType.AVRODANTIC.value)
@@ -141,7 +141,7 @@ def test_avro_pydantic_primitive_types_as_defined_types(
     expected_result = """
 from dataclasses_avroschema import types
 from dataclasses_avroschema.pydantic import AvroBaseModel
-from pydantic import Field
+import pydantic
 import typing
 
 
@@ -149,9 +149,11 @@ import typing
 class Address(AvroBaseModel):
     street: str
     name: typing.Optional[str]
-    weight: types.Int32 = Field(metadata={'unit': 'kg'})
+    weight: types.Int32 = pydantic.Field(metadata={'unit': 'kg'})
     pet_age: types.Int32 = 1
-    expirience: types.Int32 = Field(metadata={'unit': 'years'}, default=10)
+    expirience: types.Int32 = pydantic.Field(metadata={'unit': 'years'}, default=10)
+    second_street: str = pydantic.Field(metadata={'avro.java.string': 'String'}, default="Batman")
+    reason: typing.Optional[str] = pydantic.Field(metadata={'avro.java.string': 'String'}, default=None)
 
 """
     model_generator = ModelGenerator()
@@ -166,13 +168,13 @@ def test_avro_pydantic_with_fields_with_metadata(
 ) -> None:
     expected_result = """
 from dataclasses_avroschema.pydantic import AvroBaseModel
-from pydantic import Field
+import pydantic
 
 
 
 class Message(AvroBaseModel):
-    someotherfield: int = Field(metadata={'aliases': ['oldname'], 'doc': 'test'})
-    fieldwithdefault: str = "some default value"
+    someotherfield: int = pydantic.Field(metadata={'aliases': ['oldname'], 'doc': 'test', 'avro.java.string': 'String'})
+    fieldwithdefault: str = pydantic.Field(metadata={'avro.java.string': 'String'}, default="some default value")
 
     
     class Meta:
@@ -188,6 +190,7 @@ def test_decimal_field(schema_with_decimal_field: types.JsonDict) -> None:
     expected_result = """
 from dataclasses_avroschema import types
 from dataclasses_avroschema.pydantic import AvroBaseModel
+import pydantic
 
 
 
@@ -212,6 +215,7 @@ from dataclasses_avroschema import types
 from dataclasses_avroschema.pydantic import AvroBaseModel
 import datetime
 import decimal
+import pydantic
 import typing
 import uuid
 

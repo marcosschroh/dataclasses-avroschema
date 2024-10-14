@@ -76,6 +76,8 @@ def schema_primitive_types_as_defined_types() -> Dict:
                 "name": "expirience",
                 "type": {"type": "int", "unit": "years", "default": 10},
             },
+            {"name": "second_street", "type": {"type": "string", "avro.java.string": "String"}, "default": "Batman"},
+            {"name": "reason", "type": ["null", {"type": "string", "avro.java.string": "String"}], "default": None},
         ],
     }
 
@@ -259,6 +261,14 @@ def schema_with_enum_types() -> Dict:
                 ],
                 "default": None,
             },
+            {
+                "name": "limit_type",
+                "type": [
+                    {"type": "enum", "name": "LimitTypes", "symbols": ["MIN_LIMIT", "MAX_LIMIT", "EXACT_LIMIT"]},
+                    "null",
+                ],
+                "default": "MIN_LIMIT",
+            },
         ],
     }
 
@@ -303,6 +313,19 @@ def schema_with_enum_types_with_inner_default() -> Dict:
                     },
                 ],
                 "default": None,
+            },
+            {
+                "name": "limit_type",
+                "type": [
+                    {
+                        "type": "enum",
+                        "name": "LimitTypes",
+                        "symbols": ["MIN_LIMIT", "MAX_LIMIT", "EXACT_LIMIT"],
+                        "default": "MIN_LIMIT",
+                    },
+                    "null",
+                ],
+                "default": "MIN_LIMIT",
             },
         ],
     }
@@ -553,6 +576,78 @@ def schema_one_to_self_relationship() -> JsonDict:
                 "name": "teammates",
                 "type": {"type": "map", "values": "User", "name": "teammate"},
                 "default": {},
+            },
+        ],
+    }
+
+
+@pytest.fixture
+def schema_with_multiple_levels_of_relationship() -> JsonDict:
+    return {
+        "type": "record",
+        "name": "User",
+        "fields": [
+            {"name": "name", "type": "string"},
+            {"name": "age", "type": "long"},
+            {
+                "name": "addresses",
+                "type": {
+                    "type": "map",
+                    "values": {
+                        "type": "record",
+                        "name": "Address",
+                        "fields": [
+                            {"name": "street", "type": "string"},
+                            {"name": "street_number", "type": "long"},
+                            {
+                                "name": "house_main_event",
+                                "type": {
+                                    "type": "record",
+                                    "name": "HouseMainEvent",
+                                    "fields": [
+                                        {
+                                            "name": "birthday",
+                                            "type": {"type": "int", "logicalType": "date"},
+                                            "default": 18181,
+                                        },
+                                        {
+                                            "name": "meeting_time",
+                                            "type": {"type": "int", "logicalType": "time-millis"},
+                                            "default": 64662000,
+                                        },
+                                        {
+                                            "name": "release_datetime",
+                                            "type": {"type": "long", "logicalType": "timestamp-millis"},
+                                            "default": 1570903062000,
+                                        },
+                                        {
+                                            "name": "event_uuid",
+                                            "type": {"type": "string", "logicalType": "uuid"},
+                                            "default": "09f00184-7721-4266-a955-21048a5cc235",
+                                        },
+                                    ],
+                                },
+                            },
+                        ],
+                        "doc": "An Address",
+                    },
+                    "name": "address",
+                },
+            },
+            {
+                "name": "crazy_union",
+                "type": [
+                    "string",
+                    {"type": "map", "values": "Address", "name": "optional_address"},
+                ],
+            },
+            {
+                "name": "optional_addresses",
+                "type": [
+                    "null",
+                    {"type": "map", "values": "Address", "name": "optional_address"},
+                ],
+                "default": None,
             },
         ],
     }
@@ -937,12 +1032,14 @@ def with_fields_with_metadata() -> JsonDict:
                 "name": "fieldwithdefault",
                 "type": "string",
                 "default": "some default value",
+                "avro.java.string": "String",
             },
             {
                 "name": "someotherfield",
                 "type": "long",
                 "aliases": ["oldname"],
                 "doc": "test",
+                "avro.java.string": "String",
             },
         ],
     }
