@@ -81,6 +81,8 @@ class Address(AvroModel):
     weight: types.Int32 = dataclasses.field(metadata={'unit': 'kg'})
     pet_age: types.Int32 = 1
     expirience: types.Int32 = dataclasses.field(metadata={'unit': 'years'}, default=10)
+    second_street: str = dataclasses.field(metadata={'avro.java.string': 'String'}, default="Batman")
+    reason: typing.Optional[str] = dataclasses.field(metadata={'avro.java.string': 'String'}, default=None)
 
 """
     model_generator = ModelGenerator()
@@ -231,12 +233,19 @@ class Cars({templates.ENUM_PYTHON_VERSION}):
     DUNA = "duna"
 
 
+class LimitTypes({templates.ENUM_PYTHON_VERSION}):
+    MIN_LIMIT = "MIN_LIMIT"
+    MAX_LIMIT = "MAX_LIMIT"
+    EXACT_LIMIT = "EXACT_LIMIT"
+
+
 @dataclasses.dataclass
 class User(AvroModel):
     favorite_color: FavoriteColor
     primary_color: FavoriteColor
     superheros: Superheros = Superheros.BATMAN
     cars: typing.Optional[Cars] = None
+    limit_type: typing.Optional[LimitTypes] = LimitTypes.MIN_LIMIT
 """
     model_generator = ModelGenerator()
     result = model_generator.render(schema=schema_with_enum_types)
@@ -283,11 +292,21 @@ class Cars({templates.ENUM_PYTHON_VERSION}):
     class Meta:
         default = "ferrary"
 
+class LimitTypes({templates.ENUM_PYTHON_VERSION}):
+    MIN_LIMIT = "MIN_LIMIT"
+    MAX_LIMIT = "MAX_LIMIT"
+    EXACT_LIMIT = "EXACT_LIMIT"
+
+    {templates.METACLASS_DECORATOR}
+    class Meta:
+        default = "MIN_LIMIT"
+
 @dataclasses.dataclass
 class User(AvroModel):
     favorite_color: FavoriteColor
     superheros: Superheros = Superheros.BATMAN
     cars: typing.Optional[Cars] = None
+    limit_type: typing.Optional[LimitTypes] = LimitTypes.MIN_LIMIT
 """
     model_generator = ModelGenerator()
     result = model_generator.render(schema=schema_with_enum_types_with_inner_default)
@@ -534,6 +553,48 @@ class User(AvroModel):
     assert result.strip() == expected_result.strip()
 
 
+def test_schema_with_multiple_levels_of_relationship(
+    schema_with_multiple_levels_of_relationship: types.JsonDict,
+) -> None:
+    expected_result = """
+from dataclasses_avroschema import AvroModel
+import dataclasses
+import datetime
+import typing
+import uuid
+
+
+@dataclasses.dataclass
+class HouseMainEvent(AvroModel):
+    birthday: datetime.date = datetime.date(2019, 10, 12)
+    meeting_time: datetime.time = datetime.time(17, 57, 42)
+    release_datetime: datetime.datetime = datetime.datetime(2019, 10, 12, 17, 57, 42, tzinfo=datetime.timezone.utc)
+    event_uuid: uuid.UUID = "09f00184-7721-4266-a955-21048a5cc235"
+
+
+@dataclasses.dataclass
+class Address(AvroModel):
+    \"""
+    An Address
+    \"""
+    street: str
+    street_number: int
+    house_main_event: HouseMainEvent
+
+
+@dataclasses.dataclass
+class User(AvroModel):
+    name: str
+    age: int
+    addresses: typing.Dict[str, Address]
+    crazy_union: typing.Union[str, typing.Dict[str, Address]]
+    optional_addresses: typing.Optional[typing.Dict[str, Address]] = None
+"""
+    model_generator = ModelGenerator()
+    result = model_generator.render(schema=schema_with_multiple_levels_of_relationship)
+    assert result.strip() == expected_result.strip()
+
+
 def test_decimal_field(schema_with_decimal_field: types.JsonDict) -> None:
     expected_result = """
 from dataclasses_avroschema import AvroModel
@@ -717,8 +778,8 @@ import dataclasses
 
 @dataclasses.dataclass
 class Message(AvroModel):
-    someotherfield: int = dataclasses.field(metadata={'aliases': ['oldname'], 'doc': 'test'})
-    fieldwithdefault: str = "some default value"
+    someotherfield: int = dataclasses.field(metadata={'aliases': ['oldname'], 'doc': 'test', 'avro.java.string': 'String'})
+    fieldwithdefault: str = dataclasses.field(metadata={'avro.java.string': 'String'}, default="some default value")
 
     
     class Meta:

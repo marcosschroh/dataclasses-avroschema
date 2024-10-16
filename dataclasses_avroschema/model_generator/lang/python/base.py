@@ -17,10 +17,148 @@ from . import (
 )
 
 
-class FieldRepresentation(typing.NamedTuple):
+@dataclasses.dataclass
+class FieldRepresentation:
     name: str
-    string_representation: str
-    has_default: bool
+    avro_type: typing.Any
+    type_hint: str
+    default: typing.Any
+    template: Template
+    metadata: JsonDict = dataclasses.field(default_factory=dict)
+    is_complex_type: bool = False
+    children: typing.List["FieldRepresentation"] = dataclasses.field(default_factory=list)
+    inner_name: str = ""
+
+    def __post_init__(self) -> None:
+        if isinstance(self.avro_type, list):
+            self.avro_type = self.avro_type[0]
+            for child in self.children:
+                self.metadata.update(child.metadata)
+
+        if isinstance(self.avro_type, dict):
+            inner_type = self.avro_type["type"]
+            self.inner_name = self.avro_type.get("name", "")
+
+            if self.children:
+                self.child_field = self.children[0]
+                self.avro_type = self.child_field.avro_type
+                self.type_hint = self.type_hint or self.child_field.type_hint
+                self.default = self.default if self.default is not dataclasses.MISSING else self.child_field.default
+                self.metadata.update(self.child_field.metadata)
+
+            # Check that internal field name is different to the original name
+            # for example: {"name": "age", "type": { "type": "array", "items": "string", "name": "my_age" }}
+            # in this case my_age is not in age which means that this must be reflected in the model
+            # This does not applu to `enums` and `records`
+            if self.inner_name not in self.name and inner_type not in (
+                field_utils.ENUM,
+                field_utils.RECORD,
+            ):
+                self.metadata["inner_name"] = self.inner_name
+
+    def to_string(self) -> str:
+        """
+        Convert a field to string
+        """
+        if self.is_complex_type or not self.name:
+            # If the field is a complext type or
+            # name is an empty string (it means that the type is a native type
+            # with the form {"type": "a_primitive_type"}, example {"type": "string"})
+            result = self.type_hint
+        else:
+            result = templates.field_type_template.safe_substitute(name=self.name, type=self.type_hint)
+
+        # optional field attribute
+        default_generated = self.get_field_default()
+
+        if (
+            default_generated
+            not in (
+                dataclasses.MISSING,
+                "",
+            )
+            and self.avro_type != field_utils.DECIMAL
+        ):
+            result += templates.field_default_template.safe_substitute(default=default_generated)
+
+        return result
+
+    def get_field_default(self) -> str:
+        """
+        Returns the default value according to the field type
+
+        TODO: docstrings
+
+        Example:
+            If the default is "bond" the method should return '"bond"' so the double quotes
+            won't be scaped during the field render
+        """
+        field_metadata = self.metadata or {}
+        field_metadata_repr = None
+        default_repr = ""
+
+        if self.default is dataclasses.MISSING:
+            ...
+        elif self.avro_type in (
+            field_utils.STRING,
+            field_utils.UUID,
+        ):
+            default_repr = f'"{self.default}"'
+        elif self.avro_type in (
+            field_utils.BYTES,
+            field_utils.FIXED,
+        ):
+            default_repr = f'b"{self.default}"'
+        elif self.avro_type == field_utils.ENUM:
+            enum_name = self.inner_name or self.type_hint
+            default_repr = f"{casefy.pascalcase(enum_name)}.{casefy.uppercase(self.default)}"
+        elif isinstance(self.default, (dict, list)):
+            # Then is can be a regular dict as default or a record
+            if self.default:
+                if self.avro_type not in field_utils.AVRO_TYPES:
+                    # Try to get the last part in case that the type is namespaced `types.bus_type.Bus`
+                    field_type = self.avro_type.split(".")[-1]
+                    default_repr = templates.instance_template.safe_substitute(
+                        type=field_type, properties=f"**{self.default}"
+                    )
+                else:
+                    default_repr = str(self.default)
+            else:
+                default_repr = self.default.__class__.__name__
+        elif self.avro_type in avro_to_python_utils.LOGICAL_TYPES_TO_PYTHON:
+            func = avro_to_python_utils.LOGICAL_TYPES_TO_PYTHON[self.avro_type]
+            python_type = func(self.default)
+            template_func = avro_to_python_utils.LOGICAL_TYPE_TEMPLATES[self.avro_type]
+            default_repr = template_func(python_type)
+        else:
+            default_repr = str(self.default)
+
+        dataclass_field_properties = []
+        if field_metadata:
+            field_metadata_repr = f"metadata={field_metadata}"
+
+        if field_metadata_repr or isinstance(self.default, (dict, list)):
+            dataclass_field_properties = [field_metadata_repr]
+
+            if isinstance(self.default, (dict, list)):
+                if self.default:
+                    dataclass_prop = f"default_factory=lambda: {default_repr}"
+                else:
+                    dataclass_prop = f"default_factory={default_repr}"
+
+                dataclass_field_properties.append(dataclass_prop)
+            else:
+                if self.default is not dataclasses.MISSING:
+                    dataclass_field_properties.append(f"default={default_repr}")
+
+            default_repr = self.render_dataclass_field(
+                properties=", ".join([prop for prop in dataclass_field_properties if prop])
+            )
+
+        return default_repr
+
+    def render_dataclass_field(self, properties: str) -> str:
+        return self.template.safe_substitute(properties=properties)
 
 
 @dataclass
@@ -176,16 +314,14 @@ class BaseGenerator:
             self.render_field(field=field, model_name=name) for field in record_fields
         ]
 
-        fields_representation_copy = copy.deepcopy(fields_representation)
-        fields_representation.sort(key=lambda field: 1 if field.has_default else 0)
+        fields_representation_copy = copy.copy(fields_representation)
+        fields_representation.sort(key=lambda field: field.default is not dataclasses.MISSING)
 
         field_order = None
         if fields_representation_copy != fields_representation:
             field_order = [field.name for field in fields_representation_copy]
 
-        rendered_fields_string = self.field_identation.join(
-            field.string_representation for field in fields_representation
-        )
+        rendered_fields_string = self.field_identation.join(field.to_string() for field in fields_representation)
         docstring = self.render_docstring(docstring=schema.get("doc"))
 
         rendered_class = templates.class_template.safe_substitute(
@@ -203,9 +339,6 @@ class BaseGenerator:
 
         return rendered_class
 
-    def render_dataclass_field(self, properties: str) -> str:
-        return self.field_template.safe_substitute(properties=properties)
-
     def render_field(self, field: JsonDict, model_name: str) -> FieldRepresentation:
         """
         Render an avro field.
@@ -221,74 +354,61 @@ class BaseGenerator:
         type: AvroTypeRepr = field["type"]
         default = field.get("default", dataclasses.MISSING)
         field_metadata = self.get_field_metadata(field)
+        children = None
 
         # This flag tells whether the field is array, map, fixed
-        is_complex_type = has_default = False
+        is_complex_type = False
 
         if self.is_logical_type(field=field):
             is_complex_type = True
             # override the type so it can be use to get the default value in case that is needed
             type = field.get("logicalType") or field["type"]["logicalType"]
-            language_type = self.parse_logical_type(field=field)
+            type_hint = self.parse_logical_type(field=field)
         elif isinstance(type, dict):
-            field_representation = self.render_field(field=type, model_name=model_name)
-            language_type = field_representation.string_representation
-            has_default = field_representation.has_default
+            type_hint = ""
+            children = [self.render_field(field=type, model_name=model_name)]
         elif isinstance(type, list):
-            language_type = self.parse_union(field_types=type, model_name=model_name)
+            type_hint, children = self.parse_union(field_types=type, model_name=model_name)
         elif type == field_utils.ARRAY:
             is_complex_type = True
-            language_type = self.parse_array(field=field, model_name=model_name)
+            type_hint = self.parse_array(field=field, model_name=model_name)
         elif type == field_utils.MAP:
             is_complex_type = True
-            language_type = self.parse_map(field=field, model_name=model_name)
+            type_hint = self.parse_map(field=field, model_name=model_name)
         elif type == field_utils.ENUM:
             is_complex_type = True
-            language_type = self.parse_enum(field=field)
+            type_hint = self.parse_enum(field=field)
             # We must set the default Enums type level default to dataclasses.MISSING
             # as it is set in the Meta class.
             # Check https://github.com/marcosschroh/dataclasses-avroschema/issues/665
             default = dataclasses.MISSING
         elif type == field_utils.FIXED:
             is_complex_type = True
-            language_type = self.parse_fixed(field=field)
+            type_hint = self.parse_fixed(field=field)
         elif type == field_utils.RECORD:
             record = f"\n{self.render_class(schema=field)}"
             is_complex_type = True
             self.extras.append(record)
-            language_type = casefy.pascalcase(field["name"])
+            type_hint = casefy.pascalcase(field["name"])
         else:
             # Native field
-            language_type = self.get_language_type(type=type, model_name=model_name)
+            type_hint = self.get_language_type(type=type, model_name=model_name)
 
             # check if the language type must be replaced with some extra class
             # specified in the field metadata only after the native type was resolved
             type_from_metadata = self._resolve_type_from_metadata(field=field)
-            language_type = type_from_metadata or language_type
+            type_hint = type_from_metadata or type_hint
 
-        if is_complex_type or not name:
-            # If the field is a complext type or
-            # name is an empty string (it means that the type is a native type
-            # with the form {"type": "a_primitive_type"}, example {"type": "string"})
-            result = language_type
-        else:
-            result = templates.field_type_template.safe_substitute(name=name, type=language_type)
-
-        # optional field attribute
-        default_generated = self.get_field_default(
-            field_type=type, default=default, name=name, field_metadata=field_metadata
+        return FieldRepresentation(
+            name=name,
+            avro_type=type,
+            type_hint=type_hint,
+            template=self.field_template,
+            is_complex_type=is_complex_type,
+            default=default,
+            metadata=field_metadata,
+            children=children or [],
         )
-
-        if default_generated not in (
-            dataclasses.MISSING,
-            "",
-        ):
-            if type != field_utils.DECIMAL:
-                result += templates.field_default_template.safe_substitute(default=default_generated)
-            if default is not dataclasses.MISSING:
-                has_default = True
-
-        return FieldRepresentation(name=name, string_representation=result, has_default=has_default)
 
     @staticmethod
     def generate_field_name(field: JsonDict) -> str:
@@ -356,7 +476,9 @@ class BaseGenerator:
             field_repr += templates.field_default_template.safe_substitute(default=default)
         return field_repr
 
-    def parse_union(self, *, field_types: typing.List, model_name: str) -> str:
+    def parse_union(
+        self, *, field_types: typing.List, model_name: str
+    ) -> typing.Tuple[str, typing.List[FieldRepresentation]]:
         """
         Parse an Avro union
 
@@ -371,27 +493,33 @@ class BaseGenerator:
         """
 
         # XXX: Maybe more useful in general
-        def render_type(typ: str) -> str:
-            if isinstance(typ, dict):
-                field_representation = self.render_field(field=typ, model_name=model_name)
-                return field_representation.string_representation
-            else:
-                return self.get_language_type(type=typ, model_name=model_name)
+        def render_type(avro_type: typing.Union[str, dict]) -> FieldRepresentation:
+            if isinstance(avro_type, str):
+                avro_type = {"type": avro_type}
+
+            return self.render_field(field=avro_type, model_name=model_name)
 
         if field_utils.NULL in field_types and len(field_types) == 2:
             # It is an optional field, we should include in the imports typing
             # and use the optional Template
             self.imports.add("import typing")
-            (field_type,) = [f for f in field_types if f != field_utils.NULL]
-            language_types = render_type(field_type)
-            return templates.optional_template.safe_substitute(type=language_types)
+            field_type = [f for f in field_types if f != field_utils.NULL]
+            field_representation = render_type(field_type[0])
+            type_hint = templates.optional_template.safe_substitute(type=field_representation.type_hint)
+            return type_hint, [field_representation]
+            # return templates.optional_template.safe_substitute(type=language_types)
         elif len(field_types) >= 2:
             # a union with more than 2 types
             self.imports.add("import typing")
-            language_types_repr = ", ".join(render_type(t) for t in field_types)
-            return templates.union_template.safe_substitute(type=language_types_repr)
+            children = [render_type(t) for t in field_types]
+            language_types_repr = ", ".join(child.type_hint for child in children)
+            type_hint = templates.union_template.safe_substitute(type=language_types_repr)
+            return type_hint, children
         else:
-            return render_type(field_types[0])
+            # This is a weird definitions when an union can have only one type
+            #  {"name": "money_available", "type": ["double"]},
+            field_representation = render_type(field_types[0])
+            return field_representation.type_hint, [field_representation]
 
     def parse_array(self, field: JsonDict, model_name: str) -> str:
         """
@@ -485,9 +613,9 @@ class BaseGenerator:
 
         if isinstance(type, dict):
             field_representation = self.render_field(field=type, model_name=model_name)
-            language_type = field_representation.string_representation
+            language_type = field_representation.to_string()
         elif isinstance(type, list):
-            language_type = self.parse_union(field_types=type, model_name=model_name)
+            language_type, _ = self.parse_union(field_types=type, model_name=model_name)
         else:
             language_type = self.get_language_type(type=type, model_name=model_name)
 
@@ -522,6 +650,8 @@ class BaseGenerator:
             "type",
             "default",
             "pydantic-class",
+            "precision",
+            "scale",
         ]
 
         type = field["type"]
@@ -544,104 +674,6 @@ class BaseGenerator:
             )
 
         return {name: value for name, value in field.items() if name not in keys_to_ignore}
-
-    def get_field_default(
-        self,
-        *,
-        field_type: AvroTypeRepr,
-        default: typing.Any,
-        name: str,
-        field_metadata: typing.Optional[JsonDict] = None,
-    ) -> typing.Any:
-        """
-        Returns the default value according to the field type
-
-        TODO: docstrings
-
-        Example:
-            If the default is "bond" the method should return '"bond"' so the double quotes
-            won't be scaped during the field render
-        """
-        field_metadata = field_metadata or {}
-        field_metadata_repr = None
-        default_repr = ""
-
-        if isinstance(field_type, dict):
-            inner_type = field_type["type"]
-            inner_name = field_type.get("name", "")
-
-            # Check that internal field name is different to the original name
-            # for example: {"name": "age", "type": { "type": "array", "items": "string", "name": "my_age" }}
-            # in this case my_age is not in age which means that this must be reflected in the model
-            # This does not applu to `enums` and `records`
-            if inner_name not in name and inner_type not in (
-                field_utils.ENUM,
-                field_utils.RECORD,
-            ):
-                field_metadata["inner_name"] = inner_name
-
-            inner_default_repr = self.get_field_default(field_type=inner_type, name=inner_name or name, default=default)
-
-            if inner_default_repr not in (None, dataclasses.MISSING):
-                default_repr += inner_default_repr
-        elif default is dataclasses.MISSING:
-            pass
-        elif field_type in (
-            field_utils.STRING,
-            field_utils.UUID,
-        ):
-            default_repr = f'"{default}"'
-        elif field_type in (
-            field_utils.BYTES,
-            field_utils.FIXED,
-        ):
-            default_repr = f'b"{default}"'
-        elif field_type == field_utils.ENUM:
-            default_repr = f"{casefy.pascalcase(name)}.{casefy.uppercase(default)}"
-        elif isinstance(field_type, list):
-            # union type
-            default_repr = self.get_field_default(field_type=field_type[0], default=default, name=name)
-        elif isinstance(default, (dict, list)):
-            # Then is can be a regular dict as default or a record
-            if default:
-                if field_type not in field_utils.AVRO_TYPES:
-                    # Try to get the last part in case that the type is namespaced `types.bus_type.Bus`
-                    field_type = field_type.split(".")[-1]
-                    default = templates.instance_template.safe_substitute(type=field_type, properties=f"**{default}")
-
-                return f"{default}"
-            return default.__class__.__name__
-        elif field_type in avro_to_python_utils.LOGICAL_TYPES_TO_PYTHON:
-            func = avro_to_python_utils.LOGICAL_TYPES_TO_PYTHON[field_type]
-            python_type = func(default)
-            template_func = avro_to_python_utils.LOGICAL_TYPE_TEMPLATES[field_type]
-            default_repr = template_func(python_type)
-        else:
-            default_repr = str(default)
-
-        dataclass_field_properties = []
-        if field_metadata:
-            field_metadata_repr = f"metadata={field_metadata}"
-
-        if field_metadata_repr or isinstance(default, (dict, list)):
-            dataclass_field_properties = [field_metadata_repr]
-
-            if isinstance(default, (dict, list)):
-                if default:
-                    dataclass_prop = f"default_factory=lambda: {default_repr}"
-                else:
-                    dataclass_prop = f"default_factory={default_repr}"
-
-                dataclass_field_properties.append(dataclass_prop)
-            else:
-                if default is not dataclasses.MISSING:
-                    dataclass_field_properties.append(f"default={default_repr}")
-
-            default_repr = self.render_dataclass_field(
-                properties=", ".join([prop for prop in dataclass_field_properties if prop])
-            )
-
-        return default_repr
 
     @staticmethod
     def _add_schema_to_metaclass(schema_template: Template, schema: JsonDict) -> str:

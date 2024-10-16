@@ -59,7 +59,7 @@ $classes
 """
 
 # Pydanntic specific
-PYDANTIC_FIELD = "Field($properties)"
+PYDANTIC_FIELD = "pydantic.Field($properties)"
 
 field_type_template = Template(FIELD_TYPE_TEMPLATE)
 metaclass_field_template = Template(METACLASS_FIELD_TEMPLATE)
