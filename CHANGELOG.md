@@ -1,3 +1,9 @@
+## 0.63.6 (2024-10-16)
+
+### Fix
+
+- model generation simplified. Closes #746 (#776)
+
 ## 0.63.5 (2024-10-11)
 
 ### Fix
