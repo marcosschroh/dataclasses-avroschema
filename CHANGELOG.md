@@ -1,3 +1,9 @@
+## 0.63.7 (2024-10-17)
+
+### Fix
+
+- AttributeError exception raised when trying to generate schema from AvroModel itself and not a subclass of it. Closes #739 (#777)
+
 ## 0.63.6 (2024-10-16)
 
 ### Fix
