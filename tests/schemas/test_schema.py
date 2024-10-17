@@ -368,3 +368,21 @@ def test_avro_schema_method_with_inheritance() -> None:
         derived_b_schema
         == '{"type": "record", "name": "DerivedB", "fields": [{"name": "some_data", "type": "string"}, {"name": "some_more_data_B", "type": "string"}], "doc": "DerivedB docs"}'
     )
+
+
+def test_generate_schema_from_avro_model() -> None:
+    msg = "Schema generation must be called on a subclass of AvroModel, not AvroModel"
+    with pytest.raises(AttributeError, match=msg):
+        AvroModel.generate_schema()
+
+    with pytest.raises(AttributeError, match=msg):
+        AvroModel.avro_schema()
+
+    with pytest.raises(AttributeError, match=msg):
+        AvroModel.avro_schema_to_python()
+
+    with pytest.raises(AttributeError, match=msg):
+        AvroModel.get_fullname()
+
+    with pytest.raises(AttributeError, match=msg):
+        AvroModel.get_fields()

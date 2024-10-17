@@ -25,12 +25,15 @@ class AvroModel:
     _parser: Optional[Parser] = None
     _klass: Optional[Type] = None
     _metadata: Optional[SchemaMetadata] = None
-    _user_defined_types: Set[UserDefinedType] = set()
     _parent: Any = None
+    _user_defined_types: Set[UserDefinedType] = set()
     _rendered_schema: OrderedDict = dataclasses.field(default_factory=OrderedDict)
 
     @classmethod
     def generate_dataclass(cls: "Type[CT]") -> "Type[CT]":
+        if cls is AvroModel:
+            raise AttributeError("Schema generation must be called on a subclass of AvroModel, not AvroModel itself.")
+
         if dataclasses.is_dataclass(cls):
             return cls  # type: ignore
         return dataclasses.dataclass(cls)
@@ -69,7 +72,7 @@ class AvroModel:
     def generate_schema(
         cls: "Type[CT]", schema_type: serialization.SerializationType = "avro"
     ) -> Optional[OrderedDict]:
-        if cls._parser is None or cls.__mro__[1] != AvroModel:
+        if cls._parser is None:
             # Generate dataclass and metadata
             cls._klass = cls.generate_dataclass()
 
