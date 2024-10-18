@@ -473,6 +473,36 @@ def schema_one_to_one_relationship() -> JsonDict:
 
 
 @pytest.fixture
+def schema_one_to_one_relationship_clashes_types() -> JsonDict:
+    return {
+        "type": "record",
+        "name": "Message",
+        "fields": [
+            {"name": "MessageBody", "type": "string"},
+            {
+                "name": "MessageHeader",
+                "type": [
+                    "null",
+                    {
+                        "type": "array",
+                        "name": "MessageHeader",
+                        "items": {
+                            "type": "record",
+                            "name": "MessageHeader",
+                            "fields": [
+                                {"name": "version", "type": "string"},
+                                {"name": "MessageType", "type": "string"},
+                            ],
+                        },
+                    },
+                ],
+                "default": None,
+            },
+        ],
+    }
+
+
+@pytest.fixture
 def schema_one_to_many_array_relationship() -> JsonDict:
     return {
         "type": "record",

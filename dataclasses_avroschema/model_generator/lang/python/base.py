@@ -25,15 +25,15 @@ class FieldRepresentation:
     default: typing.Any
     template: Template
     metadata: JsonDict = dataclasses.field(default_factory=dict)
-    is_complex_type: bool = False
     children: typing.List["FieldRepresentation"] = dataclasses.field(default_factory=list)
     inner_name: str = ""
+    is_root: bool = False
 
     def __post_init__(self) -> None:
+        # print("hola", self)
+
         if isinstance(self.avro_type, list):
             self.avro_type = self.avro_type[0]
-            for child in self.children:
-                self.metadata.update(child.metadata)
 
         if isinstance(self.avro_type, dict):
             inner_type = self.avro_type["type"]
@@ -44,7 +44,6 @@ class FieldRepresentation:
                 self.avro_type = self.child_field.avro_type
                 self.type_hint = self.type_hint or self.child_field.type_hint
                 self.default = self.default if self.default is not dataclasses.MISSING else self.child_field.default
-                self.metadata.update(self.child_field.metadata)
 
             # Check that internal field name is different to the original name
             # for example: {"name": "age", "type": { "type": "array", "items": "string", "name": "my_age" }}
@@ -56,17 +55,25 @@ class FieldRepresentation:
             ):
                 self.metadata["inner_name"] = self.inner_name
 
+        # update all metadata based on all children
+        for child in self.children:
+            self.metadata.update(child.metadata)
+        
+        # if self.is_root and self.name in self.type_hint:
+        #     # if the name is equal to the last child type_hint
+        #     # then it means the there is a clashe
+        #     field_aliases = self.metadata.get("aliases", [])
+        #     field_aliases.append(self.name)
+        #     self.metadata["aliases"] = field_aliases
+        #     self.name = f"_{self.name}"         
+
+        print("hola", self)
+
     def to_string(self) -> str:
         """
         Convert a field to string
         """
-        if self.is_complex_type or not self.name:
-            # If the field is a complext type or
-            # name is an empty string (it means that the type is a native type
-            # with the form {"type": "a_primitive_type"}, example {"type": "string"})
-            result = self.type_hint
-        else:
-            result = templates.field_type_template.safe_substitute(name=self.name, type=self.type_hint)
+        result = templates.field_type_template.safe_substitute(name=self.name, type=self.type_hint)
 
         # optional field attribute
         default_generated = self.get_field_default()
@@ -194,6 +201,7 @@ class BaseGenerator:
     field_template: Template = field(init=False)
     avro_type_to_lang: typing.Dict[str, str] = field(init=False)
     logical_types_imports: typing.Dict[str, str] = field(init=False)
+    model_names_generated: typing.Set[str] = field(default_factory=set)
 
     # Boolean to indicate whether original_schema field containing the original schema string should be generated in
     # Meta class of all generated objects
@@ -305,13 +313,17 @@ class BaseGenerator:
         """
         Render the class generated from the schema
         """
-        name: str = casefy.pascalcase(schema["name"])
+        model_name: str = casefy.pascalcase(schema["name"])
+
+        # add the class name generated to the set to compare later with all the fields
+        self.model_names_generated.add(model_name)
+
         record_fields: typing.List[JsonDict] = schema["fields"]
         self.add_class_imports()
 
         # Sort the fields according whether it has a default value
         fields_representation: typing.List[FieldRepresentation] = [
-            self.render_field(field=field, model_name=name) for field in record_fields
+            self.render_field(field=field, model_name=model_name, is_root=True) for field in record_fields
         ]
 
         fields_representation_copy = copy.copy(fields_representation)
@@ -325,21 +337,21 @@ class BaseGenerator:
         docstring = self.render_docstring(docstring=schema.get("doc"))
 
         rendered_class = templates.class_template.safe_substitute(
-            name=name,
+            name=model_name,
             decorator=self.base_class_decorator,
             base_class=self.base_class,
             fields=rendered_fields_string,
             docstring=docstring,
         )
 
-        add_schema_name = name != schema["name"]
+        add_schema_name = model_name != schema["name"]
         class_metadata = self.render_metaclass(schema=schema, field_order=field_order, add_schema_name=add_schema_name)
         if class_metadata is not None:
             rendered_class += class_metadata
 
         return rendered_class
 
-    def render_field(self, field: JsonDict, model_name: str) -> FieldRepresentation:
+    def render_field(self, field: JsonDict, model_name: str, is_root: bool = False) -> FieldRepresentation:
         """
         Render an avro field.
 
@@ -356,11 +368,7 @@ class BaseGenerator:
         field_metadata = self.get_field_metadata(field)
         children = None
 
-        # This flag tells whether the field is array, map, fixed
-        is_complex_type = False
-
         if self.is_logical_type(field=field):
-            is_complex_type = True
             # override the type so it can be use to get the default value in case that is needed
             type = field.get("logicalType") or field["type"]["logicalType"]
             type_hint = self.parse_logical_type(field=field)
@@ -370,26 +378,21 @@ class BaseGenerator:
         elif isinstance(type, list):
             type_hint, children = self.parse_union(field_types=type, model_name=model_name)
         elif type == field_utils.ARRAY:
-            is_complex_type = True
-            type_hint = self.parse_array(field=field, model_name=model_name)
+            type_hint, children = self.parse_array(field=field, model_name=model_name)
         elif type == field_utils.MAP:
-            is_complex_type = True
-            type_hint = self.parse_map(field=field, model_name=model_name)
+            type_hint, children = self.parse_map(field=field, model_name=model_name)
         elif type == field_utils.ENUM:
-            is_complex_type = True
             type_hint = self.parse_enum(field=field)
             # We must set the default Enums type level default to dataclasses.MISSING
             # as it is set in the Meta class.
             # Check https://github.com/marcosschroh/dataclasses-avroschema/issues/665
             default = dataclasses.MISSING
         elif type == field_utils.FIXED:
-            is_complex_type = True
             type_hint = self.parse_fixed(field=field)
         elif type == field_utils.RECORD:
             record = f"\n{self.render_class(schema=field)}"
-            is_complex_type = True
             self.extras.append(record)
-            type_hint = casefy.pascalcase(field["name"])
+            type_hint = casefy.pascalcase(name)
         else:
             # Native field
             type_hint = self.get_language_type(type=type, model_name=model_name)
@@ -404,10 +407,10 @@ class BaseGenerator:
             avro_type=type,
             type_hint=type_hint,
             template=self.field_template,
-            is_complex_type=is_complex_type,
             default=default,
             metadata=field_metadata,
             children=children or [],
+            is_root=is_root,
         )
 
     @staticmethod
@@ -443,23 +446,23 @@ class BaseGenerator:
         type_from_metadata = self._resolve_type_from_metadata(field=field)
 
         if type_from_metadata is not None:
-            type = type_from_metadata
+            type_hint = type_from_metadata
         elif logical_type == field_utils.DECIMAL:
             # this is a special case for logical types
-            type = self.parse_decimal(field=field, default=default)
+            type_hint = self.parse_decimal(field=field, default=default)
         elif logical_type not in self.logical_types_imports:
             # Then it is a custom logicalType, so we default to the native type
-            type = self.get_language_type(type=field["type"])
+            type_hint = self.get_language_type(type=field["type"])
         else:
             # add the logical type import
             self.imports.add(self.logical_types_imports[logical_type])
-            type = self.avro_type_to_lang[logical_type]
+            type_hint = self.avro_type_to_lang[logical_type]
 
-        if field_name is not None:
-            field_repr = templates.field_type_template.safe_substitute(name=field_name, type=type)
-            return field_repr
+        # if field_name is not None:
+        #     field_repr = templates.field_type_template.safe_substitute(name=field_name, type=type)
+        #     return field_repr
 
-        return type
+        return type_hint
 
     def parse_decimal(self, *, field: JsonDict, default: typing.Optional[str] = None) -> str:
         precision = field["precision"]
@@ -494,8 +497,7 @@ class BaseGenerator:
 
         # XXX: Maybe more useful in general
         def render_type(avro_type: typing.Union[str, dict]) -> FieldRepresentation:
-            if isinstance(avro_type, str):
-                avro_type = {"type": avro_type}
+            avro_type = self.type_to_defined_types(avro_type)
 
             return self.render_field(field=avro_type, model_name=model_name)
 
@@ -507,7 +509,6 @@ class BaseGenerator:
             field_representation = render_type(field_type[0])
             type_hint = templates.optional_template.safe_substitute(type=field_representation.type_hint)
             return type_hint, [field_representation]
-            # return templates.optional_template.safe_substitute(type=language_types)
         elif len(field_types) >= 2:
             # a union with more than 2 types
             self.imports.add("import typing")
@@ -521,7 +522,7 @@ class BaseGenerator:
             field_representation = render_type(field_types[0])
             return field_representation.type_hint, [field_representation]
 
-    def parse_array(self, field: JsonDict, model_name: str) -> str:
+    def parse_array(self, field: JsonDict, model_name: str) -> typing.Tuple[str, typing.List[FieldRepresentation]]:
         """
         Parse an Avro array
 
@@ -530,12 +531,15 @@ class BaseGenerator:
         Example:
             {"name": "pets", "type": {"type": "array", "items": "string", "name": "pet"}}
         """
-        type = field["items"]
-        language_type = self._get_complex_langauge_type(type=type, model_name=model_name)
+        self.imports.add("import typing")
+        avro_type = self.type_to_defined_types(field["items"])
 
-        return templates.list_template.safe_substitute(type=language_type)
+        field_representation = self.render_field(field=avro_type, model_name=model_name)
+        type_hint = templates.list_template.safe_substitute(type=field_representation.type_hint)
 
-    def parse_map(self, field: JsonDict, model_name: str) -> str:
+        return type_hint, [field_representation]
+
+    def parse_map(self, field: JsonDict, model_name: str) -> typing.Tuple[str, typing.List[FieldRepresentation]]:
         """
         Parse an Avro map
 
@@ -544,10 +548,13 @@ class BaseGenerator:
         Example:
             {"name": "accounts_money", "type": {"type": "map", "values": "float", "name": "accounts_money"}},
         """
-        type = field["values"]
-        language_type = self._get_complex_langauge_type(type=type, model_name=model_name)
+        self.imports.add("import typing")
+        avro_type = self.type_to_defined_types(field["values"])
 
-        return templates.dict_template.safe_substitute(type=language_type)
+        field_representation = self.render_field(field=avro_type, model_name=model_name)
+        type_hint = templates.dict_template.safe_substitute(type=field_representation.type_hint)
+
+        return type_hint, [field_representation]
 
     def parse_fixed(self, field: JsonDict) -> str:
         self.imports.add("from dataclasses_avroschema import types")
@@ -605,22 +612,6 @@ class BaseGenerator:
 
         return enum_name
 
-    def _get_complex_langauge_type(self, *, type: typing.Any, model_name: str) -> str:
-        """
-        Get the language type for complex types (array and maps)
-        """
-        self.imports.add("import typing")
-
-        if isinstance(type, dict):
-            field_representation = self.render_field(field=type, model_name=model_name)
-            language_type = field_representation.to_string()
-        elif isinstance(type, list):
-            language_type, _ = self.parse_union(field_types=type, model_name=model_name)
-        else:
-            language_type = self.get_language_type(type=type, model_name=model_name)
-
-        return language_type
-
     def get_language_type(
         self,
         *,
@@ -643,6 +634,13 @@ class BaseGenerator:
             return str(self.avro_type_to_lang.get(type, default))
         else:
             return str(self.avro_type_to_lang.get(type, type))
+
+    @staticmethod
+    def type_to_defined_types(avro_type: typing.Any) -> JsonDict:
+        if isinstance(avro_type, (str, list)):
+            avro_type = {"type": avro_type}
+
+        return avro_type
 
     def get_field_metadata(self, field: JsonDict) -> JsonDict:
         keys_to_ignore = [

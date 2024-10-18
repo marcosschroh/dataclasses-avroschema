@@ -469,6 +469,31 @@ class User(AvroModel):
     assert result.strip() == expected_result.strip()
 
 
+def test_schema_one_to_one_relationship_clashes_types(
+    schema_one_to_one_relationship_clashes_types: types.JsonDict,
+) -> None:
+    expected_result = """
+from dataclasses_avroschema import AvroModel
+import dataclasses
+import typing
+
+
+@dataclasses.dataclass
+class MessageHeader(AvroModel):
+    version: str
+    MessageType: str
+
+
+@dataclasses.dataclass
+class Message(AvroModel):
+    MessageBody: str
+    _MessageHeader: typing.Optional[typing.List[MessageHeader]] = dataclasses.field(metadata={'aliases': ['MessageHeader']}, default=None)
+"""
+    model_generator = ModelGenerator()
+    result = model_generator.render(schema=schema_one_to_one_relationship_clashes_types)
+    assert result.strip() == expected_result.strip()
+
+
 def test_schema_one_to_many_array_relationship(
     schema_one_to_many_array_relationship: types.JsonDict,
 ) -> None:

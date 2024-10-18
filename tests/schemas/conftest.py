@@ -53,6 +53,11 @@ def user_one_address_schema():
 
 
 @pytest.fixture
+def clashes_types_schema():
+    return load_json("clashes_types_schema.avsc")
+
+
+@pytest.fixture
 def user_one_address_alias_item():
     return load_json("user_one_address_alias_item.avsc")
 

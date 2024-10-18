@@ -1,0 +1,35 @@
+{
+    "type": "record",
+    "name": "Message",
+    "fields": [
+      {
+        "name": "MessageBody",
+        "type": "string"
+      },
+      {
+        "name": "MessageHeader",
+        "type": [
+            "null",
+            {
+            "type": "array",
+            "items": {
+              "type": "record",
+              "name": "MessageHeader",
+              "fields": [
+                {
+                  "name": "version",
+                  "type": "string"
+                },
+                {
+                  "name": "MessageType",
+                  "type": "string"
+                }
+              ]
+            },
+            "name": "MessageHeader"
+          }
+        ],
+        "default": null
+      }
+    ]
+  }
