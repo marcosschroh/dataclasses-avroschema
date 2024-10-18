@@ -473,6 +473,111 @@ def schema_one_to_one_relationship() -> JsonDict:
 
 
 @pytest.fixture
+def schema_one_to_many_relationship_clashes_types() -> JsonDict:
+    return {
+        "type": "record",
+        "name": "Message",
+        "fields": [
+            {"name": "MessageBody", "type": "string"},
+            {
+                "name": "MessageHeader",
+                "type": [
+                    "null",
+                    {
+                        "type": "array",
+                        "name": "MessageHeader",
+                        "items": {
+                            "type": "record",
+                            "name": "MessageHeader",
+                            "fields": [
+                                {"name": "version", "type": "string"},
+                                {"name": "MessageType", "type": "string"},
+                            ],
+                        },
+                    },
+                ],
+                "default": None,
+            },
+        ],
+    }
+
+
+@pytest.fixture
+def schema_one_to_many_relationship_multiple_clashes_types() -> JsonDict:
+    return {
+        "type": "record",
+        "name": "Message",
+        "fields": [
+            {"name": "MessageBody", "type": "string"},
+            {
+                "name": "MessageHeader",
+                "type": [
+                    "null",
+                    {
+                        "type": "array",
+                        "name": "MessageHeader",
+                        "items": {
+                            "type": "record",
+                            "name": "MessageHeader",
+                            "fields": [
+                                {"name": "version", "type": "string"},
+                                {"name": "MessageType", "type": "string"},
+                            ],
+                        },
+                    },
+                ],
+                "default": None,
+            },
+            {
+                "name": "MessageHeader2",
+                "type": "MessageHeader",
+            },
+            {
+                "name": "SuperMessageHeader",
+                "type": {
+                    "type": "record",
+                    "name": "SuperMessageHeader",
+                    "fields": [
+                        {"name": "name", "type": "string"},
+                        {"name": "MessageHeader", "type": "MessageHeader"},
+                    ],
+                },
+            },
+        ],
+    }
+
+
+@pytest.fixture
+def schema_one_to_many_relationship_union_with_clashes_types() -> JsonDict:
+    return {
+        "type": "record",
+        "name": "Message",
+        "fields": [
+            {"name": "MessageBody", "type": "string"},
+            {
+                "name": "MessageHeader",
+                "type": [
+                    "null",
+                    {
+                        "type": "array",
+                        "name": "MessageHeader",
+                        "items": {
+                            "type": "record",
+                            "name": "MessageHeader",
+                            "fields": [
+                                {"name": "version", "type": "string"},
+                                {"name": "MessageType", "type": "string"},
+                            ],
+                        },
+                    },
+                ],
+                "default": None,
+            },
+        ],
+    }
+
+
+@pytest.fixture
 def schema_one_to_many_array_relationship() -> JsonDict:
     return {
         "type": "record",
@@ -508,6 +613,36 @@ def schema_one_to_many_array_relationship() -> JsonDict:
                 "type": [
                     "null",
                     {"type": "array", "items": "Address", "name": "optional_address"},
+                ],
+                "default": None,
+            },
+        ],
+    }
+
+
+@pytest.fixture
+def schema_one_to_one_relationship_clashes_types() -> JsonDict:
+    return {
+        "type": "record",
+        "name": "Message",
+        "fields": [
+            {"name": "MessageBody", "type": "string"},
+            {
+                "name": "MessageHeader",
+                "type": [
+                    "null",
+                    {
+                        "type": "array",
+                        "name": "MessageHeader",
+                        "items": {
+                            "type": "record",
+                            "name": "MessageHeader",
+                            "fields": [
+                                {"name": "version", "type": "string"},
+                                {"name": "MessageType", "type": "string"},
+                            ],
+                        },
+                    },
                 ],
                 "default": None,
             },

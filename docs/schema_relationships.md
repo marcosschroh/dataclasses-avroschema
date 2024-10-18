@@ -539,3 +539,81 @@ class User(AvroModel):
 ```
 
 *(This script is complete, it should run "as is")*
+
+## Naming clashes
+
+Sometimes theare are `avro schemas` that contain name clashing between `field names` and `type names`, for example the following schema the record `Message` has a field called `MessageHeader` which is also a `type` record:
+
+```json
+{
+  "type": "record",
+  "name": "Message",
+  "fields": [
+    {"name": "MessageBody", "type": "string"},
+    {
+      "name": "MessageHeader",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "name": "MessageHeader",
+          "items": {
+            "type": "record",
+            "name": "MessageHeader",
+            "fields": [
+              {"name": "version", "type": "string"},
+              {"name": "MessageType", "type": "string"}
+            ]
+          }
+        }
+      ],
+      "default": null
+    }
+  ]
+}
+```
+
+From the previous schema we could have a model which might cause unexpected results:
+
+```python
+from dataclasses_avroschema import AvroModel
+import dataclasses
+import typing
+
+
+@dataclasses.dataclass
+class MessageHeader(AvroModel):
+    version: str
+    MessageType: str
+    
+
+@dataclasses.dataclass
+class Message(AvroModel):
+    MessageBody: str
+    MessageHeader: typing.Optional[typing.List[MessageHeader]] = None
+```
+
+If you try to use the `dataclasses` module and inspect the fields of the class `Message` doing `dataclasses.fields(Message)` you will see that the `typing hint` for the field `MessageHeader` is `typing.Optional[typing.List[NoneType]]`, which is should not be. This problem is cause by the way that `Python finds references` and because *type annotations are evaluated after assignments*.
+
+To solve this problem `dataclasses-avroschema` introduces just before the name clashing a new type definition which is used to set the `type hint` when it is required. Then `type` that causes the problem is defined outside the `class scope`.
+
+```python
+from dataclasses_avroschema import AvroModel
+import dataclasses
+import typing
+
+
+@dataclasses.dataclass
+class MessageHeader(AvroModel):
+    version: str
+    MessageType: str
+
+_MessageHeader = MessageHeader
+
+@dataclasses.dataclass
+class Message(AvroModel):
+    MessageBody: str
+    MessageHeader: typing.Optional[typing.List[_MessageHeader]] = None
+```
+
+As a result the `typing hint` for the field `MessageHeader` becomes `typing.Optional[typing.List[__main__.MessageHeader]]`, which is the correct one.
