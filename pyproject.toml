@@ -29,7 +29,7 @@ casefy = "^0.1.7"
 typing-extensions = "^4.2.0"
 pydantic = {version = "^2.4.2", optional = true, extras = ["email"]}
 python-dateutil = "^2.7"
-dc-avro = {version =">=0.6.4,<0.9.0", optional = true}
+dc-avro = {version =">=0.6.4", optional = true}
 inflection = "^0.5.1"
 
 [tool.poetry.group.dev.dependencies]

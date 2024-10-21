@@ -2,13 +2,13 @@
 
 [[package]]
 name = "aiofiles"
-version = "22.1.0"
+version = "24.1.0"
 description = "File support for asyncio."
 optional = true
-python-versions = ">=3.7,<4.0"
+python-versions = ">=3.8"
 files = [
-    {file = "aiofiles-22.1.0-py3-none-any.whl", hash = "sha256:1142fa8e80dbae46bb6339573ad4c8c0841358f79c6eb50a493dceca14621bad"},
-    {file = "aiofiles-22.1.0.tar.gz", hash = "sha256:9107f1ca0b2a5553987a94a3c9959fe5b491fdf731389aa5b7b1bd0733e32de6"},
+    {file = "aiofiles-24.1.0-py3-none-any.whl", hash = "sha256:b4ec55f4195e3eb5d7abd1bf7e061763e864dd4954231fb8539a0ef8bb8260e5"},
+    {file = "aiofiles-24.1.0.tar.gz", hash = "sha256:22a075c9e5a3810f0c2e48f3008c94d68c65d763b9b03857924c99e57355166c"},
 ]
 
 [[package]]
@@ -630,21 +630,21 @@ dev = ["black", "coveralls", "mypy", "pre-commit", "pylint", "pytest (>=5)", "py
 
 [[package]]
 name = "dc-avro"
-version = "0.8.0"
+version = "0.9.1"
 description = ""
 optional = true
-python-versions = ">=3.8,<4.0"
+python-versions = "<4.0,>=3.8"
 files = [
-    {file = "dc_avro-0.8.0-py3-none-any.whl", hash = "sha256:89d5da8ec55f283443e565c428d9880d8f252d992613247792e8b81ca3f615a9"},
-    {file = "dc_avro-0.8.0.tar.gz", hash = "sha256:8bba7bb5d3ff2e3f3f25d3f02e47b78bee2a851f6cdd4f361b222aa82fd1c427"},
+    {file = "dc_avro-0.9.1-py3-none-any.whl", hash = "sha256:827039e5c8ccc32f249399ab63e32006db540661b07f6a5664d9c4e230d10a1d"},
+    {file = "dc_avro-0.9.1.tar.gz", hash = "sha256:d040f617523c119c66c2091dd22fc4b58cf7e3c276442e76265089ab50e52e8a"},
 ]
 
 [package.dependencies]
-aiofiles = ">=22.1.0,<23.0.0"
-dataclasses-avroschema = ">=0,<1"
-deepdiff = ">=6.2.3,<7.0.0"
-httpx = ">=0.23.3,<0.24.0"
-typer = {version = ">=0.9.0,<0.10.0", extras = ["all"]}
+aiofiles = ">=24.1.0,<25.0"
+dataclasses-avroschema = ">=0.57.2,<0.64.0"
+deepdiff = ">=6.2.3,<9.0.0"
+httpx = ">=0.23.3,<0.28.0"
+typer = {version = ">=0.9,<0.13", extras = ["all"]}
 
 [[package]]
 name = "decli"
@@ -2573,4 +2573,4 @@ pydantic = ["pydantic"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "b4117d169d4304f7ed78f83c993eeac44883eec0957fa5e31d85377f7444eab7"
+content-hash = "0f070ba3447820966acb485f1c28abab815309abe6029371b1f87bafc15b3082"
