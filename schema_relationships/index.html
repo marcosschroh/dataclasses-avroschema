@@ -487,6 +487,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#naming-clashes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Naming clashes
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -761,6 +770,15 @@
   <a href="#avoid-name-collision-in-multiple-relationships" class="md-nav__link">
     <span class="md-ellipsis">
       Avoid name collision in multiple relationships
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#naming-clashes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Naming clashes
     </span>
   </a>
   
@@ -1282,6 +1300,72 @@ In those cases, the <code>predifne</code> type is used in order to generate a va
 <span class="p">}</span>
 </code></pre></div>
 <p><em>(This script is complete, it should run "as is")</em></p>
+<h2 id="naming-clashes">Naming clashes</h2>
+<p>Sometimes theare are <code>avro schemas</code> that contain name clashing between <code>field names</code> and <code>type names</code>, for example the following schema the record <code>Message</code> has a field called <code>MessageHeader</code> which is also a <code>type</code> record:</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;record&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Message&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;fields&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MessageBody&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MessageHeader&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="s2">&quot;null&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;array&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MessageHeader&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;items&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;record&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MessageHeader&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;fields&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">              </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;version&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">},</span>
+<span class="w">              </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MessageType&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">}</span>
+<span class="w">            </span><span class="p">]</span>
+<span class="w">          </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>From the previous schema we could have a model which might cause unexpected results:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
+<span class="kn">import</span> <span class="nn">dataclasses</span>
+<span class="kn">import</span> <span class="nn">typing</span>
+
+
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span> <span class="nc">MessageHeader</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
+    <span class="n">version</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">MessageType</span><span class="p">:</span> <span class="nb">str</span>
+
+
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span> <span class="nc">Message</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
+    <span class="n">MessageBody</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">MessageHeader</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="n">MessageHeader</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+</code></pre></div>
+<p>If you try to use the <code>dataclasses</code> module and inspect the fields of the class <code>Message</code> doing <code>dataclasses.fields(Message)</code> you will see that the <code>typing hint</code> for the field <code>MessageHeader</code> is <code>typing.Optional[typing.List[NoneType]]</code>, which is should not be. This problem is cause by the way that <code>Python finds references</code> and because <em>type annotations are evaluated after assignments</em>.</p>
+<p>To solve this problem <code>dataclasses-avroschema</code> introduces just before the name clashing a new type definition which is used to set the <code>type hint</code> when it is required. Then <code>type</code> that causes the problem is defined outside the <code>class scope</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
+<span class="kn">import</span> <span class="nn">dataclasses</span>
+<span class="kn">import</span> <span class="nn">typing</span>
+
+
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span> <span class="nc">MessageHeader</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
+    <span class="n">version</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">MessageType</span><span class="p">:</span> <span class="nb">str</span>
+
+<span class="n">_MessageHeader</span> <span class="o">=</span> <span class="n">MessageHeader</span>
+
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span> <span class="nc">Message</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
+    <span class="n">MessageBody</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">MessageHeader</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="n">_MessageHeader</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+</code></pre></div>
+<p>As a result the <code>typing hint</code> for the field <code>MessageHeader</code> becomes <code>typing.Optional[typing.List[__main__.MessageHeader]]</code>, which is the correct one.</p>
 
 
 
