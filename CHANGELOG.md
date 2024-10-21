@@ -1,3 +1,9 @@
+## 0.63.9 (2024-10-21)
+
+### Fix
+
+- generate proper Model when there is name clashe between field name and type hints. Closes #769 (#778)
+
 ## 0.63.8 (2024-10-21)
 
 ### Fix
