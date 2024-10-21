@@ -2,10 +2,13 @@ import json
 from pathlib import Path
 
 import pytest
+from zoneinfo import ZoneInfo
 
 from dataclasses_avroschema import BaseClassEnum, ModelGenerator
 
 here = Path(__file__).parent.absolute()
+
+timezones = [ZoneInfo("CST6CDT"), ZoneInfo("Europe/London")]
 
 marks = {
     "user_self_reference_one_to_many": [
@@ -32,7 +35,8 @@ avsc_files = [pytest.param(f, id=f.stem, marks=marks.get(f.stem, ())) for f in h
 
 
 @pytest.mark.parametrize("filename", avsc_files)
-def test_roundtrip(filename: Path):
+@pytest.mark.parametrize("timezone", timezones)
+def test_roundtrip(filename: Path, timezone: ZoneInfo):
     base_class = BaseClassEnum.AVRO_MODEL.value
 
     if "pydantic_fields.avsc" in str(filename) or "logical_types_pydantic" in str(filename):
