@@ -1,3 +1,4 @@
+import dataclasses
 import json
 import typing
 
@@ -9,12 +10,14 @@ def test_one_to_one_relationship(user_one_address_schema):
     Test schema relationship one-to-one
     """
 
+    @dataclasses.dataclass
     class Address(AvroModel):
         "An Address"
 
         street: str
         street_number: int
 
+    @dataclasses.dataclass
     class User(AvroModel):
         "An User with Address"
 
@@ -30,12 +33,14 @@ def test_one_to_many_relationship(user_many_address_schema):
     Test schema relationship one-to-many
     """
 
+    @dataclasses.dataclass
     class Address(AvroModel):
         "An Address"
 
         street: str
         street_number: int
 
+    @dataclasses.dataclass
     class User(AvroModel):
         "User with multiple Address"
 
@@ -51,12 +56,14 @@ def test_one_to_many_map_relationship(user_many_address_map_schema):
     Test schema relationship one-to-many using a map
     """
 
+    @dataclasses.dataclass
     class Address(AvroModel):
         "An Address"
 
         street: str
         street_number: int
 
+    @dataclasses.dataclass
     class User(AvroModel):
         "User with multiple Address"
 
@@ -74,12 +81,14 @@ def test_one_to_many_map_relationship_with_alias(
     Test schema relationship one-to-many using a map
     """
 
+    @dataclasses.dataclass
     class Address(AvroModel):
         "An Address"
 
         street: str
         street_number: int
 
+    @dataclasses.dataclass
     class User(AvroModel):
         "User with multiple Address"
 
@@ -98,12 +107,14 @@ def test_alias_nested_item(user_one_address_alias_item):
     Test schema relationship one-to-one
     """
 
+    @dataclasses.dataclass
     class Address(AvroModel):
         "An Address"
 
         street: str
         street_number: int
 
+    @dataclasses.dataclass
     class User(AvroModel):
         "An User with Address"
 
@@ -118,12 +129,14 @@ def test_alias_nested_item(user_one_address_alias_item):
 
 
 def test_alias_nested_item_with_array(user_array_address_alias):
+    @dataclasses.dataclass
     class Address(AvroModel):
         "An Address"
 
         street: str
         street_number: int
 
+    @dataclasses.dataclass
     class User(AvroModel):
         "An User with Address"
 
@@ -138,12 +151,14 @@ def test_alias_nested_item_with_array(user_array_address_alias):
 
 
 def test_alias_nested_item_with_map(user_map_address_alias):
+    @dataclasses.dataclass
     class Address(AvroModel):
         "An Address"
 
         street: str
         street_number: int
 
+    @dataclasses.dataclass
     class User(AvroModel):
         "An User with Address"
 

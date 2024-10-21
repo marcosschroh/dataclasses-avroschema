@@ -469,6 +469,71 @@ class User(AvroModel):
     assert result.strip() == expected_result.strip()
 
 
+def test_schema_one_to_many_relationship_clashes_types(
+    schema_one_to_many_relationship_clashes_types: types.JsonDict,
+) -> None:
+    expected_result = """
+from dataclasses_avroschema import AvroModel
+import dataclasses
+import typing
+
+
+@dataclasses.dataclass
+class MessageHeader(AvroModel):
+    version: str
+    MessageType: str
+
+_MessageHeader = MessageHeader
+
+@dataclasses.dataclass
+class Message(AvroModel):
+    MessageBody: str
+    MessageHeader: typing.Optional[typing.List[_MessageHeader]] = None
+"""
+    model_generator = ModelGenerator()
+    result = model_generator.render(schema=schema_one_to_many_relationship_clashes_types)
+    assert result.strip() == expected_result.strip()
+
+
+def test_schema_onto_many_relationship_multiple_clashes_types(
+    schema_one_to_many_relationship_multiple_clashes_types: types.JsonDict,
+) -> None:
+    expected_result = """
+from dataclasses_avroschema import AvroModel
+import dataclasses
+import typing
+
+
+@dataclasses.dataclass
+class MessageHeader(AvroModel):
+    version: str
+    MessageType: str
+
+_MessageHeader = MessageHeader
+
+@dataclasses.dataclass
+class SuperMessageHeader(AvroModel):
+    name: str
+    MessageHeader: _MessageHeader
+
+_SuperMessageHeader = SuperMessageHeader
+
+@dataclasses.dataclass
+class Message(AvroModel):
+    MessageBody: str
+    MessageHeader2: MessageHeader
+    SuperMessageHeader: _SuperMessageHeader
+    MessageHeader: typing.Optional[typing.List[_MessageHeader]] = None
+
+    
+    class Meta:
+        field_order = ['MessageBody', 'MessageHeader', 'MessageHeader2', 'SuperMessageHeader']
+"""
+    model_generator = ModelGenerator()
+    result = model_generator.render(schema=schema_one_to_many_relationship_multiple_clashes_types)
+    assert result.strip() == expected_result.strip()
+
+
 def test_schema_one_to_many_array_relationship(
     schema_one_to_many_array_relationship: types.JsonDict,
 ) -> None:
