@@ -5,11 +5,11 @@ Generate [Avro](https://avro.apache.org/docs/1.8.2/spec.html) Schemas from a Pyt
 [![Tests](https://github.com/marcosschroh/dataclasses-avroschema/actions/workflows/tests.yaml/badge.svg)](https://github.com/marcosschroh/dataclasses-avroschema/actions/workflows/tests.yaml)
 [![GitHub license](https://img.shields.io/github/license/marcosschroh/dataclasses-avroschema.svg)](https://github.com/marcosschroh/dataclasses-avroschema/blob/master/LICENSE)
 [![codecov](https://codecov.io/gh/marcosschroh/dataclasses-avroschema/branch/master/graph/badge.svg)](https://codecov.io/gh/marcosschroh/dataclasses-avroschema)
-![python version](https://img.shields.io/badge/python-3.8%2B-yellowgreen)
+![python version](https://img.shields.io/badge/python-3.9%2B-yellowgreen)
 
 ## Requirements
 
-`python 3.8+`
+`python 3.9+`
 
 ## Installation
 

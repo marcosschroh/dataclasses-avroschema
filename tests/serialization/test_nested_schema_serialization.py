@@ -301,11 +301,6 @@ def test_nested_schemas_splitted_with_unions(model_class: typing.Type[AvroModel]
     c = C(b=B(a=A(s=S1())), a=A(s=S1()))
     c2 = C(b=B(a=A(s=S1())), a=A(s=S2()))
 
-    from fastavro import parse_schema
-
-    parsed_schema = parse_schema(B.avro_schema_to_python())
-    print(parsed_schema["__named_schemas"].keys())
-
     ser = b.serialize()
     assert ser == b"\x00\x00"
     assert B.deserialize(ser) == b
@@ -332,7 +327,6 @@ def test_nested_several_layers(model_class: typing.Type[AvroModel], decorator: t
         friends: typing.List[Friend]
 
     user = User(name="Alex", friends=[Friend(name="Mr. Robot", hobbies=["fishing", "codding"])])
-
     assert User.deserialize(user.serialize()) == user
 
 

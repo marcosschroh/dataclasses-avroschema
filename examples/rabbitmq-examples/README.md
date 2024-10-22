@@ -4,7 +4,7 @@ You will find an example of how to use [dataclasses-avroschema](https://github.c
 
 ## Requirements
 
-`python 3.8+ poetry docker docker-compose`
+`python 3.9+ poetry docker docker-compose`
 
 ### Cluster setup
 
