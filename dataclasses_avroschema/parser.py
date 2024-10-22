@@ -62,9 +62,8 @@ class Parser:
             # dataclasses create a (in avro context) useless docstring by default,
             # which we don't want in the schema.
             is_dataclass_with_default_docstring = (
-                dataclasses.is_dataclass(self.type)
                 # from https://github.com/python/cpython/blob/3.10/Lib/dataclasses.py
-                and doc == (self.type.__name__ + str(inspect.signature(self.type)).replace(" -> None", ""))
+                doc == (self.type.__name__ + str(inspect.signature(self.type)).replace(" -> None", ""))
             )
             if is_dataclass_with_default_docstring:
                 return None

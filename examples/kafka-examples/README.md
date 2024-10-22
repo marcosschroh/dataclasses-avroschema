@@ -4,7 +4,7 @@ You will find a series of example about how to use [dataclasses-avroschema](http
 
 ## Requirements
 
-`python 3.8+ poetry docker docker-compose`
+`python 3.9+ poetry docker docker-compose`
 
 ## Kafka examples
 
