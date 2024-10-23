@@ -34,7 +34,7 @@ LOGICAL_TYPES_IMPORTS: typing.Dict[str, str] = {
 
 # Avro types to python types
 LOGICAL_TYPES_TO_PYTHON = {
-    field_utils.DATE: lambda value: datetime.date.fromtimestamp(60 * 60 * 24 * value),
+    field_utils.DATE: lambda value: datetime.date.fromordinal(value + (datetime.date(1970, 1, 1).toordinal())),
     field_utils.TIME_MILLIS: lambda value: (datetime.datetime.min + datetime.timedelta(milliseconds=value)).time(),
     field_utils.TIME_MICROS: lambda value: (datetime.datetime.min + datetime.timedelta(microseconds=value)).time(),
     field_utils.TIMESTAMP_MILLIS: lambda value: datetime.datetime.fromtimestamp(value / 1000, tz=datetime.timezone.utc),
