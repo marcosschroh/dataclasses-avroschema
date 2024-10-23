@@ -1,3 +1,9 @@
+## 0.64.0 (2024-10-23)
+
+### Fix
+
+- generate date defaults consistently in python model generation (#780)
+
 ## 0.63.10 (2024-10-22)
 
 ### Fix
