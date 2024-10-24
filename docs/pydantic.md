@@ -450,11 +450,147 @@ To add `custom field attributes` the `metadata` attribute must be set in `pydant
 !!! note
     Make sure that `pydantic.Field` is used and *NOT* `dataclasses.field`
 
-### Custom Data Types as Fields
+## Custom Avro Type Mapping and Ser/Deserialization
+
+You can customize the way a field gets serialized and mapped to one of the [supported native Python types](https://marcosschroh.github.io/dataclasses-avroschema/fields_specification/#avro-field-and-python-types-summary). You may want to do this because:
+* You have fields with custom types
+* You have fields with native types that are not supported (like [timedelta](https://docs.python.org/3/library/datetime.html#timedelta-objects) objects)
+* You have fields with supported types that you want to map to Avro differently
+
+The built-in Pydantic validation functionality is used when deserializing a dict (which has been deserialized from Avro) into your model with `AvroBaseModel.deserialize`. This means you can use [Pydantic validators](https://docs.pydantic.dev/latest/concepts/validators/) or [Pydantic custom schemas](https://docs.pydantic.dev/latest/concepts/types/#customizing-validation-with-__get_pydantic_core_schema__).
+
+Serializing your model into a `dict` (which will be serialized to Avro) does not use the built-in Pydantic serialization functionality though. Any [Pydantic serialization](https://docs.pydantic.dev/latest/concepts/serialization/) logic you have on your model will not be used when calling `AvroBaseModel.serialize` or `AvroBaseModel.asdict`. Instead, you have to annotate the field type with a `CustomAvroEncoder` to specify the supported Avro-serializable python type and a function to convert the field type into the supported type.
+
+!!! note
+    Your `CustomAvroEncoder` will not have any effect on native Pydantic serialization, like `model_dump`, or `model_dump_json`. If you want the same serialization logic there, you need to also implement it with a [Pydantic serialization strategy](https://docs.pydantic.dev/latest/concepts/serialization/).
+
+!!! warning
+    [Generating models](#Model-generation) from avro schemas that were generated with `CustomAvroEncoder` is not supported.
+
+### Custom Types
+
+You can use a [Pydantic custom schema]([Pydantic custom schemas](https://docs.pydantic.dev/latest/concepts/types/#customizing-validation-with-__get_pydantic_core_schema__) in combination with a `CustomAvroEncoder` to work with a custom type.
+
+```python
+from typing import Annotated, Any
+
+from dataclasses_avroschema import CustomAvroEncoder
+from dataclasses_avroschema.pydantic import AvroBaseModel
+
+from pydantic import ConfigDict, GetCoreSchemaHandler
+from pydantic_core import core_schema
+
+
+class CustomClass:
+    def __init__(self, value: str) -> None:
+        self.value = value
+
+    @classmethod
+    def __get_pydantic_core_schema__(cls, source_type: Any, handler: GetCoreSchemaHandler):
+        def validate(value):
+            if isinstance(value, CustomClass):
+                return value
+            elif not isinstance(value, str):
+                raise ValueError(f"Value must be a string or CustomClass - not {type(value)}")
+
+            return cls(value)
+
+        from_str_schema = core_schema.chain_schema(
+            [
+                core_schema.str_schema(),
+                core_schema.no_info_plain_validator_function(validate),
+            ]
+        )
+
+        return core_schema.json_or_python_schema(
+            json_schema=from_str_schema,
+            python_schema=core_schema.union_schema(
+                [
+                    # check if it's an instance first before doing any further work
+                    core_schema.is_instance_schema(CustomClass),
+                    from_str_schema,
+                ]
+            ),
+            serialization=core_schema.plain_serializer_function_ser_schema(lambda instance: instance.x),
+        )
+
+    def __eq__(self, other: 'CustomClass') -> bool:
+        return self.value == other.value
+
+    def __str__(self) -> str:
+        return f"{self.value}"
+
+class MyModel(AvroBaseModel):
+    my_id: Annotated[CustomClass, CustomAvroEncoder(return_type=str, to_avro=lambda x: x.value)]
+
+
+schema = MyModel.avro_schema_to_python()
+assert schema == {
+  "type": "record",
+  "name": "MyModel",
+  "fields": [
+    {
+      "name": "my_id",
+      "type": "string"
+    }
+  ]
+}
+
+instance = MyModel(my_id="some string")
+avro_json = instance.serialize(serialization_type="avro-json")
+assert avro_json == b'{"my_id": "some string"}'
+
+new_instance = MyModel.deserialize(avro_json, serialization_type="avro-json")
+assert new_instance == instance
+```
+
+*(This script is complete, it should run "as is")*
+
+### Native Unsuported types
+
+For native types that are supported by Pydantic, but unsupported by `fastavro`, like `timedelta`, you may only need a `CustomAvroEncoder`, assuming your `CustomAvroEncoder` serializes the field type to a type that Pydantic can deserialize from.
+
+Here, we serialize a `timedelta` to a `float` number of seconds, which Pydantic can deserialize from without any custom deserialization logic.
+```python
+from datetime import timedelta
+from typing import Annotated, Any
+
+from dataclasses_avroschema import CustomAvroEncoder
+from dataclasses_avroschema.pydantic import AvroBaseModel
+
+
+class MyModel(AvroBaseModel):
+    my_timedelta: Annotated[timedelta, CustomAvroEncoder(return_type=float, to_avro=lambda x: x.total_seconds())]
+
+
+schema = MyModel.avro_schema_to_python()
+assert schema == {
+  "type": "record",
+  "name": "MyModel",
+  "fields": [
+    {
+      "name": "my_timedelta",
+      "type": "double"
+    }
+  ]
+}
+
+instance = MyModel(my_timedelta=timedelta(seconds=1.234))
+avro_json = instance.serialize(serialization_type="avro-json")
+assert avro_json == b'{"my_timedelta": 1.234}'
+
+new_instance = MyModel.deserialize(avro_json, serialization_type="avro-json")
+assert new_instance == instance
+```
+
+*(This script is complete, it should run "as is")*
+
 
 If needed, you can annotate fields with [custom classes](https://docs.pydantic.dev/latest/concepts/types/#customizing-validation-with-getpydanticcoreschema) that define validators.
 
-### Classes with `__get_pydantic_core_schema__`
+### Deprecated Custom Classes with `json_encoders` and `__get_pydantic_core_schema__`
+
+The custom serialization type and function can alternatively be defined in the Pydantic model config [`json_encoders`](https://docs.pydantic.dev/latest/api/config/#pydantic.config.ConfigDict.json_encoders) instead of a `CustomAvroEncoder` annotation, but `json_encoders` is deprecated in Pydantic. If a field is annotated by a `CustomAvroEncoder` and has an entry in `json_encoders`, the `CustomAvroEncoder` functionality will be used.
 
 !!! note
     The conversion mapping of a custom class to its [supported type](./fields_specification.md#avro-field-and-python-types-summary) must be defined in the model's [`json_encoders`](https://docs.pydantic.dev/1.10/usage/exporting_models/#json_encoders) config.

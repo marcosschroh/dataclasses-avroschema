@@ -18,7 +18,7 @@ from dataclasses_avroschema import (
     version,
 )
 from dataclasses_avroschema.faker import fake
-from dataclasses_avroschema.utils import is_pydantic_model
+from dataclasses_avroschema.utils import is_pydantic_model, is_pydantic_v2_model
 
 from . import field_utils
 from .base import Field
@@ -66,6 +66,7 @@ __all__ = [
     "DecimalField",
     "RecordField",
     "AvroField",
+    "CustomAvroEncoder",
 ]
 
 
@@ -843,6 +844,12 @@ PYDANTIC_CUSTOM_CLASS_METHOD_NAMES = {
 }
 
 
+@dataclasses.dataclass
+class CustomAvroEncoder:
+    return_type: type
+    to_avro: typing.Callable
+
+
 def field_factory(
     name: str,
     native_type: typing.Any,
@@ -862,11 +869,22 @@ def field_factory(
         metadata = {}
 
     field_info = None
+    pydantic_custom_encoder = None
+
     if native_type is None:
         native_type = type(None)
 
     if utils.is_annotated(native_type):
         a_type, *extra_args = get_args(native_type)
+
+        if inspect.isclass(parent) and is_pydantic_v2_model(parent):
+            pydantic_custom_encoder = next((arg for arg in extra_args if isinstance(arg, CustomAvroEncoder)), None)
+
+            if pydantic_custom_encoder is not None:
+                native_type = pydantic_custom_encoder.return_type
+                if default != dataclasses.MISSING:
+                    default = pydantic_custom_encoder.to_avro(default)
+
         field_info = next((arg for arg in extra_args if isinstance(arg, types.FieldInfo)), None)
 
         if field_info is not None:
@@ -998,7 +1016,8 @@ def field_factory(
         )
     # See if this is a pydantic "Custom Class"
     elif (
-        inspect.isclass(native_type)
+        pydantic_custom_encoder is None
+        and inspect.isclass(native_type)
         and not is_pydantic_model(native_type)  # type: ignore[arg-type]
         and any(method_name in dir(native_type) for method_name in PYDANTIC_CUSTOM_CLASS_METHOD_NAMES)
     ):

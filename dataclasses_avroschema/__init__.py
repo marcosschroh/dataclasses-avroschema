@@ -32,6 +32,7 @@ from .fields.fields import (
     BooleanField,
     BytesField,
     ContainerField,
+    CustomAvroEncoder,
     DateField,
     DatetimeField,
     DatetimeMicroField,
@@ -63,6 +64,7 @@ from .types import DateTimeMicro, Float32, Int32, TimeMicro, condecimal, confixe
 
 __all__ = [
     "AvroModel",
+    "CustomAvroEncoder",
     "BaseClassEnum",
     "ModelType",
     "ModelGenerator",
