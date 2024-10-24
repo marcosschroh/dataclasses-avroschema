@@ -60,9 +60,11 @@ from .main import AvroModel
 from .model_generator.generator import BaseClassEnum, ModelGenerator, ModelType
 from .serialization import AVRO, AVRO_JSON, SerializationType, deserialize, serialize
 from .types import DateTimeMicro, Float32, Int32, TimeMicro, condecimal, confixed
+from .utils import CustomAvroEncoder
 
 __all__ = [
     "AvroModel",
+    "CustomAvroEncoder",
     "BaseClassEnum",
     "ModelType",
     "ModelGenerator",

@@ -93,9 +93,12 @@ class Field:
 
         is_default_factory_callable = callable(self.default_factory)
 
+        default = self.default
         if is_default_factory_callable:
-            return self.default_factory()
-        return self.default
+            default = self.default_factory()
+        if custom_encoder := (self.model_metadata.custom_encoders or {}).get(type(self.default)):
+            return custom_encoder.to_avro(default)
+        return default
 
     def validate_default(self, default: typing.Any) -> bool:
         a_type = (self.type, *self.extra_default_types_allowed)

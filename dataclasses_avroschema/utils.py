@@ -100,6 +100,12 @@ def standardize_custom_type(
     base_class: typing.Type["AvroModel"],
     include_type: bool = True,
 ) -> typing.Any:
+    model_metadata = model.get_metadata()
+
+    custom_encoder = (model_metadata.custom_encoders or {}).get(type(value))
+    if custom_encoder is not None:
+        return custom_encoder.to_avro(value)
+
     if isinstance(value, dict):
         return {
             k: standardize_custom_type(field_name=field_name, value=v, model=model, base_class=base_class)
@@ -130,6 +136,21 @@ def standardize_custom_type(
     return value
 
 
+@dataclasses.dataclass(frozen=True)
+class CustomAvroEncoder:
+    """
+    Defines a mapping from a custom or unsupported Python type to a supported Python type.
+
+    Arguments:
+        return_type: The supported Python type
+        to_avro: A callable that takes an instance of the custom type and returns an
+            instance of return_type
+    """
+
+    return_type: type
+    to_avro: typing.Callable
+
+
 @dataclasses.dataclass
 class SchemaMetadata:
     schema_name: typing.Optional[str] = None
@@ -141,6 +162,7 @@ class SchemaMetadata:
     field_order: typing.Optional[typing.List[str]] = None
     exclude: typing.List[str] = dataclasses.field(default_factory=list)
     convert_literal_to_enum: bool = False
+    custom_encoders: typing.Optional[typing.Dict[typing.Any, CustomAvroEncoder]] = None
 
     @classmethod
     def create(cls: typing.Type["SchemaMetadata"], klass: type) -> "SchemaMetadata":
@@ -154,6 +176,7 @@ class SchemaMetadata:
             field_order=getattr(klass, "field_order", None),
             exclude=getattr(klass, "exclude", []),
             convert_literal_to_enum=getattr(klass, "convert_literal_to_enum", False),
+            custom_encoders=getattr(klass, "custom_encoders", {}),
         )
 
     def get_alias_nested_items(self, name: str) -> typing.Optional[str]:

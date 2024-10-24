@@ -48,6 +48,9 @@ User.avro_schema()
 The `class Meta` is used to specify schema attributes that are not represented by the class fields like `namespace`, `aliases` and whether to include the `schema documentation`. Also custom schema name (the default is the class' name) via `schema_name` attribute, `alias_nested_items` when you have nested items and you want to use custom naming for them, `custom dacite` configuration can be provided, `field_order`, `exclude` and `convert_literal_to_enum`.
 
 ```python title="Class Meta description"
+from dataclasses_avroschema import CustomAvroEncoder
+
+
 class Meta:
     schema_name = "Name other than the class name"
     schema_doc = False
@@ -60,6 +63,14 @@ class Meta:
     dacite_config = {
         "strict_unions_match": True,
         "strict": True,
+    }
+
+    # Only for use with Pydantic
+    custom_encoders = {
+        timedelta: CustomAvroEncoder(
+            return_type=float,
+            to_avro=lambda x: x.total_seconds(),
+        )
     }
 ```
 
@@ -78,6 +89,8 @@ class Meta:
 `convert_literal_to_enum Optional[bool]`: Whether convert `Literal string` to `enum`
 
 `dacite_config Optional[Dict]`: Dacite custom config
+
+`custom_encoders`: Mappings from unsupported or custom types to supported Python types. Only for use with Pydantic.
 
 ## Record to json and dict
 
@@ -385,13 +398,13 @@ which represents the schema *whiout the field `last_name`*
 ```json
 {
     "type": "record",
-    "name": "User", 
+    "name": "User",
     "fields": [
         {"name": "name", "type": "string"},
         {"name": "age", "type": "long"}
     ],
-    "doc": "An User", 
-    "namespace": "test.com.ar/user/v1", 
+    "doc": "An User",
+    "namespace": "test.com.ar/user/v1",
     "aliases": ["User", "My favorite User"]
 ```
 

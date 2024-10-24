@@ -1,5 +1,6 @@
 import json
 import math
+import typing
 from typing import Any, Optional
 
 import pytest
@@ -9,11 +10,10 @@ from pydantic import (
     GetCoreSchemaHandler,
     ValidationError,
     conint,
-    field_serializer,
 )
 from pydantic_core import core_schema
 
-from dataclasses_avroschema import AVRO, AVRO_JSON, types
+from dataclasses_avroschema import AVRO, AVRO_JSON, CustomAvroEncoder, types
 from dataclasses_avroschema.pydantic import AvroBaseModel
 
 
@@ -64,12 +64,16 @@ class Parent(AvroBaseModel):
     model_config = ConfigDict(json_encoders={CustomClass: str}, arbitrary_types_allowed=True)
     custom_class: CustomClass
 
-    @field_serializer("custom_class")
-    def serialize_custom_class(self, custom_class: CustomClass, _info):
-        return str(custom_class)
+
+class CustomParent(AvroBaseModel):
+    custom_class: CustomClass
+
+    class Meta:
+        custom_encoders = {CustomClass: CustomAvroEncoder(return_type=str, to_avro=lambda x: x.value)}
 
 
 parent_under_test = Parent(custom_class=CustomClass("custom class value"))
+custom_parent_under_test = CustomParent(custom_class=CustomClass("custom class value"))
 parent_avro_binary = b"$custom class value"
 parent_avro_json = b'{"custom_class": "custom class value"}'
 
@@ -100,27 +104,55 @@ def test_int_constrained_type_deserialize_invalid():
         ConstrainedType.deserialize(b'{"value": 0}', serialization_type="avro-json")
 
 
+@pytest.mark.parametrize("model", [parent_under_test, custom_parent_under_test])
 @pytest.mark.parametrize(
     "serialization_type, expected_result",
     [(AVRO, parent_avro_binary), (AVRO_JSON, parent_avro_json)],
 )
-def test_custom_class_type_serialize(serialization_type: str, expected_result: bytes):
-    serialized = parent_under_test.serialize(serialization_type)
+def test_custom_class_type_serialize(serialization_type: str, expected_result: bytes, model: AvroBaseModel):
+    serialized = model.serialize(serialization_type)
     assert serialized == expected_result
 
 
+@pytest.mark.parametrize("model", [parent_under_test, custom_parent_under_test])
 @pytest.mark.parametrize(
     "serialization_type, data",
     [(AVRO, parent_avro_binary), (AVRO_JSON, parent_avro_json)],
 )
-def test_custom_class_type_deserialize(serialization_type: str, data: bytes):
-    deserialized = Parent.deserialize(data, serialization_type)
-    assert deserialized == parent_under_test
+def test_custom_class_type_deserialize(serialization_type: str, data: bytes, model: AvroBaseModel):
+    deserialized = type(model).deserialize(data, serialization_type)
+    assert deserialized == model
 
 
-def test_custom_class_deserialize_invalid():
+@pytest.mark.parametrize("model", [parent_under_test, custom_parent_under_test])
+def test_custom_class_deserialize_invalid(model):
     with pytest.raises(ValidationError):
-        Parent.deserialize(b'{"custom_class": 1}', serialization_type="avro-json")
+        model.deserialize(b'{"custom_class": 1}', serialization_type="avro-json")
+
+
+def test_custom_types_with_defaults():
+    class CustomUnionParent(AvroBaseModel):
+        custom_class: CustomClass = CustomClass("custom class")
+        custom_union: typing.Union[CustomClass, int]
+        custom_union_int: typing.Union[CustomClass, int]
+        custom_union_with_default: typing.Union[CustomClass, int] = CustomClass("default custom class")
+        custom_union_with_default_int: typing.Union[CustomClass, int] = 4
+
+        class Meta:
+            custom_encoders = {CustomClass: CustomAvroEncoder(return_type=str, to_avro=lambda x: x.value)}
+
+    model = CustomUnionParent(custom_union=CustomClass("custom class arg"), custom_union_int=1)
+    expected_json = (
+        b'{"custom_class": "custom class", "custom_union": {"string": "custom class arg"}, '
+        b'"custom_union_int": {"long": 1}, "custom_union_with_default": {"string": '
+        b'"default custom class"}, "custom_union_with_default_int": {"long": 4}}'
+    )
+
+    json = model.serialize(AVRO_JSON)
+    assert json == expected_json
+    expected_avro = b"\x18custom class\x00 custom class arg\x02\x02\x00(default custom class\x00\x08"
+    avro = model.serialize(AVRO)
+    assert avro == expected_avro
 
 
 def test_primitive_types_with_defaults():

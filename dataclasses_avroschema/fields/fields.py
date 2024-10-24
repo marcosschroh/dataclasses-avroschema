@@ -862,6 +862,8 @@ def field_factory(
         metadata = {}
 
     field_info = None
+    custom_encoder = None
+
     if native_type is None:
         native_type = type(None)
 
@@ -877,6 +879,11 @@ def field_factory(
         if native_type not in ALL_TYPES_FIELD_CLASSES:
             # type Annotated with the end user
             native_type = a_type
+
+    custom_encoder = (model_metadata.custom_encoders or {}).get(native_type)
+
+    if custom_encoder is not None:
+        native_type = custom_encoder.return_type
 
     if native_type in IMMUTABLE_FIELDS_CLASSES:
         klass = IMMUTABLE_FIELDS_CLASSES[native_type]
@@ -998,7 +1005,8 @@ def field_factory(
         )
     # See if this is a pydantic "Custom Class"
     elif (
-        inspect.isclass(native_type)
+        custom_encoder is None
+        and inspect.isclass(native_type)
         and not is_pydantic_model(native_type)  # type: ignore[arg-type]
         and any(method_name in dir(native_type) for method_name in PYDANTIC_CUSTOM_CLASS_METHOD_NAMES)
     ):
