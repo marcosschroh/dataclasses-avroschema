@@ -1,6 +1,6 @@
 import json
 import math
-from typing import Any, Optional
+from typing import Annotated, Any, Optional
 
 import pytest
 from pydantic import (
@@ -9,11 +9,10 @@ from pydantic import (
     GetCoreSchemaHandler,
     ValidationError,
     conint,
-    field_serializer,
 )
 from pydantic_core import core_schema
 
-from dataclasses_avroschema import AVRO, AVRO_JSON, types
+from dataclasses_avroschema import AVRO, AVRO_JSON, CustomAvroEncoder, types
 from dataclasses_avroschema.pydantic import AvroBaseModel
 
 
@@ -64,12 +63,13 @@ class Parent(AvroBaseModel):
     model_config = ConfigDict(json_encoders={CustomClass: str}, arbitrary_types_allowed=True)
     custom_class: CustomClass
 
-    @field_serializer("custom_class")
-    def serialize_custom_class(self, custom_class: CustomClass, _info):
-        return str(custom_class)
+
+class AnnotatedParent(AvroBaseModel):
+    custom_class: Annotated[CustomClass, CustomAvroEncoder(return_type=str, to_avro=lambda x: x.value)]
 
 
 parent_under_test = Parent(custom_class=CustomClass("custom class value"))
+annotated_parent_under_test = AnnotatedParent(custom_class=CustomClass("custom class value"))
 parent_avro_binary = b"$custom class value"
 parent_avro_json = b'{"custom_class": "custom class value"}'
 
@@ -100,20 +100,22 @@ def test_int_constrained_type_deserialize_invalid():
         ConstrainedType.deserialize(b'{"value": 0}', serialization_type="avro-json")
 
 
+@pytest.mark.parametrize("model", [parent_under_test, annotated_parent_under_test])
 @pytest.mark.parametrize(
     "serialization_type, expected_result",
     [(AVRO, parent_avro_binary), (AVRO_JSON, parent_avro_json)],
 )
-def test_custom_class_type_serialize(serialization_type: str, expected_result: bytes):
-    serialized = parent_under_test.serialize(serialization_type)
+def test_custom_class_type_serialize(serialization_type: str, expected_result: bytes, model: AvroBaseModel):
+    serialized = model.serialize(serialization_type)
     assert serialized == expected_result
 
 
+@pytest.mark.parametrize("model", [parent_under_test, annotated_parent_under_test])
 @pytest.mark.parametrize(
     "serialization_type, data",
     [(AVRO, parent_avro_binary), (AVRO_JSON, parent_avro_json)],
 )
-def test_custom_class_type_deserialize(serialization_type: str, data: bytes):
+def test_custom_class_type_deserialize(serialization_type: str, data: bytes, model: AvroBaseModel):
     deserialized = Parent.deserialize(data, serialization_type)
     assert deserialized == parent_under_test
 

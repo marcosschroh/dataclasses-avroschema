@@ -3,7 +3,7 @@ from typing import Any, Dict, Type, TypeVar
 
 from fastavro.validation import validate
 
-from dataclasses_avroschema import AvroModel, serialization
+from dataclasses_avroschema import AvroModel, CustomAvroEncoder, serialization
 from dataclasses_avroschema.types import JsonDict
 from dataclasses_avroschema.utils import standardize_custom_type
 
@@ -29,17 +29,33 @@ class AvroBaseModel(BaseModel, AvroModel):  # type: ignore
     def _standardize_type(self) -> Dict[str, Any]:
         """
         Standardization factory that converts data according to the
-        user-defined pydantic json_encoders prior to passing values
-        to the standard type conversion factory
+        user-defined avro encoders prior to passing values
+        to the standard type conversion factory.
+
+        If an Annotation-based custom encoder is found on a field, that
+        encoder will be used, and no `json_encoders`-based encoders will be
+        used, even if they exist.
         """
-        encoders = self.model_config.get("json_encoders") or {}
+
         data = dict(self)
 
+        # Encoders are annotations on field types
+        custom_encoders = {
+            k: next((item for item in v.metadata if isinstance(item, CustomAvroEncoder)), None)
+            for k, v in self.model_fields.items()
+        }
+
+        # Encoders are in deprecated pydantic `json_encoders` model config field
+        json_encoders = self.model_config.get("json_encoders") or {}
         for k, v in data.items():
             v_type = type(v)
-            if v_type in encoders:
-                encode_method = encoders[v_type]
-                data[k] = encode_method(v)
+            custom_encoder = custom_encoders.get(k)
+            json_encoder = json_encoders.get(v_type)
+            if custom_encoder:
+                data[k] = custom_encoder.to_avro(v)
+            elif json_encoder:
+                data[k] = json_encoder(v)
+
         return data
 
     def asdict(self) -> JsonDict:

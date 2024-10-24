@@ -32,6 +32,13 @@ def is_pydantic_model(klass: typing.Type) -> bool:
 
 
 @lru_cache(maxsize=None)
+def is_pydantic_v2_model(klass: typing.Type) -> bool:
+    if pydantic is not None:
+        return issubclass(klass, pydantic.BaseModel)
+    return False
+
+
+@lru_cache(maxsize=None)
 def is_faust_record(klass: typing.Type) -> bool:
     if faust is not None:
         return issubclass(klass, faust.Record)

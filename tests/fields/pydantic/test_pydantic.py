@@ -1,11 +1,12 @@
 import dataclasses
-from typing import Any
+from datetime import timedelta
+from typing import Annotated, Any
 
 import pytest
 from pydantic import ConfigDict, GetCoreSchemaHandler, field_serializer
 from pydantic_core import CoreSchema, core_schema
 
-from dataclasses_avroschema import AvroField
+from dataclasses_avroschema import AvroField, CustomAvroEncoder
 from dataclasses_avroschema.pydantic import AvroBaseModel
 
 from . import consts
@@ -26,6 +27,31 @@ class MyModel(AvroBaseModel):
         return str(x)
 
 
+def timedelta_to_avro(delta: timedelta) -> float:
+    return delta.total_seconds()
+
+
+timedelta_encoder = CustomAvroEncoder(
+    return_type=float,
+    to_avro=timedelta_to_avro,
+)
+
+CustomTimedelta = Annotated[timedelta, timedelta_encoder]
+
+
+class MyModelCustomEncoder(AvroBaseModel):
+    x: CustomTimedelta
+
+
+def test_custom_encoder_field():
+    field_name = "custom_encoder"
+    custom_encoder_field = AvroField(field_name, CustomTimedelta, MyModelCustomEncoder)
+    assert custom_encoder_field.to_dict() == {
+        "type": "double",
+        "name": field_name,
+    }
+
+
 def test_pydantic_custom_class_field():
     field_name = "custom_class"
     custom_class_field = AvroField(field_name, PydanticCustomType, MyModel)
@@ -33,6 +59,23 @@ def test_pydantic_custom_class_field():
     assert custom_class_field.to_dict() == {
         "type": "string",
         "name": field_name,
+    }
+
+
+def test_custom_encoder_field_with_default():
+    field_name = "custom_class"
+    default = timedelta(seconds=1.234)
+    custom_encoder_field = AvroField(
+        field_name,
+        CustomTimedelta,
+        MyModelCustomEncoder,
+        default=default,
+    )
+
+    assert custom_encoder_field.to_dict() == {
+        "type": "double",
+        "name": field_name,
+        "default": 1.234,
     }
 
 
