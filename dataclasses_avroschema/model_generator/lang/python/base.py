@@ -2,6 +2,7 @@ import copy
 import dataclasses
 import json
 import typing
+from abc import abstractmethod
 from dataclasses import dataclass, field
 from string import Template
 
@@ -56,11 +57,12 @@ class FieldRepresentation:
         for child in self.children:
             self.metadata.update(child.metadata)
 
-    def to_string(self) -> str:
+    def render(self, type_hint_clashes: dict[str, str]) -> str:
         """
         Convert a field to string
         """
-        result = templates.field_type_template.safe_substitute(name=self.name, type=self.type_hint)
+        type_hint = type_hint_clashes.get(self.type_hint, self.type_hint)
+        result = templates.field_type_template.safe_substitute(name=self.name, type=type_hint)
 
         # optional field attribute
         default_generated = self.get_field_default()
@@ -156,22 +158,13 @@ class FieldRepresentation:
 
 
 @dataclass
-class BaseGenerator:
+class ClassRepresentation:
+    name: str
+    schema: JsonDict
+    base_class: str
+    template: Template = templates.class_template
+    metaclass_template: Template = templates.metaclass_template
     field_identation: str = "\n    "
-    imports: typing.Set[str] = field(default_factory=set)
-    imports_dict: typing.Dict[str, str] = field(default_factory=dict)
-
-    # extras is used fot extra code that is generated, for example Enums
-    extras: typing.List[str] = field(default_factory=list)
-
-    metadata_fields_mapper: typing.Dict[str, str] = field(
-        default_factory=lambda: {
-            # doc is not included because it is rendered as docstrings
-            "namespace": "namespace",
-            "aliases": "aliases",
-            "default": "default",
-        }
-    )
     metadata_field_templates: typing.Dict[str, Template] = field(
         default_factory=lambda: {
             "namespace": templates.metaclass_field_template,
@@ -182,58 +175,20 @@ class BaseGenerator:
             "schema_name": templates.metaclass_field_template,
         }
     )
-    # represent the decorator to add in the base class
-    base_class_decorator: str = ""
-    base_class: str = field(init=False)
-    field_template: Template = field(init=False)
-    avro_type_to_lang: typing.Dict[str, str] = field(init=False)
-    logical_types_imports: typing.Dict[str, str] = field(init=False)
-
+    metadata_fields_mapper: typing.Dict[str, str] = field(
+        default_factory=lambda: {
+            # doc is not included because it is rendered as docstrings
+            "namespace": "namespace",
+            "aliases": "aliases",
+            "default": "default",
+        }
+    )
     # Boolean to indicate whether original_schema field containing the original schema string should be generated in
     # Meta class of all generated objects
     include_original_schema: bool = False
 
-    def __post_init__(self) -> None:
-        self.avro_type_to_lang = avro_to_python_utils.AVRO_TYPE_TO_PYTHON
-        self.logical_types_imports = avro_to_python_utils.LOGICAL_TYPES_IMPORTS
-
-    def add_class_imports(self) -> None: ...
-
-    def _resolve_type_from_metadata(self, *, field: JsonDict) -> typing.Optional[str]: ...
-
-    def render(self, schemas: typing.List[JsonDict]) -> str:
-        result = []
-
-        for schema in schemas:
-            if "fields" in schema:
-                result.append(self.render_class(schema=schema))
-            else:
-                # If is not a Record then it is an Enum
-                self.render_field(field=schema, model_name="", parent_field_name=schema["name"])
-
-        classes = "\n".join(result)
-        imports = self.render_imports()
-        extras = self.render_extras()
-
-        return templates.module_template.safe_substitute(
-            classes=classes,
-            imports=imports,
-            extras=extras,
-        ).lstrip("\n")
-
-    def render_imports(self) -> str:
-        """
-        Render the imports needed for the python classes.
-        """
-        # sort the imports
-        list_imports = list(self.imports)
-        list_imports.sort()
-
-        imports = "\n".join([imp for imp in list_imports])
-        return templates.imports_template.safe_substitute(imports=imports)
-
-    def render_extras(self) -> str:
-        return "".join([extra for extra in self.extras])
+    @abstractmethod
+    def render(self, type_hint_clashes: dict[str, str]) -> str: ...
 
     def render_metaclass(
         self,
@@ -277,7 +232,7 @@ class BaseGenerator:
             return self.field_identation.join(
                 [
                     line
-                    for line in templates.metaclass_template.safe_substitute(
+                    for line in self.metaclass_template.safe_substitute(
                         properties=properties, decorator=decorator
                     ).split("\n")
                 ]
@@ -295,7 +250,160 @@ class BaseGenerator:
 
         return f'{self.field_identation}"""{indented}{self.field_identation}"""'
 
-    def render_class(self, *, schema: JsonDict, parent_field_name: typing.Optional[str] = None) -> str:
+    @staticmethod
+    def _add_schema_to_metaclass(schema_template: Template, schema: JsonDict) -> str:
+        """
+        Parses provided schema to ModelGenerator.render() to a Meta field string by using
+        metaclass_schema_field_template.
+        """
+        return schema_template.safe_substitute(name="original_schema", schema=json.dumps(schema))
+
+
+@dataclass
+class EnumRepresentation(ClassRepresentation):
+    symbols: JsonDict = field(default_factory=dict)
+
+    def render(self, type_hint_clashes: dict[str, str]) -> str:
+        symbols_repr = self.render_symbols()
+
+        docstring = self.render_docstring(docstring=self.schema.get("doc"))
+        enum_repr = templates.enum_template.safe_substitute(name=self.name, symbols=symbols_repr, docstring=docstring)
+        add_schema_name = self.name != self.schema["name"]
+        metaclass = self.render_metaclass(
+            schema=self.schema,
+            decorator=templates.METACLASS_DECORATOR,
+            add_schema_name=add_schema_name,
+        )
+
+        if metaclass:
+            enum_repr += metaclass
+
+        if self.name in type_hint_clashes:
+            clashed_typing = templates.metaclass_alias_field_template.safe_substitute(
+                name=type_hint_clashes[self.name], value=self.name
+            )
+            clashed_typing = f"\n{clashed_typing}\n"
+            enum_repr += clashed_typing
+
+        return f"{enum_repr}\n"
+
+    def render_symbols(self) -> str:
+        return self.field_identation.join(
+            [
+                templates.enum_symbol_template.safe_substitute(key=key, value=f'"{value}"')
+                for key, value in self.symbols.items()
+            ]
+        )
+
+
+@dataclass
+class ModelRepresentation(ClassRepresentation):
+    fields_representation: typing.List[FieldRepresentation] = field(default_factory=list)
+    # represent the decorator to add in the base class
+    decorator: typing.Optional[str] = None
+
+    def render(self, type_hint_clashes: dict[str, str]) -> str:
+        fields_representation_copy = copy.copy(self.fields_representation)
+        self.fields_representation.sort(key=lambda field: field.default is not dataclasses.MISSING)
+
+        field_order = None
+        if fields_representation_copy != self.fields_representation:
+            field_order = [field.name for field in fields_representation_copy]
+
+        rendered_fields_string = self.field_identation.join(
+            field.render(type_hint_clashes=type_hint_clashes) for field in self.fields_representation
+        )
+        docstring = self.render_docstring(docstring=self.schema.get("doc"))
+
+        rendered_class = self.template.safe_substitute(
+            name=self.name,
+            decorator=self.decorator or "",
+            base_class=self.base_class,
+            fields=rendered_fields_string,
+            docstring=docstring,
+        )
+
+        add_schema_name = self.name != self.schema["name"]
+        class_metadata = self.render_metaclass(
+            schema=self.schema, field_order=field_order, add_schema_name=add_schema_name
+        )
+        if class_metadata is not None:
+            rendered_class += class_metadata
+
+        if self.name in type_hint_clashes:
+            clashed_typing = templates.metaclass_alias_field_template.safe_substitute(
+                name=type_hint_clashes[self.name], value=self.name
+            )
+            clashed_typing = f"\n{clashed_typing}\n"
+            rendered_class += clashed_typing
+
+        return f"{rendered_class}\n"
+
+
+@dataclass
+class BaseGenerator:
+    field_identation: str = "\n    "
+    imports: typing.Set[str] = field(default_factory=set)
+    imports_dict: typing.Dict[str, str] = field(default_factory=dict)
+
+    # extras is used fot extra code that is generated, for example Enums
+    extras: typing.List[str] = field(default_factory=list)
+    classes_representation: typing.List[ClassRepresentation] = field(default_factory=list)
+
+    field_template: Template = field(init=False)
+    avro_type_to_lang: typing.Dict[str, str] = field(init=False)
+    logical_types_imports: typing.Dict[str, str] = field(init=False)
+    base_class_decorator: typing.Optional[str] = None
+    # Boolean to indicate whether original_schema field containing the original schema string should be generated in
+    # Meta class of all generated objects
+    include_original_schema: bool = False
+    base_class: str = field(init=False)
+    type_hint_clashes: dict[str, str] = field(default_factory=dict)
+
+    def __post_init__(self) -> None:
+        self.avro_type_to_lang = avro_to_python_utils.AVRO_TYPE_TO_PYTHON
+        self.logical_types_imports = avro_to_python_utils.LOGICAL_TYPES_IMPORTS
+
+    def add_class_imports(self) -> None: ...
+
+    def _resolve_type_from_metadata(self, *, field: JsonDict) -> typing.Optional[str]: ...
+
+    def render(self, schemas: typing.List[JsonDict]) -> str:
+        for schema in schemas:
+            if "fields" in schema:
+                self.render_class(schema=schema)
+            else:
+                # If is not a Record then it is an Enum
+                self.render_field(field=schema, model_name="", parent_field_name="")
+
+        result = [
+            class_repr.render(type_hint_clashes=self.type_hint_clashes) for class_repr in self.classes_representation
+        ]
+        classes = "".join(result)
+        imports = self.render_imports()
+        extras = self.render_extras()
+
+        return templates.module_template.safe_substitute(
+            classes=classes,
+            imports=imports,
+            extras=extras,
+        ).lstrip("\n")
+
+    def render_imports(self) -> str:
+        """
+        Render the imports needed for the python classes.
+        """
+        # sort the imports
+        list_imports = list(self.imports)
+        list_imports.sort()
+
+        imports = "\n".join([imp for imp in list_imports])
+        return templates.imports_template.safe_substitute(imports=imports)
+
+    def render_extras(self) -> str:
+        return "".join([extra for extra in self.extras])
+
+    def render_class(self, *, schema: JsonDict, parent_field_name: typing.Optional[str] = None) -> ClassRepresentation:
         """
         Render the class generated from the schema
         """
@@ -310,30 +418,17 @@ class BaseGenerator:
             for field in record_fields
         ]
 
-        fields_representation_copy = copy.copy(fields_representation)
-        fields_representation.sort(key=lambda field: field.default is not dataclasses.MISSING)
-
-        field_order = None
-        if fields_representation_copy != fields_representation:
-            field_order = [field.name for field in fields_representation_copy]
-
-        rendered_fields_string = self.field_identation.join(field.to_string() for field in fields_representation)
-        docstring = self.render_docstring(docstring=schema.get("doc"))
-
-        rendered_class = templates.class_template.safe_substitute(
+        class_representation = ModelRepresentation(
             name=model_name,
-            decorator=self.base_class_decorator,
+            schema=schema,
+            fields_representation=fields_representation,
             base_class=self.base_class,
-            fields=rendered_fields_string,
-            docstring=docstring,
+            decorator=self.base_class_decorator,
+            include_original_schema=self.include_original_schema,
         )
+        self.classes_representation.append(class_representation)
 
-        add_schema_name = model_name != schema["name"]
-        class_metadata = self.render_metaclass(schema=schema, field_order=field_order, add_schema_name=add_schema_name)
-        if class_metadata is not None:
-            rendered_class += class_metadata
-
-        return rendered_class
+        return class_representation
 
     def render_field(self, field: JsonDict, model_name: str, parent_field_name: str) -> FieldRepresentation:
         """
@@ -375,16 +470,10 @@ class BaseGenerator:
             type_hint = self.parse_fixed(field=field)
         elif avro_type == field_utils.RECORD:
             type_hint = casefy.pascalcase(name)
+            class_representation = self.render_class(schema=field, parent_field_name=name)
 
-            record = f"\n{self.render_class(schema=field, parent_field_name=name)}"
-            self.extras.append(record)
-
-            if parent_field_name == type_hint:
-                type_hint = f"_{name}"
-                clashed_class = (
-                    f"\n{templates.metaclass_alias_field_template.safe_substitute(name=type_hint, value=name)}"
-                )
-                self.extras.append(clashed_class)
+            if class_representation not in self.classes_representation:
+                self.classes_representation.append(class_representation)
         else:
             # Native field
             type_hint = self.get_language_type(avro_type=avro_type, field_name=name, model_name=model_name)
@@ -393,6 +482,14 @@ class BaseGenerator:
             # specified in the field metadata only after the native type was resolved
             type_from_metadata = self._resolve_type_from_metadata(field=field)
             type_hint = type_from_metadata or type_hint
+
+        if type_hint == parent_field_name:
+            # then there is a clashes type
+            type_hint = f"_{parent_field_name}"
+            self.type_hint_clashes[parent_field_name] = type_hint
+
+            if name:
+                self.type_hint_clashes[name] = type_hint
 
         return FieldRepresentation(
             name=name,
@@ -584,26 +681,15 @@ class BaseGenerator:
                 key = symbol
             symbols_map[key] = symbol
 
-        symbols_repr = self.field_identation.join(
-            [
-                templates.enum_symbol_template.safe_substitute(key=key, value=f'"{value}"')
-                for key, value in symbols_map.items()
-            ]
+        self.classes_representation.append(
+            EnumRepresentation(
+                name=enum_name,
+                schema=field,
+                template=templates.enum_template,
+                base_class="",
+                symbols=symbols_map,
+            )
         )
-
-        docstring = self.render_docstring(docstring=field.get("doc"))
-        enum_class = templates.enum_template.safe_substitute(name=enum_name, symbols=symbols_repr, docstring=docstring)
-        add_schema_name = enum_name != field["name"]
-        metaclass = self.render_metaclass(
-            schema=field,
-            decorator=templates.METACLASS_DECORATOR,
-            add_schema_name=add_schema_name,
-        )
-
-        if metaclass:
-            enum_class += metaclass
-
-        self.extras.append(enum_class)
 
         return enum_name
 
@@ -625,11 +711,7 @@ class BaseGenerator:
             # it means the type points to the an already specified type so it contains the type name
             # with optional namespaces, e.g. my_namespace.users.User
             # In this case we should return the last part of the string
-            type_hint = casefy.pascalcase(avro_type.split(".")[-1])
-
-            if field_name == type_hint:
-                type_hint = f"_{avro_type}"
-            return type_hint
+            return casefy.pascalcase(avro_type.split(".")[-1])
         elif default is not None:
             return str(self.avro_type_to_lang.get(avro_type, default))
         else:
@@ -672,11 +754,3 @@ class BaseGenerator:
             )
 
         return {name: value for name, value in field.items() if name not in keys_to_ignore}
-
-    @staticmethod
-    def _add_schema_to_metaclass(schema_template: Template, schema: JsonDict) -> str:
-        """
-        Parses provided schema to ModelGenerator.render() to a Meta field string by using
-        metaclass_schema_field_template.
-        """
-        return schema_template.safe_substitute(name="original_schema", schema=json.dumps(schema))

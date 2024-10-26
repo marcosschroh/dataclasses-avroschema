@@ -503,6 +503,48 @@ def schema_one_to_many_relationship_clashes_types() -> JsonDict:
 
 
 @pytest.fixture
+def schema_with_enum_clashes_types() -> JsonDict:
+    return {
+        "type": "record",
+        "name": "Message",
+        "fields": [
+            {"name": "MessageBody", "type": "string"},
+            {
+                "name": "status",
+                "type": {
+                    "type": "enum",
+                    "name": "Status",
+                    "symbols": ["ENABLED", "DISABLED"],
+                },
+            },
+            {
+                "name": "MessageHeader",
+                "type": [
+                    "null",
+                    {
+                        "type": "array",
+                        "name": "MessageHeader",
+                        "items": {
+                            "type": "record",
+                            "name": "MessageHeader",
+                            "fields": [
+                                {"name": "version", "type": "string"},
+                                {"name": "MessageType", "type": "string"},
+                            ],
+                        },
+                    },
+                ],
+                "default": None,
+            },
+            {
+                "name": "Status",
+                "type": "Status",
+            },
+        ],
+    }
+
+
+@pytest.fixture
 def schema_one_to_many_relationship_multiple_clashes_types() -> JsonDict:
     return {
         "type": "record",
@@ -531,6 +573,51 @@ def schema_one_to_many_relationship_multiple_clashes_types() -> JsonDict:
             {
                 "name": "MessageHeader2",
                 "type": "MessageHeader",
+            },
+            {
+                "name": "SuperMessageHeader",
+                "type": {
+                    "type": "record",
+                    "name": "SuperMessageHeader",
+                    "fields": [
+                        {"name": "name", "type": "string"},
+                        {"name": "MessageHeader", "type": "MessageHeader"},
+                    ],
+                },
+            },
+        ],
+    }
+
+
+@pytest.fixture
+def schema_one_to_many_relationship_with_late_clashes_types() -> JsonDict:
+    return {
+        "type": "record",
+        "name": "Message",
+        "fields": [
+            {"name": "MessageBody", "type": "string"},
+            {
+                "name": "MessageHeader2",
+                "type": {
+                    "type": "record",
+                    "name": "MessageHeader",
+                    "fields": [
+                        {"name": "version", "type": "string"},
+                        {"name": "MessageType", "type": "string"},
+                    ],
+                },
+            },
+            {
+                "name": "MessageHeader",
+                "type": [
+                    "null",
+                    {
+                        "type": "array",
+                        "name": "MessageHeader",
+                        "items": "MessageHeader",
+                    },
+                ],
+                "default": None,
             },
             {
                 "name": "SuperMessageHeader",

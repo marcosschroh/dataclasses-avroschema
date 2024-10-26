@@ -29,7 +29,6 @@ DECIMAL_TYPE_TEMPLATE = "types.condecimal(max_digits=$precision, decimal_places=
 ENUM_SYMBOL_TEMPLATE = "$key = $value"
 ENUM_PYTHON_VERSION = "str, enum.Enum" if PYTHON_VERSION_GE_311 else "enum.Enum"
 ENUM_TEMPLATE = f"""
-
 class $name({ENUM_PYTHON_VERSION}):$docstring
     $symbols
 """

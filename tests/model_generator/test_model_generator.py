@@ -485,6 +485,7 @@ class MessageHeader(AvroModel):
 
 _MessageHeader = MessageHeader
 
+
 @dataclasses.dataclass
 class Message(AvroModel):
     MessageBody: str
@@ -492,6 +493,45 @@ class Message(AvroModel):
 """
     model_generator = ModelGenerator()
     result = model_generator.render(schema=schema_one_to_many_relationship_clashes_types)
+    assert result.strip() == expected_result.strip()
+
+
+def test_schema_with_enum_clashes_types(schema_with_enum_clashes_types: types.JsonDict) -> None:
+    expected_result = f"""
+from dataclasses_avroschema import AvroModel
+import dataclasses
+import enum
+import typing
+
+
+class Status({templates.ENUM_PYTHON_VERSION}):
+    ENABLED = "ENABLED"
+    DISABLED = "DISABLED"
+
+_Status = Status
+
+
+@dataclasses.dataclass
+class MessageHeader(AvroModel):
+    version: str
+    MessageType: str
+
+_MessageHeader = MessageHeader
+
+
+@dataclasses.dataclass
+class Message(AvroModel):
+    MessageBody: str
+    status: _Status
+    Status: _Status
+    MessageHeader: typing.Optional[typing.List[_MessageHeader]] = None
+
+    
+    class Meta:
+        field_order = ['MessageBody', 'status', 'MessageHeader', 'Status']
+"""
+    model_generator = ModelGenerator()
+    result = model_generator.render(schema=schema_with_enum_clashes_types)
     assert result.strip() == expected_result.strip()
 
 
@@ -511,6 +551,7 @@ class MessageHeader(AvroModel):
 
 _MessageHeader = MessageHeader
 
+
 @dataclasses.dataclass
 class SuperMessageHeader(AvroModel):
     name: str
@@ -518,10 +559,11 @@ class SuperMessageHeader(AvroModel):
 
 _SuperMessageHeader = SuperMessageHeader
 
+
 @dataclasses.dataclass
 class Message(AvroModel):
     MessageBody: str
-    MessageHeader2: MessageHeader
+    MessageHeader2: _MessageHeader
     SuperMessageHeader: _SuperMessageHeader
     MessageHeader: typing.Optional[typing.List[_MessageHeader]] = None
 
@@ -531,6 +573,47 @@ class Message(AvroModel):
 """
     model_generator = ModelGenerator()
     result = model_generator.render(schema=schema_one_to_many_relationship_multiple_clashes_types)
+    assert result.strip() == expected_result.strip()
+
+
+def test_schema_one_to_many_relationship_with_late_clashes_types(
+    schema_one_to_many_relationship_with_late_clashes_types: types.JsonDict,
+) -> None:
+    expected_result = """
+from dataclasses_avroschema import AvroModel
+import dataclasses
+import typing
+
+
+@dataclasses.dataclass
+class MessageHeader(AvroModel):
+    version: str
+    MessageType: str
+
+_MessageHeader = MessageHeader
+
+
+@dataclasses.dataclass
+class SuperMessageHeader(AvroModel):
+    name: str
+    MessageHeader: _MessageHeader
+
+_SuperMessageHeader = SuperMessageHeader
+
+
+@dataclasses.dataclass
+class Message(AvroModel):
+    MessageBody: str
+    MessageHeader2: _MessageHeader
+    SuperMessageHeader: _SuperMessageHeader
+    MessageHeader: typing.Optional[typing.List[_MessageHeader]] = None
+
+    
+    class Meta:
+        field_order = ['MessageBody', 'MessageHeader2', 'MessageHeader', 'SuperMessageHeader']
+"""
+    model_generator = ModelGenerator()
+    result = model_generator.render(schema=schema_one_to_many_relationship_with_late_clashes_types)
     assert result.strip() == expected_result.strip()
 
 

@@ -1,3 +1,9 @@
+## 0.64.2 (2024-10-24)
+
+### Fix
+
+- **ModelGenerator**: ModelRepresentation and EnumRepresentation added to make model generation simpler. More name clashing cases fixed (#783)
+
 ## 0.64.1 (2024-10-23)
 
 ### Fix
