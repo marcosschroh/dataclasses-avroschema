@@ -14,9 +14,6 @@ except ImportError as ex:  # pragma: no cover
     raise Exception("faust-streaming must be installed in order to use AvroRecord") from ex  # pragma: no cover
 
 
-CT = typing.TypeVar("CT", bound="AvroRecord")
-
-
 class AvroRecord(Record, AvroModel):  # type: ignore
     def validate_avro(self) -> bool:
         """
@@ -56,5 +53,5 @@ class AvroRecord(Record, AvroModel):  # type: ignore
         return self.standardize_type(include_type=False)
 
     @classmethod
-    def _generate_parser(cls: typing.Type[CT]) -> FaustParser:
-        return FaustParser(type=cls._klass, metadata=cls.get_metadata(), parent=cls._parent or cls)
+    def _generate_parser(cls: typing.Type["AvroRecord"]) -> FaustParser:
+        return FaustParser(type=cls, parent=cls._parent or cls)

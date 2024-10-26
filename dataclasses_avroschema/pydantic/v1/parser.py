@@ -5,8 +5,23 @@ from dataclasses_avroschema.fields.base import Field
 from dataclasses_avroschema.fields.fields import AvroField
 from dataclasses_avroschema.parser import Parser
 
+if typing.TYPE_CHECKING:
+    from .main import AvroBaseModel  # pragma: no cover
+
 
 class PydanticV1Parser(Parser):
+    def __init__(
+        self,
+        type,
+        parent,
+    ):
+        super().__init__(type, parent)
+        self.type: typing.Type["AvroBaseModel"]
+        self.parent: typing.Type["AvroBaseModel"]
+
+    def generate_dataclass(self) -> typing.Type:
+        return self.type
+
     def parse_fields(self, exclude: typing.List) -> typing.List[Field]:
         return [
             AvroField(

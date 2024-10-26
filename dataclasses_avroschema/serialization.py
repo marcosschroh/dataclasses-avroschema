@@ -7,10 +7,8 @@ import uuid
 
 import fastavro
 
-from .types import JsonDict
-
-if typing.TYPE_CHECKING:
-    from .main import CT  # pragma: no cover
+from .protocol import ModelProtocol
+from .types import JsonDict, SerializationType
 
 DATETIME_STR_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
 DATE_STR_FORMAT = "%Y-%m-%d"
@@ -18,7 +16,6 @@ TIME_STR_FORMAT = "%H:%M:%S"
 
 AVRO = "avro"
 AVRO_JSON = "avro-json"
-SerializationType = typing.Literal["avro", "avro-json"]
 
 decimal_context = decimal.Context()
 
@@ -160,7 +157,7 @@ def deserialize_from_context(*, data: JsonDict, context: JsonDict) -> JsonDict:
     return cleaned_data
 
 
-def sanitize_union(*, union: typing.Tuple, context: JsonDict) -> typing.Optional["CT"]:
+def sanitize_union(*, union: typing.Tuple, context: JsonDict) -> typing.Optional[ModelProtocol]:
     # the first value is the model/record name and the second is its payload
     model_name, model_value = union
     if isinstance(model_value, dict):
@@ -168,7 +165,7 @@ def sanitize_union(*, union: typing.Tuple, context: JsonDict) -> typing.Optional
         model_value = deserialize_from_context(data=model_value, context=context)
 
     model_name = model_name.split(".")[-1]
-    avro_model = context.get(model_name)
+    avro_model: typing.Optional[ModelProtocol] = context.get(model_name)
 
     if avro_model is not None:
         return avro_model.parse_obj(model_value)

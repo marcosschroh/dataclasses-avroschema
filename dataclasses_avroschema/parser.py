@@ -3,14 +3,13 @@ import inspect
 import typing
 from collections import OrderedDict
 
-from . import utils
 from .fields.base import Field
-from .version import PY_VERSION
+from .utils import SchemaMetadata
 
-KWARGS = {"slots": True} if PY_VERSION >= (3, 10) else {}
+if typing.TYPE_CHECKING:
+    from .main import AvroModel
 
 
-@dataclasses.dataclass(**KWARGS)  # type: ignore
 class Parser:
     """
     Parse python dataclasses to represent it as an avro schema.
@@ -19,17 +18,33 @@ class Parser:
     be represented as an avro type.
     """
 
-    type: typing.Any
-    parent: typing.Any
-    metadata: utils.SchemaMetadata
-    fields: typing.List[Field] = dataclasses.field(default_factory=list)
-    # mapping of field_name: Field
-    fields_map: typing.Dict[str, Field] = dataclasses.field(default_factory=dict)
+    def __init__(
+        self,
+        type: typing.Type["AvroModel"],
+        parent: typing.Type["AvroModel"],
+    ):
+        self.type = type
+        self.parent = parent
 
-    def __post_init__(self) -> None:
+        # generate the dataclass for thr given type
+        self.dataclass = self.generate_dataclass()
+
+        meta = getattr(type, "Meta", type)
+        self.metadata = SchemaMetadata.create(meta)
         exclude = self.metadata.exclude
+
         self.fields = self.parse_fields(exclude=exclude)
         self.fields_map = {field.name: field for field in self.fields}
+
+    def generate_dataclass(self) -> typing.Type:
+        from .main import AvroModel
+
+        if self.type is AvroModel:
+            raise AttributeError("Schema generation must be called on a subclass of AvroModel, not AvroModel itself.")
+
+        if dataclasses.is_dataclass(self.type):
+            return self.type
+        return dataclasses.dataclass(self.type)
 
     def parse_fields(self, exclude: typing.List) -> typing.List[Field]:
         from .fields.fields import AvroField
@@ -44,7 +59,7 @@ class Parser:
                 model_metadata=self.metadata,
                 parent=self.parent,
             )
-            for dataclass_field in dataclasses.fields(self.type)
+            for dataclass_field in dataclasses.fields(self.dataclass)
             if dataclass_field.name not in exclude
         ]
 
@@ -52,11 +67,11 @@ class Parser:
         return self.fields_map
 
     def get_schema_name(self) -> str:
-        return self.type._metadata.schema_name or self.type.__name__
+        return self.metadata.schema_name or self.type.__name__
 
     def generate_documentation(self) -> typing.Optional[str]:
         if isinstance(self.metadata.schema_doc, str):
-            doc = self.metadata.schema_doc
+            doc: typing.Optional[str] = self.metadata.schema_doc
         else:
             doc = self.type.__doc__
             # dataclasses create a (in avro context) useless docstring by default,

@@ -6,10 +6,8 @@ from functools import lru_cache
 
 from typing_extensions import Annotated, get_origin
 
+from .protocol import ModelProtocol  # pragma: no cover
 from .types import FieldInfo, JsonDict, UnionType
-
-if typing.TYPE_CHECKING:
-    from .main import AvroModel  # pragma: no cover
 
 try:
     import pydantic  # pragma: no cover
@@ -25,14 +23,14 @@ except ImportError:  # type: ignore # pragma: no cover
 
 
 @lru_cache(maxsize=None)
-def is_pydantic_model(klass: typing.Type) -> bool:
+def is_pydantic_model(klass: typing.Type[ModelProtocol]) -> bool:
     if pydantic is not None:
         return issubclass(klass, v1.BaseModel) or issubclass(klass, pydantic.BaseModel)
     return False
 
 
 @lru_cache(maxsize=None)
-def is_faust_record(klass: typing.Type) -> bool:
+def is_faust_record(klass: typing.Type[ModelProtocol]) -> bool:
     if faust is not None:
         return issubclass(klass, faust.Record)
     return False
@@ -96,8 +94,8 @@ def standardize_custom_type(
     *,
     field_name: str,
     value: typing.Any,
-    model: "AvroModel",
-    base_class: typing.Type["AvroModel"],
+    model: ModelProtocol,
+    base_class: typing.Type[ModelProtocol],
     include_type: bool = True,
 ) -> typing.Any:
     if isinstance(value, dict):
