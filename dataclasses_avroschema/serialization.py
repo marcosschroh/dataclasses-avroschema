@@ -249,6 +249,8 @@ def serialize_value(*, value: typing.Any) -> typing.Any:
         value = date_to_str(value)
     elif isinstance(value, datetime.time):
         value = time_to_str(value)
+    elif isinstance(value, datetime.timedelta):
+        value = value.total_seconds()
     elif isinstance(value, (uuid.UUID, decimal.Decimal)):
         value = str(value)
     elif isinstance(value, dict):

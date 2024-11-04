@@ -19,12 +19,14 @@ AVRO_TYPE_TO_PYTHON: typing.Dict[str, str] = {
     field_utils.TIME_MICROS: "types.TimeMicro",
     field_utils.TIMESTAMP_MILLIS: "datetime.datetime",
     field_utils.TIMESTAMP_MICROS: "types.DateTimeMicro",
+    field_utils.TIMEDELTA: "datetime.timedelta",
     field_utils.UUID: "uuid.UUID",
 }
 
 LOGICAL_TYPES_IMPORTS: typing.Dict[str, str] = {
     field_utils.DECIMAL: "import decimal",
     field_utils.DATE: "import datetime",
+    field_utils.TIMEDELTA: "import datetime",
     field_utils.TIME_MILLIS: "import datetime",
     field_utils.TIME_MICROS: "from dataclasses_avroschema import types",
     field_utils.TIMESTAMP_MILLIS: "import datetime",
@@ -41,6 +43,7 @@ LOGICAL_TYPES_TO_PYTHON = {
     field_utils.TIMESTAMP_MICROS: lambda value: datetime.datetime.fromtimestamp(
         value / 1000000, tz=datetime.timezone.utc
     ),
+    field_utils.TIMEDELTA: lambda value: datetime.timedelta(seconds=value),
 }
 
 # Logical types objects to template
@@ -73,6 +76,9 @@ LOGICAL_TYPE_TEMPLATES = {
         minute=datetime_obj.minute,
         second=datetime_obj.second,
         microsecond=datetime_obj.microsecond,
+    ),
+    field_utils.TIMEDELTA: lambda timedelta_obj: templates.timedelta_template.safe_substitute(
+        seconds=timedelta_obj.total_seconds(),
     ),
 }
 

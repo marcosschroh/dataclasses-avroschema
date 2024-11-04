@@ -154,6 +154,25 @@ def test_logical_type_datetime_with_default() -> None:
     assert expected == field_with_default_factory.to_dict()
 
 
+def test_logical_type_timedelta_with_default() -> None:
+    name = "a timedelta"
+    python_type = datetime.timedelta
+    delta = datetime.timedelta(seconds=1.234567)
+    seconds = delta.total_seconds()
+
+    field = AvroField(name, python_type, default=delta)
+    field_with_default_factory = AvroField(name, python_type, default_factory=lambda: delta)
+
+    expected = {
+        "name": name,
+        "type": {"type": field_utils.DOUBLE, "logicalType": field_utils.TIMEDELTA},
+        "default": seconds,
+    }
+
+    assert expected == field.to_dict()
+    assert expected == field_with_default_factory.to_dict()
+
+
 @pytest.mark.parametrize(
     "python_type,avro_type",
     (

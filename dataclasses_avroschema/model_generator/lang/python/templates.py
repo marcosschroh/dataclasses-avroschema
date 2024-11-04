@@ -23,6 +23,7 @@ DATETIME_TEMPLATE = "datetime.datetime($year, $month, $day, $hour, $minute, $sec
 DATETIME_MICROS_TEMPLATE = (
     "datetime.datetime($year, $month, $day, $hour, $minute, $second, $microsecond, tzinfo=datetime.timezone.utc)"
 )
+TIMEDELTA_TEMPLATE = "datetime.timedelta(seconds=$seconds)"
 DECIMAL_TEMPLATE = "decimal.Decimal('$value')"
 DECIMAL_TYPE_TEMPLATE = "types.condecimal(max_digits=$precision, decimal_places=$scale)"
 
@@ -85,5 +86,6 @@ time_template = Template(TIME_TEMPLATE)
 time_micros_template = Template(TIME_MICROS_TEMPLATE)
 datetime_template = Template(DATETIME_TEMPLATE)
 datetime_micros_template = Template(DATETIME_MICROS_TEMPLATE)
+timedelta_template = Template(TIMEDELTA_TEMPLATE)
 imports_template = Template(IMPORTS_TEMPLATE.strip())
 module_template = Template(MODULE_TEMPLATE.strip())

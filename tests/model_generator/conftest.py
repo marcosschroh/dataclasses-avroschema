@@ -960,6 +960,11 @@ def schema_with_logical_types() -> JsonDict:
                 "default": 1570903062000000,
             },
             {
+                "name": "time_elapsed",
+                "type": {"type": "double", "logicalType": "dataclasses-avroschema-timedelta"},
+                "default": 788645.006007,
+            },
+            {
                 "name": "uuid_2",
                 "type": ["null", {"type": "string", "logicalType": "uuid"}],
                 "default": None,

@@ -45,6 +45,7 @@ def test_roundtrip(filename: Path, timezone: ZoneInfo):
     model_generator = ModelGenerator(base_class=base_class)
     schema = json.loads(filename.read_text())
     result = model_generator.render(schema=schema)
+    print(result)
 
     try:
         code = compile(result, filename.with_suffix(".py").name, "exec")

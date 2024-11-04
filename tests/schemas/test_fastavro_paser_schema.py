@@ -351,6 +351,9 @@ def test_logical_types_schema():
         birthday: datetime.date = a_datetime.date()
         meeting_time: datetime.time = a_datetime.time()
         release_datetime: datetime.datetime = a_datetime
+        time_elapsed: datetime.timedelta = datetime.timedelta(
+            weeks=1, days=2, hours=3, minutes=4, seconds=5, milliseconds=6, microseconds=7
+        )
         event_uuid: uuid.uuid4 = "09f00184-7721-4266-a955-21048a5cc235"
 
     assert parse_schema(LogicalTypes.avro_schema_to_python())

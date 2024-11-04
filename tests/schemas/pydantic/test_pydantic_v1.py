@@ -109,6 +109,7 @@ def test_pydantic_record_schema_complex_types_with_defaults(user_advance_with_de
 
 def test_pydantic_record_schema_logical_types(logical_types_schema):
     a_datetime = datetime.datetime(2019, 10, 12, 17, 57, 42, tzinfo=datetime.timezone.utc)
+    delta = datetime.timedelta(weeks=1, days=2, hours=3, minutes=4, seconds=5, milliseconds=6, microseconds=7)
 
     class LogicalTypes(AvroBaseModel):
         "Some logical types"
@@ -116,6 +117,7 @@ def test_pydantic_record_schema_logical_types(logical_types_schema):
         birthday: datetime.date = a_datetime.date()
         meeting_time: datetime.time = a_datetime.time()
         release_datetime: datetime.datetime = a_datetime
+        time_elapsed: datetime.timedelta = delta
         event_uuid: uuid.UUID = "09f00184-7721-4266-a955-21048a5cc235"
 
     assert LogicalTypes.avro_schema() == json.dumps(logical_types_schema)
@@ -290,7 +292,7 @@ def test_pydantic_record_schema_with_unions_type(union_type_schema):
         "Some Unions"
 
         first_union: typing.Union[str, int]
-        logical_union: typing.Union[datetime.datetime, datetime.date, uuid.UUID]
+        logical_union: typing.Union[datetime.datetime, datetime.date, datetime.timedelta, uuid.UUID]
         lake_trip: typing.Union[Bus, Car]
         river_trip: typing.Union[Bus, Car] = None
         mountain_trip: typing.Union[Bus, Car] = Field(default_factory=lambda: Bus(engine_name="honda"))
