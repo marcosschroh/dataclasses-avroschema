@@ -1,3 +1,9 @@
+## 0.65.0 (2024-11-06)
+
+### Feat
+
+- support timedelta serialization to `double` seconds (#793)
+
 ## 0.64.2 (2024-10-24)
 
 ### Fix
