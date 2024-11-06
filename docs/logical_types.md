@@ -9,6 +9,7 @@ The following list represent the avro logical types mapped to python types:
 | long      |  time-micros | types.TimeMicro |
 | long      |  timestamp-millis | datetime.datetime |
 | long      |  timestamp-micros | types.DateTimeMicro |
+| double    |  timedelta   | datetime.timedelta |
 | string    |  uuid        | uuid.uuid4 |
 | string    |  uuid        | uuid.UUID |
 | bytes     | decimal      | types.condecimal |
@@ -170,6 +171,44 @@ DatetimeLogicalType.avro_schema()
 
 !!! note
     To use `timestamp-micros` in avro schemas you need to use `types.DateTimeMicro`
+
+## Timedelta
+
+`timedelta` fields are serialized to a `double` number of seconds.
+
+```python title="Timedelta example"
+import datetime
+import dataclasses
+
+from dataclasses_avroschema import AvroModel
+
+delta = datetime.timedelta(weeks=1, days=2, hours=3, minutes=4, seconds=5, milliseconds=6, microseconds=7)
+
+@dataclasses.dataclass
+class TimedeltaLogicalType(AvroModel):
+    "Timedelta logical type"
+    time_elapsed: datetime.timedelta = delta
+
+DatetimeLogicalType.avro_schema()
+
+'{
+  "type": "record",
+  "name": "DatetimeLogicalType",
+  "fields": [
+    {
+      "name": "time_elapsed",
+      "type": {
+        "type": "double",
+        "logicalType": "dataclasses-avroschema-timedelta"
+      },
+      "default": 788645.006007
+    }
+  ],
+  "doc": "Timedelta logical type"
+}'
+```
+
+*(This script is complete, it should run "as is")*
 
 ## UUID
 

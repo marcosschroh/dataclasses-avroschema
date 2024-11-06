@@ -81,6 +81,14 @@
             "default": 1570903062000
         },
         {
+          "name": "time_elapsed",
+          "type": {
+            "type": "double",
+            "logicalType": "dataclasses-avroschema-timedelta"
+          },
+          "default": 788645.006007
+        },
+        {
             "name": "event_uuid",
             "type": {
                 "type": "string",

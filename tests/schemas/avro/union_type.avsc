@@ -11,6 +11,7 @@
       "type": [
         {"type": "long", "logicalType": "timestamp-millis"},
         {"type": "int", "logicalType": "date"},
+        {"type": "double", "logicalType": "dataclasses-avroschema-timedelta"},
         {"type": "string", "logicalType": "uuid"}
       ]
     },

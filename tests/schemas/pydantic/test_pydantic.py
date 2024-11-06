@@ -150,6 +150,7 @@ def test_pydantic_record_schema_logical_types(logical_types_pydantic_schema):
     a_past_datetime = datetime.datetime(2019, 10, 12, 17, 57, 42, tzinfo=datetime.timezone.utc)
     a_future_datetime = datetime.datetime(9999, 12, 31, 23, 59, 59)
     a_naive_datetime = datetime.datetime(2019, 10, 12, 17, 57, 42)
+    delta = datetime.timedelta(weeks=1, days=2, hours=3, minutes=4, seconds=5, milliseconds=6, microseconds=7)
 
     class LogicalTypesPydantic(AvroBaseModel):
         "Some logical types"
@@ -163,6 +164,7 @@ def test_pydantic_record_schema_logical_types(logical_types_pydantic_schema):
         future_datetime: FutureDatetime = a_future_datetime
         aware_datetime: AwareDatetime = a_datetime
         naive_datetime: NaiveDatetime = a_naive_datetime
+        time_elapsed: datetime.timedelta = delta
         event_uuid: uuid.UUID = "09f00184-7721-4266-a955-21048a5cc235"
 
     assert LogicalTypesPydantic.avro_schema() == json.dumps(logical_types_pydantic_schema)
@@ -337,7 +339,7 @@ def test_pydantic_record_schema_with_unions_type(union_type_schema):
         "Some Unions"
 
         first_union: typing.Union[str, int]
-        logical_union: typing.Union[datetime.datetime, datetime.date, uuid.UUID]
+        logical_union: typing.Union[datetime.datetime, datetime.date, datetime.timedelta, uuid.UUID]
         lake_trip: typing.Union[Bus, Car]
         river_trip: typing.Union[Bus, Car] = None
         mountain_trip: typing.Union[Bus, Car] = Field(default_factory=lambda: Bus(engine_name="honda"))

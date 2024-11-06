@@ -793,6 +793,7 @@ class LogicalTypes(AvroModel):
     meeting_datetime: typing.Optional[datetime.datetime] = None
     release_datetime: datetime.datetime = {release_datetime}
     release_datetime_micro: types.DateTimeMicro = {release_datetime_micro}
+    time_elapsed: datetime.timedelta = datetime.timedelta(seconds=788645.006007)
     uuid_2: typing.Optional[uuid.UUID] = None
     event_uuid: uuid.UUID = "ad0677ab-bd1c-4383-9d45-e46c56bcc5c9"
     explicit_with_default: types.condecimal(max_digits=3, decimal_places=2) = decimal.Decimal('3.14')

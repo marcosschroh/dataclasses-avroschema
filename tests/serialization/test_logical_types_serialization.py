@@ -12,6 +12,7 @@ from dataclasses_avroschema.faust import AvroRecord
 from dataclasses_avroschema.pydantic import AvroBaseModel
 
 a_datetime = datetime.datetime(2019, 10, 12, 17, 57, 42, tzinfo=datetime.timezone.utc)
+delta = datetime.timedelta(weeks=1, days=2, hours=3, minutes=4, seconds=5, milliseconds=6, microseconds=7)
 
 
 parametrize_base_model = pytest.mark.parametrize(
@@ -30,6 +31,7 @@ def test_logical_types(model_class: typing.Type[AvroModel], decorator: typing.Ca
         meeting_time_micro: types.TimeMicro
         release_datetime: datetime.datetime
         release_datetime_micro: types.DateTimeMicro
+        time_elapsed: datetime.timedelta
         event_uuid: uuid.UUID
 
     data = {
@@ -38,6 +40,7 @@ def test_logical_types(model_class: typing.Type[AvroModel], decorator: typing.Ca
         "meeting_time_micro": a_datetime.time(),
         "release_datetime": a_datetime,
         "release_datetime_micro": a_datetime,
+        "time_elapsed": delta,
         "event_uuid": uuid.UUID("09f00184-7721-4266-a955-21048a5cc235"),
     }
 
@@ -47,6 +50,7 @@ def test_logical_types(model_class: typing.Type[AvroModel], decorator: typing.Ca
         "meeting_time_micro": serialization.time_to_str(a_datetime.time()),
         "release_datetime": serialization.datetime_to_str(a_datetime),
         "release_datetime_micro": serialization.datetime_to_str(a_datetime),
+        "time_elapsed": 788645.006007,
         "event_uuid": "09f00184-7721-4266-a955-21048a5cc235",
     }
 

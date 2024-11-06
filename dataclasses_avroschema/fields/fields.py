@@ -8,6 +8,7 @@ import re
 import typing
 import uuid
 
+import fastavro
 from typing_extensions import get_args, get_origin
 
 from dataclasses_avroschema import (
@@ -60,6 +61,7 @@ __all__ = [
     "DateField",
     "DatetimeField",
     "DatetimeMicroField",
+    "TimedeltaField",
     "TimeMilliField",
     "TimeMicroField",
     "UUIDField",
@@ -655,6 +657,43 @@ class TimeMicroField(ImmutableField):
         datetime_object: datetime.datetime = fake.date_time(tzinfo=datetime.timezone.utc)
         datetime_object = datetime_object + datetime.timedelta(microseconds=random.randint(0, 999))
         return datetime_object.time()
+
+
+@dataclasses.dataclass
+class TimedeltaField(ImmutableField):
+    """
+    The timedelta logical represents a absolute length of time.
+
+    It annotates an Avro `double`, which stores a number of seconds to microsecond precision.
+    Note that is different than an Avro `duration`, which could represent different lengths of time depending on
+    when it is measured from.
+
+    This is not an official Avro logical type, so consumers will need to know how to handle it.
+    """
+
+    @property
+    def avro_type(self) -> typing.Dict:
+        return field_utils.LOGICAL_TIMEDELTA
+
+    def default_to_avro(self, value: datetime.timedelta) -> float:
+        return self.to_avro(value)
+
+    @classmethod
+    def from_avro(cls, value: float, *_) -> datetime.timedelta:
+        """Convert from a fastavro-supported type to a timedelta."""
+        return datetime.timedelta(seconds=value)
+
+    @classmethod
+    def to_avro(cls, value: datetime.timedelta, *_) -> float:
+        """Convert from a timedelta to a fastavro-supported type."""
+        return value.total_seconds()
+
+    def fake(self) -> datetime.timedelta:
+        return fake.time_delta(end_datetime=fake.date_time())
+
+
+fastavro.write.LOGICAL_WRITERS["double-dataclasses-avroschema-timedelta"] = TimedeltaField.to_avro
+fastavro.read.LOGICAL_READERS["double-dataclasses-avroschema-timedelta"] = TimedeltaField.from_avro
 
 
 @dataclasses.dataclass

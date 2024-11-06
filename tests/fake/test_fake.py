@@ -54,6 +54,7 @@ def test_fake_with_logical_types() -> None:
         meeting_time_micro: types.TimeMicro
         release_datetime: datetime.datetime
         release_datetime_micro: types.DateTimeMicro
+        time_elapsed: datetime.timedelta
         event_uuid: uuid.UUID
 
     assert isinstance(LogicalTypes.fake(), LogicalTypes)
