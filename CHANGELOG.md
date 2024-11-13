@@ -1,3 +1,9 @@
+## 0.65.1 (2024-11-13)
+
+### Fix
+
+- model generatation fixed when field name and field type hint clashes on arrays and maps (#795)
+
 ## 0.65.0 (2024-11-06)
 
 ### Feat
