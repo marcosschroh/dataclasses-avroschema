@@ -473,7 +473,7 @@ def schema_one_to_one_relationship() -> JsonDict:
 
 
 @pytest.fixture
-def schema_one_to_many_relationship_clashes_types() -> JsonDict:
+def schema_one_to_many_relationship_array_clashes_types() -> JsonDict:
     return {
         "type": "record",
         "name": "Message",
@@ -497,6 +497,66 @@ def schema_one_to_many_relationship_clashes_types() -> JsonDict:
                     },
                 ],
                 "default": None,
+            },
+            {
+                "name": "Sender",
+                "type": {
+                    "type": "array",
+                    "items": {
+                        "type": "record",
+                        "name": "Sender",
+                        "fields": [
+                            {"name": "company", "type": "string"},
+                            {"name": "delivered", "type": {"type": "long", "logicalType": "timestamp-millis"}},
+                        ],
+                    },
+                },
+                "default": [],
+            },
+        ],
+    }
+
+
+@pytest.fixture
+def schema_one_to_many_relationship_map_clashes_types() -> JsonDict:
+    return {
+        "type": "record",
+        "name": "Message",
+        "fields": [
+            {"name": "MessageBody", "type": "string"},
+            {
+                "name": "MessageHeader",
+                "type": [
+                    "null",
+                    {
+                        "type": "map",
+                        "name": "MessageHeader",
+                        "values": {
+                            "type": "record",
+                            "name": "MessageHeader",
+                            "fields": [
+                                {"name": "version", "type": "string"},
+                                {"name": "MessageType", "type": "string"},
+                            ],
+                        },
+                    },
+                ],
+                "default": None,
+            },
+            {
+                "name": "Sender",
+                "type": {
+                    "type": "map",
+                    "values": {
+                        "type": "record",
+                        "name": "Sender",
+                        "fields": [
+                            {"name": "company", "type": "string"},
+                            {"name": "delivered", "type": {"type": "long", "logicalType": "timestamp-millis"}},
+                        ],
+                    },
+                },
+                "default": {},
             },
         ],
     }
