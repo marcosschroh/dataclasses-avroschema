@@ -126,6 +126,11 @@ class FieldRepresentation:
             python_type = func(self.default)
             template_func = avro_to_python_utils.LOGICAL_TYPE_TEMPLATES[self.avro_type]
             default_repr = template_func(python_type)
+        elif self.avro_type == field_utils.NULL:
+            default_repr = "None"
+        elif self.avro_type == self.type_hint:
+            # this is when a Custom type is been reused which is probably an Enum
+            default_repr = f"{casefy.pascalcase(self.type_hint)}.{casefy.uppercase(self.default)}"
         else:
             default_repr = str(self.default)
 
