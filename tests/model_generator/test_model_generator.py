@@ -246,6 +246,7 @@ class User(AvroModel):
     superheros: Superheros = Superheros.BATMAN
     cars: typing.Optional[Cars] = None
     limit_type: typing.Optional[LimitTypes] = LimitTypes.MIN_LIMIT
+    another_limit_type: LimitTypes = LimitTypes.EXACT_LIMIT
 """
     model_generator = ModelGenerator()
     result = model_generator.render(schema=schema_with_enum_types)

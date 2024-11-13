@@ -269,6 +269,11 @@ def schema_with_enum_types() -> Dict:
                 ],
                 "default": "MIN_LIMIT",
             },
+            {
+                "name": "another_limit_type",
+                "type": "LimitTypes",
+                "default": "EXACT_LIMIT",
+            },
         ],
     }
 
