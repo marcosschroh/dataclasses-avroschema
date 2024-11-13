@@ -1,0 +1,51 @@
+{
+  "type": "record",
+  "name": "Message",
+  "fields": [
+    {
+      "name": "MessageBody",
+      "type": "string"
+    },
+    {
+      "name": "MessageHeader",
+      "type": [
+          "null",
+          {
+          "type": "map",
+          "values": {
+            "type": "record",
+            "name": "MessageHeader",
+            "fields": [
+              {
+                "name": "version",
+                "type": "string"
+              },
+              {
+                "name": "MessageType",
+                "type": "string"
+              }
+            ]
+          },
+          "name": "MessageHeader"
+        }
+      ],
+      "default": null
+    },
+    {
+      "name": "Sender",
+      "type": {
+          "type": "array",
+          "name": "Sender",
+          "items": {
+              "type": "record",
+              "name": "Sender",
+              "fields": [
+                  {"name": "company", "type": "string"},
+                  {"name": "delivered", "type": {"type": "long", "logicalType": "timestamp-millis"}}
+              ]
+          }
+      },
+      "default": []
+    }
+  ]
+}

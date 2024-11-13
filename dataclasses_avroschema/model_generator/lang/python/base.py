@@ -453,13 +453,19 @@ class BaseGenerator:
             type_hint = self.parse_logical_type(field=field)
         elif isinstance(avro_type, dict):
             type_hint = ""
-            children = [self.render_field(field=avro_type, model_name=model_name, parent_field_name=name)]
+            children = [
+                self.render_field(field=avro_type, model_name=model_name, parent_field_name=name or parent_field_name)
+            ]
         elif isinstance(avro_type, list):
             type_hint, children = self.parse_union(field_types=avro_type, model_name=model_name, parent_field_name=name)
         elif avro_type == field_utils.ARRAY:
-            type_hint, children = self.parse_array(field=field, model_name=model_name, parent_field_name=name)
+            type_hint, children = self.parse_array(
+                field=field, model_name=model_name, parent_field_name=name or parent_field_name
+            )
         elif avro_type == field_utils.MAP:
-            type_hint, children = self.parse_map(field=field, model_name=model_name, parent_field_name=name)
+            type_hint, children = self.parse_map(
+                field=field, model_name=model_name, parent_field_name=name or parent_field_name
+            )
         elif avro_type == field_utils.ENUM:
             type_hint = self.parse_enum(field=field)
             # We must set the default Enums type level default to dataclasses.MISSING

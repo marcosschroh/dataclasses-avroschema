@@ -30,6 +30,22 @@
           }
         ],
         "default": null
+      },
+      {
+        "name": "Sender",
+        "type": {
+            "type": "array",
+            "name": "Sender",
+            "items": {
+                "type": "record",
+                "name": "Sender",
+                "fields": [
+                    {"name": "company", "type": "string"},
+                    {"name": "delivered", "type": {"type": "long", "logicalType": "timestamp-millis"}}
+                ]
+            }
+        },
+        "default": []
       }
     ]
   }

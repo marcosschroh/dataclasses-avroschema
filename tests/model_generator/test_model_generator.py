@@ -469,12 +469,13 @@ class User(AvroModel):
     assert result.strip() == expected_result.strip()
 
 
-def test_schema_one_to_many_relationship_clashes_types(
-    schema_one_to_many_relationship_clashes_types: types.JsonDict,
+def test_schema_one_to_many_relationship_array_clashes_types(
+    schema_one_to_many_relationship_array_clashes_types: types.JsonDict,
 ) -> None:
     expected_result = """
 from dataclasses_avroschema import AvroModel
 import dataclasses
+import datetime
 import typing
 
 
@@ -487,12 +488,58 @@ _MessageHeader = MessageHeader
 
 
 @dataclasses.dataclass
+class Sender(AvroModel):
+    company: str
+    delivered: datetime.datetime
+
+_Sender = Sender
+
+
+@dataclasses.dataclass
 class Message(AvroModel):
     MessageBody: str
     MessageHeader: typing.Optional[typing.List[_MessageHeader]] = None
+    Sender: typing.List[_Sender] = dataclasses.field(default_factory=list)
 """
     model_generator = ModelGenerator()
-    result = model_generator.render(schema=schema_one_to_many_relationship_clashes_types)
+    result = model_generator.render(schema=schema_one_to_many_relationship_array_clashes_types)
+    assert result.strip() == expected_result.strip()
+
+
+def test_schema_one_to_many_relationship_map_clashes_types(
+    schema_one_to_many_relationship_map_clashes_types: types.JsonDict,
+) -> None:
+    expected_result = """
+from dataclasses_avroschema import AvroModel
+import dataclasses
+import datetime
+import typing
+
+
+@dataclasses.dataclass
+class MessageHeader(AvroModel):
+    version: str
+    MessageType: str
+
+_MessageHeader = MessageHeader
+
+
+@dataclasses.dataclass
+class Sender(AvroModel):
+    company: str
+    delivered: datetime.datetime
+
+_Sender = Sender
+
+
+@dataclasses.dataclass
+class Message(AvroModel):
+    MessageBody: str
+    MessageHeader: typing.Optional[typing.Dict[str, _MessageHeader]] = None
+    Sender: typing.Dict[str, _Sender] = dataclasses.field(default_factory=dict)
+"""
+    model_generator = ModelGenerator()
+    result = model_generator.render(schema=schema_one_to_many_relationship_map_clashes_types)
     assert result.strip() == expected_result.strip()
 
 
