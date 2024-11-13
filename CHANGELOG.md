@@ -1,3 +1,9 @@
+## 0.65.2 (2024-11-13)
+
+### Fix
+
+- generate proper default values when reusing Enums types (#796)
+
 ## 0.65.1 (2024-11-13)
 
 ### Fix
