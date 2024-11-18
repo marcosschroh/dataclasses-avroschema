@@ -82,13 +82,16 @@ def test_logical_union(model_class: typing.Type[AvroModel], decorator: typing.Ca
         "Some Unions"
 
         logical_union: typing.Union[datetime.datetime, datetime.date, uuid.UUID]
+        logical_union_timedelta: typing.Union[datetime.timedelta, None]
 
     data = {
         "logical_union": a_datetime.date(),
+        "logical_union_timedelta": None,
     }
 
     data_json = {
         "logical_union": serialization.date_to_str(a_datetime.date()),
+        "logical_union_timedelta": None,
     }
 
     logical_types = UnionSchema(**data)
