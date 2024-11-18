@@ -1,3 +1,9 @@
+## 0.65.3 (2024-11-18)
+
+### Fix
+
+- **TimedeltaField**: fix timedelta fastavro serialization so it doesn't break in union types (#797)
+
 ## 0.65.2 (2024-11-13)
 
 ### Fix
