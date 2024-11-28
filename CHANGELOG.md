@@ -1,3 +1,9 @@
+## 0.65.4 (2024-11-28)
+
+### Fix
+
+- Model and Parser protocols added (#801)
+
 ## 0.65.3 (2024-11-18)
 
 ### Fix
