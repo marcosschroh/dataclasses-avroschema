@@ -9,8 +9,23 @@ from dataclasses_avroschema.fields.base import Field
 from dataclasses_avroschema.fields.fields import AvroField
 from dataclasses_avroschema.parser import Parser
 
+if typing.TYPE_CHECKING:
+    from .main import AvroBaseModel  # pragma: no cover
+
 
 class PydanticParser(Parser):
+    def __init__(
+        self,
+        type,
+        parent,
+    ):
+        super().__init__(type, parent)
+        self.type: typing.Type["AvroBaseModel"]
+        self.parent: typing.Type["AvroBaseModel"]
+
+    def generate_dataclass(self) -> typing.Type:
+        return self.type
+
     @staticmethod
     def get_field_metadata(field_info: FieldInfo) -> dict[str, typing.Any]:
         metadata: dict[str, typing.Any] = (

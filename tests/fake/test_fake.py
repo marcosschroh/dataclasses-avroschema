@@ -7,15 +7,15 @@ import uuid
 from dataclasses_avroschema import AvroModel, types
 
 
-def test_fake_primitive_types(user_dataclass: typing.Type) -> None:
+def test_fake_primitive_types(user_dataclass: typing.Type[AvroModel]) -> None:
     assert isinstance(user_dataclass.fake(), user_dataclass)
 
 
-def test_fake_complex_types(user_advance_dataclass: typing.Type) -> None:
+def test_fake_complex_types(user_advance_dataclass: typing.Type[AvroModel]) -> None:
     assert isinstance(user_advance_dataclass.fake(), user_advance_dataclass)
 
 
-def test_fake_with_user_data(user_advance_dataclass: typing.Type) -> None:
+def test_fake_with_user_data(user_advance_dataclass: typing.Type[AvroModel]) -> None:
     """
     Creates a fake with data provided by the end user
 
@@ -80,8 +80,8 @@ def test_fake_union() -> None:
         first_union: typing.Union[str, int]
         logical_union: typing.Union[datetime.datetime, datetime.date, uuid.UUID]
         lake_trip: typing.Union[Bus, Car]
-        river_trip: typing.Optional[typing.Union[Bus, Car]] = None
         mountain_trip: typing.Union[Bus, Car] = dataclasses.field(default_factory=lambda: Bus(engine_name="honda"))
+        river_trip: typing.Optional[typing.Union[Bus, Car]] = None
 
     assert isinstance(UnionSchema.fake(), UnionSchema)
 

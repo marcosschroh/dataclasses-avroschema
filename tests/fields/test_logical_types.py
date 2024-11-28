@@ -311,7 +311,6 @@ def test_decimal_type():
         ],
         "default": None,
     }
-
     assert expected == field.to_dict()
 
     # Validate 0 <= scale <= precision

@@ -1,4 +1,4 @@
-from typing import Any, Dict, Type, TypeVar
+from typing import Any, Dict, Type
 
 from fastavro.validation import validate
 
@@ -13,16 +13,10 @@ try:
 except ImportError as ex:  # pragma: no cover
     raise Exception("pydantic must be installed in order to use AvroBaseModel") from ex  # pragma: no cover
 
-CT = TypeVar("CT", bound="AvroBaseModel")
-
 
 class AvroBaseModel(BaseModel, AvroModel):  # type: ignore
     @classmethod
-    def generate_dataclass(cls: Type[CT]) -> Type[CT]:
-        return cls
-
-    @classmethod
-    def json_schema(cls: Type[CT], *args: Any, **kwargs: Any) -> str:
+    def json_schema(cls: Type["AvroBaseModel"], *args: Any, **kwargs: Any) -> str:
         return cls.schema_json(*args, **kwargs)
 
     def _standardize_type(self) -> Dict[str, Any]:
@@ -79,7 +73,7 @@ class AvroBaseModel(BaseModel, AvroModel):  # type: ignore
         return validate(self.asdict(), schema)
 
     @classmethod
-    def fake(cls: Type[CT], **data: Any) -> CT:
+    def fake(cls: Type["AvroBaseModel"], **data: Any) -> "AvroBaseModel":
         """
         Creates a fake instance of the model.
 
@@ -96,5 +90,5 @@ class AvroBaseModel(BaseModel, AvroModel):  # type: ignore
         return cls.parse_obj(payload)
 
     @classmethod
-    def _generate_parser(cls: Type[CT]) -> PydanticV1Parser:
-        return PydanticV1Parser(type=cls._klass, metadata=cls.get_metadata(), parent=cls._parent or cls)
+    def _generate_parser(cls: Type["AvroBaseModel"]) -> PydanticV1Parser:
+        return PydanticV1Parser(type=cls, parent=cls._parent or cls)

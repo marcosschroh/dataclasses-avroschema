@@ -2,7 +2,7 @@ import dataclasses
 import inspect
 import json
 from collections import OrderedDict
-from typing import Any, Dict, List, Optional, Set, Type, TypeVar, Union
+from typing import Any, Dict, List, Optional, Set, Type, Union
 
 from dacite import Config, from_dict
 from fastavro.validation import validate
@@ -12,10 +12,7 @@ from .dacite_config import generate_dacite_config
 from .fields.base import Field
 from .parser import Parser
 from .types import JsonDict
-from .utils import SchemaMetadata, UserDefinedType, standardize_custom_type
-
-CT = TypeVar("CT", bound="AvroModel")
-
+from .utils import UserDefinedType, standardize_custom_type
 
 _schemas_cache: Dict["Type[AvroModel]", dict] = {}
 _dacite_config_cache: Dict["Type[AvroModel]", Config] = {}
@@ -23,30 +20,12 @@ _dacite_config_cache: Dict["Type[AvroModel]", Config] = {}
 
 class AvroModel:
     _parser: Optional[Parser] = None
-    _klass: Optional[Type] = None
-    _metadata: Optional[SchemaMetadata] = None
-    _parent: Any = None
+    _parent: Optional[Type["AvroModel"]] = None
     _user_defined_types: Set[UserDefinedType] = set()
     _rendered_schema: OrderedDict = dataclasses.field(default_factory=OrderedDict)
 
     @classmethod
-    def generate_dataclass(cls: "Type[CT]") -> "Type[CT]":
-        if cls is AvroModel:
-            raise AttributeError("Schema generation must be called on a subclass of AvroModel, not AvroModel itself.")
-
-        if dataclasses.is_dataclass(cls):
-            return cls  # type: ignore
-        return dataclasses.dataclass(cls)
-
-    @classmethod
-    def get_metadata(cls: "Type[CT]") -> SchemaMetadata:
-        if cls._metadata is None:
-            meta = getattr(cls._klass, "Meta", type)
-            cls._metadata = SchemaMetadata.create(meta)
-        return cls._metadata
-
-    @classmethod
-    def get_fullname(cls) -> str:
+    def get_fullname(cls: Type["AvroModel"]) -> str:
         """
         Fullname is composed of two parts: a name and a namespace
         separated by a dot. A namespace is a dot-separated sequence of such names.
@@ -56,26 +35,25 @@ class AvroModel:
         """
         # we need to make sure that the schema has been generated
         cls.generate_schema()
-        metadata = cls.get_metadata()
+        assert cls._parser
+        metadata = cls._parser.metadata
 
         if metadata.namespace:
             # if the current record has a namespace we use it
             return f"{metadata.namespace}.{cls.__name__}"
         elif cls._parent is not None:
             # if the record has a parent then we try to use the parent namespace
-            parent_metadata = cls._parent.get_metadata()
+            assert cls._parent._parser
+            parent_metadata = cls._parent._parser.metadata
             if parent_metadata.namespace:
                 return f"{parent_metadata.namespace}.{cls.__name__}"
         return cls.__name__
 
     @classmethod
     def generate_schema(
-        cls: "Type[CT]", schema_type: serialization.SerializationType = "avro"
+        cls: Type["AvroModel"], schema_type: serialization.SerializationType = "avro"
     ) -> Optional[OrderedDict]:
         if cls._parser is None:
-            # Generate dataclass and metadata
-            cls._klass = cls.generate_dataclass()
-
             # let's live open the possibility to define different
             # schema definitions like json
             if schema_type == "avro":
@@ -98,17 +76,17 @@ class AvroModel:
         return {user_type.model.__name__: user_type.model for user_type in cls._user_defined_types}
 
     @classmethod
-    def _generate_parser(cls: "Type[CT]") -> Parser:
-        return Parser(type=cls._klass, metadata=cls.get_metadata(), parent=cls._parent or cls)
+    def _generate_parser(cls: Type["AvroModel"]) -> Parser:
+        return Parser(type=cls, parent=cls._parent or cls)
 
     @classmethod
-    def avro_schema(cls: "Type[CT]", case_type: Optional[str] = None, **kwargs) -> str:
+    def avro_schema(cls: Type["AvroModel"], case_type: Optional[str] = None, **kwargs) -> str:
         return json.dumps(cls.avro_schema_to_python(case_type=case_type), **kwargs)
 
     @classmethod
     def avro_schema_to_python(
-        cls: "Type[CT]",
-        parent: Optional["CT"] = None,
+        cls: Type["AvroModel"],
+        parent: Optional[Type["AvroModel"]] = None,
         case_type: Optional[str] = None,
     ) -> Dict[str, Any]:
         if parent is not None:
@@ -135,13 +113,13 @@ class AvroModel:
         return json.loads(json.dumps(avro_schema))
 
     @classmethod
-    def get_fields(cls: "Type[CT]") -> List[Field]:
+    def get_fields(cls: Type["AvroModel"]) -> List[Field]:
         if cls._parser is None:
             cls.generate_schema()
         return cls._parser.fields  # type: ignore
 
     @classmethod
-    def _reset_parser(cls: "Type[CT]") -> None:
+    def _reset_parser(cls: Type["AvroModel"]) -> None:
         """
         Reset all the values to original state.
         """
@@ -151,12 +129,12 @@ class AvroModel:
 
     @classmethod
     def deserialize(
-        cls: "Type[CT]",
+        cls: Type["AvroModel"],
         data: bytes,
         serialization_type: serialization.SerializationType = "avro",
         create_instance: bool = True,
-        writer_schema: Optional[Union[JsonDict, "Type[CT]"]] = None,
-    ) -> Union[JsonDict, CT]:
+        writer_schema: Optional[Union[JsonDict, Type["AvroModel"]]] = None,
+    ) -> Union[JsonDict, "AvroModel"]:
         payload = cls.deserialize_to_python(data, serialization_type, writer_schema)
         obj = cls.parse_obj(payload)
 
@@ -166,10 +144,10 @@ class AvroModel:
 
     @classmethod
     def deserialize_to_python(  # This can be used straight with a pydantic dataclass to bypass dacite
-        cls: "Type[CT]",
+        cls: Type["AvroModel"],
         data: bytes,
         serialization_type: serialization.SerializationType = "avro",
-        writer_schema: Union[JsonDict, "Type[CT]", None] = None,
+        writer_schema: Union[JsonDict, Type["AvroModel"], None] = None,
     ) -> dict:
         if inspect.isclass(writer_schema) and issubclass(writer_schema, AvroModel):
             # mypy does not understand redefinitions
@@ -188,7 +166,7 @@ class AvroModel:
         )
 
     @classmethod
-    def parse_obj(cls: "Type[CT]", data: Dict) -> CT:
+    def parse_obj(cls: Type["AvroModel"], data: Dict) -> "AvroModel":
         config = _dacite_config_cache.get(cls)
         if config is None:
             config = generate_dacite_config(cls)
@@ -196,7 +174,7 @@ class AvroModel:
         return from_dict(data_class=cls, data=data, config=config)
 
     @classmethod
-    def fake(cls: "Type[CT]", **data: Any) -> CT:
+    def fake(cls: Type["AvroModel"], **data: Any) -> "AvroModel":
         """
         Creates a fake instance of the model.
 
@@ -215,7 +193,7 @@ class AvroModel:
             field.name: standardize_custom_type(
                 field_name=field.name, value=getattr(self, field.name), model=self, base_class=AvroModel
             )
-            for field in dataclasses.fields(self)  # type: ignore
+            for field in dataclasses.fields(self)  # type: ignore[arg-type]
         }
 
     def serialize(self, serialization_type: serialization.SerializationType = "avro") -> bytes:

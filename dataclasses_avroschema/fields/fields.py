@@ -846,7 +846,10 @@ class RecordField(Field):
         meta = getattr(self.type, "Meta", type)
         metadata = utils.SchemaMetadata.create(meta)
 
-        alias = self.parent._metadata.get_alias_nested_items(self.name) or metadata.get_alias_nested_items(self.name)  # type: ignore  # noqa E501
+        if self.parent is not None and self.parent._parser is not None:
+            alias = self.parent._parser.metadata.get_alias_nested_items(self.name)
+        else:
+            alias = metadata.get_alias_nested_items(self.name)  # type: ignore  # noqa E501
 
         # The priority for the schema name
         # 1. Check if exists an alias_nested_items in parent llass or Meta class of own model

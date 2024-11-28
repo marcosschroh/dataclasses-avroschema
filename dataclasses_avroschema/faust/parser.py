@@ -5,8 +5,20 @@ from dataclasses_avroschema.fields.base import Field
 from dataclasses_avroschema.fields.fields import AvroField
 from dataclasses_avroschema.parser import Parser
 
+if typing.TYPE_CHECKING:
+    from .main import AvroRecord  # pragma: no cover
+
 
 class FaustParser(Parser):
+    def __init__(
+        self,
+        type,
+        parent,
+    ):
+        super().__init__(type, parent)
+        self.type: typing.Type["AvroRecord"]
+        self.parent: typing.Type["AvroRecord"]
+
     def parse_fields(self, exclude: typing.List) -> typing.List[Field]:
         schema_fields = []
 

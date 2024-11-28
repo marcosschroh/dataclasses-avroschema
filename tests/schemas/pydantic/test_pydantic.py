@@ -336,15 +336,16 @@ def test_pydantic_record_schema_with_unions_type(union_type_schema):
             namespace = "trip"
 
     class UnionSchema(AvroBaseModel):
-        "Some Unions"
-
         first_union: typing.Union[str, int]
         logical_union: typing.Union[datetime.datetime, datetime.date, datetime.timedelta, uuid.UUID]
         lake_trip: typing.Union[Bus, Car]
-        river_trip: typing.Union[Bus, Car] = None
+        river_trip: typing.Union[None, Bus, Car] = None
         mountain_trip: typing.Union[Bus, Car] = Field(default_factory=lambda: Bus(engine_name="honda"))
-        trip_distance: typing.Union[int, TripDistance] = None
+        trip_distance: typing.Union[None, int, TripDistance] = None
         optional_distance: typing.Optional[TripDistance] = None
+
+        class Meta:
+            schema_doc = "Some Unions"
 
     assert UnionSchema.avro_schema() == json.dumps(union_type_schema)
 
@@ -560,7 +561,7 @@ def test_fake(color_enum) -> None:
 
     # just calling fake is enougt to know that a proper instance was created,
     # otherwise a pydantic validation should have been raised
-    User.fake()
+    assert User.fake()
 
 
 def test_exclude_field() -> None:

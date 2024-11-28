@@ -53,16 +53,16 @@ def generate_dacite_config(model: typing.Type["AvroModel"]) -> Config:
     """
     Get the default config for dacite and always include the self reference
     """
-    # We need to make sure that the `avro schemas` has been generated, otherwise cls._klass is empty
+    # We need to make sure that the `avro schemas` has been generated, otherwise cls._dataclass is empty
     # It won't affect the performance because the rendered schema will be store in model._rendered_schema
     model.generate_schema()
-    dacite_user_config = model._metadata.dacite_config  # type: ignore
+    dacite_user_config = model._parser.metadata.dacite_config  # type: ignore
 
     dacite_config = {
         "check_types": False,
         "cast": [],
         "forward_references": {
-            model._klass.__name__: model._klass,  # type: ignore
+            model._parser.dataclass.__name__: model._parser.dataclass,  # type: ignore
         },
         "type_hooks": {
             datetime: parse_datetime,
