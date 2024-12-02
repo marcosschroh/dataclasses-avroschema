@@ -15,7 +15,7 @@ parametrize_base_model = pytest.mark.parametrize(
         (AvroModel, dataclasses.dataclass),
         (AvroBaseModel, lambda f: f),
         (AvroBaseModelV1, lambda f: f),
-        (AvroRecord, lambda f: f),
+        (AvroRecord, dataclasses.dataclass),
     ],
 )
 
@@ -360,3 +360,22 @@ def test_union_with_multiple_records(model_class: typing.Type[AvroModel], decora
 
     assert event_serialized == b"\x02\x1ehello Event two\x10EventTwo\xac\x02"
     assert EventManager.deserialize(event_serialized) == event
+
+
+@parametrize_base_model
+def test_inheritance(model_class: typing.Type[AvroModel], decorator: typing.Callable) -> None:
+    @decorator
+    class A(model_class):
+        a: int
+
+    @decorator
+    class Parent(model_class):
+        p: A
+
+    @decorator
+    class Child(Parent):
+        c: int
+
+    child = Child(p=A(a=1), c=1)
+    ser = child.serialize()
+    assert Child.deserialize(ser) == child

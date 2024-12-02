@@ -100,16 +100,24 @@ def standardize_custom_type(
 ) -> typing.Any:
     if isinstance(value, dict):
         return {
-            k: standardize_custom_type(field_name=field_name, value=v, model=model, base_class=base_class)
+            k: standardize_custom_type(
+                field_name=field_name, value=v, model=model, base_class=base_class, include_type=include_type
+            )
             for k, v in value.items()
         }
     elif isinstance(value, list):
         return [
-            standardize_custom_type(field_name=field_name, value=v, model=model, base_class=base_class) for v in value
+            standardize_custom_type(
+                field_name=field_name, value=v, model=model, base_class=base_class, include_type=include_type
+            )
+            for v in value
         ]
     elif isinstance(value, tuple):
         return tuple(
-            standardize_custom_type(field_name=field_name, value=v, model=model, base_class=base_class) for v in value
+            standardize_custom_type(
+                field_name=field_name, value=v, model=model, base_class=base_class, include_type=include_type
+            )
+            for v in value
         )
     elif isinstance(value, enum.Enum):
         return value.value
@@ -117,11 +125,17 @@ def standardize_custom_type(
         if is_faust_record(type(value)):  # type: ignore[arg-type]
             # we need to do a trick because we can not overrride asdict from faust..
             # once the function interface is introduced we can remove this check
-            asdict = value.standardize_type()  # type: ignore
+            asdict = value.standardize_type(include_type=False)  # type: ignore
         else:
             asdict = value.asdict()
 
-        if is_union(model.__annotations__[field_name]) and include_type:
+        annotations = model.__annotations__
+        # This is a hack to get the annotations from the parent class
+        # https://github.com/marcosschroh/dataclasses-avroschema/issues/800
+        if model.__class__.mro()[1] != base_class:
+            annotations.update(typing.get_type_hints(model.__class__))
+
+        if is_union(annotations[field_name]) and include_type:
             asdict["-type"] = value.get_fullname()
         return asdict
 
