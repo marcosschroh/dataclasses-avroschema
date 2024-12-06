@@ -1,3 +1,9 @@
+## 0.65.6 (2024-12-06)
+
+### Fix
+
+- make sure that metadata is not deleted when schemas are calculated more than once. Closes #799 (#815)
+
 ## 0.65.5 (2024-12-02)
 
 ### Fix
