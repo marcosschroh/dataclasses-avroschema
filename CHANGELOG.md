@@ -1,3 +1,9 @@
+## 0.65.5 (2024-12-02)
+
+### Fix
+
+- serialization whit schema inheritance. Closes #800 (#810)
+
 ## 0.65.4 (2024-11-28)
 
 ### Fix

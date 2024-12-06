@@ -6,10 +6,16 @@ import pytest
 from dataclasses_avroschema import AvroModel
 from dataclasses_avroschema.faust import AvroRecord
 from dataclasses_avroschema.pydantic import AvroBaseModel
+from dataclasses_avroschema.pydantic.v1 import AvroBaseModel as AvroBaseModelV1
 
 parametrize_base_model = pytest.mark.parametrize(
     "model_class, decorator",
-    [(AvroModel, dataclasses.dataclass), (AvroBaseModel, lambda f: f), (AvroRecord, lambda f: f)],
+    [
+        (AvroModel, dataclasses.dataclass),
+        (AvroBaseModel, lambda f: f),
+        (AvroBaseModelV1, lambda f: f),
+        (AvroRecord, lambda f: f),
+    ],
 )
 
 
@@ -66,7 +72,13 @@ def test_self_one_to_one_relationship(model_class: typing.Type[AvroModel], decor
 
 
 # don't test AvroBaseModel due to typing incompatibilites with Pydantic
-@pytest.mark.parametrize("model_class, decorator", [(AvroModel, dataclasses.dataclass)])
+@pytest.mark.parametrize(
+    "model_class, decorator",
+    [
+        (AvroModel, dataclasses.dataclass),
+        (AvroRecord, lambda f: f),
+    ],
+)
 def test_self_one_to_many_relationship(model_class: typing.Type[AvroModel], decorator: typing.Callable):
     """
     Test self relationship one-to-many serialization
@@ -78,7 +90,7 @@ def test_self_one_to_many_relationship(model_class: typing.Type[AvroModel], deco
 
         name: str
         age: int
-        friends: typing.List[typing.Type["User"]]
+        friends: typing.Optional[typing.List[typing.Type["User"]]] = None
 
     data_friend = {"name": "john", "age": 20, "friends": []}
     friend = User(**data_friend)
@@ -96,7 +108,7 @@ def test_self_one_to_many_relationship(model_class: typing.Type[AvroModel], deco
         "friends": [data_friend],
     }
 
-    avro_binary = b"\x08juan(\x02\x08john(\x00\x00"
+    avro_binary = b"\x08juan(\x02\x02\x08john(\x02\x00\x00"
     # avro_json = b'{"name": "juan", "age": 20, "friends": [{"name": "john", "age": 20, "friends": []}]}'
 
     assert user.serialize() == avro_binary
@@ -115,8 +127,13 @@ def test_self_one_to_many_relationship(model_class: typing.Type[AvroModel], deco
     assert user.to_dict() == expected
 
 
-# don't test AvroBaseModel due to typing incompatibilites with Pydantic
-@pytest.mark.parametrize("model_class, decorator", [(AvroModel, dataclasses.dataclass)])
+@pytest.mark.parametrize(
+    "model_class, decorator",
+    [
+        (AvroModel, dataclasses.dataclass),
+        (AvroRecord, lambda f: f),
+    ],
+)
 def test_self_one_to_many_map_relationship(model_class: typing.Type[AvroModel], decorator: typing.Callable):
     """
     Test self relationship one-to-many Map serialization
@@ -128,7 +145,7 @@ def test_self_one_to_many_map_relationship(model_class: typing.Type[AvroModel], 
 
         name: str
         age: int
-        friends: typing.Dict[str, typing.Type["User"]] = None
+        friends: typing.Optional[typing.Dict[str, typing.Type["User"]]] = None
 
     data_friend = {
         "name": "john",
@@ -144,7 +161,7 @@ def test_self_one_to_many_map_relationship(model_class: typing.Type[AvroModel], 
     }
     user = User(**data_user)
 
-    avro_binary = b"\x08juan(\x02\x10a_friend\x08john(\x00\x00"
+    avro_binary = b"\x08juan(\x02\x02\x10a_friend\x08john(\x02\x00\x00"
     # avro_json = b'{"name": "juan", "age": 20, "friends": {"a_friend": {"name": "john", "age": 20, "friends": {}}}}'
 
     expected = {
