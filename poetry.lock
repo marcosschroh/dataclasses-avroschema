@@ -307,13 +307,13 @@ dev = ["freezegun (>=1.0,<2.0)", "pytest (>=6.0)", "pytest-cov"]
 
 [[package]]
 name = "casefy"
-version = "0.1.7"
+version = "1.0.0"
 description = "Utilities for string case conversion."
 optional = false
 python-versions = ">=3.6"
 files = [
-    {file = "casefy-0.1.7-py3-none-any.whl", hash = "sha256:ab05ff1c67f2a8e62d9f8986fa9a849416d61ac5413ec57d1f827b4f36589cf6"},
-    {file = "casefy-0.1.7.tar.gz", hash = "sha256:6accce985a64b9edb2a610a29ac489d78fac80e52ff8f2d137e294f2f92b8027"},
+    {file = "casefy-1.0.0-py3-none-any.whl", hash = "sha256:c89f96fb0fbd13691073b7a65c1e668e81453247d647479a3db105e86d7b0df9"},
+    {file = "casefy-1.0.0.tar.gz", hash = "sha256:bc99428475c2089c5f6a21297b4cfe4e83dff132cf3bb06655ddcb90632af1ed"},
 ]
 
 [[package]]
@@ -2710,4 +2710,4 @@ pydantic = ["pydantic"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "9c234d148577adaeea12c0fc35c526c6d5c4a515f9781a9a999c4b0d135e8aab"
+content-hash = "8a99d0a4899117dd271b957f26e5170c291295692cbaf3f3b3644c94befb8bb4"
