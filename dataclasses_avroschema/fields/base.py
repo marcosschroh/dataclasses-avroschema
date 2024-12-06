@@ -32,10 +32,17 @@ class Field:
     metadata: typing.Dict = dataclasses.field(default_factory=dict)
     model_metadata: utils.SchemaMetadata = dataclasses.field(default_factory=utils.SchemaMetadata)
     extra_default_types_allowed: typing.Tuple = dataclasses.field(default_factory=tuple)
+    # This is the metadata that the end user has defined in the dataclasses.Field or pydantic.Field
+    metadata_to_exclude: typing.List[str] = dataclasses.field(
+        default_factory=lambda: [
+            "exclude_default",
+            "inner_name",
+        ]
+    )
 
     def __post_init__(self) -> None:
-        self.exclude_default = self.metadata.pop("exclude_default", False)  # type: ignore
-        self.inner_name = self.metadata.pop("inner_name", None)  # type: ignore
+        self.exclude_default = self.metadata.get("exclude_default", False)  # type: ignore
+        self.inner_name = self.metadata.get("inner_name", None)  # type: ignore
 
     @property
     def avro_type(self) -> typing.Union[str, typing.Dict]:  # type: ignore
@@ -53,7 +60,7 @@ class Field:
         return inflection.singularize(name)
 
     def get_metadata(self) -> typing.List[typing.Tuple[str, str]]:
-        return [(name, value) for name, value in self.metadata.items()]
+        return [(name, value) for name, value in self.metadata.items() if name not in self.metadata_to_exclude]
 
     def render(self) -> OrderedDict:
         """

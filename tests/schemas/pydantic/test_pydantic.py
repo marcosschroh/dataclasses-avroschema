@@ -59,6 +59,9 @@ def test_exclude_default_from_schema(user_avro_json):
             schema_doc = False
 
     assert User.avro_schema() == json.dumps(user_avro_json)
+    # We execute again the test to make sure that that the result is the same
+    # related to https://github.com/marcosschroh/dataclasses-avroschema/issues/799
+    assert User.avro_schema() == json.dumps(user_avro_json)
 
 
 def test_pydantic_record_schema_with_metadata():
