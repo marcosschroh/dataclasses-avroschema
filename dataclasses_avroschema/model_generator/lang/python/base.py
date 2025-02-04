@@ -111,9 +111,14 @@ class FieldRepresentation:
         elif isinstance(self.default, (dict, list)):
             # Then is can be a regular dict as default or a record
             if self.default:
-                if self.avro_type not in field_utils.AVRO_TYPES:
+                if self.avro_type not in field_utils.AVRO_TYPES or self.avro_type == field_utils.RECORD:
                     # Try to get the last part in case that the type is namespaced `types.bus_type.Bus`
                     field_type = self.avro_type.split(".")[-1]
+
+                    if field_type == field_utils.RECORD:
+                        # Then it is a record defined by the first time with a default value
+                        field_type = self.type_hint
+
                     default_repr = templates.instance_template.safe_substitute(
                         type=field_type, properties=f"**{self.default}"
                     )

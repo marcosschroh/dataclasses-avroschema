@@ -26,8 +26,9 @@ class User(pydantic.BaseModel):
     age: int
     addresses: typing.Dict[str, Address]
     crazy_union: typing.Union[str, typing.Dict[str, Address]]
+    default_address: Address = pydantic.Field(default_factory=lambda: Address(**{'street': 'Main Street', 'street_number': 10}))
     optional_addresses: typing.Optional[typing.Dict[str, Address]] = None
-"""
+"""  # noqa: E501
     model_generator = ModelGenerator()
     result = model_generator.render(schema=schema_one_to_many_map_relationship, model_type=ModelType.PYDANTIC.value)
     assert result.strip() == expected_result.strip()
@@ -78,8 +79,9 @@ class User(AvroBaseModel):
     age: int
     addresses: typing.Dict[str, Address]
     crazy_union: typing.Union[str, typing.Dict[str, Address]]
+    default_address: Address = pydantic.Field(default_factory=lambda: Address(**{'street': 'Main Street', 'street_number': 10}))
     optional_addresses: typing.Optional[typing.Dict[str, Address]] = None
-"""
+"""  # noqa: E501
     model_generator = ModelGenerator()
     result = model_generator.render(schema=schema_one_to_many_map_relationship, model_type=ModelType.AVRODANTIC.value)
     assert result.strip() == expected_result.strip()

@@ -459,6 +459,7 @@ def schema_one_to_one_relationship() -> JsonDict:
                     ],
                     "doc": "An Address",
                 },
+                "default": {"street": "Main Street", "street_number": 10},
             },
             {
                 "name": "extra_address",
@@ -832,6 +833,11 @@ def schema_one_to_many_map_relationship() -> JsonDict:
                     "string",
                     {"type": "map", "values": "Address", "name": "optional_address"},
                 ],
+            },
+            {
+                "name": "default_address",
+                "type": "Address",
+                "default": {"street": "Main Street", "street_number": 10},
             },
             {
                 "name": "optional_addresses",
