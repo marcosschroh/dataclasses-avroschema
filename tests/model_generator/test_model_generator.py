@@ -460,10 +460,15 @@ class Address(AvroModel):
 class User(AvroModel):
     name: str
     age: int
-    address: Address
     extra_address: Address
     crazy_union: typing.Union[str, Address]
+    address: Address = dataclasses.field(default_factory=lambda: Address(**{'street': 'Main Street', 'street_number': 10}))
     optional_address: typing.Optional[Address] = None
+
+    
+    class Meta:
+        field_order = ['name', 'age', 'address', 'extra_address', 'crazy_union', 'optional_address']
+  
 """
     model_generator = ModelGenerator()
     result = model_generator.render(schema=schema_one_to_one_relationship)
@@ -720,6 +725,7 @@ class User(AvroModel):
     age: int
     addresses: typing.Dict[str, Address]
     crazy_union: typing.Union[str, typing.Dict[str, Address]]
+    default_address: Address = dataclasses.field(default_factory=lambda: Address(**{'street': 'Main Street', 'street_number': 10}))
     optional_addresses: typing.Optional[typing.Dict[str, Address]] = None
 """
     model_generator = ModelGenerator()

@@ -28,7 +28,7 @@ def _get_typing_objects_by_name_of(name: str) -> tuple[typing.Any, ...]:
     """Get the member named `name` from both `typing` and `typing-extensions` (if it exists)."""
     result = tuple(getattr(module, name) for module in (typing, typing_extensions) if hasattr(module, name))
     if not result:
-        raise ValueError(f'Neither `typing` nor `typing_extensions` has an object called {name!r}')
+        raise ValueError(f"Neither `typing` nor `typing_extensions` has an object called {name!r}")
     return result
 
 
