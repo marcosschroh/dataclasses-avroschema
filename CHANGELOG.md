@@ -1,3 +1,9 @@
+## 0.65.8 (2025-02-04)
+
+### Fix
+
+- **ModelGenerator**: generate proper default value for a first time defined record when it has one. Closes #829 (#835)
+
 ## 0.65.7 (2024-12-12)
 
 ### Fix
