@@ -146,6 +146,9 @@ The following list represent the avro complex types mapped to python types:
 !!! info
     There are not restriction about `enum` names but is is highly recommended to use `pascalcase`
 
+!!! info
+    Every symbol must match the regular expression `[A-Za-z_][A-Za-z0-9_]*`. This is an [avro restriction](https://avro.apache.org/docs/1.12.0/specification/#enums)
+
 ### Enums from typing.Literal of strigns
 
 `typing.Literal[...]` can be used to indicate to type checkers that the annotated object has a value equivalent to one of the provided literals. If all `Literal arguments` are `string`, then for some use cases an `avro enum` as representation would make more sense in order to preserve the constraints (`Literal arguments` to `enum symbols`).
