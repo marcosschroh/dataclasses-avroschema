@@ -1134,6 +1134,10 @@
 <p class="admonition-title">Info</p>
 <p>There are not restriction about <code>enum</code> names but is is highly recommended to use <code>pascalcase</code></p>
 </div>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>Every symbol must match the regular expression <code>[A-Za-z_][A-Za-z0-9_]*</code>. This is an <a href="https://avro.apache.org/docs/1.12.0/specification/#enums">avro restriction</a></p>
+</div>
 <h3 id="enums-from-typingliteral-of-strigns">Enums from typing.Literal of strigns</h3>
 <p><code>typing.Literal[...]</code> can be used to indicate to type checkers that the annotated object has a value equivalent to one of the provided literals. If all <code>Literal arguments</code> are <code>string</code>, then for some use cases an <code>avro enum</code> as representation would make more sense in order to preserve the constraints (<code>Literal arguments</code> to <code>enum symbols</code>).</p>
 <p>For this behaviour the attribute <code>convert_literal_to_enum</code> must be set to <code>True</code></p>
