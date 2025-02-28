@@ -1,3 +1,9 @@
+## 0.65.9 (2025-02-28)
+
+### Fix
+
+- **ModelGenerator**: render description when doc is present in schema and the model is pydantic related. Related to #837 (#843)
+
 ## 0.65.8 (2025-02-04)
 
 ### Fix
