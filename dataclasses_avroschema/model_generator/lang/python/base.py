@@ -79,6 +79,34 @@ class FieldRepresentation:
 
         return result
 
+    def get_field_metadata(self) -> typing.Optional[str]:
+        if self.metadata:
+            return f"metadata={self.metadata}"
+        return None
+
+    def add_field_properties(self, default_repr: str) -> str:
+        field_metadata_repr = self.get_field_metadata()
+
+        if field_metadata_repr or isinstance(self.default, (dict, list)):
+            dataclass_field_properties = [field_metadata_repr]
+
+            if isinstance(self.default, (dict, list)):
+                if self.default:
+                    dataclass_prop = f"default_factory=lambda: {default_repr}"
+                else:
+                    dataclass_prop = f"default_factory={default_repr}"
+
+                dataclass_field_properties.append(dataclass_prop)
+            else:
+                if self.default is not dataclasses.MISSING:
+                    dataclass_field_properties.append(f"default={default_repr}")
+
+            default_repr = self.render_dataclass_field(
+                properties=", ".join([prop for prop in dataclass_field_properties if prop])
+            )
+
+        return default_repr
+
     def get_field_default(self) -> str:
         """
         Returns the default value according to the field type
@@ -89,8 +117,6 @@ class FieldRepresentation:
             If the default is "bond" the method should return '"bond"' so the double quotes
             won't be scaped during the field render
         """
-        field_metadata = self.metadata or {}
-        field_metadata_repr = None
         default_repr = ""
 
         if self.default is dataclasses.MISSING:
@@ -139,27 +165,7 @@ class FieldRepresentation:
         else:
             default_repr = str(self.default)
 
-        dataclass_field_properties = []
-        if field_metadata:
-            field_metadata_repr = f"metadata={field_metadata}"
-
-        if field_metadata_repr or isinstance(self.default, (dict, list)):
-            dataclass_field_properties = [field_metadata_repr]
-
-            if isinstance(self.default, (dict, list)):
-                if self.default:
-                    dataclass_prop = f"default_factory=lambda: {default_repr}"
-                else:
-                    dataclass_prop = f"default_factory={default_repr}"
-
-                dataclass_field_properties.append(dataclass_prop)
-            else:
-                if self.default is not dataclasses.MISSING:
-                    dataclass_field_properties.append(f"default={default_repr}")
-
-            default_repr = self.render_dataclass_field(
-                properties=", ".join([prop for prop in dataclass_field_properties if prop])
-            )
+        default_repr = self.add_field_properties(default_repr)
 
         return default_repr
 
@@ -355,6 +361,7 @@ class BaseGenerator:
     field_identation: str = "\n    "
     imports: typing.Set[str] = field(default_factory=set)
     imports_dict: typing.Dict[str, str] = field(default_factory=dict)
+    field_representation_class: typing.Type[FieldRepresentation] = FieldRepresentation
 
     # extras is used fot extra code that is generated, for example Enums
     extras: typing.List[str] = field(default_factory=list)
@@ -507,7 +514,7 @@ class BaseGenerator:
             if name:
                 self.type_hint_clashes[name] = type_hint
 
-        return FieldRepresentation(
+        return self.field_representation_class(
             name=name,
             avro_type=avro_type,
             type_hint=type_hint,

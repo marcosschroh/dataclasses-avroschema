@@ -137,6 +137,29 @@ class User(AvroBaseModel):
     assert result.strip() == expected_result.strip()
 
 
+def test_pydantic_with_fields_with_metadata(
+    with_fields_with_metadata: types.JsonDict,
+) -> None:
+    expected_result = """
+import pydantic
+
+
+
+class Message(pydantic.BaseModel):
+    someotherfield: int = pydantic.Field(metadata={'aliases': ['oldname'], 'avro.java.string': 'String'}, description="test")
+    fieldwithdoc: int = pydantic.Field(description="test")
+    fieldwithdefault: str = pydantic.Field(metadata={'avro.java.string': 'String'}, default="some default value")
+
+    
+    class Meta:
+        field_order = ['fieldwithdefault', 'someotherfield', 'fieldwithdoc']
+
+"""  # noqa: E501
+    model_generator = ModelGenerator()
+    result = model_generator.render(schema=with_fields_with_metadata, model_type=ModelType.PYDANTIC.value)
+    assert result.strip() == expected_result.strip()
+
+
 def test_avro_pydantic_primitive_types_as_defined_types(
     schema_primitive_types_as_defined_types: types.JsonDict,
 ) -> None:
@@ -175,14 +198,15 @@ import pydantic
 
 
 class Message(AvroBaseModel):
-    someotherfield: int = pydantic.Field(metadata={'aliases': ['oldname'], 'doc': 'test', 'avro.java.string': 'String'})
+    someotherfield: int = pydantic.Field(metadata={'aliases': ['oldname'], 'avro.java.string': 'String'}, description="test")
+    fieldwithdoc: int = pydantic.Field(description="test")
     fieldwithdefault: str = pydantic.Field(metadata={'avro.java.string': 'String'}, default="some default value")
 
     
     class Meta:
-        field_order = ['fieldwithdefault', 'someotherfield']
+        field_order = ['fieldwithdefault', 'someotherfield', 'fieldwithdoc']
 
-"""
+"""  # noqa: E501
     model_generator = ModelGenerator()
     result = model_generator.render(schema=with_fields_with_metadata, model_type=ModelType.AVRODANTIC.value)
     assert result.strip() == expected_result.strip()
