@@ -3,6 +3,9 @@ from dataclasses import dataclass
 
 from dataclasses_avroschema.model_generator.lang.python import templates
 from dataclasses_avroschema.model_generator.lang.python.base import BaseGenerator
+from dataclasses_avroschema.model_generator.lang.python.pydantic.pydantic_model_generator import (
+    PydanticFieldRepresentation,
+)
 from dataclasses_avroschema.types import JsonDict
 
 
@@ -18,6 +21,7 @@ class AvroDanticModelGenerator(BaseGenerator):
 
         # Templates
         self.field_template = templates.pydantic_field_template
+        self.field_representation_class = PydanticFieldRepresentation
 
     def _resolve_type_from_metadata(self, *, field: JsonDict) -> typing.Optional[str]:
         """

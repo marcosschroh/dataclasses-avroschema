@@ -1339,6 +1339,11 @@ def with_fields_with_metadata() -> JsonDict:
                 "doc": "test",
                 "avro.java.string": "String",
             },
+            {
+                "name": "fieldwithdoc",
+                "type": "long",
+                "doc": "test",
+            },
         ],
     }
 

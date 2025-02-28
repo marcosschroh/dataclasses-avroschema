@@ -982,11 +982,12 @@ import dataclasses
 @dataclasses.dataclass
 class Message(AvroModel):
     someotherfield: int = dataclasses.field(metadata={'aliases': ['oldname'], 'doc': 'test', 'avro.java.string': 'String'})
+    fieldwithdoc: int = dataclasses.field(metadata={'doc': 'test'})
     fieldwithdefault: str = dataclasses.field(metadata={'avro.java.string': 'String'}, default="some default value")
 
     
     class Meta:
-        field_order = ['fieldwithdefault', 'someotherfield']
+        field_order = ['fieldwithdefault', 'someotherfield', 'fieldwithdoc']
 
 """
     model_generator = ModelGenerator()
