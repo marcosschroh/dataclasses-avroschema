@@ -711,18 +711,17 @@ test = ["pytest (>=6)"]
 
 [[package]]
 name = "faker"
-version = "30.8.2"
+version = "36.1.1"
 description = "Faker is a Python package that generates fake data for you."
 optional = true
-python-versions = ">=3.8"
+python-versions = ">=3.9"
 files = [
-    {file = "Faker-30.8.2-py3-none-any.whl", hash = "sha256:4a82b2908cd19f3bba1a4da2060cc4eb18a40410ccdf9350d071d79dc92fe3ce"},
-    {file = "faker-30.8.2.tar.gz", hash = "sha256:aa31b52cdae3673d6a78b4857c7bcdc0e98f201a5cb77d7827fa9e6b5876da94"},
+    {file = "Faker-36.1.1-py3-none-any.whl", hash = "sha256:ad1f1be7fd692ec0256517404a9d7f007ab36ac5d4674082fa72404049725eaa"},
+    {file = "faker-36.1.1.tar.gz", hash = "sha256:7cb2bbd4c8f040e4a340ae4019e9a48b6cf1db6a71bda4e5a61d8d13b7bef28d"},
 ]
 
 [package.dependencies]
-python-dateutil = ">=2.4"
-typing-extensions = "*"
+tzdata = "*"
 
 [[package]]
 name = "fastavro"
@@ -2724,4 +2723,4 @@ pydantic = ["pydantic"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "8a99d0a4899117dd271b957f26e5170c291295692cbaf3f3b3644c94befb8bb4"
+content-hash = "84451c3f7599b46f0b86dde24810bbdfcc425017d8b7b98ca1e5288d44fd33dc"
