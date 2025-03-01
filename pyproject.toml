@@ -50,7 +50,7 @@ mkdocstrings = {version = ">=0.24,<0.28", extras = ["python"]}
 mktestdocs = "^0.2.2"
 
 [tool.poetry.group.ci-publish.dependencies]
-commitizen = "^3.2.2"
+commitizen = ">=3.2.2,<5.0.0"
 
 [tool.poetry.extras]
 pydantic = [
