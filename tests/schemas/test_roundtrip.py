@@ -1,8 +1,8 @@
 import json
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import pytest
-from zoneinfo import ZoneInfo
 
 from dataclasses_avroschema import BaseClassEnum, ModelGenerator
 
