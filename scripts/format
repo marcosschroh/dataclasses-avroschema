@@ -5,5 +5,5 @@ if [ -d '.venv' ] ; then
     export PREFIX=".venv/bin/"
 fi
 
-${PREFIX}ruff format dataclasses_avroschema tests
-${PREFIX}ruff check dataclasses_avroschema tests --fix
+${PREFIX}ruff format dataclasses_avroschema tests examples
+${PREFIX}ruff check dataclasses_avroschema tests examples --fix

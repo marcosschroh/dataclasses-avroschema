@@ -1,6 +1,7 @@
 import dataclasses
 import json
 import math
+import typing
 
 from dataclasses_avroschema import AvroModel, types
 
@@ -108,12 +109,12 @@ def test_primitive_types_with_defaults():
 def test_primitive_types_with_nulls():
     @dataclasses.dataclass
     class User(AvroModel):
-        name: str = None
+        name: typing.Optional[str] = None
         age: int = 20
         has_pets: bool = False
-        money: float = None
-        encoded: bytes = None
-        height: types.Int32 = None
+        money: typing.Optional[float] = None
+        encoded: typing.Optional[bytes] = None
+        height: typing.Optional[types.Int32] = None
 
     data = {
         "name": None,
@@ -132,7 +133,7 @@ def test_primitive_types_with_nulls():
         "height": 184,
     }
 
-    user = User(**data)
+    user = User.parse_obj(data)
     avro_binary = user.serialize()
     avro_json = user.serialize(serialization_type="avro-json")
 
@@ -170,7 +171,7 @@ def test_primitive_types_with_nulls():
 def test_float32_primitive_type():
     @dataclasses.dataclass
     class User(AvroModel):
-        height: types.Float32 = None
+        height: typing.Optional[types.Float32] = None
 
     data = {"height": 178.3}
 
@@ -180,32 +181,37 @@ def test_float32_primitive_type():
 
     # Floating point error expected
     res = user.deserialize(avro_binary, create_instance=False)
+    assert isinstance(res, dict)
     assert res["height"] != data["height"]
     assert math.isclose(res["height"], data["height"], abs_tol=1e-5)
 
     res = user.deserialize(avro_json, serialization_type="avro-json", create_instance=False)
+    assert isinstance(res, dict)
     assert res["height"] == data["height"]
 
     # Floating point error expected
     res = user.deserialize(avro_binary)
+
+    assert isinstance(res, User)
     assert res.height != user.height
-    assert math.isclose(res.height, user.height, abs_tol=1e-5)
+    assert res.height is not None and user.height is not None and math.isclose(res.height, user.height, abs_tol=1e-5)
 
     res = user.deserialize(avro_json, serialization_type="avro-json")
+    assert isinstance(res, User)
     assert res.height == user.height
 
     res = user.to_dict()
     assert res["height"] == data["height"]
 
-    data = {"height": None}
+    empty_data = {"height": None}
 
     user = User()
     avro_binary = user.serialize()
     avro_json = user.serialize(serialization_type="avro-json")
 
-    assert user.deserialize(avro_binary, create_instance=False) == data
-    assert user.deserialize(avro_json, serialization_type="avro-json", create_instance=False) == data
+    assert user.deserialize(avro_binary, create_instance=False) == empty_data
+    assert user.deserialize(avro_json, serialization_type="avro-json", create_instance=False) == empty_data
     assert user.deserialize(avro_binary) == user
     assert user.deserialize(avro_json, serialization_type="avro-json") == user
 
-    assert user.to_dict() == data
+    assert user.to_dict() == empty_data

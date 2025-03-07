@@ -8,6 +8,7 @@ import pytest
 from dateutil.tz import UTC
 
 from dataclasses_avroschema import AVRO, AVRO_JSON, AvroModel
+from dataclasses_avroschema.types import SerializationType
 
 a_datetime = datetime.datetime(2019, 10, 12, 17, 57, 42, tzinfo=UTC)
 
@@ -50,7 +51,7 @@ address_data = {
 data_user = {
     "name": "john",
     "age": 20,
-    "addresses": [Address(**address_data)],
+    "addresses": [Address.parse_obj(address_data)],
 }
 
 user_avro_binary = b"\x08john(\x02\x08test\x14\x00"
@@ -171,7 +172,7 @@ def test_serialization(klass, data, avro_binary, avro_json, instance_json, pytho
     "serialization_type, data",
     [(AVRO, b"\x02\x00\x00"), (AVRO_JSON, b'{"users": [{"color": "BLUE"}]}')],
 )
-def test_serialization_with_enum_in_sequences(serialization_type: str, data: bytes) -> None:
+def test_serialization_with_enum_in_sequences(serialization_type: SerializationType, data: bytes) -> None:
     @dataclass
     class UserModel(AvroModel):
         color: FavoriteColor = FavoriteColor.BLUE
@@ -217,21 +218,21 @@ def test_deserialization_with_class(klass, data, avro_binary, avro_json, instanc
 
 
 def test_invalid_serialization_deserialization_types():
-    user = User(**data_user)
+    user = User.parse_obj(data_user)
 
     with pytest.raises(ValueError):
-        user.serialize(serialization_type="json")
+        user.serialize(serialization_type="json")  # type: ignore
 
     with pytest.raises(ValueError):
-        user.deserialize(b"", serialization_type="json")
+        user.deserialize(b"", serialization_type="json")  # type: ignore
 
 
 def test_deserialization_with_writer_schema_dict():
-    user = User(**data_user)
+    user = User.parse_obj(data_user)
     writer_schema = User.avro_schema_to_python()
     UserCompatible.deserialize(user.serialize(), writer_schema=writer_schema)
 
 
 def test_deserialization_with_writer_schema_avro_model():
-    user = User(**data_user)
+    user = User.parse_obj(data_user)
     UserCompatible.deserialize(user.serialize(), writer_schema=User)
