@@ -884,9 +884,7 @@ The other two examples are <code>sync</code> using the <a href="https://github.c
 
 
 <span class="k">def</span> <span class="nf">consume</span><span class="p">():</span>
-    <span class="n">consumer</span> <span class="o">=</span> <span class="n">KafkaConsumer</span><span class="p">(</span>
-        <span class="s2">&quot;my_topic&quot;</span><span class="p">,</span> <span class="n">bootstrap_servers</span><span class="o">=</span><span class="s2">&quot;localhost:9092&quot;</span><span class="p">,</span> <span class="n">group_id</span><span class="o">=</span><span class="s2">&quot;my-group&quot;</span>
-    <span class="p">)</span>
+    <span class="n">consumer</span> <span class="o">=</span> <span class="n">KafkaConsumer</span><span class="p">(</span><span class="s2">&quot;my_topic&quot;</span><span class="p">,</span> <span class="n">bootstrap_servers</span><span class="o">=</span><span class="s2">&quot;localhost:9092&quot;</span><span class="p">,</span> <span class="n">group_id</span><span class="o">=</span><span class="s2">&quot;my-group&quot;</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">msg</span> <span class="ow">in</span> <span class="n">consumer</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Message received: </span><span class="si">{</span><span class="n">msg</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2"> at </span><span class="si">{</span><span class="n">msg</span><span class="o">.</span><span class="n">timestamp</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -981,9 +979,7 @@ The other two examples are <code>sync</code> using the <a href="https://github.c
 
 
 <span class="k">def</span> <span class="nf">consume</span><span class="p">():</span>
-    <span class="n">consumer</span> <span class="o">=</span> <span class="n">KafkaConsumer</span><span class="p">(</span>
-        <span class="s2">&quot;my_topic&quot;</span><span class="p">,</span> <span class="n">bootstrap_servers</span><span class="o">=</span><span class="s2">&quot;localhost:9092&quot;</span><span class="p">,</span> <span class="n">group_id</span><span class="o">=</span><span class="s2">&quot;my-group&quot;</span>
-    <span class="p">)</span>
+    <span class="n">consumer</span> <span class="o">=</span> <span class="n">KafkaConsumer</span><span class="p">(</span><span class="s2">&quot;my_topic&quot;</span><span class="p">,</span> <span class="n">bootstrap_servers</span><span class="o">=</span><span class="s2">&quot;localhost:9092&quot;</span><span class="p">,</span> <span class="n">group_id</span><span class="o">=</span><span class="s2">&quot;my-group&quot;</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">msg</span> <span class="ow">in</span> <span class="n">consumer</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Message received: </span><span class="si">{</span><span class="n">msg</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2"> at </span><span class="si">{</span><span class="n">msg</span><span class="o">.</span><span class="n">timestamp</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
