@@ -12,22 +12,24 @@ from dataclasses_avroschema import AvroModel, types
 logging.getLogger("faker").setLevel(logging.INFO)
 
 
+class FavoriteColor(str, enum.Enum):
+    BLUE = "BLUE"
+    YELLOW = "YELLOW"
+    GREEN = "GREEN"
+
+
+class UserType(str, enum.Enum):
+    BASIC = "BASIC"
+    PREMIUM = "PREMIUM"
+
+
 @pytest.fixture
 def color_enum():
-    class FavoriteColor(str, enum.Enum):
-        BLUE = "BLUE"
-        YELLOW = "YELLOW"
-        GREEN = "GREEN"
-
     return FavoriteColor
 
 
 @pytest.fixture
 def user_type_enum():
-    class UserType(str, enum.Enum):
-        BASIC = "BASIC"
-        PREMIUM = "PREMIUM"
-
     return UserType
 
 
@@ -107,14 +109,14 @@ def user_extra_avro_atributes_dataclass():
 
 
 @pytest.fixture
-def user_advance_dataclass(color_enum):
+def user_advance_dataclass():
     @dataclasses.dataclass
     class UserAdvance(AvroModel):
         name: str
         age: int
         pets: typing.List[str]
         accounts: typing.Dict[str, int]
-        favorite_colors: color_enum
+        favorite_colors: FavoriteColor
         md5: types.confixed(size=16)
         has_car: bool = False
         country: str = "Argentina"
@@ -127,19 +129,19 @@ def user_advance_dataclass(color_enum):
 
 
 @pytest.fixture
-def user_advance_dataclass_with_enum(color_enum: type, user_type_enum: type):
+def user_advance_dataclass_with_enum():
     @dataclasses.dataclass
     class UserAdvance(AvroModel):
         name: str
         age: int
         pets: typing.List[str]
         accounts: typing.Dict[str, int]
-        favorite_colors: color_enum
+        favorite_colors: FavoriteColor
         md5: types.confixed(size=16)
         has_car: bool = False
         country: str = "Argentina"
         address: typing.Optional[str] = None
-        user_type: typing.Optional[user_type_enum] = None
+        user_type: typing.Optional[UserType] = None
 
         class Meta:
             schema_doc = False
@@ -148,19 +150,19 @@ def user_advance_dataclass_with_enum(color_enum: type, user_type_enum: type):
 
 
 @pytest.fixture
-def user_advance_dataclass_with_union_enum(color_enum: type, user_type_enum: type):
+def user_advance_dataclass_with_union_enum():
     @dataclasses.dataclass
     class UserAdvance(AvroModel):
         name: str
         age: int
         pets: typing.List[str]
         accounts: typing.Dict[str, int]
-        favorite_colors: color_enum
+        favorite_colors: FavoriteColor
         md5: types.confixed(size=16)
         has_car: bool = False
         country: str = "Argentina"
         address: typing.Optional[str] = None
-        user_type: typing.Union[int, user_type_enum] = -1
+        user_type: typing.Union[int, UserType] = -1
 
         class Meta:
             schema_doc = False
@@ -169,18 +171,18 @@ def user_advance_dataclass_with_union_enum(color_enum: type, user_type_enum: typ
 
 
 @pytest.fixture
-def user_advance_dataclass_with_union_enum_with_annotated(color_enum: type, user_type_enum: type):
+def user_advance_dataclass_with_union_enum_with_annotated():
     @dataclasses.dataclass
     class UserAdvance(AvroModel):
         name: Annotated[str, "string"]
         age: Annotated[int, "integer"]
         pets: typing.List[Annotated[str, "string"]]
         accounts: typing.Dict[str, Annotated[int, "integer"]]
-        favorite_colors: Annotated[color_enum, "a color enum"]
+        favorite_colors: Annotated[FavoriteColor, "a color enum"]
         has_car: Annotated[bool, "boolean"] = False
         country: str = "Argentina"
         address: typing.Optional[Annotated[str, "string"]] = None
-        user_type: typing.Union[Annotated[int, "integer"], user_type_enum] = -1
+        user_type: typing.Union[Annotated[int, "integer"], UserType] = -1
         md5: types.Fixed = types.Fixed(16)
 
         class Meta:
@@ -190,16 +192,16 @@ def user_advance_dataclass_with_union_enum_with_annotated(color_enum: type, user
 
 
 @pytest.fixture
-def user_advance_dataclass_with_sub_record_and_enum(color_enum: type, user_type_enum: type):
+def user_advance_dataclass_with_sub_record_and_enum():
     @dataclasses.dataclass
     class SubRecord(AvroModel):
         sub_name: str
-        user_type: typing.Union[int, user_type_enum]
+        user_type: typing.Union[int, UserType]
 
     @dataclasses.dataclass
     class UserWithSubRecordAndEnum(AvroModel):
         name: str
-        favorite_colors: color_enum
+        favorite_colors: FavoriteColor
         sub_record: SubRecord
         has_car: bool = False
 
@@ -210,7 +212,7 @@ def user_advance_dataclass_with_sub_record_and_enum(color_enum: type, user_type_
 
 
 @pytest.fixture
-def user_advance_with_defaults_dataclass(color_enum):
+def user_advance_with_defaults_dataclass():
     @dataclasses.dataclass
     class UserAdvance(AvroModel):
         name: str
@@ -218,9 +220,9 @@ def user_advance_with_defaults_dataclass(color_enum):
         pets: typing.List[str] = dataclasses.field(default_factory=lambda: ["dog", "cat"])
         accounts: typing.Dict[str, int] = dataclasses.field(default_factory=lambda: {"key": 1})
         has_car: bool = False
-        favorite_colors: color_enum = color_enum.BLUE
+        favorite_colors: FavoriteColor = FavoriteColor.BLUE
         country: str = "Argentina"
-        address: str = None
+        address: typing.Optional[str] = None
 
         class Meta:
             schema_doc = False
@@ -229,7 +231,7 @@ def user_advance_with_defaults_dataclass(color_enum):
 
 
 @pytest.fixture
-def user_advance_with_defaults_dataclass_with_enum(color_enum, user_type_enum):
+def user_advance_with_defaults_dataclass_with_enum():
     @dataclasses.dataclass
     class UserAdvance(AvroModel):
         name: str
@@ -237,10 +239,10 @@ def user_advance_with_defaults_dataclass_with_enum(color_enum, user_type_enum):
         pets: typing.List[str] = dataclasses.field(default_factory=lambda: ["dog", "cat"])
         accounts: typing.Dict[str, int] = dataclasses.field(default_factory=lambda: {"key": 1})
         has_car: bool = False
-        favorite_colors: color_enum = color_enum.BLUE
+        favorite_colors: FavoriteColor = FavoriteColor.BLUE
         country: str = "Argentina"
-        address: str = None
-        user_type: typing.Optional[user_type_enum] = None
+        address: typing.Optional[str] = None
+        user_type: typing.Optional[UserType] = None
 
         class Meta:
             schema_doc = False

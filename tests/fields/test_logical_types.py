@@ -106,7 +106,7 @@ def test_logical_type_time_micros_with_default() -> None:
         time.second,
         time.microsecond,
     )
-    microseconds = float(((hour * 60 + minutes) * 60 + seconds) * 1000000) + microseconds
+    microseconds = ((hour * 60 + minutes) * 60 + seconds) * 1000000 + microseconds
 
     expected = {
         "name": name,
@@ -303,7 +303,7 @@ def test_decimal_type():
     python_type = types.condecimal(max_digits=7, decimal_places=5)
     field = AvroField(name, python_type, default=None)
 
-    expected = {
+    assert field.to_dict() == {
         "name": name,
         "type": [
             "null",
@@ -311,7 +311,6 @@ def test_decimal_type():
         ],
         "default": None,
     }
-    assert expected == field.to_dict()
 
     # Validate 0 <= scale <= precision
     with pytest.raises(

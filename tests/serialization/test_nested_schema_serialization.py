@@ -168,7 +168,7 @@ def test_one_to_many_map_relationship(model_class: typing.Type[AvroModel], decor
         "street_number": 10,
     }
 
-    address = Address(**address_data)
+    address = Address.parse_obj(address_data)
 
     data_user = {
         "name": "john",

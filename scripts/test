@@ -9,5 +9,5 @@ tests=${1-"./tests"}
 
 ${PREFIX}pytest --cov=dataclasses_avroschema ${tests} ${2} --cov-fail-under=99 --cov-report html  --cov-report term-missing  \
     --cov-report xml --ignore=tests/documentation
-${PREFIX}ruff check dataclasses_avroschema tests
+${PREFIX}ruff check dataclasses_avroschema tests examples
 ${PREFIX}mypy dataclasses_avroschema

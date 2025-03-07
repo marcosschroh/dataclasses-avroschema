@@ -38,7 +38,7 @@ def test_faust_record_schema_complex_types(user_advance_avro_json, color_enum):
         md5: types.confixed(size=16)
         has_car: bool = False
         country: str = "Argentina"
-        address: str = None
+        address: typing.Optional[str] = None
 
         class Meta:
             schema_doc = False
@@ -55,7 +55,7 @@ def test_faust_record_schema_complex_types_with_defaults(user_advance_with_defau
         has_car: bool = False
         favorite_colors: color_enum = color_enum.BLUE
         country: str = "Argentina"
-        address: str = None
+        address: typing.Optional[str] = None
 
         class Meta:
             schema_doc = False
@@ -118,7 +118,7 @@ def test_faust_record_one_to_one_relationship_with_none_default(
 
         name: str
         age: int
-        address: Address = None
+        address: typing.Optional[Address] = None
 
     assert User.avro_schema() == json.dumps(user_one_address_schema_with_none_default)
 
@@ -178,7 +178,7 @@ def test_faust_record_self_one_to_one_relationship(
         name: str
         age: int
         friend: typing.Type["User"]
-        teamates: typing.Type["User"] = None
+        teamates: typing.Optional[typing.Type["User"]] = None
 
     assert User.avro_schema() == json.dumps(user_self_reference_one_to_one_schema)
 
@@ -250,9 +250,9 @@ def test_faust_record_schema_with_unions_type(union_type_schema):
         first_union: typing.Union[str, int]
         logical_union: typing.Union[datetime.datetime, datetime.date, uuid.uuid4]
         lake_trip: typing.Union[Bus, Car]
-        river_trip: typing.Union[Bus, Car] = None
+        river_trip: typing.Union[None, Bus, Car] = None
         mountain_trip: typing.Union[Bus, Car] = dataclasses.field(default_factory=lambda: {"engine_name": "honda"})
-        trip_distance: typing.Union[int, TripDistance] = None
+        trip_distance: typing.Union[None, int, TripDistance] = None
 
     assert UnionSchema.avro_schema() == json.dumps(union_type_schema)
 
