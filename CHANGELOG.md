@@ -1,3 +1,9 @@
+## 0.65.10 (2025-03-10)
+
+### Fix
+
+- **AvroRecord**: deserialize properly union when they are encoded using avro-bynary. Related to #849 (#853)
+
 ## 0.65.9 (2025-02-28)
 
 ### Fix
