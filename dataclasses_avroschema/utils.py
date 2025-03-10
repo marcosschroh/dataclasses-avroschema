@@ -152,7 +152,7 @@ def standardize_custom_type(
         if is_faust_record(type(value)):  # type: ignore[arg-type]
             # we need to do a trick because we can not overrride asdict from faust..
             # once the function interface is introduced we can remove this check
-            asdict = value.standardize_type(include_type=False)  # type: ignore
+            asdict = value.standardize_type(include_type=include_type)  # type: ignore
         else:
             asdict = value.asdict()
 

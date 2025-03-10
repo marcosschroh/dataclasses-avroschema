@@ -271,7 +271,7 @@ def test_nested_schemas_splitted_with_unions(model_class: typing.Type[AvroModel]
 
     @decorator
     class S1(model_class):
-        ...
+        age: int = 10
 
         class Meta:
             namespace = "my_namespace"
@@ -302,15 +302,15 @@ def test_nested_schemas_splitted_with_unions(model_class: typing.Type[AvroModel]
     c2 = C(b=B(a=A(s=S1())), a=A(s=S2()))
 
     ser = b.serialize()
-    assert ser == b"\x00\x00"
+    assert ser == b"\x00\x00\x14"
     assert B.deserialize(ser) == b
 
     ser = c.serialize()
-    assert ser == b"\x00\x00\x00"
+    assert ser == b"\x00\x00\x14\x00\x14"
     assert C.deserialize(ser) == c
 
     ser = c2.serialize()
-    assert ser == b"\x00\x00\x02\x14"
+    assert ser == b"\x00\x00\x14\x02\x14"
     assert C.deserialize(ser) == c2
 
 
