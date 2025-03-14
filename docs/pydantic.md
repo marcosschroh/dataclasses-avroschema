@@ -445,10 +445,47 @@ for example:
 
 ## Adding Custom Field-level Attributes
 
-To add `custom field attributes` the `metadata` attribute must be set in `pydantic.Field`. For more info check [adding-custom-field-level-attributes](https://marcosschroh.github.io/dataclasses-avroschema/fields_specification/#adding-custom-field-level-attributes) section for `dataclasses`.
+Custom Field-level attributes can be added by leveraging the Pydantic's [`Field`](https://docs.pydantic.dev/latest/api/fields/#pydantic.fields.Field) function, with the [json_schema_extra](https://docs.pydantic.dev/latest/concepts/json_schema/#customizing-json-schema) property, ensuring you have the `metadata` attribute enclosing the custom field-level attributes you want to add.
 
-!!! note
-    Make sure that `pydantic.Field` is used and *NOT* `dataclasses.field`
+Let's say you have the following model:
+
+```python
+from dataclasses_avroschema.pydantic import AvroBaseModel
+from pydantic import Field
+
+class Person(AvroBaseModel):
+    first_name: str = Field(json_schema_extra={"metadata": {"description": "This is the person's first name"}}, default=None)
+    last_name: str = None
+    phone: str = None
+
+print(Person.avro_schema())%
+```
+
+You'll get:
+
+```json
+{
+    "description": "This is the person's first name",
+    "name": "first_name",
+    "type": [
+        "null",
+        "string"
+    ],
+    "default": null
+},
+...
+```
+
+*(This script is complete, it should run "as is")*
+
+Please note the following:
+
+- The field we want to have additional metadata (`first_name`) is using the `Field` function.
+- The `Field` function is using the `json_schema_metadata` attribute, which allows you to define the field's custom attributes.
+- The `metadata` key is the root parent for the object that will contain the custom attributes.
+
+The only difference between the Pydantic's `json_schema_extra` implementation and dataclasses-avroschema functionality is that the latter requires the `metadata` key to properly identify the extra information that will get added to the field.
+
 
 ### Custom Data Types as Fields
 
