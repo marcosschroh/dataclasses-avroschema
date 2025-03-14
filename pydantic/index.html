@@ -1646,11 +1646,38 @@ for example:</p>
 </div>
 </div>
 <h2 id="adding-custom-field-level-attributes">Adding Custom Field-level Attributes</h2>
-<p>To add <code>custom field attributes</code> the <code>metadata</code> attribute must be set in <code>pydantic.Field</code>. For more info check <a href="https://marcosschroh.github.io/dataclasses-avroschema/fields_specification/#adding-custom-field-level-attributes">adding-custom-field-level-attributes</a> section for <code>dataclasses</code>.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Make sure that <code>pydantic.Field</code> is used and <em>NOT</em> <code>dataclasses.field</code></p>
-</div>
+<p>Custom Field-level attributes can be added by leveraging the Pydantic's <a href="https://docs.pydantic.dev/latest/api/fields/#pydantic.fields.Field"><code>Field</code></a> function, with the <a href="https://docs.pydantic.dev/latest/concepts/json_schema/#customizing-json-schema">json_schema_extra</a> property, ensuring you have the <code>metadata</code> attribute enclosing the custom field-level attributes you want to add.</p>
+<p>Let's say you have the following model:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">dataclasses_avroschema.pydantic</span> <span class="kn">import</span> <span class="n">AvroBaseModel</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">Field</span>
+
+<span class="k">class</span> <span class="nc">Person</span><span class="p">(</span><span class="n">AvroBaseModel</span><span class="p">):</span>
+    <span class="n">first_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">json_schema_extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;This is the person&#39;s first name&quot;</span><span class="p">}},</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">last_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">phone</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">Person</span><span class="o">.</span><span class="n">avro_schema</span><span class="p">())</span>
+</code></pre></div>
+<p>You'll get:</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;This is the person&#39;s first name&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;first_name&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="s2">&quot;null&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;string&quot;</span>
+<span class="w">    </span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
+<span class="p">},</span>
+<span class="err">...</span>
+</code></pre></div>
+<p><em>(This script is complete, it should run "as is")</em></p>
+<p>Please note the following:</p>
+<ul>
+<li>The field we want to have additional metadata (<code>first_name</code>) is using the <code>Field</code> function.</li>
+<li>The <code>Field</code> function is using the <code>json_schema_metadata</code> attribute, which allows you to define the field's custom attributes.</li>
+<li>The <code>metadata</code> key is the root parent for the object that will contain the custom attributes.</li>
+</ul>
+<p>The only difference between the Pydantic's <code>json_schema_extra</code> implementation and dataclasses-avroschema functionality is that the latter requires the <code>metadata</code> key to properly identify the extra information that will get added to the field.</p>
 <h3 id="custom-data-types-as-fields">Custom Data Types as Fields</h3>
 <p>If needed, you can annotate fields with <a href="https://docs.pydantic.dev/latest/concepts/types/#customizing-validation-with-getpydanticcoreschema">custom classes</a> that define validators.</p>
 <h3 id="classes-with-__get_pydantic_core_schema__">Classes with <code>__get_pydantic_core_schema__</code></h3>
