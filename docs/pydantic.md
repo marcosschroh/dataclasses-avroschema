@@ -458,7 +458,7 @@ class Person(AvroBaseModel):
     last_name: str = None
     phone: str = None
 
-print(Person.avro_schema())%
+print(Person.avro_schema())
 ```
 
 You'll get:
