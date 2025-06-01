@@ -534,18 +534,18 @@ development = ["black", "flake8", "mypy", "pytest", "types-colorama"]
 
 [[package]]
 name = "commitizen"
-version = "4.3.0"
+version = "4.8.2"
 description = "Python commitizen client tool"
 optional = false
 python-versions = "<4.0,>=3.9"
 groups = ["ci-publish"]
 files = [
-    {file = "commitizen-4.3.0-py3-none-any.whl", hash = "sha256:6038abce79d81f0296f2589eb17c8c6a164949c46f7dbc9af5283d6a82d8131c"},
-    {file = "commitizen-4.3.0.tar.gz", hash = "sha256:bdcd18f7bbda811ce082684e69606cf8b95e784a23585078cc001897cc41976f"},
+    {file = "commitizen-4.8.2-py3-none-any.whl", hash = "sha256:86cae0bd8e1da889389d828b30a5acb79b62f9290f9274b127ee9d8c189eb16c"},
+    {file = "commitizen-4.8.2.tar.gz", hash = "sha256:4fc73126c7300f715f11b85242550677722c57767b579100e869ccd45143e2c5"},
 ]
 
 [package.dependencies]
-argcomplete = ">=1.12.1,<3.6"
+argcomplete = ">=1.12.1,<3.7"
 charset-normalizer = ">=2.1.0,<4"
 colorama = ">=0.4.1,<1.0"
 decli = ">=0.6.0,<1.0"
@@ -1023,9 +1023,10 @@ colorama = ">=0.4"
 name = "h11"
 version = "0.16.0"
 description = "A pure-Python, bring-your-own-I/O implementation of HTTP/1.1"
-optional = false
+optional = true
 python-versions = ">=3.8"
 groups = ["main"]
+markers = "extra == \"cli\""
 files = [
     {file = "h11-0.16.0-py3-none-any.whl", hash = "sha256:63cf8bbe7522de3bf65932fda1d9c2772064ffb3dae62d55932da54b31cb6c86"},
     {file = "h11-0.16.0.tar.gz", hash = "sha256:4e35b956cf45792e4caa5885e69fba00bdbc6ffafbfa020300e549b208ee5ff1"},
