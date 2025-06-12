@@ -1,6 +1,7 @@
 import dataclasses
 import typing
 from collections import OrderedDict
+from typing import Literal, overload
 
 from .types import JsonDict, SerializationType
 
@@ -75,11 +76,32 @@ class ModelProtocol(typing.Protocol[CT]):
     def _reset_parser(cls: typing.Type[CT]) -> None: ...
 
     @classmethod
+    @overload
     def deserialize(
         cls: typing.Type[CT],
         data: bytes,
         serialization_type: SerializationType = "avro",
-        create_instance: bool = True,
+        create_instance: Literal[True] = ...,
+        writer_schema: typing.Optional[typing.Union[JsonDict, typing.Type[CT]]] = None,
+    ) -> CT: ...
+
+    @classmethod
+    @overload
+    def deserialize(
+        cls: typing.Type[CT],
+        data: bytes,
+        serialization_type: SerializationType = "avro",
+        create_instance: Literal[False] = ...,
+        writer_schema: typing.Optional[typing.Union[JsonDict, typing.Type[CT]]] = None,
+    ) -> JsonDict: ...
+
+    @classmethod
+    @overload
+    def deserialize(
+        cls: typing.Type[CT],
+        data: bytes,
+        serialization_type: SerializationType = "avro",
+        create_instance: bool = ...,
         writer_schema: typing.Optional[typing.Union[JsonDict, typing.Type[CT]]] = None,
     ) -> typing.Union[JsonDict, CT]: ...
 
