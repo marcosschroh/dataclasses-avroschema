@@ -1,6 +1,7 @@
 import copy
 import dataclasses
 import json
+import keyword
 import typing
 from abc import abstractmethod
 from dataclasses import dataclass, field
@@ -527,18 +528,28 @@ class BaseGenerator:
     @staticmethod
     def generate_field_name(field: JsonDict) -> str:
         field_name = field.get("name", "")
+        if not field_name:
+            return field_name
 
-        if field_name and not field_name.isidentifier():
+        if keyword.iskeyword(field_name):
+            valid_identifier = f"{field_name}_"
+            BaseGenerator.maybe_add_alias(field, field_name)
+            return valid_identifier
+
+        if not field_name.isidentifier():
             valid_identifier = casefy.snakecase(field_name)
             if valid_identifier != field_name:
-                aliases = field.get("aliases", [])
-
-                if valid_identifier not in aliases:
-                    aliases.append(field_name)
-                    field["aliases"] = aliases
-
+                BaseGenerator.maybe_add_alias(field, field_name)
             return valid_identifier
         return field_name
+
+    @staticmethod
+    def maybe_add_alias(field: JsonDict, alias: str) -> None:
+        aliases = field.get("aliases", [])
+
+        if alias not in aliases:
+            aliases.append(alias)
+            field["aliases"] = aliases
 
     @staticmethod
     def is_logical_type(*, field: JsonDict) -> bool:
