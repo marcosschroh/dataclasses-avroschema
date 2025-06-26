@@ -63,6 +63,20 @@ def schema_with_invalid_python_identifiers() -> Dict:
 
 
 @pytest.fixture
+def schema_with_python_keywords() -> Dict:
+    return {
+        "type": "record",
+        "name": "Address",
+        "fields": [
+            {"name": "class", "type": "string"},
+            {"name": "yield", "type": "string", "aliases": ["yield"]},
+            {"name": "yield_class", "type": "long"},
+        ],
+        "doc": "An Address",
+    }
+
+
+@pytest.fixture
 def schema_primitive_types_as_defined_types() -> Dict:
     return {
         "type": "record",
