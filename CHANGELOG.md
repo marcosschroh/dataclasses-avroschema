@@ -1,3 +1,9 @@
+## 0.65.11 (2025-06-26)
+
+### Fix
+
+- **ModelGenerator**: Rename fields named after Python keywords (#870)
+
 ## 0.65.10 (2025-03-10)
 
 ### Fix

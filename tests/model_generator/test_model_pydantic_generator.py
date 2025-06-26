@@ -115,6 +115,28 @@ class Address(AvroBaseModel):
     assert result.strip() == expected_result.strip()
 
 
+def test_avro_pydantic_python_keywords(schema_with_python_keywords: types.JsonDict) -> None:
+    expected_result = """
+from dataclasses_avroschema.pydantic import AvroBaseModel
+import pydantic
+
+
+
+class Address(AvroBaseModel):
+    \"""
+    An Address
+    \"""
+    class_: str = pydantic.Field(metadata={'aliases': ['class']})
+    yield_: str = pydantic.Field(metadata={'aliases': ['yield']})
+    yield_class: int
+
+
+"""
+    model_generator = ModelGenerator()
+    result = model_generator.render(schema=schema_with_python_keywords, model_type=ModelType.AVRODANTIC.value)
+    assert result.strip() == expected_result.strip()
+
+
 def test_avro_pydantic_model_with_meta_fields(
     schema_one_to_self_relationship: types.JsonDict,
 ) -> None:
