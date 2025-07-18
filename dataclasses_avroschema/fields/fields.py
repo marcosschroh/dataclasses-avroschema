@@ -903,7 +903,7 @@ PYDANTIC_CUSTOM_CLASS_METHOD_NAMES = {
 def field_factory(
     name: str,
     native_type: typing.Any,
-    parent: typing.Any = None,
+    parent: typing.Optional[typing.Type["AvroModel"]] = None,
     *,
     default: typing.Any = dataclasses.MISSING,
     default_factory: typing.Any = dataclasses.MISSING,
@@ -911,6 +911,11 @@ def field_factory(
     model_metadata: typing.Optional[utils.SchemaMetadata] = None,
 ) -> Field:
     from dataclasses_avroschema import AvroModel
+
+    if parent is None:
+        # if parent is None, then we assume that the field is defined in an AvroModel
+        # and we set the parent to AvroModel
+        parent = AvroModel
 
     if model_metadata is None:
         model_metadata = utils.SchemaMetadata()
