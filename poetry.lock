@@ -2653,13 +2653,13 @@ testing = ["coverage", "pytest", "pytest-cov"]
 
 [[package]]
 name = "walrus"
-version = "0.9.4"
+version = "0.9.5"
 description = "walrus"
 optional = false
 python-versions = "*"
 groups = ["dev"]
 files = [
-    {file = "walrus-0.9.4.tar.gz", hash = "sha256:b9f190b9c9a5192f144ffdd7b628eff5d5dbe3353bb2fb5aa48026594e82b7aa"},
+    {file = "walrus-0.9.5.tar.gz", hash = "sha256:03adff2029b0ac700426c8989e8a8c9ef9d47031be514f011d1a35cbdc21a639"},
 ]
 
 [package.dependencies]
