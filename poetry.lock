@@ -670,23 +670,24 @@ dev = ["black", "coveralls", "mypy", "pre-commit", "pylint", "pytest (>=5)", "py
 
 [[package]]
 name = "dc-avro"
-version = "0.9.3"
+version = "0.12.2"
 description = ""
 optional = true
 python-versions = "<4.0,>=3.9"
 groups = ["main"]
 markers = "extra == \"cli\""
 files = [
-    {file = "dc_avro-0.9.3-py3-none-any.whl", hash = "sha256:b0edda1466ba2f02313f7ecbc324b3ccddd52a19ad157fda21a555e6e71d9007"},
-    {file = "dc_avro-0.9.3.tar.gz", hash = "sha256:0a482e284637b710974084cb809c80d7a9be8275a6a7bacde1184fb1dbbdd6c1"},
+    {file = "dc_avro-0.12.2-py3-none-any.whl", hash = "sha256:be4bb0af7de67561bf6982eeed20c06a98a41565efdaa3f26dbe6ab63ce04ad9"},
+    {file = "dc_avro-0.12.2.tar.gz", hash = "sha256:81797276a814fa25985cc0f0790c30dc909415dd8fa129b944f6a6b081a7c59f"},
 ]
 
 [package.dependencies]
 aiofiles = ">=24.1.0,<25.0"
 dataclasses-avroschema = ">=0.57.2"
 deepdiff = ">=6.2.3,<9.0.0"
-httpx = ">=0.23.3,<0.28.0"
-typer = {version = ">=0.9,<0.13", extras = ["all"]}
+httpx = ">=0.23.3,<0.29.0"
+truststore = {version = ">=0.10.1,<0.11.0", markers = "python_version >= \"3.10\" and python_version < \"4.0\""}
+typer = {version = ">=0.9,<0.17", extras = ["all"]}
 
 [[package]]
 name = "decli"
@@ -2538,6 +2539,19 @@ groups = ["ci-publish"]
 files = [
     {file = "tomlkit-0.13.2-py3-none-any.whl", hash = "sha256:7a974427f6e119197f670fbbbeae7bef749a6c14e793db934baefc1b5f03efde"},
     {file = "tomlkit-0.13.2.tar.gz", hash = "sha256:fff5fe59a87295b278abd31bec92c15d9bc4a06885ab12bcea52c71119392e79"},
+]
+
+[[package]]
+name = "truststore"
+version = "0.10.4"
+description = "Verify certificates using native system trust stores"
+optional = true
+python-versions = ">=3.10"
+groups = ["main"]
+markers = "python_version >= \"3.10\" and extra == \"cli\""
+files = [
+    {file = "truststore-0.10.4-py3-none-any.whl", hash = "sha256:adaeaecf1cbb5f4de3b1959b42d41f6fab57b2b1666adb59e89cb0b53361d981"},
+    {file = "truststore-0.10.4.tar.gz", hash = "sha256:9d91bd436463ad5e4ee4aba766628dd6cd7010cf3e2461756b3303710eebc301"},
 ]
 
 [[package]]
