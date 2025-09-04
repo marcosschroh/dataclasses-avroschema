@@ -77,6 +77,16 @@ def schema_with_python_keywords() -> Dict:
 
 
 @pytest.fixture
+def schema_with_no_fields() -> Dict:
+    return {
+        "type": "record",
+        "name": "Empty",
+        "fields": [],
+        "doc": "An object with no fields",
+    }
+
+
+@pytest.fixture
 def schema_primitive_types_as_defined_types() -> Dict:
     return {
         "type": "record",
