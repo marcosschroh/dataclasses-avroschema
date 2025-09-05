@@ -12,6 +12,9 @@ from dataclasses_avroschema import utils
 
 logger = logging.getLogger(__name__)
 
+if typing.TYPE_CHECKING:
+    from dataclasses_avroschema import AvroModel  # pragma: no cover
+
 
 @dataclasses.dataclass  # type: ignore
 class Field:
@@ -19,12 +22,11 @@ class Field:
         "name",
         "type",
         "default",
-        "parent",
     )
 
     name: str
     type: typing.Any  # store the python primitive type
-    parent: typing.Any
+    parent: typing.Type["AvroModel"]
     default: typing.Any
     default_factory: typing.Any = dataclasses.MISSING
     exclude_default: bool = False

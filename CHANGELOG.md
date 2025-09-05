@@ -1,3 +1,15 @@
+## 0.65.13 (2025-09-04)
+
+### Fix
+
+- **ModelGenerator**: Add `pass` keyword when there are no fields (#891)
+
+## 0.65.12 (2025-07-18)
+
+### Fix
+
+- add some missing types (#877)
+
 ## 0.65.11 (2025-06-26)
 
 ### Fix

@@ -10,6 +10,10 @@ from typing_extensions import Annotated, get_origin
 from .protocol import ModelProtocol  # pragma: no cover
 from .types import FieldInfo, JsonDict, UnionType
 
+if typing.TYPE_CHECKING:
+    from dataclasses_avroschema import AvroModel  # pragma: no cover
+
+
 try:
     import pydantic  # pragma: no cover
     from pydantic import v1
@@ -228,7 +232,7 @@ class FieldMetadata:
 
 class UserDefinedType(typing.NamedTuple):
     name: str
-    model: typing.Type
+    model: typing.Type["AvroModel"]
 
 
 epoch: datetime = datetime(1970, 1, 1, tzinfo=timezone.utc)

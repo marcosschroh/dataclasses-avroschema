@@ -115,6 +115,24 @@ class Address(AvroBaseModel):
     assert result.strip() == expected_result.strip()
 
 
+def test_avro_pydantic_empty_fields(schema_with_no_fields: types.JsonDict) -> None:
+    expected_result = """
+from dataclasses_avroschema.pydantic import AvroBaseModel
+import pydantic
+
+
+
+class Empty(AvroBaseModel):
+    \"""
+    An object with no fields
+    \"""
+    pass
+"""
+    model_generator = ModelGenerator()
+    result = model_generator.render(schema=schema_with_no_fields, model_type=ModelType.AVRODANTIC.value)
+    assert result.strip() == expected_result.strip()
+
+
 def test_avro_pydantic_python_keywords(schema_with_python_keywords: types.JsonDict) -> None:
     expected_result = """
 from dataclasses_avroschema.pydantic import AvroBaseModel

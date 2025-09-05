@@ -327,8 +327,12 @@ class ModelRepresentation(ClassRepresentation):
         if fields_representation_copy != self.fields_representation:
             field_order = [field.name for field in fields_representation_copy]
 
-        rendered_fields_string = self.field_identation.join(
-            field.render(type_hint_clashes=type_hint_clashes) for field in self.fields_representation
+        rendered_fields_string = (
+            self.field_identation.join(
+                field.render(type_hint_clashes=type_hint_clashes) for field in self.fields_representation
+            )
+            if len(self.fields_representation) > 0
+            else "pass"
         )
         docstring = self.render_docstring(docstring=self.schema.get("doc"))
 
