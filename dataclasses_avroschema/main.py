@@ -2,7 +2,7 @@ import dataclasses
 import inspect
 import json
 from collections import OrderedDict
-from typing import Any, Dict, List, Optional, Set, Type, Union
+from typing import Any, Dict, List, Literal, Optional, Set, Type, TypeVar, Union, overload
 
 from dacite import Config, from_dict
 from fastavro.validation import validate
@@ -16,6 +16,7 @@ from .utils import UserDefinedType, standardize_custom_type
 
 _schemas_cache: Dict["Type[AvroModel]", dict] = {}
 _dacite_config_cache: Dict["Type[AvroModel]", Config] = {}
+TSelf = TypeVar("TSelf", bound="AvroModel")
 
 
 class AvroModel:
@@ -128,13 +129,40 @@ class AvroModel:
         cls._parent = None
 
     @classmethod
+    @overload
     def deserialize(
-        cls: Type["AvroModel"],
+        cls: Type[TSelf],
         data: bytes,
-        serialization_type: serialization.SerializationType = "avro",
-        create_instance: bool = True,
-        writer_schema: Optional[Union[JsonDict, Type["AvroModel"]]] = None,
-    ) -> Union[JsonDict, "AvroModel"]:
+        serialization_type: serialization.SerializationType = ...,
+        create_instance: Literal[True] = ...,
+        writer_schema: Optional[Union[JsonDict, Type["AvroModel"]]] = ...,
+    ) -> TSelf: ...
+    @classmethod
+    @overload
+    def deserialize(
+        cls: Type[TSelf],
+        data: bytes,
+        serialization_type: serialization.SerializationType = ...,
+        create_instance: Literal[False] = ...,
+        writer_schema: Optional[Union[JsonDict, Type["AvroModel"]]] = ...,
+    ) -> JsonDict: ...
+    @classmethod
+    @overload
+    def deserialize(
+        cls: Type[TSelf],
+        data: bytes,
+        serialization_type: serialization.SerializationType = ...,
+        create_instance: bool = ...,
+        writer_schema: Optional[Union[JsonDict, Type["AvroModel"]]] = ...,
+    ) -> Union[TSelf, JsonDict]: ...
+    @classmethod
+    def deserialize(
+        cls,
+        data,
+        serialization_type="avro",
+        create_instance=True,
+        writer_schema=None,
+    ):
         payload = cls.deserialize_to_python(data, serialization_type, writer_schema)
         obj = cls.parse_obj(payload)
 
@@ -166,7 +194,7 @@ class AvroModel:
         )
 
     @classmethod
-    def parse_obj(cls: Type["AvroModel"], data: Dict) -> "AvroModel":
+    def parse_obj(cls: Type[TSelf], data: Dict) -> TSelf:
         config = _dacite_config_cache.get(cls)
         if config is None:
             config = generate_dacite_config(cls)
