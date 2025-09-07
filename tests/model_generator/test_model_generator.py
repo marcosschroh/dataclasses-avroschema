@@ -1,3 +1,4 @@
+from asyncio import Event
 from dataclasses_avroschema import ModelGenerator, ModelType, types
 from dataclasses_avroschema.fields import field_utils
 from dataclasses_avroschema.model_generator.lang.python.avro_to_python_utils import (
@@ -859,7 +860,7 @@ class LogicalTypes(AvroModel):
 
 
 def test_schema_with_unknown_logical_types(schema_with_unknown_logical_types: types.JsonDict) -> None:
-    expected_result = """
+    expected_result = '''
 from dataclasses_avroschema import AvroModel
 import dataclasses
 import datetime
@@ -867,6 +868,12 @@ import datetime
 
 @dataclasses.dataclass
 class Urls(AvroModel):
+    """
+
+    Attributes:
+        regular: Urls
+    """
+
     regular: str = dataclasses.field(metadata={'doc': 'Urls'})
 
     
@@ -875,6 +882,12 @@ class Urls(AvroModel):
 
 @dataclasses.dataclass
 class TestEvent(AvroModel):
+    """
+    
+    Attributes:
+        occurredAt: Event time
+    """
+
     occurredAt: datetime.datetime = dataclasses.field(metadata={'doc': 'Event time'})
     previous: Urls
 
@@ -882,9 +895,11 @@ class TestEvent(AvroModel):
     class Meta:
         namespace = "com.example"
 
-"""
+'''
     model_generator = ModelGenerator()
     result = model_generator.render(schema=schema_with_unknown_logical_types)
+    with open("model_generated.py", "w") as f:
+        f.write(result.strip())
     assert result.strip() == expected_result.strip()
 
 

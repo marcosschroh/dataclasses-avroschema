@@ -40,6 +40,14 @@ class $name($base_class):$docstring
     $fields
 """
 
+DOCSTRINGS_WITH_FIELDS_TEMPLATE = '''
+    """
+    $class_docstring
+    Attributes:
+        $fields_docstring
+    """
+'''
+
 INSTANCE_TEMPLATE = "$type($properties)"
 
 METACLASS_TEMPLATE = """
@@ -77,6 +85,7 @@ enum_symbol_template = Template(ENUM_SYMBOL_TEMPLATE)
 enum_template = Template(ENUM_TEMPLATE)
 field_template = Template(FIELD_TEMPLATE)
 pydantic_field_template = Template(PYDANTIC_FIELD)
+docstrings_with_fields_template = Template(DOCSTRINGS_WITH_FIELDS_TEMPLATE)
 class_template = Template(CLASS_TEMPLATE)
 instance_template = Template(INSTANCE_TEMPLATE)
 metaclass_template = Template(METACLASS_TEMPLATE)

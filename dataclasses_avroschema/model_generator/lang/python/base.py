@@ -112,8 +112,6 @@ class FieldRepresentation:
         """
         Returns the default value according to the field type
 
-        TODO: docstrings
-
         Example:
             If the default is "bond" the method should return '"bond"' so the double quotes
             won't be scaped during the field render
@@ -256,16 +254,25 @@ class ClassRepresentation:
             ).rstrip(self.field_identation)
         return None
 
-    def render_docstring(self, *, docstring: typing.Optional[str]) -> str:
+    def render_docstring(self, *, docstring: typing.Optional[str], fields_representation: typing.Optional[typing.List[FieldRepresentation]] = None) -> str:
         """
         Render the module with the classes generated from the schema
         """
-        if not docstring:
-            return ""
+        docstring_repr = ""
 
-        indented = self.field_identation + self.field_identation.join(docstring.splitlines())
+        if docstring:
+            indented = self.field_identation + self.field_identation.join(docstring.splitlines())
+            docstring_repr = f'{self.field_identation}"""{indented}{self.field_identation}"""'
+        
+        if fields_representation is not None:
+            field_docs: list[str] = [f"{field.name}: {field.metadata['doc']}" for field in fields_representation if field.metadata.get("doc")]
+            if field_docs:
+                docstring_repr = templates.docstrings_with_fields_template.safe_substitute(
+                    class_docstring=docstring_repr,
+                    fields_docstring=self.field_identation.join(field_docs)
+                )
 
-        return f'{self.field_identation}"""{indented}{self.field_identation}"""'
+        return docstring_repr
 
     @staticmethod
     def _add_schema_to_metaclass(schema_template: Template, schema: JsonDict) -> str:
@@ -334,7 +341,7 @@ class ModelRepresentation(ClassRepresentation):
             if len(self.fields_representation) > 0
             else "pass"
         )
-        docstring = self.render_docstring(docstring=self.schema.get("doc"))
+        docstring = self.render_docstring(docstring=self.schema.get("doc"), fields_representation=self.fields_representation)
 
         rendered_class = self.template.safe_substitute(
             name=self.name,
