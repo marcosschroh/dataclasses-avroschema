@@ -1,3 +1,15 @@
+## 0.65.14 (2025-09-07)
+
+### Fix
+
+- Refine return type of parse_obj and deserialize to be the current class (#868)
+
+## 0.65.13 (2025-09-04)
+
+### Fix
+
+- **ModelGenerator**: Add `pass` keyword when there are no fields (#891)
+
 ## 0.65.12 (2025-07-18)
 
 ### Fix
