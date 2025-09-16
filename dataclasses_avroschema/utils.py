@@ -158,7 +158,7 @@ def standardize_custom_type(
             # once the function interface is introduced we can remove this check
             asdict = value.standardize_type(include_type=include_type)  # type: ignore
         else:
-            asdict = value.asdict()
+            asdict = value.asdict(include_type=include_type)
 
         annotations = model.__annotations__
         # This is a hack to get the annotations from the parent class
