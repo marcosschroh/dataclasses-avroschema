@@ -3,12 +3,13 @@ import enum
 import typing
 from datetime import datetime, timezone
 from functools import lru_cache
+from types import UnionType
 
 import typing_extensions
 from typing_extensions import Annotated, get_origin
 
 from .protocol import ModelProtocol  # pragma: no cover
-from .types import FieldInfo, JsonDict, UnionType
+from .types import FieldInfo, JsonDict
 
 if typing.TYPE_CHECKING:
     from dataclasses_avroschema import AvroModel  # pragma: no cover

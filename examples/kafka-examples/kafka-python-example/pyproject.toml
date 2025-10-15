@@ -6,7 +6,7 @@ authors = ["marcosschroh <schrohm@gmail.com>"]
 packages = [{include = "kafka_python_example"}]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.10"
 kafka-python = "^2.0.2"
 dataclasses-avroschema = { path = "../../../.", develop = true }
 

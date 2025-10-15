@@ -230,7 +230,7 @@ event_2 = b'{"first_union": 10, "logical_union": {"long": 1647971584847}}'
 
 my_union.deserialize(event_2, serialization_type="avro-json")
 
-File ~/Projects/dataclasses-avroschema/.venv/lib/python3.9/site-packages/fastavro/io/json_decoder.py:213, in AvroJSONDecoder.read_index(self)
+File ~/Projects/dataclasses-avroschema/.venv/lib/python3.10/site-packages/fastavro/io/json_decoder.py:213, in AvroJSONDecoder.read_index(self)
     211     label = "null"
     212 else:
 --> 213     label, data = self._current[self._key].popitem()

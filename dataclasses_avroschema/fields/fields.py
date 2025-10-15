@@ -7,6 +7,7 @@ import random
 import re
 import typing
 import uuid
+from types import UnionType
 
 import fastavro
 from typing_extensions import get_args, get_origin
@@ -24,15 +25,12 @@ from dataclasses_avroschema.utils import is_pydantic_model
 from . import field_utils
 from .base import Field
 
-if version.PY_VERSION >= (3, 9):  # pragma: no cover
-    GenericAlias = (
-        typing.GenericAlias,  # type: ignore
-        typing._GenericAlias,  # type: ignore
-        typing._SpecialGenericAlias,  # type: ignore
-        typing._UnionGenericAlias,  # type: ignore
-    )  # noqa: E501
-else:
-    GenericAlias = typing._GenericAlias  # type: ignore  # pragma: no cover
+GenericAlias = (
+    typing.GenericAlias,  # type: ignore
+    typing._GenericAlias,  # type: ignore
+    typing._SpecialGenericAlias,  # type: ignore
+    typing._UnionGenericAlias,  # type: ignore
+)  # noqa: E501
 
 
 if typing.TYPE_CHECKING:
@@ -1034,7 +1032,7 @@ def field_factory(
             model_metadata=model_metadata,
             parent=parent,
         )
-    elif types.UnionType is not None and isinstance(native_type, types.UnionType):
+    elif UnionType is not None and isinstance(native_type, UnionType):
         # we need to check whether types.UnionType because it works only in
         # python 3.9 or importing __future__ in previous python versions
         # cases when a container is used, for example `typing.List[int] | str` in python is

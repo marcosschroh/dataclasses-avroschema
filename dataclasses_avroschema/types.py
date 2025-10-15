@@ -1,18 +1,7 @@
 import datetime
 import decimal
 import typing
-
-from .version import PY_VERSION
-
-if PY_VERSION >= (3, 9):
-    from typing import Annotated  # type: ignore
-else:
-    from typing_extensions import Annotated  # type: ignore # pragma: no cover
-
-if PY_VERSION >= (3, 10):
-    from types import UnionType  # type: ignore # pragma: no cover
-else:
-    UnionType = None  # type: ignore # pragma: no cover
+from typing import Annotated
 
 T = typing.TypeVar("T")
 JsonDict = typing.Dict[str, typing.Any]

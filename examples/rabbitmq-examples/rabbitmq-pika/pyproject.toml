@@ -6,7 +6,7 @@ authors = ["marcosschroh <schrohm@gmail.com>"]
 packages = [{include = "rabbitmq_pika"}]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.10"
 dataclasses-avroschema = { path = "../../../.", develop = true }
 pika = "^1.3.2"
 
