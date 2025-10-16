@@ -6,7 +6,7 @@ authors = ["marcosschroh <schrohm@gmail.com>"]
 packages = [{include = "redis_streams_example"}]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.10"
 walrus = "^0.9.3"
 dataclasses-avroschema = { path = "../../../.", develop = true }
 

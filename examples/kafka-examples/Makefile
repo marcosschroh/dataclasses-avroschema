@@ -1,5 +1,5 @@
 # This Makefile requires the following commands to be available:
-# * python3.9
+# * python3.10
 # * docker
 
 # Docker Compse options
