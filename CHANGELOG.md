@@ -1,3 +1,13 @@
+## 0.66.0 (2025-10-16)
+
+### BREAKING CHANGE
+
+- python 3.9 support dropped
+
+### Feat
+
+- small tweaks (#901)
+
 ## 0.65.14 (2025-09-07)
 
 ### Fix
