@@ -49,10 +49,18 @@ class Parser:
     def parse_fields(self, exclude: typing.List) -> typing.List[Field]:
         from .fields.fields import AvroField
 
+        # Use get_type_hints to resolve ForwardRef objects (PEP 649 in Python 3.14+)
+        # This ensures forward references to classes defined later are properly resolved
+        try:
+            type_hints = typing.get_type_hints(self.dataclass)
+        except Exception:
+            # If get_type_hints fails (e.g., due to missing imports), fall back to raw annotations
+            type_hints = {}
+
         return [
             AvroField(
                 dataclass_field.name,
-                dataclass_field.type,
+                type_hints.get(dataclass_field.name, dataclass_field.type),
                 default=dataclass_field.default,
                 default_factory=dataclass_field.default_factory,  # type: ignore  # TODO: resolve mypy
                 metadata=dict(dataclass_field.metadata),
