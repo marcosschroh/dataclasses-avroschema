@@ -1039,13 +1039,13 @@
 <h1 id="pydantic-v1-integration">Pydantic V1 Integration</h1>
 <p>It is possible to use <a href="https://docs.pydantic.dev/1.10/">pydantic</a> with <code>dataclasses-avroschema</code> making use of <code>AvroBaseModel</code>:</p>
 <p>You must use all the <code>pydantic</code> features and all <code>dataclasses-avroschema</code> functionality will be injected.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Pydantic V1 core functionality will not work properly with Python 3.14 or greater. As such, Python 3.13 is the latest supported Python version for V1.</p>
+</div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>With <code>pydantic</code> you do not have to use <code>python dataclasses</code></p>
-</div>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>The support of <code>pydantic v1</code> will be deprecated in the future. We recommend to migrate to <code>pydantic v2</code>.</p>
 </div>
 <h2 id="avro-and-json-schemas">Avro and Json schemas</h2>
 <div class="highlight"><span class="filename">Basic usage</span><pre><span></span><code><span class="kn">import</span> <span class="nn">typing</span>
