@@ -1,3 +1,9 @@
+## 0.66.1 (2025-11-17)
+
+### Fix
+
+- suppor for python3.14 added. Closes #902 (#911)
+
 ## 0.66.0 (2025-10-16)
 
 ### BREAKING CHANGE
