@@ -4,19 +4,27 @@ import typing
 
 import pytest
 
-from dataclasses_avroschema import AvroModel
+from dataclasses_avroschema import AvroModel, utils
 from dataclasses_avroschema.faust import AvroRecord
 from dataclasses_avroschema.pydantic import AvroBaseModel
 from dataclasses_avroschema.pydantic.v1 import AvroBaseModel as AvroBaseModelV1
 
+
+def get_parametrize():
+    parametrize = [
+        pytest.param(AvroModel, dataclasses.dataclass, id="AvroModel"),
+        pytest.param(AvroBaseModel, lambda f: f, id="AvroBaseModel"),
+        pytest.param(AvroRecord, dataclasses.dataclass, id="AvroRecord"),
+    ]
+
+    if not utils.is_python_314_or_newer():
+        parametrize.append(pytest.param(AvroBaseModelV1, lambda f: f, id="AvroBaseModelV1"))
+    return parametrize
+
+
 parametrize_base_model = pytest.mark.parametrize(
     "model_class, decorator",
-    [
-        (AvroModel, dataclasses.dataclass),
-        (AvroBaseModel, lambda f: f),
-        (AvroBaseModelV1, lambda f: f),
-        (AvroRecord, dataclasses.dataclass),
-    ],
+    get_parametrize(),
 )
 
 

@@ -6,10 +6,15 @@ import uuid
 import pytest
 from pydantic.v1 import Field
 
-from dataclasses_avroschema import types
+from dataclasses_avroschema import types, utils
 from dataclasses_avroschema.pydantic.v1 import AvroBaseModel
 
 from .const import pydantic_v1_fields as pydantic_fields
+
+if utils.is_python_314_or_newer():
+    pytest.skip(
+        allow_module_level=True, reason="Pydantic v1 is not supported in Python 3.14 or newer"
+    )  # pragma: no cover
 
 
 def test_fake_with_logical_types() -> None:
