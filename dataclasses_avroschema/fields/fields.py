@@ -528,6 +528,17 @@ class SelfReferenceField(Field):
             return [field_utils.NULL, str_type]
         return str_type
 
+    @staticmethod
+    def _get_self_reference_type(a_type: typing.Union[typing.Type, typing.ForwardRef]) -> str:
+        if getattr(a_type, "__args__", None):
+            # this is a typing.Type[typing.ForwardRef]
+            internal_type: typing.ForwardRef = a_type.__args__[0]  # type: ignore
+            return internal_type.__forward_arg__
+
+        if isinstance(a_type, typing.ForwardRef):
+            return a_type.__forward_arg__
+        return a_type.__name__
+
     def get_default_value(self) -> typing.Union[dataclasses._MISSING_TYPE, None]:
         # Only check for None because self reference default value can be only None
         if self.default is None:

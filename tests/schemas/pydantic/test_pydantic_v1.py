@@ -23,6 +23,11 @@ from pydantic.v1 import (
 from dataclasses_avroschema import types, utils
 from dataclasses_avroschema.pydantic.v1 import AvroBaseModel
 
+if utils.is_python_314_or_newer():
+    pytest.skip(
+        allow_module_level=True, reason="Pydantic v1 is not supported in Python 3.14 or newer"
+    )  # pragma: no cover
+
 encoded = "test".encode()
 
 

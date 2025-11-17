@@ -4,11 +4,11 @@ It is possible to use [pydantic](https://docs.pydantic.dev/1.10/) with `dataclas
 
 You must use all the `pydantic` features and all `dataclasses-avroschema` functionality will be injected.
 
+!!! warning
+    Pydantic V1 core functionality will not work properly with Python 3.14 or greater. As such, Python 3.13 is the latest supported Python version for V1.
+
 !!! note
     With `pydantic` you do not have to use `python dataclasses`
-
-!!! warning
-    The support of `pydantic v1` will be deprecated in the future. We recommend to migrate to `pydantic v2`.
 
 ## Avro and Json schemas
 

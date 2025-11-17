@@ -3,19 +3,27 @@ import typing
 
 import pytest
 
-from dataclasses_avroschema import AvroModel
+from dataclasses_avroschema import AvroModel, utils
 from dataclasses_avroschema.faust import AvroRecord
 from dataclasses_avroschema.pydantic import AvroBaseModel
 from dataclasses_avroschema.pydantic.v1 import AvroBaseModel as AvroBaseModelV1
 
+
+def get_parametrize():
+    parametrize = [
+        pytest.param(AvroModel, dataclasses.dataclass, id="AvroModel"),
+        pytest.param(AvroBaseModel, lambda f: f, id="AvroBaseModel"),
+        pytest.param(AvroRecord, dataclasses.dataclass, id="AvroRecord"),
+    ]
+
+    if not utils.is_python_314_or_newer():
+        parametrize.append(pytest.param(AvroBaseModelV1, lambda f: f, id="AvroBaseModelV1"))
+    return parametrize
+
+
 parametrize_base_model = pytest.mark.parametrize(
     "model_class, decorator",
-    [
-        (AvroModel, dataclasses.dataclass),
-        (AvroBaseModel, lambda f: f),
-        (AvroBaseModelV1, lambda f: f),
-        (AvroRecord, lambda f: f),
-    ],
+    get_parametrize(),
 )
 
 
@@ -36,9 +44,10 @@ def test_self_one_to_one_relationship(model_class: typing.Type[AvroModel], decor
     data_friend = {
         "name": "john",
         "age": 20,
+        "friend": None,
     }
 
-    friend = User(**data_friend)
+    friend = User.parse_obj(data_friend)
 
     data_user = {
         "name": "juan",
@@ -46,7 +55,7 @@ def test_self_one_to_one_relationship(model_class: typing.Type[AvroModel], decor
         "friend": friend,
     }
 
-    user = User(**data_user)
+    user = User.parse_obj(data_user)
 
     avro_binary = b"\x08juan(\x02\x08john(\x00"
     # Seems a bug in fastavro
@@ -93,14 +102,14 @@ def test_self_one_to_many_relationship(model_class: typing.Type[AvroModel], deco
         friends: typing.Optional[typing.List[typing.Type["User"]]] = None
 
     data_friend = {"name": "john", "age": 20, "friends": []}
-    friend = User(**data_friend)
+    friend = User.parse_obj(data_friend)
 
     data_user = {
         "name": "juan",
         "age": 20,
         "friends": [friend],
     }
-    user = User(**data_user)
+    user = User.parse_obj(data_user)
 
     expected = {
         "name": "juan",
@@ -152,14 +161,14 @@ def test_self_one_to_many_map_relationship(model_class: typing.Type[AvroModel], 
         "age": 20,
         "friends": {},
     }
-    friend = User(**data_friend)
+    friend = User.parse_obj(data_friend)
 
     data_user = {
         "name": "juan",
         "age": 20,
         "friends": {"a_friend": friend},
     }
-    user = User(**data_user)
+    user = User.parse_obj(data_user)
 
     avro_binary = b"\x08juan(\x02\x02\x10a_friend\x08john(\x02\x00\x00"
     # avro_json = b'{"name": "juan", "age": 20, "friends": {"a_friend": {"name": "john", "age": 20, "friends": {}}}}'

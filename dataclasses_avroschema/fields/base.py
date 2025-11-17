@@ -51,13 +51,6 @@ class Field:
         ...  #  pragma: no cover
 
     @staticmethod
-    def _get_self_reference_type(a_type: typing.Any) -> str:
-        if getattr(a_type, "__args__", None):
-            internal_type = a_type.__args__[0]
-            return internal_type.__forward_arg__
-        return a_type.__name__
-
-    @staticmethod
     def get_singular_name(name: str) -> str:
         return inflection.singularize(name)
 
