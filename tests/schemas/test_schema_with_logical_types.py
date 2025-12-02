@@ -3,7 +3,7 @@ import datetime
 import decimal
 import json
 import uuid
-from typing import ForwardRef, Optional, Union
+from typing import Optional
 
 from dataclasses_avroschema import AvroModel, types
 
@@ -70,6 +70,7 @@ def test_uuid_with_forward_ref_not_treated_as_self_reference():
 
     See: https://github.com/marcosschroh/dataclasses-avroschema/issues/912
     """
+
     # Simulate TYPE_CHECKING import: Optional["UUID"] becomes Union[ForwardRef('UUID'), None]
     @dataclasses.dataclass
     class FooWithForwardRefUUID(AvroModel):
@@ -85,8 +86,9 @@ def test_uuid_with_forward_ref_not_treated_as_self_reference():
 
     # Expected: ["null", {"type": "string", "logicalType": "uuid"}]
     # Bug (before fix): ["null", "uuid.UUID"]
-    assert uuid_field["type"] == ["null", {"type": "string", "logicalType": "uuid"}], \
+    assert uuid_field["type"] == ["null", {"type": "string", "logicalType": "uuid"}], (
         f"UUID field should use logical type, not string. Got: {uuid_field['type']}"
+    )
 
 
 def test_self_reference_still_works_with_forward_ref_fix():
@@ -98,6 +100,7 @@ def test_self_reference_still_works_with_forward_ref_fix():
     - The self-reference should produce the class name as type
     - The UUID should produce the logical type
     """
+
     @dataclasses.dataclass
     class Foo(AvroModel):
         name: str
@@ -113,13 +116,15 @@ def test_self_reference_still_works_with_forward_ref_fix():
 
     # Verify self-reference field produces class name
     friend_field = fields["friend"]
-    assert friend_field["type"] == ["null", "Foo"], \
+    assert friend_field["type"] == ["null", "Foo"], (
         f"Self-reference should produce class name. Got: {friend_field['type']}"
+    )
 
     # Verify UUID field produces logical type, not string
     uuid_field = fields["_uuid"]
-    assert uuid_field["type"] == ["null", {"type": "string", "logicalType": "uuid"}], \
+    assert uuid_field["type"] == ["null", {"type": "string", "logicalType": "uuid"}], (
         f"UUID should be logical type, not string. Got: {uuid_field['type']}"
+    )
 
 
 def test_nested_class_with_forward_ref_uuid():
@@ -129,6 +134,7 @@ def test_nested_class_with_forward_ref_uuid():
     Scenario: Foo contains Bar, and Bar has a ForwardRef UUID field.
     Both the nested relationship and UUID resolution should work.
     """
+
     @dataclasses.dataclass
     class Bar(AvroModel):
         value: str
@@ -145,8 +151,9 @@ def test_nested_class_with_forward_ref_uuid():
 
     # Verify Foo's UUID field is a logical type
     foo_uuid_field = fields["foo_uuid"]
-    assert foo_uuid_field["type"] == ["null", {"type": "string", "logicalType": "uuid"}], \
+    assert foo_uuid_field["type"] == ["null", {"type": "string", "logicalType": "uuid"}], (
         f"Foo's UUID should be logical type. Got: {foo_uuid_field['type']}"
+    )
 
     # Verify Bar is properly nested (not treated as self-reference)
     bar_field = fields["bar"]
@@ -158,5 +165,6 @@ def test_nested_class_with_forward_ref_uuid():
     # Verify Bar's UUID field inside the nested record
     bar_fields = {f["name"]: f for f in bar_record["fields"]}
     bar_uuid_field = bar_fields["bar_uuid"]
-    assert bar_uuid_field["type"] == ["null", {"type": "string", "logicalType": "uuid"}], \
+    assert bar_uuid_field["type"] == ["null", {"type": "string", "logicalType": "uuid"}], (
         f"Bar's UUID should be logical type. Got: {bar_uuid_field['type']}"
+    )
