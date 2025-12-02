@@ -955,13 +955,8 @@ def field_factory(
         try:
             native_type = eval(forward_arg, eval_namespace)
         except (NameError, SyntaxError):
-            # If we can't resolve it, check if it's a self-reference
-            if forward_arg == parent.__name__:
-                # It's a self-reference, let it pass through to is_self_referenced check
-                pass
-            else:
-                # Can't resolve and not a self-reference, will error later
-                pass
+            # If we can't resolve it, let it pass through to is_self_referenced check
+            pass
 
     if utils.is_annotated(native_type):
         a_type, *extra_args = get_args(native_type)
