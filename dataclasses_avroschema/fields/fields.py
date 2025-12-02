@@ -936,6 +936,33 @@ def field_factory(
     if native_type is None:
         native_type = type(None)
 
+    # Resolve ForwardRef to actual type if possible
+    # This handles cases like TYPE_CHECKING imports where types are ForwardRef at runtime
+    if isinstance(native_type, typing.ForwardRef):
+        # Try to evaluate the ForwardRef in a namespace that includes common types
+        forward_arg = native_type.__forward_arg__
+        # Build namespace with logical types and common modules
+        eval_namespace = {
+            "uuid": uuid,
+            "UUID": uuid.UUID,
+            "datetime": datetime,
+            "date": datetime.date,
+            "time": datetime.time,
+            "timedelta": datetime.timedelta,
+            "Decimal": decimal.Decimal,
+            "decimal": decimal,
+        }
+        try:
+            native_type = eval(forward_arg, eval_namespace)
+        except (NameError, SyntaxError):
+            # If we can't resolve it, check if it's a self-reference
+            if forward_arg == parent.__name__:
+                # It's a self-reference, let it pass through to is_self_referenced check
+                pass
+            else:
+                # Can't resolve and not a self-reference, will error later
+                pass
+
     if utils.is_annotated(native_type):
         a_type, *extra_args = get_args(native_type)
         field_info = next((arg for arg in extra_args if isinstance(arg, types.FieldInfo)), None)
