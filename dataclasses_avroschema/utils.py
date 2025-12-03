@@ -55,7 +55,7 @@ def _is_typing_name(obj: object, name: str) -> bool:
 
 def get_klass_annotations(klass: typing.Type[ModelProtocol]) -> typing.Dict[str, typing.Type]:
     if is_python_314_or_newer():
-        annotationlib.get_annotations(klass)
+        return annotationlib.get_annotations(klass)
     return klass.__annotations__
 
 
@@ -116,9 +116,10 @@ def is_self_referenced(a_type: typing.Type, parent: typing.Type) -> bool:
             isinstance(a_type, typing._GenericAlias)  # type: ignore
             and a_type.__args__
             and isinstance(a_type.__args__[0], typing.ForwardRef)
+            and a_type.__args__[0].__forward_arg__ == parent.__name__
         )
         or a_type == parent
-        or isinstance(a_type, typing.ForwardRef)
+        or (isinstance(a_type, typing.ForwardRef) and a_type.__forward_arg__ == parent.__name__)
     )
 
 
