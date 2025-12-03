@@ -236,3 +236,107 @@ def test_deserialization_with_writer_schema_dict():
 def test_deserialization_with_writer_schema_avro_model():
     user = User.parse_obj(data_user)
     UserCompatible.deserialize(user.serialize(), writer_schema=User)
+
+
+def test_serialization_with_forward_ref_uuid():
+    """
+    Test serialization/deserialization with ForwardRef UUID fields.
+    This ensures the fix for issue #912 works end-to-end.
+
+    See: https://github.com/marcosschroh/dataclasses-avroschema/issues/912
+    """
+
+    @dataclass
+    class ModelWithForwardRefUUID(AvroModel):
+        name: str
+        # ForwardRef UUID - simulates TYPE_CHECKING import scenario
+        record_id: typing.Optional["uuid.UUID"] = None
+
+    test_uuid = uuid.UUID("12345678-1234-5678-1234-567812345678")
+    instance = ModelWithForwardRefUUID(name="test", record_id=test_uuid)
+
+    # Serialize
+    avro_binary = instance.serialize()
+    assert avro_binary is not None
+    assert len(avro_binary) > 0
+
+    # Deserialize and verify
+    deserialized = ModelWithForwardRefUUID.deserialize(avro_binary)
+    assert deserialized.name == "test"
+    assert deserialized.record_id == test_uuid
+
+    # Test with None UUID
+    instance_null = ModelWithForwardRefUUID(name="null_uuid", record_id=None)
+    avro_binary_null = instance_null.serialize()
+    deserialized_null = ModelWithForwardRefUUID.deserialize(avro_binary_null)
+    assert deserialized_null.name == "null_uuid"
+    assert deserialized_null.record_id is None
+
+
+def test_serialization_with_self_reference_and_forward_ref_uuid():
+    """
+    Test serialization with both self-reference and ForwardRef UUID in same model.
+    Ensures self-references work correctly alongside ForwardRef resolution.
+    """
+
+    @dataclass
+    class Person(AvroModel):
+        name: str
+        # Self-reference
+        friend: typing.Optional["Person"] = None
+        # ForwardRef UUID
+        person_id: typing.Optional["uuid.UUID"] = None
+
+    person_uuid = uuid.UUID("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee")
+    friend_uuid = uuid.UUID("11111111-2222-3333-4444-555555555555")
+
+    friend = Person(name="Alice", friend=None, person_id=friend_uuid)
+    person = Person(name="Bob", friend=friend, person_id=person_uuid)
+
+    # Serialize
+    avro_binary = person.serialize()
+    assert avro_binary is not None
+
+    # Deserialize and verify
+    deserialized = Person.deserialize(avro_binary)
+    assert deserialized.name == "Bob"
+    assert deserialized.person_id == person_uuid
+    assert deserialized.friend is not None
+    assert deserialized.friend.name == "Alice"
+    assert deserialized.friend.person_id == friend_uuid
+    assert deserialized.friend.friend is None
+
+
+def test_serialization_with_nested_models_and_forward_ref_uuid():
+    """
+    Test serialization with nested models where both have ForwardRef UUID fields.
+    """
+
+    @dataclass
+    class InnerModel(AvroModel):
+        value: str
+        inner_id: typing.Optional["uuid.UUID"] = None
+
+    @dataclass
+    class OuterModel(AvroModel):
+        name: str
+        inner: typing.Optional[InnerModel] = None
+        outer_id: typing.Optional["uuid.UUID"] = None
+
+    inner_uuid = uuid.UUID("11111111-1111-1111-1111-111111111111")
+    outer_uuid = uuid.UUID("22222222-2222-2222-2222-222222222222")
+
+    inner = InnerModel(value="inner_value", inner_id=inner_uuid)
+    outer = OuterModel(name="outer_name", inner=inner, outer_id=outer_uuid)
+
+    # Serialize
+    avro_binary = outer.serialize()
+    assert avro_binary is not None
+
+    # Deserialize and verify
+    deserialized = OuterModel.deserialize(avro_binary)
+    assert deserialized.name == "outer_name"
+    assert deserialized.outer_id == outer_uuid
+    assert deserialized.inner is not None
+    assert deserialized.inner.value == "inner_value"
+    assert deserialized.inner.inner_id == inner_uuid
