@@ -1,7 +1,9 @@
+import ast
 import dataclasses
 import datetime
 import decimal
 import enum
+import importlib
 import inspect
 import random
 import re
@@ -197,6 +199,10 @@ class BaseListField(ContainerField):
     def generate_items_type(self) -> typing.Any:
         # because avro can have only one type, we take the first one
         items_type = self.type.__args__[0]
+
+        # Resolve ForwardRef if the item type is a forward reference
+        if isinstance(items_type, typing.ForwardRef):
+            items_type = _resolve_forward_ref(items_type)
 
         if utils.is_union(items_type):
             self.internal_field = UnionField(
@@ -909,6 +915,145 @@ PYDANTIC_CUSTOM_CLASS_METHOD_NAMES = {
 }
 
 
+def _resolve_forward_ref(forward_ref: typing.ForwardRef) -> typing.Any:
+    """
+    Resolve a ForwardRef to its actual type.
+
+    This handles Python 3.14+ (PEP 649) deferred annotations and TYPE_CHECKING imports
+    by building a namespace from the ForwardRef's globals and dynamically importing
+    types that were only imported under TYPE_CHECKING.
+
+    Args:
+        forward_ref: The ForwardRef to resolve
+
+    Returns:
+        The resolved type, or the original ForwardRef if resolution fails
+    """
+    forward_arg = forward_ref.__forward_arg__
+    # Build namespace with logical types and common modules as fallbacks
+    eval_namespace: dict[str, typing.Any] = {
+        "uuid": uuid,
+        "UUID": uuid.UUID,
+        "datetime": datetime.datetime,  # Use class, not module - user likely means the class
+        "date": datetime.date,
+        "time": datetime.time,
+        "timedelta": datetime.timedelta,
+        "Decimal": decimal.Decimal,
+        "decimal": decimal,
+    }
+    # Python 3.14+ (PEP 649): ForwardRef has __globals__ from the defining module
+    # Use it as the base namespace for better resolution of module-level types
+    forward_globals = getattr(forward_ref, "__globals__", None)
+    if forward_globals:
+        # Start with standard types as base
+        full_namespace = dict(eval_namespace)
+        # Module globals override standard types
+        full_namespace.update(forward_globals)
+        eval_namespace = full_namespace
+
+        # Get TYPE_CHECKING imports using the ForwardRef's __globals__ directly
+        # This works even when running as __main__ because __globals__ has __file__
+        type_checking_imports = _get_type_checking_imports_from_globals(forward_globals)
+        if type_checking_imports:
+            eval_namespace.update(type_checking_imports)
+
+    try:
+        return eval(forward_arg, eval_namespace)
+    except (NameError, SyntaxError):
+        # If we can't resolve it, return the original ForwardRef
+        return forward_ref
+
+
+# Cache for parsed TYPE_CHECKING imports per file path
+# This avoids re-reading and re-parsing the same source file for each ForwardRef
+_type_checking_imports_cache: dict[str, dict[str, typing.Any]] = {}
+
+
+def _get_type_checking_imports_from_globals(
+    forward_globals: dict[str, typing.Any],
+) -> dict[str, typing.Any]:
+    """
+    Extract TYPE_CHECKING imports using the ForwardRef's __globals__ dict.
+
+    This is more reliable than using the module from sys.modules because
+    __globals__ always has __file__ even when running as __main__.
+
+    Results are cached per file path to avoid repeated file I/O and parsing.
+    """
+    # Try to get source from __file__ in globals
+    module_file = forward_globals.get("__file__")
+    if not module_file:
+        return {}
+
+    # Check cache first
+    if module_file in _type_checking_imports_cache:
+        return _type_checking_imports_cache[module_file]
+
+    try:
+        with open(module_file) as f:
+            source = f.read()
+    except (OSError, IOError):
+        _type_checking_imports_cache[module_file] = {}
+        return {}
+
+    result = _parse_type_checking_imports(source)
+    _type_checking_imports_cache[module_file] = result
+    return result
+
+
+def _parse_type_checking_imports(source: str) -> dict[str, typing.Any]:
+    """
+    Parse source code and extract TYPE_CHECKING imports.
+
+    Args:
+        source: The source code to parse
+
+    Returns:
+        Dict mapping import names to their actual types
+    """
+    result: dict[str, typing.Any] = {}
+    try:
+        tree = ast.parse(source)
+    except SyntaxError:
+        return result
+
+    for node in ast.walk(tree):
+        if isinstance(node, ast.If):
+            # Check if it's 'if TYPE_CHECKING:', 'if typing.TYPE_CHECKING:', or 'if <alias>.TYPE_CHECKING:'
+            # (e.g., 'import typing as tp' then 'if tp.TYPE_CHECKING:')
+            is_type_checking = (isinstance(node.test, ast.Name) and node.test.id == "TYPE_CHECKING") or (
+                isinstance(node.test, ast.Attribute)
+                and isinstance(node.test.value, ast.Name)
+                and node.test.attr == "TYPE_CHECKING"
+                # Accept any alias for typing module (typing, tp, t, etc.)
+            )
+            if is_type_checking:
+                for stmt in node.body:
+                    # Handle: from module import name
+                    if isinstance(stmt, ast.ImportFrom) and stmt.module:
+                        for alias in stmt.names:
+                            name = alias.name
+                            asname = alias.asname or name
+                            try:
+                                imported_module = importlib.import_module(stmt.module)
+                                obj = getattr(imported_module, name, None)
+                                if obj is not None:
+                                    result[asname] = obj
+                            except (ImportError, AttributeError):
+                                pass
+                    # Handle: import module OR import module as alias
+                    elif isinstance(stmt, ast.Import):
+                        for alias in stmt.names:
+                            module_name = alias.name
+                            asname = alias.asname or module_name
+                            try:
+                                imported_module = importlib.import_module(module_name)
+                                result[asname] = imported_module
+                            except ImportError:
+                                pass
+    return result
+
+
 def field_factory(
     name: str,
     native_type: typing.Any,
@@ -939,24 +1084,7 @@ def field_factory(
     # Resolve ForwardRef to actual type if possible
     # This handles cases like TYPE_CHECKING imports where types are ForwardRef at runtime
     if isinstance(native_type, typing.ForwardRef):
-        # Try to evaluate the ForwardRef in a namespace that includes common types
-        forward_arg = native_type.__forward_arg__
-        # Build namespace with logical types and common modules
-        eval_namespace = {
-            "uuid": uuid,
-            "UUID": uuid.UUID,
-            "datetime": datetime,
-            "date": datetime.date,
-            "time": datetime.time,
-            "timedelta": datetime.timedelta,
-            "Decimal": decimal.Decimal,
-            "decimal": decimal,
-        }
-        try:
-            native_type = eval(forward_arg, eval_namespace)
-        except (NameError, SyntaxError):
-            # If we can't resolve it, let it pass through to is_self_referenced check
-            pass
+        native_type = _resolve_forward_ref(native_type)
 
     if utils.is_annotated(native_type):
         a_type, *extra_args = get_args(native_type)
