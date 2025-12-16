@@ -1,0 +1,39 @@
+name: Benchmark Compare
+
+on:
+  pull_request:
+    branches: ["*"]
+
+jobs:
+  bench:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        fetch-depth: 0
+    - name: Setup python
+      uses: actions/setup-python@v6
+      with:
+        python-version: '3.13'
+        architecture: x64
+    - name: Set Cache
+      uses: actions/cache@v4
+      id: cache  # name for referring later
+      with:
+        path: .venv/
+        # The cache key depends on poetry.lock
+        key: ${{ runner.os }}-cache-${{ hashFiles('poetry.lock') }}-313
+        restore-keys: |
+          ${{ runner.os }}-cache-
+          ${{ runner.os }}-
+    - name: Install Poetry
+      uses: snok/install-poetry@v1
+      with:
+        version: latest
+        virtualenvs-in-project: true
+        virtualenvs-create: true
+    - name: Install Dependencies
+      # if: steps.cache.outputs.cache-hit != 'true'
+      run: poetry install --extras "faker"
+    - name: Benchmark regression test
+      run: ./scripts/bench-compare

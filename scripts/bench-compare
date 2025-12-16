@@ -1,0 +1,18 @@
+# This script runs pytest benchmarks to compare benchmark results.
+#
+# The script compares the latest benchmark with the current code.
+# This is useful for identifying performance regressions or improvements.
+# It should run on a PR, to compare the performance of the current code with the previous release.
+#
+# Usage: Run this script locally for testing performance changes.
+# If you are running on a Mac, you may need to run the bench-current on the previous code,
+# and then on the current code.
+#
+#!/bin/bash -e
+
+export PREFIX=""
+if [ -d '.venv' ] ; then
+    export PREFIX=".venv/bin/"
+fi
+
+${PREFIX}pytest tests/test_benchmarks.py tests/model_generator/test_benchmark_model_generator.py --benchmark-compare --benchmark-compare-fail=mean:10%

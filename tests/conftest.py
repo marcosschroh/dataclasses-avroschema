@@ -179,11 +179,11 @@ def user_advance_dataclass_with_union_enum_with_annotated():
         pets: typing.List[Annotated[str, "string"]]
         accounts: typing.Dict[str, Annotated[int, "integer"]]
         favorite_colors: Annotated[FavoriteColor, "a color enum"]
+        md5: types.confixed(size=16)
         has_car: Annotated[bool, "boolean"] = False
         country: str = "Argentina"
         address: typing.Optional[Annotated[str, "string"]] = None
         user_type: typing.Union[Annotated[int, "integer"], UserType] = -1
-        md5: types.Fixed = types.Fixed(16)
 
         class Meta:
             schema_doc = False
