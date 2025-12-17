@@ -31,6 +31,7 @@ pydantic = {version = "^2.4.2", optional = true, extras = ["email"]}
 python-dateutil = "^2.7"
 dc-avro = {version =">=0.6.4", optional = true}
 inflection = "^0.5.1"
+pytest-benchmark = "^5.2.3"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.8.0"

@@ -1,0 +1,16 @@
+#!/bin/bash -e
+# This script runs benchmark tests using pytest and saves the results.
+#
+# By saving this information, way we can keep track of the regressions in performance.
+# This script should be run on merge, to create a report for the current release.
+#
+# Usage:
+# 1. Run this script from the terminal: ./bench-current
+# 2. The benchmark results will be saved in the `.benchmarks` folder.
+
+export PREFIX=""
+if [ -d '.venv' ] ; then
+    export PREFIX=".venv/bin/"
+fi
+
+${PREFIX}pytest tests/test_benchmarks.py tests/model_generator/test_benchmark_model_generator.py --benchmark-autosave

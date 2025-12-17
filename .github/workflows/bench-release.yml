@@ -1,0 +1,49 @@
+name: Benchmark latest release
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  bench_release:
+    if: ${{ startsWith(github.event.head_commit.message, 'bump:') }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out
+      uses: actions/checkout@v6
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+    - name: Setup python
+      uses: actions/setup-python@v6
+      with:
+        python-version: '3.13'
+        architecture: x64
+    - name: Set Cache
+      uses: actions/cache@v4
+      id: cache  # name for referring later
+      with:
+        path: .venv/
+        # The cache key depends on poetry.lock
+        key: ${{ runner.os }}-cache-${{ hashFiles('poetry.lock') }}-313
+        restore-keys: |
+          ${{ runner.os }}-cache-
+          ${{ runner.os }}-
+    - name: Install Poetry
+      uses: snok/install-poetry@v1
+      with:
+        version: latest
+        virtualenvs-in-project: true
+    - name: Install Dependencies
+      # if: steps.cache.outputs.cache-hit != 'true'
+      run: poetry install --extras "faker"
+    - name: Benchmark code
+      run: ./scripts/bench-current
+    - name: Commit benchmark
+      run: |
+        git config --global user.email "action@github.com"
+        git config --global user.name "GitHub Action"
+        git add .benchmarks/
+        git commit -m "bench: current release"
+        git push origin master
