@@ -1518,17 +1518,18 @@ typing-extensions = {version = ">=4.0", markers = "python_version < \"3.11\""}
 
 [[package]]
 name = "mktestdocs"
-version = "0.2.4"
-description = ""
+version = "0.2.5"
+description = "A tool for testing markdown documentation"
 optional = false
-python-versions = "*"
+python-versions = ">=3.8"
 groups = ["docs"]
 files = [
-    {file = "mktestdocs-0.2.4-py2.py3-none-any.whl", hash = "sha256:10b047aec287ac4703e121515a76b133c611122280c69017f54d2e7d080cc880"},
+    {file = "mktestdocs-0.2.5-py3-none-any.whl", hash = "sha256:2b20d2387b2025597f3129773edef16d09b08b1b6d31da6cc51af5b693c10430"},
+    {file = "mktestdocs-0.2.5.tar.gz", hash = "sha256:7935d4e665b34b690cdf14749abb842723652485f67af12dce51099bcb98e105"},
 ]
 
 [package.extras]
-test = ["pytest (>=4.0.2)"]
+test = ["pytest"]
 
 [[package]]
 name = "mode-streaming"
