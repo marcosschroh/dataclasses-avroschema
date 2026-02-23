@@ -343,14 +343,14 @@ extras = ["regex"]
 
 [[package]]
 name = "casefy"
-version = "1.0.0"
+version = "1.1.0"
 description = "Utilities for string case conversion."
 optional = false
 python-versions = ">=3.6"
 groups = ["main"]
 files = [
-    {file = "casefy-1.0.0-py3-none-any.whl", hash = "sha256:c89f96fb0fbd13691073b7a65c1e668e81453247d647479a3db105e86d7b0df9"},
-    {file = "casefy-1.0.0.tar.gz", hash = "sha256:bc99428475c2089c5f6a21297b4cfe4e83dff132cf3bb06655ddcb90632af1ed"},
+    {file = "casefy-1.1.0-py3-none-any.whl", hash = "sha256:a3dfcb14d85902d90702db1e9835760237f6a73ec0ae3b7e991ad767513a3cbc"},
+    {file = "casefy-1.1.0.tar.gz", hash = "sha256:849d6e0f80506fac70ab8e18999a4ca1eb7d8f70941682383d64aa22a7497f8f"},
 ]
 
 [[package]]
@@ -2986,4 +2986,4 @@ pydantic = ["pydantic"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.10"
-content-hash = "d8de4e1ced8193c4b7f23a1b0f9fab6534b64022d287491703f03b916018b93d"
+content-hash = "4652d07a8e8ddc3ab4283936af94dfbac38d6aa7e37593e4ea296311cf4297ce"
