@@ -35,7 +35,7 @@ class AvroBaseModel(BaseModel, AvroModel):  # type: ignore
                 data[k] = encode_method(v)
         return data
 
-    def asdict(self) -> JsonDict:
+    def asdict(self, include_type: bool = True) -> JsonDict:
         """
         Returns this model in dictionary form. This method differs from
         pydantic's dict by converting all values to their Avro representation.
@@ -44,7 +44,7 @@ class AvroBaseModel(BaseModel, AvroModel):  # type: ignore
         """
         return {
             field_name: standardize_custom_type(
-                field_name=field_name, value=value, model=self, base_class=AvroBaseModel
+                field_name=field_name, value=value, model=self, base_class=AvroBaseModel, include_type=include_type
             )
             for field_name, value in self._standardize_type().items()
         }
