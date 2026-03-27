@@ -1,3 +1,9 @@
+## 0.66.3 (2026-03-27)
+
+### Fix
+
+- normalize union tuples inside lists during deserialization (#932)
+
 ## 0.66.2 (2025-12-03)
 
 ### Fix
