@@ -138,23 +138,19 @@ def deserialize(
     return payload  # type: ignore
 
 
-def deserialize_from_context(*, data: JsonDict, context: JsonDict) -> JsonDict:
+def deserialize_from_context(*, data: typing.Any, context: JsonDict) -> typing.Any:
     """
-    This function tries to convert cast all the cases that have
-    `unions` with a Tuple format (AvroType, payload), for example
-    (Car, {"brand": "fiat"}). This cases happens when there are
-    avro unions of records which are similar or equals among them
+    Recursively normalize deserialized data: unwrap union tuples
+    produced by fastavro's return_record_name=True, and recurse into
+    dicts and lists so that all nesting shapes are handled consistently.
     """
-    cleaned_data = {}
-    for field_name, field_value in data.items():
-        if isinstance(field_value, dict):
-            field_value = deserialize_from_context(data=field_value, context=context)
-        elif isinstance(field_value, tuple) and len(field_value) == 2:
-            field_value = sanitize_union(union=field_value, context=context)
-
-        cleaned_data[field_name] = field_value
-
-    return cleaned_data
+    if isinstance(data, dict):
+        return {k: deserialize_from_context(data=v, context=context) for k, v in data.items()}
+    elif isinstance(data, tuple) and len(data) == 2:
+        return sanitize_union(union=data, context=context)
+    elif isinstance(data, list):
+        return [deserialize_from_context(data=item, context=context) for item in data]
+    return data
 
 
 def sanitize_union(*, union: typing.Tuple, context: JsonDict) -> typing.Optional[ModelProtocol]:

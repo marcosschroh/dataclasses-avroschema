@@ -371,6 +371,81 @@ def test_union_with_multiple_records(model_class: typing.Type[AvroModel], decora
 
 
 @parametrize_base_model
+def test_union_in_array_deserialization(model_class: typing.Type[AvroModel], decorator: typing.Callable) -> None:
+    """
+    Test union deserialization inside array elements.
+
+    See: https://github.com/marcosschroh/dataclasses-avroschema/issues/931
+    """
+    if model_class == AvroBaseModelV1:
+        pytest.skip(reason="Smart Unions are not supported properly in `AvroBaseModelV1` (pydantic v1)")
+
+    @decorator
+    class RecordA(model_class):
+        value: str
+
+    @decorator
+    class RecordB(model_class):
+        value: str
+        extra: str
+
+    @decorator
+    class Item(model_class):
+        field: typing.Union[RecordA, RecordB]
+
+    @decorator
+    class Container(model_class):
+        items: typing.List[Item]
+
+    container = Container(items=[Item(field=RecordA(value="hello")), Item(field=RecordB(value="world", extra="!"))])
+    serialized = container.serialize()
+
+    expected = {
+        "items": [
+            {"field": {"value": "hello"}},
+            {"field": {"value": "world", "extra": "!"}},
+        ]
+    }
+
+    assert Container.deserialize(serialized, create_instance=False) == expected
+    assert Container.deserialize(serialized) == container
+
+
+@parametrize_base_model
+def test_union_in_flat_array_deserialization(model_class: typing.Type[AvroModel], decorator: typing.Callable) -> None:
+    """
+    Test union deserialization with flat array of union records.
+
+    See: https://github.com/marcosschroh/dataclasses-avroschema/issues/931
+    """
+    if model_class == AvroBaseModelV1:
+        pytest.skip(reason="Smart Unions are not supported properly in `AvroBaseModelV1` (pydantic v1)")
+
+    @decorator
+    class RecordA(model_class):
+        value: str
+
+    @decorator
+    class RecordB(model_class):
+        value: str
+        extra: str
+
+    @decorator
+    class Container(model_class):
+        items: typing.List[typing.Union[RecordA, RecordB]]
+
+    container = Container(items=[RecordA(value="a1"), RecordB(value="b1", extra="x"), RecordA(value="a2")])
+    serialized = container.serialize()
+
+    expected = {
+        "items": [{"value": "a1"}, {"value": "b1", "extra": "x"}, {"value": "a2"}],
+    }
+
+    assert Container.deserialize(serialized, create_instance=False) == expected
+    assert Container.deserialize(serialized) == container
+
+
+@parametrize_base_model
 def test_inheritance(model_class: typing.Type[AvroModel], decorator: typing.Callable) -> None:
     @decorator
     class A(model_class):
