@@ -8,9 +8,11 @@ from types import UnionType
 import typing_extensions
 from typing_extensions import Annotated, get_origin
 
-from .protocol import ModelProtocol  # pragma: no cover
 from .types import FieldInfo, JsonDict
 from .version import is_python_314_or_newer
+
+if typing.TYPE_CHECKING:
+    from .protocol import ModelProtocol  # pragma: no cover
 
 try:
     # only in python 3.14+
@@ -53,21 +55,21 @@ def _is_typing_name(obj: object, name: str) -> bool:
     return False
 
 
-def get_klass_annotations(klass: typing.Type[ModelProtocol]) -> typing.Dict[str, typing.Type]:
+def get_klass_annotations(klass: typing.Type["ModelProtocol"]) -> typing.Dict[str, typing.Type]:
     if is_python_314_or_newer():
         return annotationlib.get_annotations(klass)
     return klass.__annotations__
 
 
 @lru_cache(maxsize=None)
-def is_pydantic_model(klass: typing.Type[ModelProtocol]) -> bool:
+def is_pydantic_model(klass: typing.Type["ModelProtocol"]) -> bool:
     if pydantic is not None:
         return issubclass(klass, v1.BaseModel) or issubclass(klass, pydantic.BaseModel)
     return False
 
 
 @lru_cache(maxsize=None)
-def is_faust_record(klass: typing.Type[ModelProtocol]) -> bool:
+def is_faust_record(klass: typing.Type["ModelProtocol"]) -> bool:
     if faust is not None:
         return issubclass(klass, faust.Record)
     return False
@@ -92,7 +94,7 @@ def is_union(a_type: typing.Type) -> bool:
     )
 
 
-def is_self_referenced(a_type: typing.Type, parent: typing.Type) -> bool:
+def is_self_referenced(a_type: typing.Type, parent: typing.Type["ModelProtocol"]) -> bool:
     """
     Given a python type, return True if is self referenced, meaning
     that is instance of typing.ForwardRef, otherwise False
@@ -144,8 +146,8 @@ def standardize_custom_type(
     *,
     field_name: str,
     value: typing.Any,
-    model: ModelProtocol,
-    base_class: typing.Type[ModelProtocol],
+    model: "ModelProtocol",
+    base_class: typing.Type["ModelProtocol"],
     include_type: bool = True,
 ) -> typing.Any:
     if isinstance(value, dict):

@@ -1,28 +1,23 @@
 import dataclasses
 import typing
 
-from dataclasses_avroschema.fields.base import Field
 from dataclasses_avroschema.fields.fields import AvroField
 from dataclasses_avroschema.parser import Parser
-
-if typing.TYPE_CHECKING:
-    from .main import AvroBaseModel  # pragma: no cover
+from dataclasses_avroschema.protocol import FieldProtocol, ModelProtocol
 
 
 class PydanticV1Parser(Parser):
     def __init__(
         self,
-        type,
-        parent,
+        type: typing.Type[ModelProtocol],
+        parent: typing.Type[ModelProtocol],
     ):
         super().__init__(type, parent)
-        self.type: typing.Type["AvroBaseModel"]
-        self.parent: typing.Type["AvroBaseModel"]
 
     def generate_dataclass(self) -> typing.Type:
         return self.type
 
-    def parse_fields(self, exclude: typing.List) -> typing.List[Field]:
+    def parse_fields(self, exclude: typing.List) -> typing.List[FieldProtocol]:
         return [
             AvroField(
                 model_field.name,
@@ -35,6 +30,6 @@ class PydanticV1Parser(Parser):
                 model_metadata=self.metadata,
                 parent=self.parent,
             )
-            for model_field in self.type.__fields__.values()
+            for model_field in self.type.__fields__.values()  # type: ignore
             if model_field.name not in exclude
         ]

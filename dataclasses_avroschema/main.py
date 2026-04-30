@@ -9,8 +9,8 @@ from fastavro.validation import validate
 
 from . import case, serialization
 from .dacite_config import generate_dacite_config
-from .fields.base import Field
 from .parser import Parser
+from .protocol import FieldProtocol, ModelProtocol, ParserProtocol
 from .types import JsonDict
 from .utils import UserDefinedType, standardize_custom_type
 
@@ -20,8 +20,8 @@ TSelf = TypeVar("TSelf", bound="AvroModel")
 
 
 class AvroModel:
-    _parser: Optional[Parser] = None
-    _parent: Optional[Type["AvroModel"]] = None
+    _parser: Optional[ParserProtocol] = None
+    _parent: Optional[Type["ModelProtocol"]] = None
     _user_defined_types: Set[UserDefinedType] = set()
     _rendered_schema: OrderedDict = dataclasses.field(default_factory=OrderedDict)
 
@@ -114,7 +114,7 @@ class AvroModel:
         return json.loads(json.dumps(avro_schema))
 
     @classmethod
-    def get_fields(cls: Type["AvroModel"]) -> List[Field]:
+    def get_fields(cls: Type["AvroModel"]) -> List[FieldProtocol]:
         if cls._parser is None:
             cls.generate_schema()
         return cls._parser.fields  # type: ignore
