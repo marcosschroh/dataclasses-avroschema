@@ -20,6 +20,7 @@ from dataclasses_avroschema import (
     version,
 )
 from dataclasses_avroschema.faker import fake
+from dataclasses_avroschema.protocol import FieldProtocol, ModelProtocol
 from dataclasses_avroschema.utils import is_pydantic_model
 
 from . import field_utils
@@ -72,7 +73,7 @@ __all__ = [
 class ImmutableField(Field):
     def get_avro_type(
         self,
-    ) -> typing.Union[str, typing.List, typing.Dict[str, typing.Any]]:
+    ) -> typing.Union[str, typing.List, types.JsonDict]:
         if self.default is None:
             return [field_utils.NULL, self.avro_type]
         return self.avro_type
@@ -167,7 +168,7 @@ class ContainerField(Field):
 @dataclasses.dataclass
 class BaseListField(ContainerField):
     items_type: typing.Any = None
-    internal_field: Field = dataclasses.field(init=False)
+    internal_field: FieldProtocol = dataclasses.field(init=False)
 
     @property
     def avro_type(self) -> typing.Dict:
@@ -297,7 +298,7 @@ class DictField(ContainerField):
 @dataclasses.dataclass
 class UnionField(Field):
     unions: typing.List = dataclasses.field(default_factory=list)
-    internal_fields: typing.List[Field] = dataclasses.field(default_factory=list)
+    internal_fields: typing.List[FieldProtocol] = dataclasses.field(default_factory=list)
     elements: typing.Tuple = dataclasses.field(default_factory=tuple)
 
     def generate_unions_type(self) -> typing.List:
@@ -364,7 +365,7 @@ class UnionField(Field):
 
 @dataclasses.dataclass
 class LiteralField(Field):
-    avro_field: Field = dataclasses.field(init=False)
+    avro_field: FieldProtocol = dataclasses.field(init=False)
 
     def __post_init__(self) -> None:
         """
@@ -391,7 +392,7 @@ class LiteralField(Field):
         )
 
     def get_avro_type(self) -> types.JsonDict:
-        return self.avro_field.get_avro_type()
+        return typing.cast(types.JsonDict, self.avro_field.get_avro_type())
 
     def default_to_avro(self, default: typing.Any):
         return self.avro_field.default_to_avro(default)
@@ -826,7 +827,7 @@ class DecimalField(Field):
 
     def get_avro_type(
         self,
-    ) -> typing.Union[types.JsonDict, typing.List[typing.Union[str, types.JsonDict]]]:
+    ) -> typing.Union[types.JsonDict, typing.List]:
         avro_type = {
             "type": field_utils.BYTES,
             "logicalType": field_utils.DECIMAL,
@@ -851,7 +852,7 @@ class DecimalField(Field):
 
 @dataclasses.dataclass
 class RecordField(Field):
-    def get_avro_type(self) -> typing.Union[str, typing.List, typing.Dict]:
+    def get_avro_type(self) -> typing.Union[str, typing.List, types.JsonDict]:
         meta = getattr(self.type, "Meta", type)
         metadata = utils.SchemaMetadata.create(meta)
 
@@ -912,19 +913,19 @@ PYDANTIC_CUSTOM_CLASS_METHOD_NAMES = {
 def field_factory(
     name: str,
     native_type: typing.Any,
-    parent: typing.Optional[typing.Type["AvroModel"]] = None,
+    parent: typing.Optional[typing.Type["ModelProtocol"]] = None,
     *,
     default: typing.Any = dataclasses.MISSING,
     default_factory: typing.Any = dataclasses.MISSING,
     metadata: typing.Optional[typing.Dict[str, typing.Any]] = None,
     model_metadata: typing.Optional[utils.SchemaMetadata] = None,
-) -> Field:
+) -> FieldProtocol:
     from dataclasses_avroschema import AvroModel
 
     if parent is None:
         # if parent is None, then we assume that the field is defined in an AvroModel
         # and we set the parent to AvroModel
-        parent = AvroModel
+        parent = typing.cast(typing.Type[ModelProtocol], AvroModel)
 
     if model_metadata is None:
         model_metadata = utils.SchemaMetadata()
@@ -1098,7 +1099,7 @@ def field_factory(
         if getattr(parent, "__config__", None):
             try:
                 # Build a field for the encoded type since that's what will be serialized
-                encoded_type = parent.__config__.json_encoders[native_type]
+                encoded_type = parent.__config__.json_encoders[native_type]  # type: ignore
             except KeyError:
                 raise ValueError(
                     f"Type {native_type} for field {name} must be "
@@ -1107,7 +1108,7 @@ def field_factory(
                     "pydantic configs are inherited)"
                 )
         else:
-            encoded_type = parent.model_config["json_encoders"][native_type]
+            encoded_type = parent.model_config["json_encoders"][native_type]  # type: ignore
 
         # default_factory is not schema-friendly for Custom Classes since it could be returning
         # dynamically constructed values that should not be treated as defaults. For example,
