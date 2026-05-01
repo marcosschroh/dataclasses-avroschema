@@ -216,10 +216,10 @@ class AvroModel:
 
         return from_dict(data_class=cls, data=payload, config=generate_dacite_config(cls))
 
-    def asdict(self) -> JsonDict:
+    def asdict(self, include_type: bool = True) -> JsonDict:
         return {
             field.name: standardize_custom_type(
-                field_name=field.name, value=getattr(self, field.name), model=self, base_class=AvroModel
+                field_name=field.name, value=getattr(self, field.name), model=self, base_class=AvroModel, include_type=include_type
             )
             for field in dataclasses.fields(self)  # type: ignore[arg-type]
         }
