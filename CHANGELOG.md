@@ -1,3 +1,13 @@
+## 0.68.0 (2026-05-01)
+
+### BREAKING CHANGE
+
+- Pydantic v1 drooped
+
+### Feat
+
+- **pydantic**: Pydantic v1 support dropped (#942)
+
 ## 0.67.0 (2026-04-30)
 
 ### Feat
