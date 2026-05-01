@@ -26,7 +26,6 @@ if typing.TYPE_CHECKING:
 
 try:
     import pydantic  # pragma: no cover
-    from pydantic import v1
 except ImportError:  # type: ignore # pragma: no cover
     pydantic = None  # type: ignore # pragma: no cover
 
@@ -64,7 +63,7 @@ def get_klass_annotations(klass: typing.Type["ModelProtocol"]) -> typing.Dict[st
 @lru_cache(maxsize=None)
 def is_pydantic_model(klass: typing.Type["ModelProtocol"]) -> bool:
     if pydantic is not None:
-        return issubclass(klass, v1.BaseModel) or issubclass(klass, pydantic.BaseModel)
+        return issubclass(klass, pydantic.BaseModel)
     return False
 
 
