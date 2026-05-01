@@ -5,23 +5,18 @@ import typing
 
 from pydantic.fields import FieldInfo
 
-from dataclasses_avroschema.fields.base import Field
 from dataclasses_avroschema.fields.fields import AvroField
 from dataclasses_avroschema.parser import Parser
-
-if typing.TYPE_CHECKING:
-    from .main import AvroBaseModel  # pragma: no cover
+from dataclasses_avroschema.protocol import FieldProtocol, ModelProtocol
 
 
 class PydanticParser(Parser):
     def __init__(
         self,
-        type,
-        parent,
+        type: typing.Type[ModelProtocol],
+        parent: typing.Type[ModelProtocol],
     ):
         super().__init__(type, parent)
-        self.type: typing.Type["AvroBaseModel"]
-        self.parent: typing.Type["AvroBaseModel"]
 
     def generate_dataclass(self) -> typing.Type:
         return self.type
@@ -45,7 +40,7 @@ class PydanticParser(Parser):
 
         return metadata
 
-    def parse_fields(self, exclude: typing.List) -> typing.List[Field]:
+    def parse_fields(self, exclude: typing.List) -> typing.List[FieldProtocol]:
         return [
             AvroField(
                 field_name,
@@ -58,7 +53,7 @@ class PydanticParser(Parser):
                 model_metadata=self.metadata,
                 parent=self.parent,
             )
-            for field_name, field_info in self.type.model_fields.items()
+            for field_name, field_info in self.type.model_fields.items()  # type: ignore
             if field_name not in exclude and field_name != "model_config"
         ]
 
@@ -66,8 +61,8 @@ class PydanticParser(Parser):
         doc = None
         if isinstance(self.metadata.schema_doc, str):
             doc = self.metadata.schema_doc
-        elif self.type.model_config and "title" in self.type.model_config:
-            doc = self.type.model_config["title"]
+        elif self.type.model_config and "title" in self.type.model_config:  # type: ignore
+            doc = self.type.model_config["title"]  # type: ignore
         else:
             doc = super().generate_documentation()
         return doc

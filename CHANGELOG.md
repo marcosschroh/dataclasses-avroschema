@@ -1,3 +1,15 @@
+## 0.67.0 (2026-04-30)
+
+### Feat
+
+- FieldProtocol added (#940)
+
+## 0.66.4 (2026-04-24)
+
+### Fix
+
+- Move pytest-benchmark to dev dependencies (#939)
+
 ## 0.66.3 (2026-03-27)
 
 ### Fix
