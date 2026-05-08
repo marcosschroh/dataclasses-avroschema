@@ -1,3 +1,9 @@
+## 0.68.1 (2026-05-08)
+
+### Fix
+
+- Small tweaks added to immutable fields. Removed test skiping for the ones working in roundtrip (#945)
+
 ## 0.68.0 (2026-05-01)
 
 ### BREAKING CHANGE
