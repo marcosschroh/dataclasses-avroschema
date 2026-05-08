@@ -81,7 +81,9 @@ class ImmutableField(Field):
 
 @dataclasses.dataclass
 class StringField(ImmutableField):
-    avro_type: typing.ClassVar[str] = field_utils.STRING
+    @property
+    def avro_type(self) -> str:
+        return field_utils.STRING
 
     def fake(self) -> str:
         return fake.pystr()
@@ -89,7 +91,9 @@ class StringField(ImmutableField):
 
 @dataclasses.dataclass
 class IntField(ImmutableField):
-    avro_type: typing.ClassVar[str] = field_utils.INT
+    @property
+    def avro_type(self) -> str:
+        return field_utils.INT
 
     def fake(self) -> int:
         return fake.pyint()
@@ -97,7 +101,9 @@ class IntField(ImmutableField):
 
 @dataclasses.dataclass
 class LongField(ImmutableField):
-    avro_type: typing.ClassVar[str] = field_utils.LONG
+    @property
+    def avro_type(self) -> str:
+        return field_utils.LONG
 
     def fake(self) -> int:
         return fake.pyint()
@@ -105,7 +111,9 @@ class LongField(ImmutableField):
 
 @dataclasses.dataclass
 class BooleanField(ImmutableField):
-    avro_type: typing.ClassVar[str] = field_utils.BOOLEAN
+    @property
+    def avro_type(self) -> str:
+        return field_utils.BOOLEAN
 
     def fake(self) -> bool:
         return fake.pybool()
@@ -113,7 +121,9 @@ class BooleanField(ImmutableField):
 
 @dataclasses.dataclass
 class DoubleField(ImmutableField):
-    avro_type: typing.ClassVar[str] = field_utils.DOUBLE
+    @property
+    def avro_type(self) -> str:
+        return field_utils.DOUBLE
 
     def __post_init__(self):
         super().__post_init__()
@@ -125,7 +135,9 @@ class DoubleField(ImmutableField):
 
 @dataclasses.dataclass
 class FloatField(ImmutableField):
-    avro_type: typing.ClassVar[str] = field_utils.FLOAT
+    @property
+    def avro_type(self) -> str:
+        return field_utils.FLOAT
 
     def fake(self) -> float:
         return fake.pyfloat()  # Roughly the range on a float32
@@ -133,7 +145,9 @@ class FloatField(ImmutableField):
 
 @dataclasses.dataclass
 class BytesField(ImmutableField):
-    avro_type: typing.ClassVar[str] = field_utils.BYTES
+    @property
+    def avro_type(self) -> str:
+        return field_utils.BYTES
 
     def default_to_avro(self, item: bytes) -> str:
         return item.decode()

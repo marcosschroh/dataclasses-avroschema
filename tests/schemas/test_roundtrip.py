@@ -17,12 +17,6 @@ marks = {
             reason="schema generator does not handle self references correctly",
         )
     ],
-    "user_self_reference_one_to_many_map": [
-        pytest.mark.xfail(
-            raises=ValueError,
-            reason="schema generator does not handle self references correctly",
-        )
-    ],
     "user_self_reference_one_to_one": [
         pytest.mark.xfail(
             raises=ValueError,
