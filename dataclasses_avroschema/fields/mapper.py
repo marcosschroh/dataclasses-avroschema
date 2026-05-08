@@ -39,6 +39,7 @@ LOGICAL_TYPES_FIELDS_CLASSES = {
     datetime.datetime: fields.DatetimeField,
     datetime.timedelta: fields.TimedeltaField,
     types.DateTimeMicro: fields.DatetimeMicroField,
+    types.LocalDateTime: fields.LocalDateTimeField,
     uuid.uuid4: fields.UUIDField,
     uuid.UUID: fields.UUIDField,
     bytes: fields.BytesField,

@@ -140,7 +140,7 @@ def test_pydantic_record_schema_complex_types_with_defaults(user_advance_with_de
         has_car: bool = False
         favorite_colors: color_enum = color_enum.BLUE
         country: str = "Argentina"
-        address: str = None
+        address: typing.Optional[str] = None
 
         class Meta:
             schema_doc = False
@@ -161,6 +161,8 @@ def test_pydantic_record_schema_logical_types(logical_types_pydantic_schema):
         birthday: datetime.date = a_datetime.date()
         meeting_time: datetime.time = a_datetime.time()
         release_datetime: datetime.datetime = a_datetime
+        local_datetime: types.LocalDateTime = a_datetime
+        local_datetime_naive: types.LocalDateTime = a_naive_datetime
         past_date: PastDate = a_past_datetime.date()
         future_date: FutureDate = a_future_datetime.date()
         past_datetime: PastDatetime = a_past_datetime

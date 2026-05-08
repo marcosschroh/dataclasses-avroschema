@@ -52,6 +52,7 @@ def test_fake_with_logical_types() -> None:
         birthday: datetime.date
         meeting_time: datetime.time
         meeting_time_micro: types.TimeMicro
+        local_datetime: types.LocalDateTime
         release_datetime: datetime.datetime
         release_datetime_micro: types.DateTimeMicro
         time_elapsed: datetime.timedelta

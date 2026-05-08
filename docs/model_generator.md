@@ -39,6 +39,7 @@ This section describe how to convert `python classes` from an `avro schema` (avs
     | time-micros| types.TimeMicro|
     | timestamp-millis| datetime.datetime|
     | timestamp-micros| types.DateTimeMicro|
+    | local-timestamp-millis| types.LocalDateTime|
     | decimal | types.condecimal|
     | uuid | uuid.UUID    |
 
@@ -65,6 +66,7 @@ This section describe how to convert `python classes` from an `avro schema` (avs
     | time-micros| types.TimeMicro|
     | timestamp-millis| datetime.datetime|
     | timestamp-micros| types.DateTimeMicro|
+    | local-timestamp-millis| types.LocalDateTime|
     | decimal | types.condecimal|
     | uuid | uuid.UUID    |
 
@@ -102,7 +104,7 @@ with open("models.py", mode="+w") as f:
 
 Then, the end result is:
 
-```py
+```python
 # models.py
 from dataclasses_avroschema import AvroModel
 from dataclasses_avroschema import types
@@ -125,7 +127,9 @@ Generating a single module from multiple schemas is useful for example to group 
 
 ## LogicalTypes
 
-Native `logicalTypes` are supported by `dataclasses-avroschema` but custom ones are not. If you defined a custom `logicalType` then
+### Custom LogicalTypes
+
+Native `logicalTypes` are supported by `dataclasses-avroschema`, but custom ones are not. If you defined a custom `logicalType` then
 the fallback is used when generating the field. In the next example we have a `logicalType` defined as `url`, which is not a native one,
 then the model generated will use `string`
 
@@ -162,6 +166,73 @@ class TestEvent(AvroModel):
     regular: str = dataclasses.field(metadata={'doc': 'Urls'})
 """
 ```
+
+### LocalDateTime with aware datetime
+
+When using `local timestamp`, the timezone is always lost, regarless if the schema was created using an `aware` datetime object. Let's say that we want to do a
+roundtrip, starting from a model, then we generate the `avro schema` and from the schema we generate the model again: `model -> generate schema -> generate model`:
+
+```python
+import datetime
+from dataclasses import dataclass
+
+from dataclasses_avroschema import AvroModel, ModelGenerator, types
+
+dt = datetime.datetime(2026, 5, 11, 17, 33, 56, tzinfo=datetime.timezone.utc)
+
+@dataclass
+class LogicalTypesMillis(AvroModel):
+    "Some logical types"
+
+    release_datetime: datetime.datetime = dt
+    local_datetime: types.LocalDateTime = dt
+
+avro_schema = LogicalTypesMillis.avro_schema()
+print(avro_schema)
+
+
+'''{
+  "type": "record", 
+  "name": "LogicalTypesMillis", 
+  "fields": [
+    {"name": "release_datetime", "type": {"type": "long", "logicalType": "timestamp-millis"}, "default": 1778520836000},
+    {"name": "local_datetime", "type": {"type": "long", "logicalType": "local-timestamp-millis"}, "default": 1778513636000}
+  ]
+}'''
+
+# Then, if we generate the model from the schema:
+
+model_generator = ModelGenerator()
+schema = LogicalTypesMillis.avro_schema_to_python()  # use the schema python representation
+
+print(model_generator.render(schema=schema))
+```
+
+Which give us the model
+
+```python
+from dataclasses_avroschema import AvroModel
+from dataclasses_avroschema import types
+import dataclasses
+import datetime
+
+
+@dataclasses.dataclass
+class LogicalTypesMillis(AvroModel):
+    """
+    Some logical types
+    """
+    release_datetime: datetime.datetime = datetime.datetime(2026, 5, 11, 17, 33, 56, tzinfo=datetime.timezone.utc)
+    local_datetime: types.LocalDateTime = datetime.datetime(2026, 5, 11, 17, 33, 56, tzinfo=None)
+
+```
+
+The expectation is that the initial `model` would be equal to the `model generate`, but it is not. The difference is that the default value for
+`local_datetime` has lost the `timezeone`, as expexted. If we would have used a `naive` datetime as default for `local_datetime`, then the models
+would have match.
+
+!!! note
+    Always use naive datetime object to set defaults when using `local timestamp`
 
 ## Render Pydantic models
 

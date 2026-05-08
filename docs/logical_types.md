@@ -10,6 +10,7 @@ The following list represent the avro logical types mapped to python types:
 | long      |  timestamp-millis | datetime.datetime |
 | long      |  timestamp-micros | types.DateTimeMicro |
 | double    |  timedelta   | datetime.timedelta |
+| long      |  local-timestamp-millis | types.LocalDateTime |
 | string    |  uuid        | uuid.uuid4 |
 | string    |  uuid        | uuid.UUID |
 | bytes     | decimal      | types.condecimal |
@@ -171,6 +172,52 @@ DatetimeLogicalType.avro_schema()
 
 !!! note
     To use `timestamp-micros` in avro schemas you need to use `types.DateTimeMicro`
+
+## LocalDateTime
+
+The `local-timestamp-millis` logical type represents a timestamp in a local timezone, regardless of what specific time zone is considered local,
+with a precision of one millisecond. A `local-timestamp-millis` logical type annotates an `Avro long`, where the long stores the number of milliseconds,
+from `1 January 1970 00:00:00.000`.
+
+In python we do not have a native type for it, then we will use `types.LocalDateTime`, which is an `annotation` of `datetime.datetime`: `Annotated[datetime.datetime, LocalDateTimeFieldInfo()]`.
+
+!!! note
+    When using `local-timestamp-millis` with aware datetime objects, the `timezone info` is lost!! 
+
+In the following example, we ilustrate the usage of `local-timestamp-millis` and the difference between `timestamp-millis`:
+
+```python title="Local datetime"
+import datetime
+from dataclasses import dataclass
+
+from dataclasses_avroschema import AvroModel, ModelGenerator, types
+
+# aware datetime object
+dt = datetime.datetime(2026, 5, 11, 17, 33, 56, tzinfo=datetime.timezone.utc)
+
+@dataclass
+class LogicalTypesMillis(AvroModel):
+    release_datetime: datetime.datetime = dt
+    local_datetime: types.LocalDateTime = dt
+
+
+LogicalTypesMillis.avro_schema()
+```
+
+Given as output:
+
+```json
+'{
+  "type": "record", 
+  "name": "LogicalTypesMillis", 
+  "fields": [
+    {"name": "release_datetime", "type": {"type": "long", "logicalType": "timestamp-millis"}, "default": 1778520836000},
+    {"name": "local_datetime", "type": {"type": "long", "logicalType": "local-timestamp-millis"}, "default": 1778513636000}
+  ]
+}'
+```
+
+From the output schema, we can see that the default generated are different, even though we use the same default `dt` in the model
 
 ## Timedelta
 
