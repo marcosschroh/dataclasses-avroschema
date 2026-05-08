@@ -60,9 +60,9 @@ RECORD = "record"
 LOGICAL_DATE = {"type": INT, "logicalType": DATE}
 LOGICAL_TIME_MILIS = {"type": INT, "logicalType": TIME_MILLIS}
 LOGICAL_TIME_MICROS = {"type": LONG, "logicalType": TIME_MICROS}
+LOGICAL_TIMEDELTA = {"type": DOUBLE, "logicalType": TIMEDELTA}
 LOGICAL_DATETIME_MILIS = {"type": LONG, "logicalType": TIMESTAMP_MILLIS}
 LOGICAL_DATETIME_MICROS = {"type": LONG, "logicalType": TIMESTAMP_MICROS}
-LOGICAL_TIMEDELTA = {"type": DOUBLE, "logicalType": TIMEDELTA}
 LOGICAL_UUID = {"type": STRING, "logicalType": UUID}
 
 AVRO_TYPES = (

@@ -410,6 +410,7 @@ MAPPING_LOGICAL_TYPES = [
 LOGICAL_TYPES = (
     (datetime.date, field_utils.LOGICAL_DATE),
     (datetime.time, field_utils.LOGICAL_TIME_MILIS),
+    (datetime.timedelta, field_utils.LOGICAL_TIMEDELTA),
     (types.TimeMicro, field_utils.LOGICAL_TIME_MICROS),
     (
         datetime.datetime,

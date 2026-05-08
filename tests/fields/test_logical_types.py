@@ -165,7 +165,7 @@ def test_logical_type_timedelta_with_default() -> None:
 
     expected = {
         "name": name,
-        "type": {"type": field_utils.DOUBLE, "logicalType": field_utils.TIMEDELTA},
+        "type": field_utils.LOGICAL_TIMEDELTA,
         "default": seconds,
     }
 
