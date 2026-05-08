@@ -187,7 +187,7 @@ def standardize_custom_type(
             annotations.update(typing.get_type_hints(model.__class__))
 
         if is_union(annotations[field_name]) and include_type:
-            asdict["-type"] = value.get_fullname()
+            return (value.get_fullname(), asdict)
         return asdict
 
     return value

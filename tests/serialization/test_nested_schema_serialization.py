@@ -364,6 +364,49 @@ def test_union_with_multiple_records(model_class: typing.Type[AvroModel], decora
 
 
 @parametrize_base_model
+def test_nested_optional_records_serialize(model_class: typing.Type[AvroModel], decorator: typing.Callable) -> None:
+    @decorator
+    class Inner(model_class):
+        x: str
+
+    @decorator
+    class Middle(model_class):
+        child: typing.Optional[Inner] = None
+
+    @decorator
+    class Outer(model_class):
+        child: typing.Optional[Middle] = None
+
+    instance = Outer(child=Middle(child=Inner(x="a")))
+    if model_class is not AvroRecord:
+        payload = instance.asdict()
+        assert payload == {"child": ("Middle", {"child": ("Inner", {"x": "a"})})}
+    assert Outer.deserialize(instance.serialize()) == instance
+
+
+@parametrize_base_model
+def test_nested_union_records_serialize(model_class: typing.Type[AvroModel], decorator: typing.Callable) -> None:
+    @decorator
+    class InnerA(model_class):
+        a: str
+
+    @decorator
+    class InnerB(model_class):
+        b: int
+
+    @decorator
+    class Middle(model_class):
+        child: typing.Union[InnerA, InnerB]
+
+    @decorator
+    class Outer(model_class):
+        middle: Middle
+
+    instance = Outer(middle=Middle(child=InnerB(b=42)))
+    assert Outer.deserialize(instance.serialize()) == instance
+
+
+@parametrize_base_model
 def test_union_in_array_deserialization(model_class: typing.Type[AvroModel], decorator: typing.Callable) -> None:
     """
     Test union deserialization inside array elements.
