@@ -585,6 +585,30 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="LogicalTypes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#custom-logicaltypes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Custom LogicalTypes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#localdatetime-with-aware-datetime" class="md-nav__link">
+    <span class="md-ellipsis">
+      LocalDateTime with aware datetime
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -833,6 +857,30 @@
       LogicalTypes
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="LogicalTypes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#custom-logicaltypes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Custom LogicalTypes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#localdatetime-with-aware-datetime" class="md-nav__link">
+    <span class="md-ellipsis">
+      LocalDateTime with aware datetime
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1104,6 +1152,10 @@ and any extras so the result can be saved in a file and it will be ready to use.
 <td>types.DateTimeMicro</td>
 </tr>
 <tr>
+<td>local-timestamp-millis</td>
+<td>types.LocalDateTime</td>
+</tr>
+<tr>
 <td>decimal</td>
 <td>types.condecimal</td>
 </tr>
@@ -1200,6 +1252,10 @@ and any extras so the result can be saved in a file and it will be ready to use.
 <td>types.DateTimeMicro</td>
 </tr>
 <tr>
+<td>local-timestamp-millis</td>
+<td>types.LocalDateTime</td>
+</tr>
+<tr>
 <td>decimal</td>
 <td>types.condecimal</td>
 </tr>
@@ -1260,7 +1316,8 @@ and any extras so the result can be saved in a file and it will be ready to use.
 </code></pre></div>
 <p>Generating a single module from multiple schemas is useful for example to group schemas that belong to the same namespace.</p>
 <h2 id="logicaltypes">LogicalTypes</h2>
-<p>Native <code>logicalTypes</code> are supported by <code>dataclasses-avroschema</code> but custom ones are not. If you defined a custom <code>logicalType</code> then
+<h3 id="custom-logicaltypes">Custom LogicalTypes</h3>
+<p>Native <code>logicalTypes</code> are supported by <code>dataclasses-avroschema</code>, but custom ones are not. If you defined a custom <code>logicalType</code> then
 the fallback is used when generating the field. In the next example we have a <code>logicalType</code> defined as <code>url</code>, which is not a native one,
 then the model generated will use <code>string</code></p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">ModelGenerator</span><span class="p">,</span> <span class="n">ModelType</span>
@@ -1295,6 +1352,66 @@ then the model generated will use <code>string</code></p>
 <span class="sd">    regular: str = dataclasses.field(metadata={&#39;doc&#39;: &#39;Urls&#39;})</span>
 <span class="sd">&quot;&quot;&quot;</span>
 </code></pre></div>
+<h3 id="localdatetime-with-aware-datetime">LocalDateTime with aware datetime</h3>
+<p>When using <code>local</code> timestamps, the timezone is always lost, even though if a schema was created using an <code>aware</code> datetime object. Let's say that we want to do a
+roundtrip, starting from a model, then we generate the <code>avro schema</code> and from the schema we generate the model again: <code>model -&gt; generate schema -&gt; generate model</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span><span class="p">,</span> <span class="n">ModelGenerator</span><span class="p">,</span> <span class="n">types</span>
+
+<span class="n">dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2026</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">33</span><span class="p">,</span> <span class="mi">56</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">LogicalTypesMillis</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
+    <span class="s2">&quot;Some logical types&quot;</span>
+
+    <span class="n">release_datetime</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span> <span class="o">=</span> <span class="n">dt</span>
+    <span class="n">local_datetime</span><span class="p">:</span> <span class="n">types</span><span class="o">.</span><span class="n">LocalDateTime</span> <span class="o">=</span> <span class="n">dt</span>
+
+<span class="n">avro_schema</span> <span class="o">=</span> <span class="n">LogicalTypesMillis</span><span class="o">.</span><span class="n">avro_schema</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">avro_schema</span><span class="p">)</span>
+</code></pre></div>
+<p>Generating the avro schema:</p>
+<div class="highlight"><pre><span></span><code><span class="err">&#39;</span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;record&quot;</span><span class="p">,</span><span class="w"> </span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LogicalTypesMillis&quot;</span><span class="p">,</span><span class="w"> </span>
+<span class="w">  </span><span class="nt">&quot;fields&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;release_datetime&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;long&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;logicalType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;timestamp-millis&quot;</span><span class="p">},</span><span class="w"> </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1778520836000</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;local_datetime&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;long&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;logicalType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;local-timestamp-millis&quot;</span><span class="p">},</span><span class="w"> </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1778513636000</span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span><span class="err">&#39;</span>
+</code></pre></div>
+<p>Then, if we generate the model from the schema:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">ModelGenerator</span><span class="p">,</span> <span class="n">ModelType</span>
+
+<span class="n">model_generator</span> <span class="o">=</span> <span class="n">ModelGenerator</span><span class="p">()</span>
+<span class="n">schema</span> <span class="o">=</span> <span class="n">LogicalTypes</span><span class="o">.</span><span class="n">avro_schema_to_python</span><span class="p">()</span>  <span class="c1"># use the schema python representation</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">model_generator</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">))</span>
+</code></pre></div>
+<p>Which give us the model</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span>
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">types</span>
+<span class="kn">import</span> <span class="nn">dataclasses</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+
+
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span> <span class="nc">LogicalTypes</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Some logical types</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">release_datetime</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2026</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">33</span><span class="p">,</span> <span class="mi">56</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
+    <span class="n">local_datetime</span><span class="p">:</span> <span class="n">types</span><span class="o">.</span><span class="n">LocalDateTime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2026</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">33</span><span class="p">,</span> <span class="mi">56</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</code></pre></div>
+<p>The expectation is that the initial <code>model</code> would be equal to the <code>model generate</code>, but is not. The difference is that the default value for
+<code>local_datetime</code> has lost the <code>timezeone</code>, as expexted. If we would have use a <code>naive</code> datetime as default for <code>local_datetime</code>, then the models
+would have match.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Always use naive datetime object to set defaults when using <code>local timestamp</code></p>
+</div>
 <h2 id="render-pydantic-models">Render Pydantic models</h2>
 <p>It is also possible to render <code>BaseModel</code> (pydantic) and <code>AvroBaseModel</code> (avro + pydantic) models as well.
 The end result will also include the necessaty imports and the use of <code>pydantic.Field</code> in case that it is needed:</p>
