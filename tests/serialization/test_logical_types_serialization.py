@@ -78,8 +78,6 @@ def test_logical_local_timestamps(model_class: typing.Type[AvroModel], decorator
         release_datetime_naive: datetime.datetime
         local_datetime_naive: types.LocalDateTime
 
-    # a_datetime = datetime.datetime(2019, 10, 12, 17, 57, 42, tzinfo=datetime.timezone.utc)
-
     data = {
         "release_datetime": a_datetime,
         "local_datetime": a_datetime,

@@ -169,7 +169,7 @@ class TestEvent(AvroModel):
 
 ### LocalDateTime with aware datetime
 
-When using `local timestamp`, the timezone is always lost, regarless if the schema was created using an `aware` datetime object. Let's say that we want to do a
+When using `local timestamp`, the timezone is always lost, regardless of whether the schema was created using an `aware` datetime object. Let's say that we want to do a
 roundtrip, starting from a model, then we generate the `avro schema` and from the schema we generate the model again: `model -> generate schema -> generate model`:
 
 ```python

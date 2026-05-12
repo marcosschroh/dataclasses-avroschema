@@ -12,11 +12,8 @@ def test_logical_types_schema(logical_types_schema):
     """
     Test a schema with Logical Types
     """
-    a_datetime = datetime.datetime(2019, 10, 12, 17, 57, 42)
+    a_datetime = datetime.datetime(2019, 10, 12, 17, 57, 42, tzinfo=datetime.timezone.utc)
     delta = datetime.timedelta(weeks=1, days=2, hours=3, minutes=4, seconds=5, milliseconds=6, microseconds=7)
-
-    print(datetime.datetime.now(datetime.timezone.utc).astimezone())
-    print("Current timezone info:", datetime.datetime.now(datetime.timezone.utc).astimezone().tzinfo)
 
     @dataclasses.dataclass
     class LogicalTypes(AvroModel):
@@ -27,7 +24,7 @@ def test_logical_types_schema(logical_types_schema):
         release_datetime: datetime.datetime = a_datetime
         local_datetime: types.LocalDateTime = a_datetime
         time_elapsed: datetime.timedelta = delta
-        event_uuid: uuid.uuid4 = "09f00184-7721-4266-a955-21048a5cc235"
+        event_uuid: uuid.UUID = "09f00184-7721-4266-a955-21048a5cc235"
 
     assert LogicalTypes.avro_schema() == json.dumps(logical_types_schema)
 

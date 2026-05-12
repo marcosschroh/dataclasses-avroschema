@@ -819,9 +819,10 @@ class LocalDateTimeField(ImmutableField):
         We remove the timezone information because this logical type represents a timestamp in a local timezone,
         regardless of what specific time zone is considered local.
         """
-
-        date_time = date_time.replace(tzinfo=None)
-        ts = date_time.timestamp()
+        if date_time.tzinfo:
+            ts = (date_time - utils.epoch).total_seconds()
+        else:
+            ts = (date_time - utils.epoch_naive).total_seconds()
 
         return int(ts * 1000)
 

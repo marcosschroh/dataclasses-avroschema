@@ -45,7 +45,9 @@ LOGICAL_TYPES_TO_PYTHON = {
     field_utils.TIMESTAMP_MICROS: lambda value: datetime.datetime.fromtimestamp(
         value / 1000000, tz=datetime.timezone.utc
     ),
-    field_utils.LOCAL_TIMESTAMP_MILLIS: lambda value: datetime.datetime.fromtimestamp(value / 1000, tz=None),
+    field_utils.LOCAL_TIMESTAMP_MILLIS: lambda value: datetime.datetime.fromtimestamp(
+        value / 1000, tz=datetime.timezone.utc
+    ),
     field_utils.TIMEDELTA: lambda value: datetime.timedelta(seconds=value),
 }
 

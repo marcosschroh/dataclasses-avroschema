@@ -120,6 +120,22 @@ TimeLogicalTypes.avro_schema()
 
 ## Datetime
 
+In `avro` aware datetime objects can be represented in two flavours: `timestamp-millis` and `timestamp-micros`
+
+The `timestamp-millis` logical type represents an instant on the global timeline, independent of a particular `time zone` or `calendar`,
+with a precision of one millisecond. A `timestamp-millis` logical type annotates an Avro long, where the long stores the number
+of milliseconds from the unix epoch, `1 January 1970 00:00:00.000 UTC`. We represent `timestamp-millis` with `datetime.datetime` python objects.
+
+The `timestamp-micros` represents the same as `timestamp-millis` but with a precision of one microsecond. 
+In python we do not have a native type for it, then we will use `DateTimeMicro`, which is an `annotation` of `datetime.datetime`: `Annotated[datetime.datetime, DateTimeMicroFieldInfo()]`.
+
+Use `timestamp-millis` and `timestamp-micros` when:
+
+- You care about the exact instant in time globally.
+- Producers/consumers run in different time zones.
+- You need reliable ordering, deduplication, TTL/retention windows, or auditing.
+- You want round-trip safety for aware datetimes.
+
 ```python title="DateTime example"
 import datetime
 import dataclasses
@@ -171,7 +187,10 @@ DatetimeLogicalType.avro_schema()
 *(This script is complete, it should run "as is")*
 
 !!! note
-    To use `timestamp-micros` in avro schemas you need to use `types.DateTimeMicro`
+    To use `timestamp-micros` in avro schemas you need to use `DateTimeMicro`
+
+!!! note
+    `timestamp-millis` and `timestamp-micros` maintain `timezone info`
 
 ## LocalDateTime
 
@@ -181,8 +200,14 @@ from `1 January 1970 00:00:00.000`.
 
 In python we do not have a native type for it, then we will use `types.LocalDateTime`, which is an `annotation` of `datetime.datetime`: `Annotated[datetime.datetime, LocalDateTimeFieldInfo()]`.
 
-!!! note
-    When using `local-timestamp-millis` with aware datetime objects, the `timezone info` is lost!! 
+!!! warning
+    When using `local-timestamp-millis` with aware datetime objects, the `timezone info` is lost!!
+
+Use local-timestamp-millis only when:
+
+- You care about wall-clock local time semantics, not a global instant.
+- The value is tied to human local schedules, like “store opens at 09:00 local”.
+- You intentionally do not want timezone conversion behavior.
 
 In the following example, we ilustrate the usage of `local-timestamp-millis` and the difference between `timestamp-millis`:
 
@@ -190,15 +215,15 @@ In the following example, we ilustrate the usage of `local-timestamp-millis` and
 import datetime
 from dataclasses import dataclass
 
-from dataclasses_avroschema import AvroModel, ModelGenerator, types
+from dataclasses_avroschema import AvroModel, ModelGenerator, LocalDateTime
 
-# aware datetime object
-dt = datetime.datetime(2026, 5, 11, 17, 33, 56, tzinfo=datetime.timezone.utc)
+# aware datetime object in CEST (+7200). In UTC (+0000) the datetime is datetime.datetime(2026, 5, 11, 15, 33, 56)
+dt = datetime.datetime(2026, 5, 11, 17, 33, 56, tzinfo=datetime.timezone(datetime.timedelta(hours=2)))
 
 @dataclass
 class LogicalTypesMillis(AvroModel):
     release_datetime: datetime.datetime = dt
-    local_datetime: types.LocalDateTime = dt
+    local_datetime: LocalDateTime = dt
 
 
 LogicalTypesMillis.avro_schema()
@@ -207,17 +232,42 @@ LogicalTypesMillis.avro_schema()
 Given as output:
 
 ```json
-'{
-  "type": "record", 
-  "name": "LogicalTypesMillis", 
+{
+  "type": "record",
+  "name": "LogicalTypesMillis",
   "fields": [
-    {"name": "release_datetime", "type": {"type": "long", "logicalType": "timestamp-millis"}, "default": 1778520836000},
-    {"name": "local_datetime", "type": {"type": "long", "logicalType": "local-timestamp-millis"}, "default": 1778513636000}
+    {"name": "release_datetime", "type": {"type": "long", "logicalType": "timestamp-millis"}, "default": 1778513636000},
+    {"name": "local_datetime", "type": {"type": "long", "logicalType": "local-timestamp-millis"}, "default": 1778513636000},
   ]
-}'
+}
 ```
 
-From the output schema, we can see that the default generated are different, even though we use the same default `dt` in the model
+We can see that `release_datetime` and `local_datetime` have the same default `1778513636000`. when using `local timestamp` because we set the same default in the class.
+Now, if we `serialize` and `deserialize` an instance, we don't get the same original object as the `timezone` info is lost when using `local-timestamp`:
+
+```python
+import datetime
+from dataclasses import dataclass
+
+from dataclasses_avroschema import AvroModel, ModelGenerator, types
+
+# aware datetime object in CEST (+02:00). In UTC (+00:00) the datetime is datetime.datetime(2026, 5, 11, 15, 33, 56)
+dt = datetime.datetime(2026, 5, 11, 17, 33, 56, tzinfo=datetime.timezone(datetime.timedelta(hours=2)))
+
+@dataclass
+class LogicalTypesMillis(AvroModel):
+    release_datetime: datetime.datetime = dt
+    local_datetime: types.LocalDateTime = dt
+
+
+instance = LogicalTypesMillis()
+new_instance = LogicalTypesMillis.deserialize(instance.serialize())
+
+assert instance != new_instance
+
+print(f"instance.local_datetime {instance.local_datetime} != new_instancelocal_datetime. {new_instance.local_datetime}")
+# instance.local_datetime 2026-05-11 17:33:56+02:00 != new_instance.local_datetime 2026-05-11 17:33:56
+```
 
 ## Timedelta
 
