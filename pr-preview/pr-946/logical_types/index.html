@@ -1089,7 +1089,7 @@ from <code>1 January 1970 00:00:00.000</code>.</p>
 <p>In python we do not have a native type for it, then we will use <code>types.LocalDateTime</code>, which is an <code>annotation</code> of <code>datetime.datetime</code>: <code>Annotated[datetime.datetime, LocalDateTimeFieldInfo()]</code>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>When using <code>local-timestamp-millis</code> with aware datetime objects, the <code>timezone info</code> is lost!! </p>
+<p>When using <code>local-timestamp-millis</code> with aware datetime objects, the <code>timezone info</code> is lost!!</p>
 </div>
 <p>In the following example, we ilustrate the usage of <code>local-timestamp-millis</code> and the difference between <code>timestamp-millis</code>:</p>
 <div class="highlight"><span class="filename">Local datetime</span><pre><span></span><code><span class="kn">import</span> <span class="nn">datetime</span>
@@ -1109,16 +1109,15 @@ from <code>1 January 1970 00:00:00.000</code>.</p>
 <span class="n">LogicalTypesMillis</span><span class="o">.</span><span class="n">avro_schema</span><span class="p">()</span>
 </code></pre></div>
 <p>Given as output:</p>
-<div class="highlight"><pre><span></span><code><span class="err">&#39;</span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;record&quot;</span><span class="p">,</span><span class="w"> </span>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;record&quot;</span><span class="p">,</span>
 <span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LogicalTypesMillis&quot;</span><span class="p">,</span><span class="w"> </span>
 <span class="w">  </span><span class="nt">&quot;fields&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">    </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;release_datetime&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;long&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;logicalType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;timestamp-millis&quot;</span><span class="p">},</span><span class="w"> </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1778520836000</span><span class="p">},</span>
-<span class="w">    </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;local_datetime&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;long&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;logicalType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;local-timestamp-millis&quot;</span><span class="p">},</span><span class="w"> </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1778513636000</span><span class="p">}</span>
+<span class="w">    </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;local_datetime&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;long&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;logicalType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;local-timestamp-millis&quot;</span><span class="p">},</span><span class="w"> </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1778520836000</span><span class="p">}</span>
 <span class="w">  </span><span class="p">]</span>
 <span class="p">}</span><span class="err">&#39;</span>
 </code></pre></div>
-<p>From the output schema, we can see that the default generated are different, even though we use the same default <code>dt</code> in the model</p>
 <h2 id="timedelta">Timedelta</h2>
 <p><code>timedelta</code> fields are serialized to a <code>double</code> number of seconds.</p>
 <div class="highlight"><span class="filename">Timedelta example</span><pre><span></span><code><span class="kn">import</span> <span class="nn">datetime</span>
