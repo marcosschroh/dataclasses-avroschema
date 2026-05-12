@@ -1371,22 +1371,21 @@ roundtrip, starting from a model, then we generate the <code>avro schema</code> 
 
 <span class="n">avro_schema</span> <span class="o">=</span> <span class="n">LogicalTypesMillis</span><span class="o">.</span><span class="n">avro_schema</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">avro_schema</span><span class="p">)</span>
-</code></pre></div>
-<p>Generating the avro schema:</p>
-<div class="highlight"><pre><span></span><code><span class="err">&#39;</span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;record&quot;</span><span class="p">,</span><span class="w"> </span>
-<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LogicalTypesMillis&quot;</span><span class="p">,</span><span class="w"> </span>
-<span class="w">  </span><span class="nt">&quot;fields&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">    </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;release_datetime&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;long&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;logicalType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;timestamp-millis&quot;</span><span class="p">},</span><span class="w"> </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1778520836000</span><span class="p">},</span>
-<span class="w">    </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;local_datetime&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;long&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;logicalType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;local-timestamp-millis&quot;</span><span class="p">},</span><span class="w"> </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1778513636000</span><span class="p">}</span>
-<span class="w">  </span><span class="p">]</span>
-<span class="p">}</span><span class="err">&#39;</span>
-</code></pre></div>
-<p>Then, if we generate the model from the schema:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">ModelGenerator</span><span class="p">,</span> <span class="n">ModelType</span>
+
+
+<span class="sd">&#39;&#39;&#39;{</span>
+<span class="sd">  &quot;type&quot;: &quot;record&quot;, </span>
+<span class="sd">  &quot;name&quot;: &quot;LogicalTypesMillis&quot;, </span>
+<span class="sd">  &quot;fields&quot;: [</span>
+<span class="sd">    {&quot;name&quot;: &quot;release_datetime&quot;, &quot;type&quot;: {&quot;type&quot;: &quot;long&quot;, &quot;logicalType&quot;: &quot;timestamp-millis&quot;}, &quot;default&quot;: 1778520836000},</span>
+<span class="sd">    {&quot;name&quot;: &quot;local_datetime&quot;, &quot;type&quot;: {&quot;type&quot;: &quot;long&quot;, &quot;logicalType&quot;: &quot;local-timestamp-millis&quot;}, &quot;default&quot;: 1778513636000}</span>
+<span class="sd">  ]</span>
+<span class="sd">}&#39;&#39;&#39;</span>
+
+<span class="c1"># Then, if we generate the model from the schema:</span>
 
 <span class="n">model_generator</span> <span class="o">=</span> <span class="n">ModelGenerator</span><span class="p">()</span>
-<span class="n">schema</span> <span class="o">=</span> <span class="n">LogicalTypes</span><span class="o">.</span><span class="n">avro_schema_to_python</span><span class="p">()</span>  <span class="c1"># use the schema python representation</span>
+<span class="n">schema</span> <span class="o">=</span> <span class="n">LogicalTypesMillis</span><span class="o">.</span><span class="n">avro_schema_to_python</span><span class="p">()</span>  <span class="c1"># use the schema python representation</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">model_generator</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">))</span>
 </code></pre></div>
@@ -1398,7 +1397,7 @@ roundtrip, starting from a model, then we generate the <code>avro schema</code> 
 
 
 <span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
-<span class="k">class</span> <span class="nc">LogicalTypes</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">LogicalTypesMillis</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Some logical types</span>
 <span class="sd">    &quot;&quot;&quot;</span>
