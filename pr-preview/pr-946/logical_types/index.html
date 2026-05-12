@@ -1031,6 +1031,17 @@
 <p class="admonition-title">To use <code>time-micros</code> in avro schemas you need to use <code>types.TimeMicro</code></p>
 </div>
 <h2 id="datetime">Datetime</h2>
+<p>The <code>timestamp-millis</code> logical type represents an instant on the global timeline, independent of a particular <code>time zone</code> or <code>calendar</code>,
+with a precision of one millisecond. A <code>timestamp-millis</code> logical type annotates an Avro long, where the long stores the number
+of milliseconds from the unix epoch, <code>1 January 1970 00:00:00.000 UTC</code>.</p>
+<p>The <code>timestamp-micros</code> represents the same as <code>timestamp-millis</code> but with a precision of one microsecond.</p>
+<p>Use <code>timestamp-millis</code> and <code>timestamp-micros</code> when:</p>
+<ul>
+<li>You care about the exact instant in time globally.</li>
+<li>Producers/consumers run in different time zones.</li>
+<li>You need reliable ordering, deduplication, TTL/retention windows, or auditing.</li>
+<li>You want round-trip safety for aware datetimes.</li>
+</ul>
 <div class="highlight"><span class="filename">DateTime example</span><pre><span></span><code><span class="kn">import</span> <span class="nn">datetime</span>
 <span class="kn">import</span> <span class="nn">dataclasses</span>
 <span class="kn">import</span> <span class="nn">typing</span>
@@ -1082,11 +1093,25 @@
 <p class="admonition-title">Note</p>
 <p>To use <code>timestamp-micros</code> in avro schemas you need to use <code>types.DateTimeMicro</code></p>
 </div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code>timestamp-millis</code> and <code>timestamp-micros</code> maintain <code>timezone info</code></p>
+</div>
 <h2 id="localdatetime">LocalDateTime</h2>
 <p>The <code>local-timestamp-millis</code> logical type represents a timestamp in a local timezone, regardless of what specific time zone is considered local,
 with a precision of one millisecond. A <code>local-timestamp-millis</code> logical type annotates an <code>Avro long</code>, where the long stores the number of milliseconds,
 from <code>1 January 1970 00:00:00.000</code>.</p>
 <p>In python we do not have a native type for it, then we will use <code>types.LocalDateTime</code>, which is an <code>annotation</code> of <code>datetime.datetime</code>: <code>Annotated[datetime.datetime, LocalDateTimeFieldInfo()]</code>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>When using <code>local-timestamp-millis</code> with aware datetime objects, the <code>timezone info</code> is lost!!</p>
+</div>
+<p>Use local-timestamp-millis only when:</p>
+<ul>
+<li>You care about wall-clock local time semantics, not a global instant.</li>
+<li>The value is tied to human local schedules, like “store opens at 09:00 local”.</li>
+<li>You intentionally do not want timezone conversion behavior.</li>
+</ul>
 <p>In the following example, we ilustrate the usage of <code>local-timestamp-millis</code> and the difference between <code>timestamp-millis</code>:</p>
 <div class="highlight"><span class="filename">Local datetime</span><pre><span></span><code><span class="kn">import</span> <span class="nn">datetime</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
@@ -1139,10 +1164,6 @@ Now, if we <code>serialize</code> and <code>deserialize</code> an instance, we d
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;instance.local_datetime </span><span class="si">{</span><span class="n">instance</span><span class="o">.</span><span class="n">local_datetime</span><span class="si">}</span><span class="s2"> != new_instancelocal_datetime. </span><span class="si">{</span><span class="n">new_instance</span><span class="o">.</span><span class="n">local_datetime</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="c1"># instance.local_datetime 2026-05-11 17:33:56+02:00 != new_instance.local_datetime 2026-05-11 17:33:56</span>
 </code></pre></div>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>When using <code>local-timestamp-millis</code> with aware datetime objects, the <code>timezone info</code> is lost!!</p>
-</div>
 <h2 id="timedelta">Timedelta</h2>
 <p><code>timedelta</code> fields are serialized to a <code>double</code> number of seconds.</p>
 <div class="highlight"><span class="filename">Timedelta example</span><pre><span></span><code><span class="kn">import</span> <span class="nn">datetime</span>
