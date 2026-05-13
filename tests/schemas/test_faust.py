@@ -73,6 +73,7 @@ def test_faust_record_schema_logical_types(logical_types_schema):
         birthday: datetime.date = a_datetime.date()
         meeting_time: datetime.time = a_datetime.time()
         release_datetime: datetime.datetime = a_datetime
+        local_datetime: types.LocalDateTime = a_datetime
         time_elapsed: datetime.timedelta = delta
         event_uuid: uuid.uuid4 = "09f00184-7721-4266-a955-21048a5cc235"
 

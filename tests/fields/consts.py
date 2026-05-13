@@ -109,17 +109,42 @@ PRIMITIVE_TYPES_AND_INVALID_DEFAULTS = (
     (type(None), "test"),
 )
 
+# Represent the logical types
+# (python_type, avro_type)
 LOGICAL_TYPES = (
+    (datetime.date, field_utils.LOGICAL_DATE),
+    (datetime.time, field_utils.LOGICAL_TIME_MILIS),
+    (datetime.timedelta, field_utils.LOGICAL_TIMEDELTA),
+    (types.TimeMicro, field_utils.LOGICAL_TIME_MICROS),
+    (types.LocalDateTime, field_utils.LOGICAL_LOCAL_DATETIME_MILIS),
+    (
+        datetime.datetime,
+        field_utils.LOGICAL_DATETIME_MILIS,
+    ),
+    (uuid.uuid4, field_utils.LOGICAL_UUID),
+    (uuid.UUID, field_utils.LOGICAL_UUID),
+)
+
+LOGICAL_TYPES_WITH_DEFAULT = (
     (datetime.date, field_utils.LOGICAL_DATE, now.date()),
     (datetime.time, field_utils.LOGICAL_TIME_MILIS, now.time()),
     (types.TimeMicro, field_utils.LOGICAL_TIME_MICROS, now.time()),
     (datetime.datetime, field_utils.LOGICAL_DATETIME_MILIS, now),
     (types.DateTimeMicro, field_utils.LOGICAL_DATETIME_MICROS, now),
+    (types.LocalDateTime, field_utils.LOGICAL_LOCAL_DATETIME_MILIS, now),
     (uuid.UUID, field_utils.LOGICAL_UUID, uuid.uuid4()),
     (Annotated[datetime.date, "date"], field_utils.LOGICAL_DATE, now.date()),
     (Annotated[datetime.time, "time"], field_utils.LOGICAL_TIME_MILIS, now.time()),
     (Annotated[datetime.datetime, "datetime"], field_utils.LOGICAL_DATETIME_MILIS, now),
     (Annotated[uuid.UUID, "uuid"], field_utils.LOGICAL_UUID, uuid.uuid4()),
+)
+
+LOGICAL_TYPES_AND_INVALID_DEFAULTS = (
+    (datetime.date, 1, None),
+    (datetime.time, "test", None),
+    (datetime.datetime, 10, None),
+    (uuid.uuid4, 10, f"Invalid default type. Default should be {str} or {uuid.UUID}"),
+    (uuid.UUID, 10, f"Invalid default type. Default should be {str} or {uuid.UUID}"),
 )
 
 UNION_PRIMITIVE_ELEMENTS = (
@@ -390,7 +415,7 @@ SEQUENCES_AND_TYPES = [
 SEQUENCES_LOGICAL_TYPES = [
     pytest.param(sequence, python_type, items_type, value, marks=xfail_annotation(sequence))
     for sequence in SEQUENCE_TYPES
-    for python_type, items_type, value in LOGICAL_TYPES
+    for python_type, items_type, value in LOGICAL_TYPES_WITH_DEFAULT
 ]
 
 MAPPING_AND_TYPES = [
@@ -402,32 +427,8 @@ MAPPING_AND_TYPES = [
 MAPPING_LOGICAL_TYPES = [
     pytest.param(mapping, python_type, items_type, value, marks=xfail_annotation(mapping))
     for mapping in MAPPING_TYPES
-    for python_type, items_type, value in LOGICAL_TYPES
+    for python_type, items_type, value in LOGICAL_TYPES_WITH_DEFAULT
 ]
-
-# Represent the logical types
-# (python_type, avro_type)
-LOGICAL_TYPES = (
-    (datetime.date, field_utils.LOGICAL_DATE),
-    (datetime.time, field_utils.LOGICAL_TIME_MILIS),
-    (datetime.timedelta, field_utils.LOGICAL_TIMEDELTA),
-    (types.TimeMicro, field_utils.LOGICAL_TIME_MICROS),
-    (
-        datetime.datetime,
-        field_utils.LOGICAL_DATETIME_MILIS,
-    ),
-    (uuid.uuid4, field_utils.LOGICAL_UUID),
-    (uuid.UUID, field_utils.LOGICAL_UUID),
-)
-
-LOGICAL_TYPES_AND_INVALID_DEFAULTS = (
-    (datetime.date, 1, None),
-    (datetime.time, "test", None),
-    (datetime.datetime, 10, None),
-    (uuid.uuid4, 10, f"Invalid default type. Default should be {str} or {uuid.UUID}"),
-    (uuid.UUID, 10, f"Invalid default type. Default should be {str} or {uuid.UUID}"),
-)
-
 
 ARRAY_WITH_UNION_TYPES = (
     (typing.Union[int, str], [field_utils.LONG, field_utils.STRING], [10, 20, "test"]),

@@ -15,14 +15,16 @@ def test_logical_types_schema(logical_types_schema):
     a_datetime = datetime.datetime(2019, 10, 12, 17, 57, 42, tzinfo=datetime.timezone.utc)
     delta = datetime.timedelta(weeks=1, days=2, hours=3, minutes=4, seconds=5, milliseconds=6, microseconds=7)
 
+    @dataclasses.dataclass
     class LogicalTypes(AvroModel):
         "Some logical types"
 
         birthday: datetime.date = a_datetime.date()
         meeting_time: datetime.time = a_datetime.time()
         release_datetime: datetime.datetime = a_datetime
+        local_datetime: types.LocalDateTime = a_datetime
         time_elapsed: datetime.timedelta = delta
-        event_uuid: uuid.uuid4 = "09f00184-7721-4266-a955-21048a5cc235"
+        event_uuid: uuid.UUID = "09f00184-7721-4266-a955-21048a5cc235"
 
     assert LogicalTypes.avro_schema() == json.dumps(logical_types_schema)
 
@@ -33,6 +35,7 @@ def test_logical_micro_types_schema(logical_types_micro_schemas):
     """
     a_datetime = datetime.datetime(2019, 10, 12, 17, 57, 42, tzinfo=datetime.timezone.utc)
 
+    @dataclasses.dataclass
     class LogicalTypesMicro(AvroModel):
         "Some logical types"
 
@@ -52,6 +55,7 @@ def test_decimal_types_schema(decimal_types_schema):
     Test a schema with decimal types
     """
 
+    @dataclasses.dataclass
     class DecimalTest(AvroModel):
         "Some Decimal Tests"
 

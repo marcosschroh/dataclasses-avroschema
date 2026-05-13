@@ -12,6 +12,7 @@ from .fields.field_utils import (
     LOGICAL_DATE,
     LOGICAL_DATETIME_MICROS,
     LOGICAL_DATETIME_MILIS,
+    LOGICAL_LOCAL_DATETIME_MILIS,
     LOGICAL_TIME_MICROS,
     LOGICAL_TIME_MILIS,
     LOGICAL_UUID,
@@ -45,6 +46,7 @@ from .fields.fields import (
     IntField,
     ListField,
     LiteralField,
+    LocalDateTimeField,
     LongField,
     NoneField,
     RecordField,
@@ -59,7 +61,7 @@ from .fields.fields import (
 from .main import AvroModel
 from .model_generator.generator import BaseClassEnum, ModelGenerator, ModelType
 from .serialization import AVRO, AVRO_JSON, SerializationType, deserialize, serialize
-from .types import DateTimeMicro, Float32, Int32, TimeMicro, condecimal, confixed
+from .types import DateTimeMicro, Float32, Int32, LocalDateTime, TimeMicro, condecimal, confixed
 
 __all__ = [
     "AvroModel",
@@ -70,6 +72,7 @@ __all__ = [
     "Float32",
     "TimeMicro",
     "DateTimeMicro",
+    "LocalDateTime",
     "condecimal",
     "confixed",
     "BOOLEAN",
@@ -97,6 +100,7 @@ __all__ = [
     "LOGICAL_TIME_MICROS",
     "LOGICAL_DATETIME_MILIS",
     "LOGICAL_DATETIME_MICROS",
+    "LOGICAL_LOCAL_DATETIME_MILIS",
     "LOGICAL_UUID",
     "PYTHON_TYPE_TO_AVRO",
     "ImmutableField",
@@ -120,6 +124,7 @@ __all__ = [
     "DateField",
     "DatetimeField",
     "DatetimeMicroField",
+    "LocalDateTimeField",
     "TimeMilliField",
     "TimeMicroField",
     "UUIDField",

@@ -19,9 +19,9 @@ TYPE_TEMPLATE = '"$type"'
 DATE_TEMPLATE = "datetime.date($year, $month, $day)"
 TIME_TEMPLATE = "datetime.time($hour, $minute, $second)"
 TIME_MICROS_TEMPLATE = "datetime.time($hour, $minute, $second, $microsecond)"
-DATETIME_TEMPLATE = "datetime.datetime($year, $month, $day, $hour, $minute, $second, tzinfo=datetime.timezone.utc)"
+DATETIME_TEMPLATE = "datetime.datetime($year, $month, $day, $hour, $minute, $second, tzinfo=$tzinfo)"
 DATETIME_MICROS_TEMPLATE = (
-    "datetime.datetime($year, $month, $day, $hour, $minute, $second, $microsecond, tzinfo=datetime.timezone.utc)"
+    "datetime.datetime($year, $month, $day, $hour, $minute, $second, $microsecond, tzinfo=$tzinfo)"
 )
 TIMEDELTA_TEMPLATE = "datetime.timedelta(seconds=$seconds)"
 DECIMAL_TEMPLATE = "decimal.Decimal('$value')"

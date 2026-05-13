@@ -647,10 +647,10 @@ class TimeMicroField(ImmutableField):
     """
     The time-micros logical type represents a time of day,
     with no reference to a particular calendar,
-    time zone or date, with a precision of one millisecond.
+    time zone or date, with a precision of one microsecond.
 
     A time-micros logical type annotates an Avro long,
-    where the int stores the number of milliseconds after midnight, 00:00:00.000000.
+    where the int stores the number of microseconds after midnight, 00:00:00.000000.
     """
 
     @property
@@ -769,8 +769,8 @@ class DatetimeField(ImmutableField):
 @dataclasses.dataclass
 class DatetimeMicroField(ImmutableField):
     """
-    The timestamp-millis logical type represents an instant on the global timeline,
-    independent of a particular time zone or calendar, with a precision of one millisecond.
+    The timestamp-micros logical type represents an instant on the global timeline,
+    independent of a particular time zone or calendar, with a precision of one microsecond.
 
     A timestamp-millis logical type annotates an Avro long,
     where the long stores the number of milliseconds from the unix epoch,
@@ -796,6 +796,38 @@ class DatetimeMicroField(ImmutableField):
     def fake(self) -> datetime.datetime:
         datetime_object: datetime.datetime = fake.date_time(tzinfo=datetime.timezone.utc)
         return datetime_object + datetime.timedelta(microseconds=random.randint(0, 999))
+
+
+@dataclasses.dataclass
+class LocalDateTimeField(ImmutableField):
+    """
+    The local-timestamp-millis logical type represents a timestamp in a local timezone,
+    regardless of what specific time zone is considered local, with a precision of one millisecond.
+
+    A local-timestamp-millis logical type annotates an Avro long,
+    where the long stores the number of milliseconds, from 1 January 1970 00:00:00.000.
+    """
+
+    @property
+    def avro_type(self) -> typing.Dict:
+        return field_utils.LOGICAL_LOCAL_DATETIME_MILIS
+
+    def default_to_avro(self, date_time: datetime.datetime) -> int:
+        """
+        Returns the number of milliseconds from the unix epoch,
+        1 January 1970 00:00:00.000 from a given datetime.
+        We remove the timezone information because this logical type represents a timestamp in a local timezone,
+        regardless of what specific time zone is considered local.
+        """
+        if date_time.tzinfo:
+            ts = (date_time - utils.epoch).total_seconds()
+        else:
+            ts = (date_time - utils.epoch_naive).total_seconds()
+
+        return int(ts * 1000)
+
+    def fake(self) -> datetime.datetime:
+        return fake.date_time()
 
 
 @dataclasses.dataclass

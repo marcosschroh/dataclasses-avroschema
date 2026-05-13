@@ -28,6 +28,7 @@ __all__ = [
     "LOGICAL_DATE",
     "LOGICAL_TIME_MILIS",
     "LOGICAL_TIME_MICROS",
+    "LOGICAL_LOCAL_DATETIME_MILIS",
     "LOGICAL_DATETIME_MILIS",
     "LOGICAL_DATETIME_MICROS",
     "LOGICAL_TIMEDELTA",
@@ -39,6 +40,7 @@ TIME_MILLIS = "time-millis"
 TIME_MICROS = "time-micros"
 TIMESTAMP_MILLIS = "timestamp-millis"
 TIMESTAMP_MICROS = "timestamp-micros"
+LOCAL_TIMESTAMP_MILLIS = "local-timestamp-millis"
 TIMEDELTA = "dataclasses-avroschema-timedelta"
 
 BOOLEAN = "boolean"
@@ -63,6 +65,7 @@ LOGICAL_TIME_MICROS = {"type": LONG, "logicalType": TIME_MICROS}
 LOGICAL_TIMEDELTA = {"type": DOUBLE, "logicalType": TIMEDELTA}
 LOGICAL_DATETIME_MILIS = {"type": LONG, "logicalType": TIMESTAMP_MILLIS}
 LOGICAL_DATETIME_MICROS = {"type": LONG, "logicalType": TIMESTAMP_MICROS}
+LOGICAL_LOCAL_DATETIME_MILIS = {"type": LONG, "logicalType": LOCAL_TIMESTAMP_MILLIS}
 LOGICAL_UUID = {"type": STRING, "logicalType": UUID}
 
 AVRO_TYPES = (

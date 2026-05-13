@@ -54,7 +54,7 @@ def test_logical_types(model_class: typing.Type[AvroModel], decorator: typing.Ca
         "event_uuid": "09f00184-7721-4266-a955-21048a5cc235",
     }
 
-    logical_types = LogicalTypes(**data)
+    logical_types = LogicalTypes.parse_obj(data)
 
     avro_binary = logical_types.serialize()
     avro_json = logical_types.serialize(serialization_type="avro-json")
@@ -65,6 +65,60 @@ def test_logical_types(model_class: typing.Type[AvroModel], decorator: typing.Ca
     assert logical_types.deserialize(avro_json, serialization_type="avro-json") == logical_types
 
     assert logical_types.to_json() == json.dumps(data_json)
+
+
+@parametrize_base_model
+def test_logical_local_timestamps(model_class: typing.Type[AvroModel], decorator: typing.Callable):
+    @decorator
+    class LogicalTypes(model_class):
+        "Some logical types"
+
+        release_datetime: datetime.datetime
+        local_datetime: types.LocalDateTime
+        release_datetime_naive: datetime.datetime
+        local_datetime_naive: types.LocalDateTime
+
+    data = {
+        "release_datetime": a_datetime,
+        "local_datetime": a_datetime,
+        "release_datetime_naive": a_datetime.replace(tzinfo=None),  # naive datetime
+        "local_datetime_naive": a_datetime.replace(tzinfo=None),  # naive datetime
+    }
+
+    data_json = {
+        "release_datetime": serialization.datetime_to_str(a_datetime),
+        "local_datetime": serialization.datetime_to_str(a_datetime),
+        "release_datetime_naive": serialization.datetime_to_str(a_datetime.replace(tzinfo=None)),
+        "local_datetime_naive": serialization.datetime_to_str(a_datetime.replace(tzinfo=None)),
+    }
+
+    logical_types = LogicalTypes.parse_obj(data)
+
+    # first compare json, without using the serde from fastavro
+    assert logical_types.to_json() == json.dumps(data_json)
+
+    # Compare what we get when using fastavro to serialize and deserialize
+    # First serialize the instance
+    avro_binary = logical_types.serialize()
+    avro_json = logical_types.serialize(serialization_type="avro-json")
+
+    # Now the deserialize and compare
+    # fastavro always return aware timestamps with UTC timezone form timestamps-millis
+    # because we set a naive datetime for the field release_datetime_naive, we need to make it aware with UTC timezone
+    # to be able to compare with the deserialized value. Then ALWAYS use aware datetimes to avoid this issue!!!!
+    data["release_datetime_naive"] = data["release_datetime_naive"].astimezone()
+    logical_types.release_datetime_naive = logical_types.release_datetime_naive.astimezone()
+
+    # Fastavro always returns naive datetimes for local-timestamp-millis
+    # then we need to clean the timezone info from the original datetimes
+    data["local_datetime"] = data["local_datetime"].replace(tzinfo=None)
+    logical_types.local_datetime = logical_types.local_datetime.replace(tzinfo=None)
+
+    assert logical_types.deserialize(avro_binary, create_instance=False) == data
+    assert logical_types.deserialize(avro_json, serialization_type="avro-json", create_instance=False) == data
+
+    assert logical_types.deserialize(avro_binary) == logical_types
+    assert logical_types.deserialize(avro_json, serialization_type="avro-json") == logical_types
 
 
 @parametrize_base_model
@@ -94,7 +148,7 @@ def test_logical_union(model_class: typing.Type[AvroModel], decorator: typing.Ca
         "logical_union_timedelta": None,
     }
 
-    logical_types = UnionSchema(**data)
+    logical_types = UnionSchema.parse_obj(data)
 
     avro_binary = logical_types.serialize()
     avro_json = logical_types.serialize(serialization_type="avro-json")
@@ -117,6 +171,7 @@ def test_logical_types_with_defaults(model_class: typing.Type[AvroModel], decora
         birthday: datetime.date = a_datetime.date()
         meeting_time: datetime.time = a_datetime.time()
         release_datetime: datetime.datetime = a_datetime
+        local_datetime: types.LocalDateTime = a_datetime
         meeting_time_micro: types.TimeMicro = a_datetime.time()
         release_datetime_micro: types.DateTimeMicro = a_datetime
         event_uuid: uuid.UUID = uuid.UUID("09f00184-7721-4266-a955-21048a5cc235")
@@ -127,6 +182,7 @@ def test_logical_types_with_defaults(model_class: typing.Type[AvroModel], decora
         "meeting_time": a_datetime.time(),
         "meeting_time_micro": a_datetime.time(),
         "release_datetime": a_datetime,
+        "local_datetime": a_datetime.replace(tzinfo=None),
         "release_datetime_micro": a_datetime,
         "event_uuid": uuid.UUID("09f00184-7721-4266-a955-21048a5cc235"),
         "implicit_decimal": decimal.Decimal("2.72"),
@@ -138,13 +194,14 @@ def test_logical_types_with_defaults(model_class: typing.Type[AvroModel], decora
         "birthday": serialization.date_to_str(a_datetime.date()),
         "meeting_time": serialization.time_to_str(a_datetime.time()),
         "release_datetime": serialization.datetime_to_str(a_datetime),
+        "local_datetime": serialization.datetime_to_str(a_datetime.replace(tzinfo=None)),
         "meeting_time_micro": serialization.time_to_str(a_datetime.time()),
         "release_datetime_micro": serialization.datetime_to_str(a_datetime),
         "event_uuid": "09f00184-7721-4266-a955-21048a5cc235",
         "decimal_with_default": "3.14159",
     }
 
-    logical_types = LogicalTypes(**data)
+    logical_types = LogicalTypes.parse_obj(data)
 
     avro_binary = logical_types.serialize()
     avro_json = logical_types.serialize(serialization_type="avro-json")
