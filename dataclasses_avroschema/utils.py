@@ -148,25 +148,41 @@ def standardize_custom_type(
     model: "ModelProtocol",
     base_class: typing.Type["ModelProtocol"],
     include_type: bool = True,
+    inside_collection: bool = False,
 ) -> typing.Any:
     if isinstance(value, dict):
         return {
             k: standardize_custom_type(
-                field_name=field_name, value=v, model=model, base_class=base_class, include_type=include_type
+                field_name=field_name,
+                value=v,
+                model=model,
+                base_class=base_class,
+                include_type=include_type,
+                inside_collection=True,
             )
             for k, v in value.items()
         }
     elif isinstance(value, list):
         return [
             standardize_custom_type(
-                field_name=field_name, value=v, model=model, base_class=base_class, include_type=include_type
+                field_name=field_name,
+                value=v,
+                model=model,
+                base_class=base_class,
+                include_type=include_type,
+                inside_collection=True,
             )
             for v in value
         ]
     elif isinstance(value, tuple):
         return tuple(
             standardize_custom_type(
-                field_name=field_name, value=v, model=model, base_class=base_class, include_type=include_type
+                field_name=field_name,
+                value=v,
+                model=model,
+                base_class=base_class,
+                include_type=include_type,
+                inside_collection=True,
             )
             for v in value
         )
@@ -186,8 +202,8 @@ def standardize_custom_type(
         if model.__class__.mro()[1] != base_class:
             annotations.update(typing.get_type_hints(model.__class__))
 
-        if is_union(annotations[field_name]) and include_type:
-            asdict["-type"] = value.get_fullname()
+        if is_union(annotations[field_name]) and include_type and not inside_collection:
+            return (value.get_fullname(), asdict)
         return asdict
 
     return value
