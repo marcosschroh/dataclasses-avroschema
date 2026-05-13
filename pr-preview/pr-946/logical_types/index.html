@@ -1031,10 +1031,12 @@
 <p class="admonition-title">To use <code>time-micros</code> in avro schemas you need to use <code>types.TimeMicro</code></p>
 </div>
 <h2 id="datetime">Datetime</h2>
+<p>In <code>avro</code> aware datetime objects can be represented in two flavours: <code>timestamp-millis</code> and <code>timestamp-micros</code></p>
 <p>The <code>timestamp-millis</code> logical type represents an instant on the global timeline, independent of a particular <code>time zone</code> or <code>calendar</code>,
 with a precision of one millisecond. A <code>timestamp-millis</code> logical type annotates an Avro long, where the long stores the number
-of milliseconds from the unix epoch, <code>1 January 1970 00:00:00.000 UTC</code>.</p>
-<p>The <code>timestamp-micros</code> represents the same as <code>timestamp-millis</code> but with a precision of one microsecond.</p>
+of milliseconds from the unix epoch, <code>1 January 1970 00:00:00.000 UTC</code>. We represent <code>timestamp-millis</code> with <code>datetime.datetime</code> python objects.</p>
+<p>The <code>timestamp-micros</code> represents the same as <code>timestamp-millis</code> but with a precision of one microsecond. 
+In python we do not have a native type for it, then we will use <code>DateTimeMicro</code>, which is an <code>annotation</code> of <code>datetime.datetime</code>: <code>Annotated[datetime.datetime, DateTimeMicroFieldInfo()]</code>.</p>
 <p>Use <code>timestamp-millis</code> and <code>timestamp-micros</code> when:</p>
 <ul>
 <li>You care about the exact instant in time globally.</li>
@@ -1091,7 +1093,7 @@ of milliseconds from the unix epoch, <code>1 January 1970 00:00:00.000 UTC</code
 <p><em>(This script is complete, it should run "as is")</em></p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>To use <code>timestamp-micros</code> in avro schemas you need to use <code>types.DateTimeMicro</code></p>
+<p>To use <code>timestamp-micros</code> in avro schemas you need to use <code>DateTimeMicro</code></p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -1116,16 +1118,15 @@ from <code>1 January 1970 00:00:00.000</code>.</p>
 <div class="highlight"><span class="filename">Local datetime</span><pre><span></span><code><span class="kn">import</span> <span class="nn">datetime</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 
-<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span><span class="p">,</span> <span class="n">ModelGenerator</span><span class="p">,</span> <span class="n">types</span>
+<span class="kn">from</span> <span class="nn">dataclasses_avroschema</span> <span class="kn">import</span> <span class="n">AvroModel</span><span class="p">,</span> <span class="n">ModelGenerator</span><span class="p">,</span> <span class="n">LocalDateTime</span>
 
 <span class="c1"># aware datetime object in CEST (+7200). In UTC (+0000) the datetime is datetime.datetime(2026, 5, 11, 15, 33, 56)</span>
-<span class="n">dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2026</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">33</span><span class="p">,</span> <span class="mi">56</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="p">(</span><span class="n">timedelta</span><span class="p">(</span><span class="n">hours</span><span class="o">=</span><span class="mi">2</span><span class="p">)))</span>
+<span class="n">dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2026</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">33</span><span class="p">,</span> <span class="mi">56</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">timezone</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">hours</span><span class="o">=</span><span class="mi">2</span><span class="p">)))</span>
 
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">LogicalTypesMillis</span><span class="p">(</span><span class="n">AvroModel</span><span class="p">):</span>
     <span class="n">release_datetime</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span> <span class="o">=</span> <span class="n">dt</span>
-    <span class="n">local_datetime</span><span class="p">:</span> <span class="n">types</span><span class="o">.</span><span class="n">LocalDateTime</span> <span class="o">=</span> <span class="n">dt</span>
-    <span class="c1"># local_datetime_naive: types.LocalDateTime = dt.replace(tzinfo=None)</span>
+    <span class="n">local_datetime</span><span class="p">:</span> <span class="n">LocalDateTime</span> <span class="o">=</span> <span class="n">dt</span>
 
 
 <span class="n">LogicalTypesMillis</span><span class="o">.</span><span class="n">avro_schema</span><span class="p">()</span>
