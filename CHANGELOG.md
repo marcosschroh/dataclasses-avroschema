@@ -1,3 +1,9 @@
+## 0.69.0 (2026-05-13)
+
+### Feat
+
+- **fields**: add support for local-timestamp-millis (#946)
+
 ## 0.68.1 (2026-05-08)
 
 ### Fix
