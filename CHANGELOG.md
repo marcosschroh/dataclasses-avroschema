@@ -1,3 +1,9 @@
+## 0.69.1 (2026-05-13)
+
+### Fix
+
+- encode nested union records with tuple notation (#944). Closes #943
+
 ## 0.69.0 (2026-05-13)
 
 ### Feat
