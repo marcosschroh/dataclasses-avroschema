@@ -40,7 +40,8 @@ def test_logical_micro_types_schema(logical_types_micro_schemas):
         "Some logical types"
 
         time_micros: types.TimeMicro
-        datetime_micros: types.DateTimeMicro
+        datetime_micro: types.DateTimeMicro
+        local_datetime_micro: types.LocalDateTimeMicro = a_datetime
         meeting_time: datetime.time = a_datetime.time()
         meeting_datetime: datetime.datetime = a_datetime
         meeting_time_micros: types.TimeMicro = a_datetime.time()

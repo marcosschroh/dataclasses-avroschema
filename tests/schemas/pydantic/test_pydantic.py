@@ -163,6 +163,8 @@ def test_pydantic_record_schema_logical_types(logical_types_pydantic_schema):
         release_datetime: datetime.datetime = a_datetime
         local_datetime: types.LocalDateTime = a_datetime
         local_datetime_naive: types.LocalDateTime = a_naive_datetime
+        local_datetime_micro: types.LocalDateTimeMicro = a_datetime
+        local_datetime_micro_naive: types.LocalDateTimeMicro = a_naive_datetime
         past_date: PastDate = a_past_datetime.date()
         future_date: FutureDate = a_future_datetime.date()
         past_datetime: PastDatetime = a_past_datetime

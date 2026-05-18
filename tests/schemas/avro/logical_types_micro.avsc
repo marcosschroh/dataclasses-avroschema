@@ -10,11 +10,19 @@
             }
         },
         {
-          "name": "datetime_micros",
+          "name": "datetime_micro",
           "type": {
             "type": "long",
             "logicalType": "timestamp-micros"
           }
+        },
+        {
+          "name": "local_datetime_micro",
+          "type": {
+            "type": "long",
+            "logicalType": "local-timestamp-micros"
+          },
+          "default": 1570903062000000
         },
         {
           "name": "meeting_time",
