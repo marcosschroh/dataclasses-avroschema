@@ -1,3 +1,9 @@
+## 0.70.0 (2026-05-18)
+
+### Feat
+
+- **fields**: add support for local-timestamp-micros (#949)
+
 ## 0.69.1 (2026-05-13)
 
 ### Fix
