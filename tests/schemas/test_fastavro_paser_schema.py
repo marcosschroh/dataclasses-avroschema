@@ -5,7 +5,7 @@ import uuid
 
 from fastavro import parse_schema
 
-from dataclasses_avroschema import AvroModel, DateTimeMicro, LocalDateTime, TimeMicro
+from dataclasses_avroschema import AvroModel, DateTimeMicro, LocalDateTime, LocalDateTimeMicro, TimeMicro
 
 
 def test_minimal_schema(user_dataclass):
@@ -351,6 +351,7 @@ def test_logical_types_schema():
         birthday: datetime.date = a_datetime.date()
         meeting_time: datetime.time = a_datetime.time()
         local_datetime: LocalDateTime = a_datetime
+        local_datetime_micros: LocalDateTimeMicro = a_datetime
         release_datetime: datetime.datetime = a_datetime
         time_elapsed: datetime.timedelta = datetime.timedelta(
             weeks=1, days=2, hours=3, minutes=4, seconds=5, milliseconds=6, microseconds=7

@@ -20,6 +20,7 @@ AVRO_TYPE_TO_PYTHON: typing.Dict[str, str] = {
     field_utils.TIMESTAMP_MILLIS: "datetime.datetime",
     field_utils.TIMESTAMP_MICROS: "types.DateTimeMicro",
     field_utils.LOCAL_TIMESTAMP_MILLIS: "types.LocalDateTime",
+    field_utils.LOCAL_TIMESTAMP_MICROS: "types.LocalDateTimeMicro",
     field_utils.TIMEDELTA: "datetime.timedelta",
     field_utils.UUID: "uuid.UUID",
 }
@@ -33,6 +34,7 @@ LOGICAL_TYPES_IMPORTS: typing.Dict[str, str] = {
     field_utils.TIMESTAMP_MILLIS: "import datetime",
     field_utils.TIMESTAMP_MICROS: "from dataclasses_avroschema import types",
     field_utils.LOCAL_TIMESTAMP_MILLIS: "from dataclasses_avroschema import types",
+    field_utils.LOCAL_TIMESTAMP_MICROS: "from dataclasses_avroschema import types",
     field_utils.UUID: "import uuid",
 }
 
@@ -47,6 +49,9 @@ LOGICAL_TYPES_TO_PYTHON = {
     ),
     field_utils.LOCAL_TIMESTAMP_MILLIS: lambda value: datetime.datetime.fromtimestamp(
         value / 1000, tz=datetime.timezone.utc
+    ),
+    field_utils.LOCAL_TIMESTAMP_MICROS: lambda value: datetime.datetime.fromtimestamp(
+        value / 1000000, tz=datetime.timezone.utc
     ),
     field_utils.TIMEDELTA: lambda value: datetime.timedelta(seconds=value),
 }
@@ -91,6 +96,16 @@ LOGICAL_TYPE_TEMPLATES = {
         hour=datetime_obj.hour,
         minute=datetime_obj.minute,
         second=datetime_obj.second,
+        tzinfo=None,
+    ),
+    field_utils.LOCAL_TIMESTAMP_MICROS: lambda datetime_obj: templates.datetime_micros_template.safe_substitute(
+        year=datetime_obj.year,
+        month=datetime_obj.month,
+        day=datetime_obj.day,
+        hour=datetime_obj.hour,
+        minute=datetime_obj.minute,
+        second=datetime_obj.second,
+        microsecond=datetime_obj.microsecond,
         tzinfo=None,
     ),
     field_utils.TIMEDELTA: lambda timedelta_obj: templates.timedelta_template.safe_substitute(

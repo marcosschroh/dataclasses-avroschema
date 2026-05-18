@@ -831,6 +831,39 @@ class LocalDateTimeField(ImmutableField):
 
 
 @dataclasses.dataclass
+class LocalDateTimeMicroField(ImmutableField):
+    """
+    The local-timestamp-micros logical type represents a timestamp in a local timezone,
+    regardless of what specific time zone is considered local, with a precision of one millisecond.
+
+    A local-timestamp-micros logical type annotates an Avro long,
+    where the long stores the number of microseconds, from 1 January 1970 00:00:00.000000.
+    """
+
+    @property
+    def avro_type(self) -> typing.Dict:
+        return field_utils.LOGICAL_LOCAL_DATETIME_MICROS
+
+    def default_to_avro(self, date_time: datetime.datetime) -> int:
+        """
+        Returns the number of microseconds from the unix epoch,
+        1 January 1970 00:00:00.000000 from a given datetime.
+        We remove the timezone information because this logical type represents a timestamp in a local timezone,
+        regardless of what specific time zone is considered local.
+        """
+        if date_time.tzinfo:
+            ts = (date_time - utils.epoch).total_seconds()
+        else:
+            ts = (date_time - utils.epoch_naive).total_seconds()
+
+        return int(ts * 1000000)
+
+    def fake(self) -> datetime.datetime:
+        datetime_object: datetime.datetime = fake.date_time()
+        return datetime_object + datetime.timedelta(microseconds=random.randint(0, 999))
+
+
+@dataclasses.dataclass
 class UUIDField(ImmutableField):
     @property
     def avro_type(self) -> typing.Dict:

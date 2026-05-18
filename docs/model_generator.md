@@ -40,6 +40,7 @@ This section describe how to convert `python classes` from an `avro schema` (avs
     | timestamp-millis| datetime.datetime|
     | timestamp-micros| types.DateTimeMicro|
     | local-timestamp-millis| types.LocalDateTime|
+    | local-timestamp-millis-micros| types.LocalDateTimeMicro|
     | decimal | types.condecimal|
     | uuid | uuid.UUID    |
 
@@ -67,6 +68,7 @@ This section describe how to convert `python classes` from an `avro schema` (avs
     | timestamp-millis| datetime.datetime|
     | timestamp-micros| types.DateTimeMicro|
     | local-timestamp-millis| types.LocalDateTime|
+    | local-timestamp-millis-micros| types.LocalDateTimeMicro|
     | decimal | types.condecimal|
     | uuid | uuid.UUID    |
 

@@ -117,10 +117,12 @@ LOGICAL_TYPES = (
     (datetime.timedelta, field_utils.LOGICAL_TIMEDELTA),
     (types.TimeMicro, field_utils.LOGICAL_TIME_MICROS),
     (types.LocalDateTime, field_utils.LOGICAL_LOCAL_DATETIME_MILIS),
+    (types.LocalDateTimeMicro, field_utils.LOGICAL_LOCAL_DATETIME_MICROS),
     (
         datetime.datetime,
         field_utils.LOGICAL_DATETIME_MILIS,
     ),
+    (types.DateTimeMicro, field_utils.LOGICAL_DATETIME_MICROS),
     (uuid.uuid4, field_utils.LOGICAL_UUID),
     (uuid.UUID, field_utils.LOGICAL_UUID),
 )
@@ -132,6 +134,7 @@ LOGICAL_TYPES_WITH_DEFAULT = (
     (datetime.datetime, field_utils.LOGICAL_DATETIME_MILIS, now),
     (types.DateTimeMicro, field_utils.LOGICAL_DATETIME_MICROS, now),
     (types.LocalDateTime, field_utils.LOGICAL_LOCAL_DATETIME_MILIS, now),
+    (types.LocalDateTimeMicro, field_utils.LOGICAL_LOCAL_DATETIME_MICROS, now),
     (uuid.UUID, field_utils.LOGICAL_UUID, uuid.uuid4()),
     (Annotated[datetime.date, "date"], field_utils.LOGICAL_DATE, now.date()),
     (Annotated[datetime.time, "time"], field_utils.LOGICAL_TIME_MILIS, now.time()),

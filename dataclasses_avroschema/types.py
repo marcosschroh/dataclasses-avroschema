@@ -56,6 +56,9 @@ class DateTimeMicroFieldInfo(FieldInfo): ...
 class LocalDateTimeFieldInfo(FieldInfo): ...
 
 
+class LocalDateTimeMicroFieldInfo(FieldInfo): ...
+
+
 def confixed(
     *,
     size,
@@ -77,6 +80,7 @@ Float32 = Annotated[float, Float32FieldInfo()]
 TimeMicro = Annotated[datetime.time, TimeMicroFieldInfo()]
 DateTimeMicro = Annotated[datetime.datetime, DateTimeMicroFieldInfo()]
 LocalDateTime = Annotated[datetime.datetime, LocalDateTimeFieldInfo()]
+LocalDateTimeMicro = Annotated[datetime.datetime, LocalDateTimeMicroFieldInfo()]
 
 CUSTOM_TYPES = (
     Int32,
@@ -84,6 +88,7 @@ CUSTOM_TYPES = (
     TimeMicro,
     DateTimeMicro,
     LocalDateTime,
+    LocalDateTimeMicro,
     condecimal,
     confixed,
 )

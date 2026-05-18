@@ -75,21 +75,27 @@ def test_logical_local_timestamps(model_class: typing.Type[AvroModel], decorator
 
         release_datetime: datetime.datetime
         local_datetime: types.LocalDateTime
+        local_datetime_micro: types.LocalDateTimeMicro
         release_datetime_naive: datetime.datetime
         local_datetime_naive: types.LocalDateTime
+        local_datetime_micro_naive: types.LocalDateTimeMicro
 
     data = {
         "release_datetime": a_datetime,
         "local_datetime": a_datetime,
+        "local_datetime_micro": a_datetime,
         "release_datetime_naive": a_datetime.replace(tzinfo=None),  # naive datetime
         "local_datetime_naive": a_datetime.replace(tzinfo=None),  # naive datetime
+        "local_datetime_micro_naive": a_datetime.replace(tzinfo=None),  # naive datetime
     }
 
     data_json = {
         "release_datetime": serialization.datetime_to_str(a_datetime),
         "local_datetime": serialization.datetime_to_str(a_datetime),
+        "local_datetime_micro": serialization.datetime_to_str(a_datetime),
         "release_datetime_naive": serialization.datetime_to_str(a_datetime.replace(tzinfo=None)),
         "local_datetime_naive": serialization.datetime_to_str(a_datetime.replace(tzinfo=None)),
+        "local_datetime_micro_naive": serialization.datetime_to_str(a_datetime.replace(tzinfo=None)),
     }
 
     logical_types = LogicalTypes.parse_obj(data)
@@ -109,10 +115,12 @@ def test_logical_local_timestamps(model_class: typing.Type[AvroModel], decorator
     data["release_datetime_naive"] = data["release_datetime_naive"].astimezone()
     logical_types.release_datetime_naive = logical_types.release_datetime_naive.astimezone()
 
-    # Fastavro always returns naive datetimes for local-timestamp-millis
+    # Fastavro always returns naive datetimes for local-timestamps
     # then we need to clean the timezone info from the original datetimes
     data["local_datetime"] = data["local_datetime"].replace(tzinfo=None)
+    data["local_datetime_micro"] = data["local_datetime_micro"].replace(tzinfo=None)
     logical_types.local_datetime = logical_types.local_datetime.replace(tzinfo=None)
+    logical_types.local_datetime_micro = logical_types.local_datetime_micro.replace(tzinfo=None)
 
     assert logical_types.deserialize(avro_binary, create_instance=False) == data
     assert logical_types.deserialize(avro_json, serialization_type="avro-json", create_instance=False) == data
