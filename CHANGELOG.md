@@ -1,3 +1,9 @@
+## 0.70.1 (2026-07-20)
+
+### Fix
+
+- documentation fixed. Dependencies updated. Dependabot updated. (#959)
+
 ## 0.70.0 (2026-05-18)
 
 ### Feat
