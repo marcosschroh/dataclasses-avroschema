@@ -243,27 +243,24 @@ The end result will also include the necessaty imports and the use of `pydantic.
 
 For example:
 
-```python
-schema = {
-    "type": "record",
-    "name": "User",
-    "fields": [
-        {"name": "name", "type": "string"},
-        {"name": "age", "type": "long"},
-        {"name": "friend", "type": ["null", "User"], "default": None},
-        {"name": "relatives", "type": {"type": "array", "items": "User", "name": "relative"}, "default": []},
-        {"name": "teammates", "type": {"type": "map", "values": "User", "name": "teammate"}, "default": {}},
-        {"name": "money", "type": {"type": "bytes", "logicalType": "decimal", "precision": 10, "scale": 3}},
-    ],
-}
-```
-
-and then render the result:
-
 === "Pydantic models"
 
     ```python
     from dataclasses_avroschema import ModelGenerator, ModelType
+
+
+    schema = {
+        "type": "record",
+        "name": "User",
+        "fields": [
+            {"name": "name", "type": "string"},
+            {"name": "age", "type": "long"},
+            {"name": "friend", "type": ["null", "User"], "default": None},
+            {"name": "relatives", "type": {"type": "array", "items": "User", "name": "relative"}, "default": []},
+            {"name": "teammates", "type": {"type": "map", "values": "User", "name": "teammate"}, "default": {}},
+            {"name": "money", "type": {"type": "bytes", "logicalType": "decimal", "precision": 10, "scale": 3}},
+        ],
+    }
 
     model_generator = ModelGenerator()
     result = model_generator.render(schema=schema, model_type=ModelType.PYDANTIC.value)
@@ -291,7 +288,21 @@ and then render the result:
 === "Avrodantic models"
 
     ```python
-    from dataclasses_avroschema import ModelGenerator
+    from dataclasses_avroschema import ModelGenerator, ModelType
+
+
+    schema = {
+        "type": "record",
+        "name": "User",
+        "fields": [
+            {"name": "name", "type": "string"},
+            {"name": "age", "type": "long"},
+            {"name": "friend", "type": ["null", "User"], "default": None},
+            {"name": "relatives", "type": {"type": "array", "items": "User", "name": "relative"}, "default": []},
+            {"name": "teammates", "type": {"type": "map", "values": "User", "name": "teammate"}, "default": {}},
+            {"name": "money", "type": {"type": "bytes", "logicalType": "decimal", "precision": 10, "scale": 3}},
+        ],
+    }
 
     model_generator = ModelGenerator()
     result = model_generator.render(schema=schema, model_type=ModelType.AVRODANTIC.value)
@@ -726,4 +737,4 @@ class AvroDeployment(AvroModel):
         original_schema = '{"type": "record", "namespace": "com.kubertenes", "name": "AvroDeployment", "fields": [{"name": "image", "type": "string"}, {"name": "replicas", "type": "int"}, {"name": "port", "type": "int"}]}'
 ```
 
-As the example shows, the Meta class of AvroDeployment, now contains an "original_schema" field `AvroDeployment.Meta.original_schema`, which can be referred to instead. 
+As the example shows, the Meta class of AvroDeployment, now contains an "original_schema" field `AvroDeployment.Meta.original_schema`, which can be referred to instead
