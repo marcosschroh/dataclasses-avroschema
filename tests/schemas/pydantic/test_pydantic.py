@@ -47,6 +47,23 @@ def test_pydantic_record_schema_primitive_types(user_avro_json):
     assert User.avro_schema() == json.dumps(user_avro_json)
 
 
+def test_pydantic_decimal_field_constraints():
+    class Transaction(AvroBaseModel):
+        amount: typing.Annotated[decimal.Decimal, Field(max_digits=9, decimal_places=2)]
+
+    assert Transaction.avro_schema_to_python()["fields"] == [
+        {
+            "name": "amount",
+            "type": {
+                "type": "bytes",
+                "logicalType": "decimal",
+                "precision": 9,
+                "scale": 2,
+            },
+        }
+    ]
+
+
 def test_exclude_default_from_schema(user_avro_json):
     class User(AvroBaseModel):
         name: str = Field(default="marcos", metadata={"exclude_default": True})

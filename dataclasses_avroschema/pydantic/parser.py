@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import dataclasses
+import decimal
 import typing
 
 from pydantic.fields import FieldInfo
@@ -8,6 +9,7 @@ from pydantic.fields import FieldInfo
 from dataclasses_avroschema.fields.fields import AvroField
 from dataclasses_avroschema.parser import Parser
 from dataclasses_avroschema.protocol import FieldProtocol, ModelProtocol
+from dataclasses_avroschema.types import DecimalFieldInfo
 
 
 class PydanticParser(Parser):
@@ -40,11 +42,34 @@ class PydanticParser(Parser):
 
         return metadata
 
+    @staticmethod
+    def get_field_type(field_info: FieldInfo) -> typing.Any:
+        annotation = field_info.rebuild_annotation()
+        if field_info.annotation is decimal.Decimal:
+            decimal_info = next(
+                (
+                    item
+                    for item in field_info.metadata
+                    if getattr(item, "max_digits", None) is not None
+                    and getattr(item, "decimal_places", None) is not None
+                ),
+                None,
+            )
+            if decimal_info is not None:
+                annotation = typing.Annotated[
+                    annotation,
+                    DecimalFieldInfo(
+                        max_digits=decimal_info.max_digits,
+                        decimal_places=decimal_info.decimal_places,
+                    ),
+                ]
+        return annotation
+
     def parse_fields(self, exclude: typing.List) -> typing.List[FieldProtocol]:
         return [
             AvroField(
                 field_name,
-                field_info.rebuild_annotation(),
+                self.get_field_type(field_info),
                 default=dataclasses.MISSING
                 if field_info.is_required() or field_info.default_factory
                 else field_info.default,
