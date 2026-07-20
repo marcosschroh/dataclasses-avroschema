@@ -47,7 +47,7 @@ UnionSchema.avro_schema()
 ```
 
 - `Field` internal api updated:
-  - `to_avro` was renamed to `default_to_avro` and is an instance method
+- `to_avro` was renamed to `default_to_avro` and is an instance method
 
 ## Migration from previous versions to 0.27.0
 
@@ -58,12 +58,13 @@ UnionSchema.avro_schema()
     ```python
     import dataclasses
     from dataclasses_avroschema import AvroModel, types
+    # from dataclasses_avroschema import types 
 
 
     class UserAdvance(AvroModel):
         name: str
         age: int
-        favorite_colors: types.Enum = types.Enum(["BLUE", "YELLOW", "GREEN"], default="BLUE")  # --> replace with field!!!
+        # favorite_colors: types.Enum = types.Enum(["BLUE", "YELLOW", "GREEN"], default="BLUE")  # --> replace with field!!!
     ```
 
     should be replaced by:
@@ -92,13 +93,14 @@ UnionSchema.avro_schema()
 
     ```python
     import dataclasses
-    from dataclasses_avroschema import AvroModel, types
+    from dataclasses_avroschema import AvroModel
+    # from dataclasses_avroschema import types
 
 
     class UserAdvance(AvroModel):
         name: str
         age: int
-        favorite_colors: types.Enum = types.Enum(["BLUE", "YELLOW", "GREEN"], default="BLUE")  # --> replace with field!!!
+        # favorite_colors: types.Enum = types.Enum(["BLUE", "YELLOW", "GREEN"], default="BLUE")  # --> replace with field!!!
     ```
 
     should be replaced by:

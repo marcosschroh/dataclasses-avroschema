@@ -170,13 +170,14 @@ For this behaviour the attribute `convert_literal_to_enum` must be set to `True`
             convert_literal_to_enum = True
 
     print(MyModel.avro_schema())
-
-    {
+    
+    
+    '''{
       "type": "record",
       "name": "MyModel", "fields": [
         {"name": "options", "type": {"type": "enum", "name": "options", "symbols": ["four_4", "five_5"]}, "default": "four_4"},
         {"name": "optional_field", "type": ["null", {"type": "enum", "name": "optional_field", "symbols": ["four_4", "five_5"]}], "default": null}]
-    }
+    }'''
     ```
 
 === "Literal as avro string"
@@ -192,14 +193,14 @@ For this behaviour the attribute `convert_literal_to_enum` must be set to `True`
 
     print(MyModel.avro_schema())
 
-    {
+    '''{
       "type": "record",
       "name": "MyModel",
       "fields": [
         {"name": "options", "type": "string", "default": "four_4"},
         {"name": "optional_field", "type": ["null", "string"], "default": null}
       ]
-    }
+    }'''
     ```
 
 ### Repeated Enums
@@ -351,7 +352,7 @@ The question is: how can we set a `enum type level default`?. The answer is usin
             default = "Unknown"
 
 
-    @dataclass
+    @dataclasses.dataclass
     class MyRecord(AvroModel):
         my_field: MyEnum = MyEnum.UNKNOWN
     ```
@@ -375,7 +376,7 @@ The question is: how can we set a `enum type level default`?. The answer is usin
             default = "Unknown"
 
 
-    @dataclass
+    @dataclasses.dataclass
     class User(AvroModel):
         my_field: MyEnum = MyEnum.UNKNOWN
     ```
@@ -594,6 +595,7 @@ UnionSchema.avro_schema()
 === "python <= 3.9"
 
     ```python
+    import typing
     import dataclasses
     from dataclasses_avroschema import AvroModel
 
@@ -622,7 +624,8 @@ UnionSchema.avro_schema()
       lake_trip: typing.Union[Bus, Car]
       river_trip: typing.Union[Bus, Car] = None
       mountain_trip: typing.Union[Bus, Car] = dataclasses.field(
-          default_factory=lambda: Bus("engine_name": "honda"))
+        default_factory=lambda: Bus(engine_name="honda")
+      )
 
     UnionSchema.avro_schema()
     ```
@@ -658,7 +661,8 @@ UnionSchema.avro_schema()
       lake_trip: Bus | Car
       river_trip: Bus | Car | None = None
       mountain_trip: Bus | Car = dataclasses.field(
-          default_factory=lambda: Bus("engine_name": "honda"))
+        default_factory=lambda: Bus(engine_name="honda")
+      )
 
     UnionSchema.avro_schema()
     ```
