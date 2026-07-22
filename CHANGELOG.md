@@ -1,3 +1,9 @@
+## 0.70.2 (2026-07-22)
+
+### Fix
+
+- bridge Pydantic decimal constraints (#961)
+
 ## 0.70.1 (2026-07-20)
 
 ### Fix
