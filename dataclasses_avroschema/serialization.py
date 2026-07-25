@@ -57,8 +57,13 @@ def serialize(payload: JsonDict, schema: typing.Dict, serialization_type: Serial
         value = file_like_output.getvalue()
     elif serialization_type == AVRO_JSON:
         file_like_output = io.StringIO()
-        fastavro.json_writer(file_like_output, schema, [payload])
-        value = file_like_output.getvalue().encode("utf-8")
+        if schema.get("type") == "record" and not schema.get("fields"):
+            # `fastavro.json_writer` raises an `Internal Parser Exception` when
+            # flushing a record without fields, so encode the empty record directly.
+            value = b"{}"
+        else:
+            fastavro.json_writer(file_like_output, schema, [payload])
+            value = file_like_output.getvalue().encode("utf-8")
     else:
         raise ValueError(f"Serialization type should be `avro` or `avro-json`, not {serialization_type}")
 

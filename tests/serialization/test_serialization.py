@@ -340,3 +340,17 @@ def test_serialization_with_nested_models_and_forward_ref_uuid():
     assert deserialized.inner is not None
     assert deserialized.inner.value == "inner_value"
     assert deserialized.inner.inner_id == inner_uuid
+
+
+def test_schema_without_fields_serialization() -> None:
+    """A record without fields must serialize with both avro and avro-json."""
+
+    @dataclass
+    class EmptyModel(AvroModel):
+        pass
+
+    empty = EmptyModel()
+
+    assert empty.serialize() == b""
+    assert empty.serialize(serialization_type=AVRO_JSON) == b"{}"
+    assert EmptyModel.deserialize(b"{}", serialization_type=AVRO_JSON) == empty
