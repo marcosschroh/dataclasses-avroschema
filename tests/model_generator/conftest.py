@@ -1379,3 +1379,19 @@ def logical_types_not_nested() -> JsonDict:
         "name": "LogicalTypesNotNested",
         "fields": [{"name": "occurrence_date", "type": "long", "logicalType": "timestamp-millis"}],
     }
+
+
+@pytest.fixture
+def logical_types_not_nested_with_null_default() -> JsonDict:
+    return {
+        "type": "record",
+        "name": "LogicalTypesNotNestedWithNullDefault",
+        "fields": [
+            {
+                "name": "occurrence_date",
+                "type": ["null", "long"],
+                "logicalType": "timestamp-millis",
+                "default": None,
+            }
+        ],
+    }
