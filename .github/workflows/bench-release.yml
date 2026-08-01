@@ -16,7 +16,7 @@ jobs:
         fetch-depth: 0
         token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
     - name: Setup python
-      uses: actions/setup-python@v6.3.0
+      uses: actions/setup-python@v7.0.0
       with:
         python-version: '3.13'
         architecture: x64
