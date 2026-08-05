@@ -88,6 +88,10 @@ class Parser:
         field_order = self.metadata.field_order
 
         if field_order is not None:
+            # Work on a copy: `field_order` is the list object defined on the model
+            # (and shared with subclasses through inheritance), so appending to it
+            # would permanently rewrite the user's declared order.
+            field_order = list(field_order)
             for field_name in self.fields_map.keys():
                 if field_name not in field_order:
                     field_order.append(field_name)

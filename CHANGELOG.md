@@ -1,3 +1,15 @@
+## 0.70.4 (2026-08-05)
+
+### Fix
+
+- serialize records without fields to avro-json (#964)
+
+## 0.70.3 (2026-08-05)
+
+### Fix
+
+- do not mutate Meta.field_order during schema generation (#963)
+
 ## 0.70.2 (2026-07-22)
 
 ### Fix
