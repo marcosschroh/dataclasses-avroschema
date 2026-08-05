@@ -122,6 +122,11 @@ class FieldRepresentation:
 
         if self.default is dataclasses.MISSING:
             ...
+        elif self.default is None:
+            # A `null` default is always rendered as `None`, regardless of the
+            # field type. Type specific converters (e.g. the logical type ones)
+            # cannot handle `None`.
+            default_repr = "None"
         elif self.avro_type in (
             field_utils.STRING,
             field_utils.UUID,
