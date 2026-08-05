@@ -1,3 +1,9 @@
+## 0.70.5 (2026-08-05)
+
+### Fix
+
+- render null default as None in model generator (#962)
+
 ## 0.70.4 (2026-08-05)
 
 ### Fix
