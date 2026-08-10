@@ -18,6 +18,13 @@ from . import (
     templates,
 )
 
+# `render_field` walks the schema by calling itself, so the schema decides how deep the
+# interpreter's stack goes. Nesting arrays or maps a few thousand levels deep is a small
+# document to write and a `RecursionError` to render, which is why the depth is bounded
+# here rather than left to the interpreter. Pass `max_nesting_depth` to the generator to
+# change it.
+MAX_NESTING_DEPTH = 100
+
 
 @dataclasses.dataclass
 class FieldRepresentation:
@@ -386,6 +393,8 @@ class BaseGenerator:
     include_original_schema: bool = False
     base_class: str = field(init=False)
     type_hint_clashes: dict[str, str] = field(default_factory=dict)
+    max_nesting_depth: int = MAX_NESTING_DEPTH
+    _nesting_depth: int = field(default=0, init=False)
 
     def __post_init__(self) -> None:
         self.avro_type_to_lang = avro_to_python_utils.AVRO_TYPE_TO_PYTHON
@@ -458,6 +467,25 @@ class BaseGenerator:
         return class_representation
 
     def render_field(self, field: JsonDict, model_name: str, parent_field_name: str) -> FieldRepresentation:
+        """
+        Render an avro field, refusing to go deeper than `max_nesting_depth`.
+
+        The depth is tracked here because every nesting shape — a nested record, an array,
+        a map, a union — comes back through this method.
+        """
+        if self._nesting_depth >= self.max_nesting_depth:
+            raise ValueError(
+                f"The schema is nested more than {self.max_nesting_depth} levels deep. "
+                "Set `max_nesting_depth` on the generator if this schema is legitimate."
+            )
+
+        self._nesting_depth += 1
+        try:
+            return self._render_field(field=field, model_name=model_name, parent_field_name=parent_field_name)
+        finally:
+            self._nesting_depth -= 1
+
+    def _render_field(self, field: JsonDict, model_name: str, parent_field_name: str) -> FieldRepresentation:
         """
         Render an avro field.
 
