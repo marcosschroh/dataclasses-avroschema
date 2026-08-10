@@ -2,6 +2,7 @@ import datetime
 import decimal
 import enum
 import io
+import math
 import typing
 import uuid
 
@@ -18,6 +19,12 @@ AVRO = "avro"
 AVRO_JSON = "avro-json"
 
 decimal_context = decimal.Context()
+
+# The avro spec bounds a decimal's `precision` by the size of its payload rather than by
+# an absolute value, so a schema can ask for any number of digits. `create_decimal` and
+# `scaleb` both cost more as that number grows. This is the largest value accepted from a
+# schema; raise it if a use case genuinely needs more digits than this.
+MAX_DECIMAL_PRECISION = 1000
 
 
 def serialize(payload: JsonDict, schema: typing.Dict, serialization_type: SerializationType = "avro") -> bytes:
@@ -191,20 +198,56 @@ def decimal_to_str(value: decimal.Decimal, precision: int, scale: int = 0) -> st
     return r"\u" + value_bytes.hex()
 
 
+def max_decimal_bytes(*, precision: int, scale: int) -> int:
+    """The most bytes the unscaled value of a decimal with this precision can occupy.
+
+    `prepare_bytes_decimal` multiplies the unscaled value by `10 ** (exp + scale)` before
+    encoding it, so up to `scale` further digits can legitimately appear on the wire.
+    """
+    digits = precision + scale
+    bits = math.ceil(digits * math.log2(10)) + 1  # + 1 for the sign bit
+
+    return (bits + 7) // 8
+
+
 def string_to_decimal(*, value: str, schema: JsonDict) -> decimal.Decimal:
+    scale = schema.get("scale", 0)
+    precision = schema["precision"]
+
+    if not isinstance(precision, int) or isinstance(precision, bool) or precision <= 0:
+        raise ValueError(f"`precision` must be a positive integer, not {precision!r}")
+
+    if precision > MAX_DECIMAL_PRECISION:
+        raise ValueError(
+            f"`precision` is {precision}, above the maximum of {MAX_DECIMAL_PRECISION} "
+            "(`serialization.MAX_DECIMAL_PRECISION`)"
+        )
+
+    if not isinstance(scale, int) or isinstance(scale, bool) or not 0 <= scale <= precision:
+        raise ValueError(f"`scale` must be an integer between zero and the precision, not {scale!r}")
+
     # first remove the Unicode character
     value = value.replace(r"\u", "")
 
     # then concert to bytes
     decimal_bytes = bytes.fromhex(value)
 
-    # finally get the decimal.Decimal
-    scale = schema.get("scale", 0)
-    precision = schema["precision"]
-    unscaled_datum = int.from_bytes(decimal_bytes, byteorder="big", signed=True)
-    decimal_context.prec = precision
+    # A payload longer than the precision allows is not a decimal this schema can describe,
+    # and the cost of turning it into one grows with its length.
+    max_bytes = max_decimal_bytes(precision=precision, scale=scale)
+    if len(decimal_bytes) > max_bytes:
+        raise ValueError(
+            f"The decimal value is {len(decimal_bytes)} bytes, which does not fit in the "
+            f"{precision} digits declared by the schema (at most {max_bytes} bytes)"
+        )
 
-    return decimal_context.create_decimal(unscaled_datum).scaleb(-scale, decimal_context)
+    # finally get the decimal.Decimal. The context is local because `decimal_context` is
+    # module level: assigning to its `prec` also changed the precision of unrelated decimal
+    # work elsewhere in the process.
+    context = decimal.Context(prec=precision)
+    unscaled_datum = int.from_bytes(decimal_bytes, byteorder="big", signed=True)
+
+    return context.create_decimal(unscaled_datum).scaleb(-scale, context)
 
 
 # This is an almost complete copy of fastavro's _logical_writers_py.prepare_bytes_decimal
