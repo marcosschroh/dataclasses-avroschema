@@ -19,6 +19,10 @@ AVRO_JSON = "avro-json"
 
 decimal_context = decimal.Context()
 
+# The deepest payload `deserialize_from_context` will walk. A recursive schema lets the
+# payload, rather than the schema, decide how deep the nesting goes.
+MAX_DESERIALIZE_DEPTH = 100
+
 
 def serialize(payload: JsonDict, schema: typing.Dict, serialization_type: SerializationType = "avro") -> bytes:
     """
@@ -143,27 +147,37 @@ def deserialize(
     return payload  # type: ignore
 
 
-def deserialize_from_context(*, data: typing.Any, context: JsonDict) -> typing.Any:
+def deserialize_from_context(*, data: typing.Any, context: JsonDict, depth: int = 0) -> typing.Any:
     """
     Recursively normalize deserialized data: unwrap union tuples
     produced by fastavro's return_record_name=True, and recurse into
     dicts and lists so that all nesting shapes are handled consistently.
+
+    A recursive schema puts the nesting depth in the hands of the payload, so the walk is
+    bounded by `MAX_DESERIALIZE_DEPTH` and reports going past it as a `ValueError` instead
+    of as a `RecursionError` raised somewhere further down.
     """
+    if depth > MAX_DESERIALIZE_DEPTH:
+        raise ValueError(
+            f"The payload is nested more than {MAX_DESERIALIZE_DEPTH} levels deep "
+            "(`serialization.MAX_DESERIALIZE_DEPTH`)"
+        )
+
     if isinstance(data, dict):
-        return {k: deserialize_from_context(data=v, context=context) for k, v in data.items()}
+        return {k: deserialize_from_context(data=v, context=context, depth=depth + 1) for k, v in data.items()}
     elif isinstance(data, tuple) and len(data) == 2:
-        return sanitize_union(union=data, context=context)
+        return sanitize_union(union=data, context=context, depth=depth)
     elif isinstance(data, list):
-        return [deserialize_from_context(data=item, context=context) for item in data]
+        return [deserialize_from_context(data=item, context=context, depth=depth + 1) for item in data]
     return data
 
 
-def sanitize_union(*, union: typing.Tuple, context: JsonDict) -> typing.Optional[ModelProtocol]:
+def sanitize_union(*, union: typing.Tuple, context: JsonDict, depth: int = 0) -> typing.Optional[ModelProtocol]:
     # the first value is the model/record name and the second is its payload
     model_name, model_value = union
     if isinstance(model_value, dict):
         # it can be a dict again so we need to sanitize
-        model_value = deserialize_from_context(data=model_value, context=context)
+        model_value = deserialize_from_context(data=model_value, context=context, depth=depth + 1)
 
     model_name = model_name.split(".")[-1]
     avro_model: typing.Optional[ModelProtocol] = context.get(model_name)
