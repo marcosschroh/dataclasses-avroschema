@@ -196,10 +196,16 @@ def standardize_custom_type(
         else:
             asdict = value.asdict()
 
-        annotations = get_klass_annotations(model.__class__)
+        # A copy, because `get_klass_annotations` hands back the class's own
+        # `__annotations__` and the updates below would otherwise be written into it.
+        annotations = dict(get_klass_annotations(model.__class__))
         # This is a hack to get the annotations from the parent class
         # https://github.com/marcosschroh/dataclasses-avroschema/issues/800
-        if model.__class__.mro()[1] != base_class:
+        #
+        # The field can also be inherited from a plain mixin, which the check above misses
+        # when the model subclasses the base class directly, so the hints are resolved on
+        # a miss as well rather than letting the lookup raise `KeyError`.
+        if model.__class__.mro()[1] != base_class or field_name not in annotations:
             annotations.update(typing.get_type_hints(model.__class__))
 
         if is_union(annotations[field_name]) and include_type and not inside_collection:
