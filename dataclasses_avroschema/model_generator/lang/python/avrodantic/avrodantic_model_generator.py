@@ -6,6 +6,7 @@ from dataclasses_avroschema.model_generator.lang.python.base import BaseGenerato
 from dataclasses_avroschema.model_generator.lang.python.pydantic.pydantic_model_generator import (
     PydanticFieldRepresentation,
 )
+from dataclasses_avroschema.model_generator.lang.python.validations import validate_type_expression
 from dataclasses_avroschema.types import JsonDict
 
 
@@ -45,7 +46,9 @@ class AvroDanticModelGenerator(BaseGenerator):
         pydantic_class = field.get("pydantic-class")
 
         if pydantic_class is not None:
-            return f"pydantic.{pydantic_class}"
+            # This becomes the field's annotation, which is evaluated when the generated
+            # module is imported, so it has to name an attribute and not be an expression.
+            return f"pydantic.{validate_type_expression(pydantic_class, location='pydantic-class')}"
         return None
 
     def add_class_imports(self) -> None:

@@ -131,8 +131,11 @@ def deserialize(
         input_stream = io.StringIO(data.decode())
         # This is an iterator, but not a container
         records = fastavro.json_reader(input_stream, schema)
-        # records can have multiple payloads, but in this case we return the first one
-        payload = list(records)[0]
+        # records can have multiple payloads, but in this case we return the first one.
+        # Taking it from the iterator rather than building a list first means the rest of
+        # the payload is never decoded, so its size does not decide how much memory the
+        # call takes.
+        payload = next(iter(records))
     else:
         raise ValueError(f"Serialization type should be `avro` or `avro-json`, not {serialization_type}")
 
