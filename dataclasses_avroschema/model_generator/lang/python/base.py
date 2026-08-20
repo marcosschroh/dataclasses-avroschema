@@ -17,6 +17,13 @@ from . import (
     avro_to_python_utils,
     templates,
 )
+from .validations import (
+    escape_docstring,
+    escape_string,
+    validate_aliases,
+    validate_fullname,
+    validate_name,
+)
 
 
 @dataclasses.dataclass
@@ -131,15 +138,18 @@ class FieldRepresentation:
             field_utils.STRING,
             field_utils.UUID,
         ):
-            default_repr = f'"{self.default}"'
+            default_repr = f'"{escape_string(self.default)}"'
         elif self.avro_type in (
             field_utils.BYTES,
             field_utils.FIXED,
         ):
-            default_repr = f'b"{self.default}"'
+            default_repr = f'b"{escape_string(self.default)}"'
         elif self.avro_type == field_utils.ENUM:
             enum_name = self.inner_name or self.type_hint
-            default_repr = f"{casefy.pascalcase(enum_name)}.{casefy.uppercase(self.default)}"
+            # `casefy.uppercase` only case folds, so anything that is not a letter
+            # survives into the enum member reference.
+            member = validate_name(self.default, location="enum default")
+            default_repr = f"{casefy.pascalcase(enum_name)}.{casefy.uppercase(member)}"
         elif isinstance(self.default, (dict, list)):
             # Then is can be a regular dict as default or a record
             if self.default:
@@ -151,8 +161,10 @@ class FieldRepresentation:
                         # Then it is a record defined by the first time with a default value
                         field_type = self.type_hint
 
+                    # `field_type` is rendered in callable position, so the schema's own
+                    # record name has to be a name and not an expression.
                     default_repr = templates.instance_template.safe_substitute(
-                        type=field_type, properties=f"**{self.default}"
+                        type=validate_name(field_type, location="record name"), properties=f"**{self.default}"
                     )
                 else:
                     default_repr = str(self.default)
@@ -167,7 +179,8 @@ class FieldRepresentation:
             default_repr = "None"
         elif self.avro_type == self.type_hint:
             # this is when a Custom type is been reused which is probably an Enum
-            default_repr = f"{casefy.pascalcase(self.type_hint)}.{casefy.uppercase(self.default)}"
+            member = validate_name(self.default, location="enum default")
+            default_repr = f"{casefy.pascalcase(self.type_hint)}.{casefy.uppercase(member)}"
         else:
             default_repr = str(self.default)
 
@@ -223,8 +236,15 @@ class ClassRepresentation:
         """
         Render Class Meta that contains the schema matadata
         """
+        # Aliases are rendered unquoted, so a schema that supplies a bare string instead
+        # of a list would reach the Meta body as an expression.
+        if (aliases := schema.get("aliases")) is not None:
+            validate_aliases(aliases)
+
         metadata = [
-            self.metadata_field_templates[meta_avro_field].safe_substitute(name=meta_field, value=value)
+            self._render_metadata_field(
+                template=self.metadata_field_templates[meta_avro_field], name=meta_field, value=value
+            )
             for meta_avro_field, meta_field in self.metadata_fields_mapper.items()
             if (value := schema.get(meta_avro_field))
         ]
@@ -244,7 +264,11 @@ class ClassRepresentation:
 
         if add_schema_name:
             metadata.append(
-                self.metadata_field_templates["schema_name"].safe_substitute(name="schema_name", value=schema["name"])
+                self._render_metadata_field(
+                    template=self.metadata_field_templates["schema_name"],
+                    name="schema_name",
+                    value=schema["name"],
+                )
             )
 
         properties = self.field_identation.join(metadata)
@@ -268,9 +292,20 @@ class ClassRepresentation:
         if not docstring:
             return ""
 
-        indented = self.field_identation + self.field_identation.join(docstring.splitlines())
+        indented = self.field_identation + self.field_identation.join(escape_docstring(docstring).splitlines())
 
         return f'{self.field_identation}"""{indented}{self.field_identation}"""'
+
+    @staticmethod
+    def _render_metadata_field(*, template: Template, name: str, value: typing.Any) -> str:
+        """
+        Substitute a Meta field into its template, escaping the value when the
+        template wraps it in quotes. Templates that render a value unquoted (an
+        alias list, a field order) get it unchanged.
+        """
+        if template.template == templates.METACLASS_FIELD_TEMPLATE:
+            value = escape_string(value)
+        return template.safe_substitute(name=name, value=value)
 
     @staticmethod
     def _add_schema_to_metaclass(schema_template: Template, schema: JsonDict) -> str:
@@ -312,7 +347,7 @@ class EnumRepresentation(ClassRepresentation):
     def render_symbols(self) -> str:
         return self.field_identation.join(
             [
-                templates.enum_symbol_template.safe_substitute(key=key, value=f'"{value}"')
+                templates.enum_symbol_template.safe_substitute(key=key, value=f'"{escape_string(value)}"')
                 for key, value in self.symbols.items()
             ]
         )
@@ -698,11 +733,14 @@ class BaseGenerator:
         namespace = field.get("namespace")
         aliases = field.get("aliases")
 
+        # Both end up inside the `types.confixed(...)` call that becomes the field's
+        # annotation, and an annotation is evaluated when the generated module is
+        # imported.
         if namespace is not None:
-            properties += f', namespace="{namespace}"'
+            properties += f', namespace="{validate_fullname(namespace, location="namespace")}"'
 
         if aliases is not None:
-            properties += f", aliases={aliases}"
+            properties += f", aliases={validate_aliases(aliases)}"
 
         return templates.fixed_template.safe_substitute(properties=properties)
 
@@ -719,6 +757,11 @@ class BaseGenerator:
         symbols_map = {}
         symbols: typing.List[str] = field["symbols"]
         for symbol in symbols:
+            # A symbol is rendered as the enum member name, an identifier. The public
+            # `ModelGenerator.render` rejects a malformed one through
+            # `fastavro.parse_schema`, but the generators are importable and their
+            # `render` does not validate.
+            validate_name(symbol, location="enum symbol")
             key = casefy.uppercase(symbol)
             if key in symbols:
                 key = symbol
