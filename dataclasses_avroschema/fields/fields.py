@@ -67,7 +67,15 @@ __all__ = [
     "DecimalField",
     "RecordField",
     "AvroField",
+    "MAX_FAKE_FIXED_SIZE",
+    "MAX_FAKE_DECIMAL_DIGITS",
 ]
+
+# `fake()` builds a value as large as the field says it is, and for a model generated from
+# a schema both of these numbers come from that schema. These are the largest values it
+# will build; both are module level, so a project that needs bigger fixtures can raise them.
+MAX_FAKE_FIXED_SIZE = 65_536  # bytes
+MAX_FAKE_DECIMAL_DIGITS = 1_000  # digits
 
 
 class ImmutableField(Field):
@@ -456,6 +464,12 @@ class FixedField(BytesField):
         return True
 
     def fake(self) -> bytes:
+        if self.size > MAX_FAKE_FIXED_SIZE:
+            raise ValueError(
+                f"Can not fake a `fixed` field of {self.size} bytes, above the maximum of "
+                f"{MAX_FAKE_FIXED_SIZE} (`fields.MAX_FAKE_FIXED_SIZE`)"
+            )
+
         return fake.pystr(max_chars=self.size).encode()
 
 
@@ -923,6 +937,12 @@ class DecimalField(Field):
         return serialization.decimal_to_str(default, self.max_digits, self.decimal_places)
 
     def fake(self) -> decimal.Decimal:
+        if self.max_digits > MAX_FAKE_DECIMAL_DIGITS:
+            raise ValueError(
+                f"Can not fake a decimal of {self.max_digits} digits, above the maximum of "
+                f"{MAX_FAKE_DECIMAL_DIGITS} (`fields.MAX_FAKE_DECIMAL_DIGITS`)"
+            )
+
         return fake.pydecimal(
             right_digits=self.decimal_places,
             left_digits=self.max_digits - self.decimal_places,

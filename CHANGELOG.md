@@ -1,3 +1,15 @@
+## 0.70.9 (2026-09-08)
+
+### Fix
+
+- bound the decimal precision and payload accepted from a schema (#968)
+
+## 0.70.8 (2026-09-08)
+
+### Fix
+
+- bound the sizes fake() will build for fixed and decimal fields (#969)
+
 ## 0.70.7 (2026-08-20)
 
 ### Fix
