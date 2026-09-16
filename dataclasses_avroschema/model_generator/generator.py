@@ -1,7 +1,9 @@
 import enum
+import json
 import logging
 import typing
 from dataclasses import dataclass, field
+from pathlib import Path
 
 import fastavro
 
@@ -101,11 +103,35 @@ class ModelGenerator:
         }
 
     @staticmethod
-    def validate_schema(*, schemas: typing.List[JsonDict]) -> None:
+    def validate_schema(
+        *,
+        schemas: typing.Union[JsonDict, typing.List[JsonDict]],
+        named_schemas: typing.Optional[typing.Dict[str, typing.Any]] = None,
+    ) -> None:
         """
         Validate that the schemas are valid avro schemas
+
+        A single schema dict is accepted as well as a list. Share the mutable
+        `named_schemas` registry across calls to resolve references to types
+        defined in other schemas, in dependency order.
         """
-        fastavro.parse_schema(schemas)
+        schema_list: typing.List[JsonDict] = [schemas] if isinstance(schemas, dict) else list(schemas)
+
+        _named: typing.Dict[str, typing.Any] = named_schemas if named_schemas is not None else {}
+        for schema in schema_list:
+            # fastavro overwrites an already registered name silently, so compare against a snapshot
+            previous = dict(_named)
+            fastavro.parse_schema(schema, named_schemas=_named)
+
+            for fullname, definition in previous.items():
+                redefinition = _named[fullname]
+                if redefinition is not definition and redefinition != definition:
+                    logger.warning(
+                        "Named schema %r was redefined with a different definition. The last definition "
+                        "wins, so anything already rendered from the previous one is out of sync with "
+                        "`named_schemas`. Pass a separate `named_schemas` dict to keep them apart.",
+                        fullname,
+                    )
 
     def render(
         self,
@@ -127,12 +153,16 @@ class ModelGenerator:
         schemas: typing.List[JsonDict],
         model_type: typing.Optional[str] = None,
         include_original_schema: bool = False,
+        named_schemas: typing.Optional[typing.Dict[str, typing.Any]] = None,
     ) -> str:
         """
         Render the module with the classes generated from the schemas
+
+        Share the mutable `named_schemas` registry across calls to resolve
+        references to types defined in other schemas.
         """
 
-        self.validate_schema(schemas=schemas)
+        self.validate_schema(schemas=schemas, named_schemas=named_schemas)
 
         if model_type is None:
             logger.warning(
@@ -148,3 +178,28 @@ class ModelGenerator:
         model_generator.include_original_schema = include_original_schema
 
         return model_generator.render(schemas=schemas)
+
+    @classmethod
+    def render_files(
+        cls,
+        paths: typing.Sequence[typing.Union[str, Path]],
+        *,
+        model_type: typing.Optional[str] = None,
+        base_class: str = BaseClassEnum.AVRO_MODEL.value,
+        include_original_schema: bool = False,
+    ) -> str:
+        """
+        Load one or more `.avsc` files and render them as python classes
+
+        All files share a single named schemas registry, so a schema can reference a
+        type defined in another file. Files are processed in the given order and names
+        are registered as they are encountered, so dependencies must come first. Files
+        are read with `json.loads` and must be strict json.
+        """
+        schemas = [json.loads(Path(p).read_text()) for p in paths]
+        mg = cls(base_class=base_class, include_original_schema=include_original_schema)
+        return mg.render_module(
+            schemas=schemas,
+            model_type=model_type,
+            include_original_schema=include_original_schema,
+        )
