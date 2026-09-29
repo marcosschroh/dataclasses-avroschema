@@ -1,3 +1,9 @@
+## 0.70.10 (2026-09-29)
+
+### Fix
+
+- make casefy dependency more flexible (#975)
+
 ## 0.70.9 (2026-09-08)
 
 ### Fix
