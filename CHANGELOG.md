@@ -1,3 +1,9 @@
+## 0.70.11 (2026-09-30)
+
+### Fix
+
+- **deps**: requests, pydantic and time-machine dependencies updated (#976)
+
 ## 0.70.10 (2026-09-29)
 
 ### Fix
