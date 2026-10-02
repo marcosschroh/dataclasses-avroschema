@@ -180,6 +180,7 @@ def test_recursive_pydantic_map_schema():
 
 def test_recursive_dataclass_map_schema():
     from typing import Type
+
     from dataclasses_avroschema import AvroModel
 
     class User(AvroModel):

@@ -88,7 +88,8 @@ def _get_nested_metadata(native_type: typing.Any) -> typing.Dict[str, typing.Any
     metadata: typing.Dict[str, typing.Any] = {}
     for annotation in get_args(native_type)[1:]:
         if isinstance(annotation, FieldInfo) and isinstance(annotation.json_schema_extra, dict):
-            metadata.update(annotation.json_schema_extra.get("metadata", {}))
+            extra_metadata = typing.cast(typing.Dict[str, typing.Any], annotation.json_schema_extra).get("metadata", {})
+            metadata.update(extra_metadata)
     return metadata
 
 
