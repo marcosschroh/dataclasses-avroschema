@@ -439,7 +439,7 @@ for example:
         color: Color
 
     bus =  Bus(driver="bond", color=Color.RED)
-    print(busmodel_dump())
+    print(bus.model_dump())
     # >>> {'driver': 'bond', 'color': 'RED'}
     ```
 

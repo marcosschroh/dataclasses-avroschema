@@ -20,6 +20,7 @@ from dataclasses_avroschema import (
     version,
 )
 from dataclasses_avroschema.faker import fake
+from dataclasses_avroschema.protocol import FieldProtocol, ModelProtocol
 from dataclasses_avroschema.utils import is_pydantic_model
 
 from . import field_utils
@@ -66,13 +67,21 @@ __all__ = [
     "DecimalField",
     "RecordField",
     "AvroField",
+    "MAX_FAKE_FIXED_SIZE",
+    "MAX_FAKE_DECIMAL_DIGITS",
 ]
+
+# `fake()` builds a value as large as the field says it is, and for a model generated from
+# a schema both of these numbers come from that schema. These are the largest values it
+# will build; both are module level, so a project that needs bigger fixtures can raise them.
+MAX_FAKE_FIXED_SIZE = 65_536  # bytes
+MAX_FAKE_DECIMAL_DIGITS = 1_000  # digits
 
 
 class ImmutableField(Field):
     def get_avro_type(
         self,
-    ) -> typing.Union[str, typing.List, typing.Dict[str, typing.Any]]:
+    ) -> typing.Union[str, typing.List, types.JsonDict]:
         if self.default is None:
             return [field_utils.NULL, self.avro_type]
         return self.avro_type
@@ -80,7 +89,9 @@ class ImmutableField(Field):
 
 @dataclasses.dataclass
 class StringField(ImmutableField):
-    avro_type: typing.ClassVar[str] = field_utils.STRING
+    @property
+    def avro_type(self) -> str:
+        return field_utils.STRING
 
     def fake(self) -> str:
         return fake.pystr()
@@ -88,7 +99,9 @@ class StringField(ImmutableField):
 
 @dataclasses.dataclass
 class IntField(ImmutableField):
-    avro_type: typing.ClassVar[str] = field_utils.INT
+    @property
+    def avro_type(self) -> str:
+        return field_utils.INT
 
     def fake(self) -> int:
         return fake.pyint()
@@ -96,7 +109,9 @@ class IntField(ImmutableField):
 
 @dataclasses.dataclass
 class LongField(ImmutableField):
-    avro_type: typing.ClassVar[str] = field_utils.LONG
+    @property
+    def avro_type(self) -> str:
+        return field_utils.LONG
 
     def fake(self) -> int:
         return fake.pyint()
@@ -104,7 +119,9 @@ class LongField(ImmutableField):
 
 @dataclasses.dataclass
 class BooleanField(ImmutableField):
-    avro_type: typing.ClassVar[str] = field_utils.BOOLEAN
+    @property
+    def avro_type(self) -> str:
+        return field_utils.BOOLEAN
 
     def fake(self) -> bool:
         return fake.pybool()
@@ -112,7 +129,9 @@ class BooleanField(ImmutableField):
 
 @dataclasses.dataclass
 class DoubleField(ImmutableField):
-    avro_type: typing.ClassVar[str] = field_utils.DOUBLE
+    @property
+    def avro_type(self) -> str:
+        return field_utils.DOUBLE
 
     def __post_init__(self):
         super().__post_init__()
@@ -124,7 +143,9 @@ class DoubleField(ImmutableField):
 
 @dataclasses.dataclass
 class FloatField(ImmutableField):
-    avro_type: typing.ClassVar[str] = field_utils.FLOAT
+    @property
+    def avro_type(self) -> str:
+        return field_utils.FLOAT
 
     def fake(self) -> float:
         return fake.pyfloat()  # Roughly the range on a float32
@@ -132,7 +153,9 @@ class FloatField(ImmutableField):
 
 @dataclasses.dataclass
 class BytesField(ImmutableField):
-    avro_type: typing.ClassVar[str] = field_utils.BYTES
+    @property
+    def avro_type(self) -> str:
+        return field_utils.BYTES
 
     def default_to_avro(self, item: bytes) -> str:
         return item.decode()
@@ -167,7 +190,7 @@ class ContainerField(Field):
 @dataclasses.dataclass
 class BaseListField(ContainerField):
     items_type: typing.Any = None
-    internal_field: Field = dataclasses.field(init=False)
+    internal_field: FieldProtocol = dataclasses.field(init=False)
 
     @property
     def avro_type(self) -> typing.Dict:
@@ -297,7 +320,7 @@ class DictField(ContainerField):
 @dataclasses.dataclass
 class UnionField(Field):
     unions: typing.List = dataclasses.field(default_factory=list)
-    internal_fields: typing.List[Field] = dataclasses.field(default_factory=list)
+    internal_fields: typing.List[FieldProtocol] = dataclasses.field(default_factory=list)
     elements: typing.Tuple = dataclasses.field(default_factory=tuple)
 
     def generate_unions_type(self) -> typing.List:
@@ -364,7 +387,7 @@ class UnionField(Field):
 
 @dataclasses.dataclass
 class LiteralField(Field):
-    avro_field: Field = dataclasses.field(init=False)
+    avro_field: FieldProtocol = dataclasses.field(init=False)
 
     def __post_init__(self) -> None:
         """
@@ -391,7 +414,7 @@ class LiteralField(Field):
         )
 
     def get_avro_type(self) -> types.JsonDict:
-        return self.avro_field.get_avro_type()
+        return typing.cast(types.JsonDict, self.avro_field.get_avro_type())
 
     def default_to_avro(self, default: typing.Any):
         return self.avro_field.default_to_avro(default)
@@ -441,6 +464,12 @@ class FixedField(BytesField):
         return True
 
     def fake(self) -> bytes:
+        if self.size > MAX_FAKE_FIXED_SIZE:
+            raise ValueError(
+                f"Can not fake a `fixed` field of {self.size} bytes, above the maximum of "
+                f"{MAX_FAKE_FIXED_SIZE} (`fields.MAX_FAKE_FIXED_SIZE`)"
+            )
+
         return fake.pystr(max_chars=self.size).encode()
 
 
@@ -632,10 +661,10 @@ class TimeMicroField(ImmutableField):
     """
     The time-micros logical type represents a time of day,
     with no reference to a particular calendar,
-    time zone or date, with a precision of one millisecond.
+    time zone or date, with a precision of one microsecond.
 
     A time-micros logical type annotates an Avro long,
-    where the int stores the number of milliseconds after midnight, 00:00:00.000000.
+    where the int stores the number of microseconds after midnight, 00:00:00.000000.
     """
 
     @property
@@ -754,8 +783,8 @@ class DatetimeField(ImmutableField):
 @dataclasses.dataclass
 class DatetimeMicroField(ImmutableField):
     """
-    The timestamp-millis logical type represents an instant on the global timeline,
-    independent of a particular time zone or calendar, with a precision of one millisecond.
+    The timestamp-micros logical type represents an instant on the global timeline,
+    independent of a particular time zone or calendar, with a precision of one microsecond.
 
     A timestamp-millis logical type annotates an Avro long,
     where the long stores the number of milliseconds from the unix epoch,
@@ -780,6 +809,71 @@ class DatetimeMicroField(ImmutableField):
 
     def fake(self) -> datetime.datetime:
         datetime_object: datetime.datetime = fake.date_time(tzinfo=datetime.timezone.utc)
+        return datetime_object + datetime.timedelta(microseconds=random.randint(0, 999))
+
+
+@dataclasses.dataclass
+class LocalDateTimeField(ImmutableField):
+    """
+    The local-timestamp-millis logical type represents a timestamp in a local timezone,
+    regardless of what specific time zone is considered local, with a precision of one millisecond.
+
+    A local-timestamp-millis logical type annotates an Avro long,
+    where the long stores the number of milliseconds, from 1 January 1970 00:00:00.000.
+    """
+
+    @property
+    def avro_type(self) -> typing.Dict:
+        return field_utils.LOGICAL_LOCAL_DATETIME_MILIS
+
+    def default_to_avro(self, date_time: datetime.datetime) -> int:
+        """
+        Returns the number of milliseconds from the unix epoch,
+        1 January 1970 00:00:00.000 from a given datetime.
+        We remove the timezone information because this logical type represents a timestamp in a local timezone,
+        regardless of what specific time zone is considered local.
+        """
+        if date_time.tzinfo:
+            ts = (date_time - utils.epoch).total_seconds()
+        else:
+            ts = (date_time - utils.epoch_naive).total_seconds()
+
+        return int(ts * 1000)
+
+    def fake(self) -> datetime.datetime:
+        return fake.date_time()
+
+
+@dataclasses.dataclass
+class LocalDateTimeMicroField(ImmutableField):
+    """
+    The local-timestamp-micros logical type represents a timestamp in a local timezone,
+    regardless of what specific time zone is considered local, with a precision of one millisecond.
+
+    A local-timestamp-micros logical type annotates an Avro long,
+    where the long stores the number of microseconds, from 1 January 1970 00:00:00.000000.
+    """
+
+    @property
+    def avro_type(self) -> typing.Dict:
+        return field_utils.LOGICAL_LOCAL_DATETIME_MICROS
+
+    def default_to_avro(self, date_time: datetime.datetime) -> int:
+        """
+        Returns the number of microseconds from the unix epoch,
+        1 January 1970 00:00:00.000000 from a given datetime.
+        We remove the timezone information because this logical type represents a timestamp in a local timezone,
+        regardless of what specific time zone is considered local.
+        """
+        if date_time.tzinfo:
+            ts = (date_time - utils.epoch).total_seconds()
+        else:
+            ts = (date_time - utils.epoch_naive).total_seconds()
+
+        return int(ts * 1000000)
+
+    def fake(self) -> datetime.datetime:
+        datetime_object: datetime.datetime = fake.date_time()
         return datetime_object + datetime.timedelta(microseconds=random.randint(0, 999))
 
 
@@ -826,7 +920,7 @@ class DecimalField(Field):
 
     def get_avro_type(
         self,
-    ) -> typing.Union[types.JsonDict, typing.List[typing.Union[str, types.JsonDict]]]:
+    ) -> typing.Union[types.JsonDict, typing.List]:
         avro_type = {
             "type": field_utils.BYTES,
             "logicalType": field_utils.DECIMAL,
@@ -843,6 +937,12 @@ class DecimalField(Field):
         return serialization.decimal_to_str(default, self.max_digits, self.decimal_places)
 
     def fake(self) -> decimal.Decimal:
+        if self.max_digits > MAX_FAKE_DECIMAL_DIGITS:
+            raise ValueError(
+                f"Can not fake a decimal of {self.max_digits} digits, above the maximum of "
+                f"{MAX_FAKE_DECIMAL_DIGITS} (`fields.MAX_FAKE_DECIMAL_DIGITS`)"
+            )
+
         return fake.pydecimal(
             right_digits=self.decimal_places,
             left_digits=self.max_digits - self.decimal_places,
@@ -851,7 +951,7 @@ class DecimalField(Field):
 
 @dataclasses.dataclass
 class RecordField(Field):
-    def get_avro_type(self) -> typing.Union[str, typing.List, typing.Dict]:
+    def get_avro_type(self) -> typing.Union[str, typing.List, types.JsonDict]:
         meta = getattr(self.type, "Meta", type)
         metadata = utils.SchemaMetadata.create(meta)
 
@@ -912,19 +1012,19 @@ PYDANTIC_CUSTOM_CLASS_METHOD_NAMES = {
 def field_factory(
     name: str,
     native_type: typing.Any,
-    parent: typing.Optional[typing.Type["AvroModel"]] = None,
+    parent: typing.Optional[typing.Type["ModelProtocol"]] = None,
     *,
     default: typing.Any = dataclasses.MISSING,
     default_factory: typing.Any = dataclasses.MISSING,
     metadata: typing.Optional[typing.Dict[str, typing.Any]] = None,
     model_metadata: typing.Optional[utils.SchemaMetadata] = None,
-) -> Field:
+) -> FieldProtocol:
     from dataclasses_avroschema import AvroModel
 
     if parent is None:
         # if parent is None, then we assume that the field is defined in an AvroModel
         # and we set the parent to AvroModel
-        parent = AvroModel
+        parent = typing.cast(typing.Type[ModelProtocol], AvroModel)
 
     if model_metadata is None:
         model_metadata = utils.SchemaMetadata()
@@ -1098,7 +1198,7 @@ def field_factory(
         if getattr(parent, "__config__", None):
             try:
                 # Build a field for the encoded type since that's what will be serialized
-                encoded_type = parent.__config__.json_encoders[native_type]
+                encoded_type = parent.__config__.json_encoders[native_type]  # type: ignore
             except KeyError:
                 raise ValueError(
                     f"Type {native_type} for field {name} must be "
@@ -1107,7 +1207,7 @@ def field_factory(
                     "pydantic configs are inherited)"
                 )
         else:
-            encoded_type = parent.model_config["json_encoders"][native_type]
+            encoded_type = parent.model_config["json_encoders"][native_type]  # type: ignore
 
         # default_factory is not schema-friendly for Custom Classes since it could be returning
         # dynamically constructed values that should not be treated as defaults. For example,

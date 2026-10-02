@@ -1,27 +1,24 @@
 from __future__ import annotations
 
 import dataclasses
+import decimal
 import typing
 
 from pydantic.fields import FieldInfo
 
-from dataclasses_avroschema.fields.base import Field
 from dataclasses_avroschema.fields.fields import AvroField
 from dataclasses_avroschema.parser import Parser
-
-if typing.TYPE_CHECKING:
-    from .main import AvroBaseModel  # pragma: no cover
+from dataclasses_avroschema.protocol import FieldProtocol, ModelProtocol
+from dataclasses_avroschema.types import DecimalFieldInfo
 
 
 class PydanticParser(Parser):
     def __init__(
         self,
-        type,
-        parent,
+        type: typing.Type[ModelProtocol],
+        parent: typing.Type[ModelProtocol],
     ):
         super().__init__(type, parent)
-        self.type: typing.Type["AvroBaseModel"]
-        self.parent: typing.Type["AvroBaseModel"]
 
     def generate_dataclass(self) -> typing.Type:
         return self.type
@@ -45,11 +42,34 @@ class PydanticParser(Parser):
 
         return metadata
 
-    def parse_fields(self, exclude: typing.List) -> typing.List[Field]:
+    @staticmethod
+    def get_field_type(field_info: FieldInfo) -> typing.Any:
+        annotation = field_info.rebuild_annotation()
+        if field_info.annotation is decimal.Decimal:
+            decimal_info = next(
+                (
+                    item
+                    for item in field_info.metadata
+                    if getattr(item, "max_digits", None) is not None
+                    and getattr(item, "decimal_places", None) is not None
+                ),
+                None,
+            )
+            if decimal_info is not None:
+                annotation = typing.Annotated[
+                    annotation,
+                    DecimalFieldInfo(
+                        max_digits=decimal_info.max_digits,
+                        decimal_places=decimal_info.decimal_places,
+                    ),
+                ]
+        return annotation
+
+    def parse_fields(self, exclude: typing.List) -> typing.List[FieldProtocol]:
         return [
             AvroField(
                 field_name,
-                field_info.rebuild_annotation(),
+                self.get_field_type(field_info),
                 default=dataclasses.MISSING
                 if field_info.is_required() or field_info.default_factory
                 else field_info.default,
@@ -58,7 +78,7 @@ class PydanticParser(Parser):
                 model_metadata=self.metadata,
                 parent=self.parent,
             )
-            for field_name, field_info in self.type.model_fields.items()
+            for field_name, field_info in self.type.model_fields.items()  # type: ignore
             if field_name not in exclude and field_name != "model_config"
         ]
 
@@ -66,8 +86,8 @@ class PydanticParser(Parser):
         doc = None
         if isinstance(self.metadata.schema_doc, str):
             doc = self.metadata.schema_doc
-        elif self.type.model_config and "title" in self.type.model_config:
-            doc = self.type.model_config["title"]
+        elif self.type.model_config and "title" in self.type.model_config:  # type: ignore
+            doc = self.type.model_config["title"]  # type: ignore
         else:
             doc = super().generate_documentation()
         return doc

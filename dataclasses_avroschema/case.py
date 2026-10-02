@@ -46,10 +46,12 @@ CASE_TO_FUNC = {
     ALPHANUMCASE: casefy.alphanumcase,
 }
 
+CaseFieldType = typing.Union[typing.Dict, typing.List]
 
-def case_item(item: typing.Dict, case_type: str) -> typing.Dict:
+
+def case_item(item: typing.Dict, case_type: str) -> CaseFieldType:
     case_func = CASE_TO_FUNC[case_type]
-    new_field = {}
+    new_field: CaseFieldType = {}
     for key, value in item.items():
         if key == "name":
             case_name = case_func(value)  # type: ignore
@@ -68,7 +70,7 @@ def case_item(item: typing.Dict, case_type: str) -> typing.Dict:
     return new_field
 
 
-def case_record(avro_schema_dict: typing.Dict, case_type: str) -> typing.Dict:
+def case_record(avro_schema_dict: typing.Dict, case_type: str) -> CaseFieldType:
     fields = avro_schema_dict.get("fields")
 
     if fields is not None:

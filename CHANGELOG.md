@@ -1,3 +1,109 @@
+## 0.70.11 (2026-09-30)
+
+### Fix
+
+- **deps**: requests, pydantic and time-machine dependencies updated (#976)
+
+## 0.70.10 (2026-09-29)
+
+### Fix
+
+- make casefy dependency more flexible (#975)
+
+## 0.70.9 (2026-09-08)
+
+### Fix
+
+- bound the decimal precision and payload accepted from a schema (#968)
+
+## 0.70.8 (2026-09-08)
+
+### Fix
+
+- bound the sizes fake() will build for fixed and decimal fields (#969)
+
+## 0.70.7 (2026-08-20)
+
+### Fix
+
+- bound the length of the strings handed to dateutil (#971)
+
+## 0.70.6 (2026-08-18)
+
+### Fix
+
+- security patched
+
+## 0.70.5 (2026-08-05)
+
+### Fix
+
+- render null default as None in model generator (#962)
+
+## 0.70.4 (2026-08-05)
+
+### Fix
+
+- serialize records without fields to avro-json (#964)
+
+## 0.70.3 (2026-08-05)
+
+### Fix
+
+- do not mutate Meta.field_order during schema generation (#963)
+
+## 0.70.2 (2026-07-22)
+
+### Fix
+
+- bridge Pydantic decimal constraints (#961)
+
+## 0.70.1 (2026-07-20)
+
+### Fix
+
+- documentation fixed. Dependencies updated. Dependabot updated. (#959)
+
+## 0.70.0 (2026-05-18)
+
+### Feat
+
+- **fields**: add support for local-timestamp-micros (#949)
+
+## 0.69.1 (2026-05-13)
+
+### Fix
+
+- encode nested union records with tuple notation (#944). Closes #943
+
+## 0.69.0 (2026-05-13)
+
+### Feat
+
+- **fields**: add support for local-timestamp-millis (#946)
+
+## 0.68.1 (2026-05-08)
+
+### Fix
+
+- Small tweaks added to immutable fields. Removed test skiping for the ones working in roundtrip (#945)
+
+## 0.68.0 (2026-05-01)
+
+### BREAKING CHANGE
+
+- Pydantic v1 drooped
+
+### Feat
+
+- **pydantic**: Pydantic v1 support dropped (#942)
+
+## 0.67.0 (2026-04-30)
+
+### Feat
+
+- FieldProtocol added (#940)
+
 ## 0.66.4 (2026-04-24)
 
 ### Fix

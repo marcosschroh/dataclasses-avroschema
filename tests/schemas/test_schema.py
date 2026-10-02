@@ -227,6 +227,32 @@ def test_order_field_not_specifing_all(order_fields_schema):
     assert User.avro_schema() == json.dumps(order_fields_schema)
 
 
+def test_order_field_not_mutated_by_schema_generation(order_fields_schema):
+    """`Meta.field_order` must not be rewritten by generating the schema."""
+
+    @dataclass
+    class User(AvroModel):
+        name: str
+        age: int
+        money: float
+        encoded: bytes
+        has_pets: bool = False
+
+        class Meta:
+            field_order = [
+                "encoded",
+                "has_pets",
+                "money",
+            ]
+
+    User.avro_schema()
+
+    assert User.Meta.field_order == ["encoded", "has_pets", "money"]
+    # regenerating (and generating for a subclass) must still honour the
+    # declared order rather than an order left over from a previous run
+    assert User.avro_schema() == json.dumps(order_fields_schema)
+
+
 def test_exclude_field_from_schema(user_extra_avro_attributes):
     class User(AvroModel):
         "An User"

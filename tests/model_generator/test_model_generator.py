@@ -1048,3 +1048,22 @@ class LogicalTypesNotNested(AvroModel):
     model_generator = ModelGenerator()
     result = model_generator.render(schema=logical_types_not_nested)
     assert result.strip() == expected_result.strip()
+
+
+def test_schema_with_logical_types_not_nested_and_null_default(
+    logical_types_not_nested_with_null_default: types.JsonDict,
+) -> None:
+    expected_result = """
+from dataclasses_avroschema import AvroModel
+import dataclasses
+import datetime
+
+
+@dataclasses.dataclass
+class LogicalTypesNotNestedWithNullDefault(AvroModel):
+    occurrence_date: datetime.datetime = None
+    """
+
+    model_generator = ModelGenerator()
+    result = model_generator.render(schema=logical_types_not_nested_with_null_default)
+    assert result.strip() == expected_result.strip()

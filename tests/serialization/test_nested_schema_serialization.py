@@ -4,22 +4,17 @@ import typing
 
 import pytest
 
-from dataclasses_avroschema import AvroModel, utils
+from dataclasses_avroschema import AvroModel
 from dataclasses_avroschema.faust import AvroRecord
 from dataclasses_avroschema.pydantic import AvroBaseModel
-from dataclasses_avroschema.pydantic.v1 import AvroBaseModel as AvroBaseModelV1
 
 
 def get_parametrize():
-    parametrize = [
+    return [
         pytest.param(AvroModel, dataclasses.dataclass, id="AvroModel"),
         pytest.param(AvroBaseModel, lambda f: f, id="AvroBaseModel"),
         pytest.param(AvroRecord, dataclasses.dataclass, id="AvroRecord"),
     ]
-
-    if not utils.is_python_314_or_newer():
-        parametrize.append(pytest.param(AvroBaseModelV1, lambda f: f, id="AvroBaseModelV1"))
-    return parametrize
 
 
 parametrize_base_model = pytest.mark.parametrize(
@@ -274,8 +269,6 @@ def test_nested_schemas_splitted_with_unions(model_class: typing.Type[AvroModel]
     This test will cover the cases when nested schemas with Unions that are
     used in a separate way.
     """
-    if model_class == AvroBaseModelV1:
-        pytest.skip(reason="Smart Unions are not supported properly in `AvroBaseModelV1` (pydantic v1)")
 
     @decorator
     class S1(model_class):
@@ -371,14 +364,55 @@ def test_union_with_multiple_records(model_class: typing.Type[AvroModel], decora
 
 
 @parametrize_base_model
+def test_nested_optional_records_serialize(model_class: typing.Type[AvroModel], decorator: typing.Callable) -> None:
+    @decorator
+    class Inner(model_class):
+        x: str
+
+    @decorator
+    class Middle(model_class):
+        child: typing.Optional[Inner] = None
+
+    @decorator
+    class Outer(model_class):
+        child: typing.Optional[Middle] = None
+
+    instance = Outer(child=Middle(child=Inner(x="a")))
+    if model_class is not AvroRecord:
+        payload = instance.asdict()
+        assert payload == {"child": ("Middle", {"child": ("Inner", {"x": "a"})})}
+    assert Outer.deserialize(instance.serialize()) == instance
+
+
+@parametrize_base_model
+def test_nested_union_records_serialize(model_class: typing.Type[AvroModel], decorator: typing.Callable) -> None:
+    @decorator
+    class InnerA(model_class):
+        a: str
+
+    @decorator
+    class InnerB(model_class):
+        b: int
+
+    @decorator
+    class Middle(model_class):
+        child: typing.Union[InnerA, InnerB]
+
+    @decorator
+    class Outer(model_class):
+        middle: Middle
+
+    instance = Outer(middle=Middle(child=InnerB(b=42)))
+    assert Outer.deserialize(instance.serialize()) == instance
+
+
+@parametrize_base_model
 def test_union_in_array_deserialization(model_class: typing.Type[AvroModel], decorator: typing.Callable) -> None:
     """
     Test union deserialization inside array elements.
 
     See: https://github.com/marcosschroh/dataclasses-avroschema/issues/931
     """
-    if model_class == AvroBaseModelV1:
-        pytest.skip(reason="Smart Unions are not supported properly in `AvroBaseModelV1` (pydantic v1)")
 
     @decorator
     class RecordA(model_class):
@@ -418,8 +452,6 @@ def test_union_in_flat_array_deserialization(model_class: typing.Type[AvroModel]
 
     See: https://github.com/marcosschroh/dataclasses-avroschema/issues/931
     """
-    if model_class == AvroBaseModelV1:
-        pytest.skip(reason="Smart Unions are not supported properly in `AvroBaseModelV1` (pydantic v1)")
 
     @decorator
     class RecordA(model_class):

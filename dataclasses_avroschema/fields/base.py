@@ -8,12 +8,14 @@ from collections import OrderedDict
 import inflection
 from typing_extensions import get_args
 
-from dataclasses_avroschema import utils
+from dataclasses_avroschema import types, utils
 
 logger = logging.getLogger(__name__)
 
-if typing.TYPE_CHECKING:
-    from dataclasses_avroschema import AvroModel  # pragma: no cover
+from dataclasses_avroschema.protocol import ModelProtocol
+
+# if typing.TYPE_CHECKING:
+#     from dataclasses_avroschema import AvroModelProtocol  # pragma: no cover
 
 
 @dataclasses.dataclass  # type: ignore
@@ -26,7 +28,7 @@ class Field:
 
     name: str
     type: typing.Any  # store the python primitive type
-    parent: typing.Type["AvroModel"]
+    parent: typing.Type[ModelProtocol]
     default: typing.Any
     default_factory: typing.Any = dataclasses.MISSING
     exclude_default: bool = False
@@ -119,7 +121,7 @@ class Field:
         return dict(self.render())
 
     @abc.abstractmethod
-    def get_avro_type(self) -> typing.Any: ...  # pragma: no cover
+    def get_avro_type(self) -> typing.Union[str, types.JsonDict, typing.List]: ...  # pragma: no cover
 
     def fake(self) -> typing.Any:
         return None

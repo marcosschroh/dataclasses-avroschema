@@ -47,6 +47,23 @@ def test_pydantic_record_schema_primitive_types(user_avro_json):
     assert User.avro_schema() == json.dumps(user_avro_json)
 
 
+def test_pydantic_decimal_field_constraints():
+    class Transaction(AvroBaseModel):
+        amount: typing.Annotated[decimal.Decimal, Field(max_digits=9, decimal_places=2)]
+
+    assert Transaction.avro_schema_to_python()["fields"] == [
+        {
+            "name": "amount",
+            "type": {
+                "type": "bytes",
+                "logicalType": "decimal",
+                "precision": 9,
+                "scale": 2,
+            },
+        }
+    ]
+
+
 def test_exclude_default_from_schema(user_avro_json):
     class User(AvroBaseModel):
         name: str = Field(default="marcos", metadata={"exclude_default": True})
@@ -140,7 +157,7 @@ def test_pydantic_record_schema_complex_types_with_defaults(user_advance_with_de
         has_car: bool = False
         favorite_colors: color_enum = color_enum.BLUE
         country: str = "Argentina"
-        address: str = None
+        address: typing.Optional[str] = None
 
         class Meta:
             schema_doc = False
@@ -161,6 +178,10 @@ def test_pydantic_record_schema_logical_types(logical_types_pydantic_schema):
         birthday: datetime.date = a_datetime.date()
         meeting_time: datetime.time = a_datetime.time()
         release_datetime: datetime.datetime = a_datetime
+        local_datetime: types.LocalDateTime = a_datetime
+        local_datetime_naive: types.LocalDateTime = a_naive_datetime
+        local_datetime_micro: types.LocalDateTimeMicro = a_datetime
+        local_datetime_micro_naive: types.LocalDateTimeMicro = a_naive_datetime
         past_date: PastDate = a_past_datetime.date()
         future_date: FutureDate = a_future_datetime.date()
         past_datetime: PastDatetime = a_past_datetime

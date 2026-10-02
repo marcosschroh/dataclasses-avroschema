@@ -3,11 +3,8 @@ import inspect
 import typing
 from collections import OrderedDict
 
-from .fields.base import Field
+from .protocol import FieldProtocol, ModelProtocol
 from .utils import SchemaMetadata
-
-if typing.TYPE_CHECKING:
-    from .main import AvroModel
 
 
 class Parser:
@@ -20,8 +17,8 @@ class Parser:
 
     def __init__(
         self,
-        type: typing.Type["AvroModel"],
-        parent: typing.Type["AvroModel"],
+        type: typing.Type[ModelProtocol],
+        parent: typing.Type[ModelProtocol],
     ):
         self.type = type
         self.parent = parent
@@ -46,7 +43,7 @@ class Parser:
             return self.type
         return dataclasses.dataclass(self.type)
 
-    def parse_fields(self, exclude: typing.List) -> typing.List[Field]:
+    def parse_fields(self, exclude: typing.List) -> typing.List[FieldProtocol]:
         from .fields.fields import AvroField
 
         return [
@@ -63,7 +60,7 @@ class Parser:
             if dataclass_field.name not in exclude
         ]
 
-    def get_fields_map(self) -> typing.Dict[str, Field]:
+    def get_fields_map(self) -> typing.Dict[str, FieldProtocol]:
         return self.fields_map
 
     def get_schema_name(self) -> str:
@@ -91,6 +88,10 @@ class Parser:
         field_order = self.metadata.field_order
 
         if field_order is not None:
+            # Work on a copy: `field_order` is the list object defined on the model
+            # (and shared with subclasses through inheritance), so appending to it
+            # would permanently rewrite the user's declared order.
+            field_order = list(field_order)
             for field_name in self.fields_map.keys():
                 if field_name not in field_order:
                     field_order.append(field_name)

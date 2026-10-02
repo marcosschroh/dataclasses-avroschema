@@ -27,6 +27,38 @@
             "default": 1570903062000
         },
         {
+            "name": "local_datetime",
+            "type": {
+                "type": "long",
+                "logicalType": "local-timestamp-millis"
+            },
+            "default": 1570903062000
+        },
+        {
+            "name": "local_datetime_naive",
+            "type": {
+                "type": "long",
+                "logicalType": "local-timestamp-millis"
+            },
+            "default": 1570903062000
+        },
+        {
+            "name": "local_datetime_micro",
+            "type": {
+               "type": "long",
+               "logicalType": "local-timestamp-micros"
+            },
+            "default": 1570903062000000
+        },
+        {
+            "name": "local_datetime_micro_naive",
+            "type": {
+                "type": "long",
+                "logicalType": "local-timestamp-micros"
+            },
+            "default": 1570903062000000
+        },
+        {
             "name": "past_date",
             "type": {
                 "type": "int",

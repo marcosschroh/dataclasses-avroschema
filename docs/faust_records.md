@@ -127,7 +127,7 @@ In order to validate the data `validation=True` must be used as is described in 
 === "No Data validation"
     ```python
     import typing
-
+    from faust.models import fields
     from dataclasses_avroschema.faust import AvroRecord
 
 

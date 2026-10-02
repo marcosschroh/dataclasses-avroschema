@@ -1,17 +1,69 @@
+import abc
 import dataclasses
 import typing
 from collections import OrderedDict
 from typing import Literal, overload
 
 from .types import JsonDict, SerializationType
-
-if typing.TYPE_CHECKING:
-    from .fields.base import Field  # pragma: no cover
-    from .utils import UserDefinedType  # pragma: no cover
+from .utils import (
+    SchemaMetadata,
+    UserDefinedType,
+)
 
 CT = typing.TypeVar("CT", bound="ModelProtocol")
 # This means that when we have List[Protocol] can be use when we have List[ParserProtocol]
 CP = typing.TypeVar("CP", bound="ParserProtocol", covariant=True)
+
+
+class FieldProtocol(typing.Protocol):
+    name: str
+    type: typing.Any  # store the python primitive type
+    parent: typing.Type["ModelProtocol"]
+    default: typing.Any
+    default_factory: typing.Any = dataclasses.MISSING
+    exclude_default: bool = False
+    inner_name: typing.Optional[str] = None
+    metadata: typing.Dict = dataclasses.field(default_factory=dict)
+    model_metadata: SchemaMetadata = dataclasses.field(default_factory=SchemaMetadata)
+    extra_default_types_allowed: typing.Tuple = dataclasses.field(default_factory=tuple)
+    # This is the metadata that the end user has defined in the dataclasses.Field or pydantic.Field
+    metadata_to_exclude: typing.List[str] = dataclasses.field(
+        default_factory=lambda: [
+            "exclude_default",
+            "inner_name",
+        ]
+    )
+
+    def __init__(self, name: str, type: typing.Type, **kwargs: typing.Any): ...
+
+    def __post_init__(self) -> None: ...
+
+    @property
+    def avro_type(self) -> typing.Union[str, typing.Dict]: ...
+
+    @staticmethod
+    def get_singular_name(name: str) -> str: ...
+
+    @abc.abstractmethod
+    def get_avro_type(self) -> typing.Union[str, JsonDict, typing.List]: ...  # pragma: no cover
+
+    def get_default_value(self) -> typing.Any: ...
+
+    def get_metadata(self) -> typing.List[typing.Tuple[str, str]]: ...
+
+    def render(self) -> OrderedDict: ...
+
+    def validate_default(self, default: typing.Any) -> bool: ...
+
+    def default_to_avro(self, value: typing.Any) -> typing.Any: ...
+
+    def to_json(self) -> str: ...
+
+    def to_dict(self) -> dict: ...
+
+    def fake(self) -> typing.Any: ...
+
+    def exist_type(self) -> int: ...
 
 
 class ParserProtocol(typing.Protocol[CP]):
@@ -22,13 +74,15 @@ class ParserProtocol(typing.Protocol[CP]):
     be represented as an avro type.
     """
 
+    metadata: SchemaMetadata
+
     def __init__(self, type: typing.Type["ModelProtocol"], parent: typing.Type["ModelProtocol"]): ...
 
     def generate_dataclass(self) -> typing.Type: ...
 
-    def parse_fields(self, exclude: typing.List) -> typing.List["Field"]: ...
+    def parse_fields(self, exclude: typing.List) -> typing.List[FieldProtocol]: ...
 
-    def get_fields_map(self) -> typing.Dict[str, "Field"]: ...
+    def get_fields_map(self) -> typing.Dict[str, FieldProtocol]: ...
 
     def get_schema_name(self) -> str: ...
 
@@ -40,9 +94,9 @@ class ParserProtocol(typing.Protocol[CP]):
 
 
 class ModelProtocol(typing.Protocol[CT]):
-    # _parser: typing.Optional[ParserProtocol] = None
+    _parser: typing.Optional[ParserProtocol] = None
     _parent: typing.Optional[CT] = None
-    _user_defined_types: typing.Set["UserDefinedType"] = set()
+    _user_defined_types: typing.Set[UserDefinedType] = set()
     _rendered_schema: OrderedDict = dataclasses.field(default_factory=OrderedDict)
 
     @classmethod
@@ -70,7 +124,7 @@ class ModelProtocol(typing.Protocol[CT]):
     ) -> typing.Dict[str, typing.Any]: ...
 
     @classmethod
-    def get_fields(cls: typing.Type[CT]) -> typing.List["Field"]: ...
+    def get_fields(cls: typing.Type[CT]) -> typing.List[FieldProtocol]: ...
 
     @classmethod
     def _reset_parser(cls: typing.Type[CT]) -> None: ...

@@ -3,6 +3,7 @@ from dataclasses import MISSING, dataclass
 
 from dataclasses_avroschema.model_generator.lang.python import templates
 from dataclasses_avroschema.model_generator.lang.python.base import BaseGenerator, FieldRepresentation
+from dataclasses_avroschema.model_generator.lang.python.validations import escape_string, validate_type_expression
 from dataclasses_avroschema.types import JsonDict
 
 
@@ -19,7 +20,7 @@ class PydanticFieldRepresentation(FieldRepresentation):
 
         if "doc" in self.metadata:
             doc = self.metadata["doc"]
-            description = f'description="{doc}"'
+            description = f'description="{escape_string(doc)}"'
 
             if field_metadata_repr:
                 field_metadata_repr = f"{field_metadata_repr}, {description}"
@@ -83,7 +84,9 @@ class PydanticModelGenerator(BaseGenerator):
         pydantic_class = field.get("pydantic-class")
 
         if pydantic_class is not None:
-            return f"pydantic.{pydantic_class}"
+            # This becomes the field's annotation, which is evaluated when the generated
+            # module is imported, so it has to name an attribute and not be an expression.
+            return f"pydantic.{validate_type_expression(pydantic_class, location='pydantic-class')}"
         return None
 
     def add_class_imports(self) -> None:

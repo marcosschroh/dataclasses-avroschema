@@ -50,7 +50,13 @@ class Float32FieldInfo(FieldInfo): ...
 class TimeMicroFieldInfo(FieldInfo): ...
 
 
-class DateTimeMicro2FieldInfo(FieldInfo): ...
+class DateTimeMicroFieldInfo(FieldInfo): ...
+
+
+class LocalDateTimeFieldInfo(FieldInfo): ...
+
+
+class LocalDateTimeMicroFieldInfo(FieldInfo): ...
 
 
 def confixed(
@@ -72,13 +78,17 @@ def condecimal(*, max_digits: int, decimal_places: int) -> typing.Type[decimal.D
 Int32 = Annotated[int, Int32FieldInfo()]
 Float32 = Annotated[float, Float32FieldInfo()]
 TimeMicro = Annotated[datetime.time, TimeMicroFieldInfo()]
-DateTimeMicro = Annotated[datetime.datetime, DateTimeMicro2FieldInfo()]
+DateTimeMicro = Annotated[datetime.datetime, DateTimeMicroFieldInfo()]
+LocalDateTime = Annotated[datetime.datetime, LocalDateTimeFieldInfo()]
+LocalDateTimeMicro = Annotated[datetime.datetime, LocalDateTimeMicroFieldInfo()]
 
 CUSTOM_TYPES = (
     Int32,
     Float32,
     TimeMicro,
     DateTimeMicro,
+    LocalDateTime,
+    LocalDateTimeMicro,
     condecimal,
     confixed,
 )

@@ -8,9 +8,11 @@ from types import UnionType
 import typing_extensions
 from typing_extensions import Annotated, get_origin
 
-from .protocol import ModelProtocol  # pragma: no cover
 from .types import FieldInfo, JsonDict
 from .version import is_python_314_or_newer
+
+if typing.TYPE_CHECKING:
+    from .protocol import ModelProtocol  # pragma: no cover
 
 try:
     # only in python 3.14+
@@ -24,7 +26,6 @@ if typing.TYPE_CHECKING:
 
 try:
     import pydantic  # pragma: no cover
-    from pydantic import v1
 except ImportError:  # type: ignore # pragma: no cover
     pydantic = None  # type: ignore # pragma: no cover
 
@@ -53,21 +54,21 @@ def _is_typing_name(obj: object, name: str) -> bool:
     return False
 
 
-def get_klass_annotations(klass: typing.Type[ModelProtocol]) -> typing.Dict[str, typing.Type]:
+def get_klass_annotations(klass: typing.Type["ModelProtocol"]) -> typing.Dict[str, typing.Type]:
     if is_python_314_or_newer():
         return annotationlib.get_annotations(klass)
     return klass.__annotations__
 
 
 @lru_cache(maxsize=None)
-def is_pydantic_model(klass: typing.Type[ModelProtocol]) -> bool:
+def is_pydantic_model(klass: typing.Type["ModelProtocol"]) -> bool:
     if pydantic is not None:
-        return issubclass(klass, v1.BaseModel) or issubclass(klass, pydantic.BaseModel)
+        return issubclass(klass, pydantic.BaseModel)
     return False
 
 
 @lru_cache(maxsize=None)
-def is_faust_record(klass: typing.Type[ModelProtocol]) -> bool:
+def is_faust_record(klass: typing.Type["ModelProtocol"]) -> bool:
     if faust is not None:
         return issubclass(klass, faust.Record)
     return False
@@ -92,7 +93,7 @@ def is_union(a_type: typing.Type) -> bool:
     )
 
 
-def is_self_referenced(a_type: typing.Type, parent: typing.Type) -> bool:
+def is_self_referenced(a_type: typing.Type, parent: typing.Type["ModelProtocol"]) -> bool:
     """
     Given a python type, return True if is self referenced, meaning
     that is instance of typing.ForwardRef, otherwise False
@@ -144,28 +145,44 @@ def standardize_custom_type(
     *,
     field_name: str,
     value: typing.Any,
-    model: ModelProtocol,
-    base_class: typing.Type[ModelProtocol],
+    model: "ModelProtocol",
+    base_class: typing.Type["ModelProtocol"],
     include_type: bool = True,
+    inside_collection: bool = False,
 ) -> typing.Any:
     if isinstance(value, dict):
         return {
             k: standardize_custom_type(
-                field_name=field_name, value=v, model=model, base_class=base_class, include_type=include_type
+                field_name=field_name,
+                value=v,
+                model=model,
+                base_class=base_class,
+                include_type=include_type,
+                inside_collection=True,
             )
             for k, v in value.items()
         }
     elif isinstance(value, list):
         return [
             standardize_custom_type(
-                field_name=field_name, value=v, model=model, base_class=base_class, include_type=include_type
+                field_name=field_name,
+                value=v,
+                model=model,
+                base_class=base_class,
+                include_type=include_type,
+                inside_collection=True,
             )
             for v in value
         ]
     elif isinstance(value, tuple):
         return tuple(
             standardize_custom_type(
-                field_name=field_name, value=v, model=model, base_class=base_class, include_type=include_type
+                field_name=field_name,
+                value=v,
+                model=model,
+                base_class=base_class,
+                include_type=include_type,
+                inside_collection=True,
             )
             for v in value
         )
@@ -179,14 +196,20 @@ def standardize_custom_type(
         else:
             asdict = value.asdict()
 
-        annotations = get_klass_annotations(model.__class__)
+        # A copy, because `get_klass_annotations` hands back the class's own
+        # `__annotations__` and the updates below would otherwise be written into it.
+        annotations = dict(get_klass_annotations(model.__class__))
         # This is a hack to get the annotations from the parent class
         # https://github.com/marcosschroh/dataclasses-avroschema/issues/800
-        if model.__class__.mro()[1] != base_class:
+        #
+        # The field can also be inherited from a plain mixin, which the check above misses
+        # when the model subclasses the base class directly, so the hints are resolved on
+        # a miss as well rather than letting the lookup raise `KeyError`.
+        if model.__class__.mro()[1] != base_class or field_name not in annotations:
             annotations.update(typing.get_type_hints(model.__class__))
 
-        if is_union(annotations[field_name]) and include_type:
-            asdict["-type"] = value.get_fullname()
+        if is_union(annotations[field_name]) and include_type and not inside_collection:
+            return (value.get_fullname(), asdict)
         return asdict
 
     return value
