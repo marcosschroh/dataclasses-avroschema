@@ -1089,6 +1089,11 @@ def field_factory(
 
     # Resolve ForwardRef to actual type if possible
     # This handles cases like TYPE_CHECKING imports where types are ForwardRef at runtime
+    if isinstance(native_type, str) and native_type not in ALL_TYPES_FIELD_CLASSES:
+        # Python 3.10 keeps string arguments of builtin generics (e.g. dict[str, "User"])
+        # as plain strings; normalize them so the ForwardRef handling below applies.
+        # Names registered as field classes (e.g. "ConstrainedIntValue") stay untouched.
+        native_type = typing.ForwardRef(native_type)
     if isinstance(native_type, typing.ForwardRef):
         # Try to evaluate the ForwardRef in a namespace that includes common types
         forward_arg = native_type.__forward_arg__
