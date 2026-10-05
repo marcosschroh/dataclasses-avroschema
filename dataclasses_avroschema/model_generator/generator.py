@@ -105,33 +105,13 @@ class ModelGenerator:
     @staticmethod
     def validate_schema(
         *,
-        schemas: typing.Union[JsonDict, typing.List[JsonDict]],
+        schemas: typing.List[JsonDict],
         named_schemas: typing.Optional[typing.Dict[str, typing.Any]] = None,
     ) -> None:
         """
         Validate that the schemas are valid avro schemas
-
-        A single schema dict is accepted as well as a list. Share the mutable
-        `named_schemas` registry across calls to resolve references to types
-        defined in other schemas, in dependency order.
         """
-        schema_list: typing.List[JsonDict] = [schemas] if isinstance(schemas, dict) else list(schemas)
-
-        _named: typing.Dict[str, typing.Any] = named_schemas if named_schemas is not None else {}
-        for schema in schema_list:
-            # fastavro overwrites an already registered name silently, so compare against a snapshot
-            previous = dict(_named)
-            fastavro.parse_schema(schema, named_schemas=_named)
-
-            for fullname, definition in previous.items():
-                redefinition = _named[fullname]
-                if redefinition is not definition and redefinition != definition:
-                    logger.warning(
-                        "Named schema %r was redefined with a different definition. The last definition "
-                        "wins, so anything already rendered from the previous one is out of sync with "
-                        "`named_schemas`. Pass a separate `named_schemas` dict to keep them apart.",
-                        fullname,
-                    )
+        fastavro.parse_schema(schemas, named_schemas=named_schemas)
 
     def render(
         self,

@@ -3,14 +3,12 @@
 from __future__ import annotations
 
 import json
-import logging
 from pathlib import Path
+from unittest import mock
 
 import pytest
 
 from dataclasses_avroschema import ModelGenerator
-
-GENERATOR_LOGGER = "dataclasses_avroschema.model_generator.generator"
 
 
 # Fixtures
@@ -84,17 +82,6 @@ def person_schema() -> dict:
     }
 
 
-@pytest.fixture()
-def conflicting_address_schema() -> dict:
-    """Same fullname as `address_schema`, different fields."""
-    return {
-        "type": "record",
-        "name": "Address",
-        "namespace": "com.example",
-        "fields": [{"name": "zipcode", "type": "string"}],
-    }
-
-
 # validate_schema
 
 
@@ -122,6 +109,15 @@ def test_validate_schema_resolves_cross_file_reference_with_named_schemas(addres
     # Second call resolves com.example.Address from ns -- no UnknownType
     ModelGenerator.validate_schema(schemas=[person_schema], named_schemas=ns)
     assert "com.example.Person" in ns
+
+
+def test_validate_schema_forwards_named_schemas_to_fastavro(person_schema):
+    """validate_schema is a thin pass-through: fastavro does the actual work."""
+    ns: dict = {}
+    with mock.patch("dataclasses_avroschema.model_generator.generator.fastavro.parse_schema") as parse_schema:
+        ModelGenerator.validate_schema(schemas=[person_schema], named_schemas=ns)
+
+    parse_schema.assert_called_once_with([person_schema], named_schemas=ns)
 
 
 # render_module with named_schemas
@@ -300,81 +296,3 @@ def test_enum_cross_file_reference_with_named_schemas(tmp_path: Path):
     assert "class Task" in code
     assert "priority: Priority" in code
 
-
-# input shapes
-
-
-def test_validate_schema_accepts_a_bare_schema_dict(address_schema):
-    """
-    A single schema dict is accepted and treated as a one-element list.
-
-    Regression guard: iterating a dict yields its keys, so the per-schema loop
-    would parse the string "type" and raise a misleading
-    ``UnknownType: type``.
-    """
-    ns: dict = {}
-    ModelGenerator.validate_schema(schemas=address_schema, named_schemas=ns)
-    assert "com.example.Address" in ns
-
-
-# conflicting redefinitions
-
-
-def test_validate_schema_warns_on_conflicting_redefinition(address_schema, conflicting_address_schema, caplog):
-    """Redefining a name with a different definition warns, and the last one wins."""
-    ns: dict = {}
-    ModelGenerator.validate_schema(schemas=[address_schema], named_schemas=ns)
-
-    with caplog.at_level(logging.WARNING, logger=GENERATOR_LOGGER):
-        ModelGenerator.validate_schema(schemas=[conflicting_address_schema], named_schemas=ns)
-
-    assert "com.example.Address" in caplog.text
-    # the overwrite is not prevented, only reported
-    assert [f["name"] for f in ns["com.example.Address"]["fields"]] == ["zipcode"]
-
-
-def test_validate_schema_warns_on_conflicting_redefinition_within_one_call(
-    address_schema, conflicting_address_schema, caplog
-):
-    """A conflict between two schemas passed in the same call also warns."""
-    with caplog.at_level(logging.WARNING, logger=GENERATOR_LOGGER):
-        ModelGenerator.validate_schema(schemas=[address_schema, conflicting_address_schema])
-
-    assert "com.example.Address" in caplog.text
-
-
-def test_validate_schema_is_quiet_on_identical_redefinition(address_schema, caplog):
-    """Re-registering the identical definition is not a conflict and stays quiet."""
-    ns: dict = {}
-    ModelGenerator.validate_schema(schemas=[address_schema], named_schemas=ns)
-
-    with caplog.at_level(logging.WARNING, logger=GENERATOR_LOGGER):
-        ModelGenerator.validate_schema(schemas=[dict(address_schema)], named_schemas=ns)
-
-    assert caplog.text == ""
-    assert [f["name"] for f in ns["com.example.Address"]["fields"]] == ["street", "city"]
-
-
-def test_metadata_only_redefinition_still_warns(address_schema, caplog):
-    """
-    A redefinition differing only in metadata warns as well.
-
-    `aliases` lands in `Meta` and `doc` becomes the class docstring, so the two
-    definitions do produce different models.
-    """
-    mg = ModelGenerator()
-    plain = mg.render_module(schemas=[address_schema], model_type="dataclass")
-    aliased = mg.render_module(schemas=[{**address_schema, "aliases": ["OldAddress"]}], model_type="dataclass")
-    documented = mg.render_module(schemas=[{**address_schema, "doc": "a postal address"}], model_type="dataclass")
-
-    assert "aliases" not in plain
-    assert "aliases = ['OldAddress']" in aliased
-    assert "a postal address" in documented
-
-    ns: dict = {}
-    ModelGenerator.validate_schema(schemas=[address_schema], named_schemas=ns)
-
-    with caplog.at_level(logging.WARNING, logger=GENERATOR_LOGGER):
-        ModelGenerator.validate_schema(schemas=[{**address_schema, "aliases": ["OldAddress"]}], named_schemas=ns)
-
-    assert "com.example.Address" in caplog.text
