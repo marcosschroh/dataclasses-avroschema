@@ -1,7 +1,9 @@
 import enum
+import json
 import logging
 import typing
 from dataclasses import dataclass, field
+from pathlib import Path
 
 import fastavro
 
@@ -101,11 +103,15 @@ class ModelGenerator:
         }
 
     @staticmethod
-    def validate_schema(*, schemas: typing.List[JsonDict]) -> None:
+    def validate_schema(
+        *,
+        schemas: typing.List[JsonDict],
+        named_schemas: typing.Optional[typing.Dict[str, typing.Any]] = None,
+    ) -> None:
         """
         Validate that the schemas are valid avro schemas
         """
-        fastavro.parse_schema(schemas)
+        fastavro.parse_schema(schemas, named_schemas=named_schemas)
 
     def render(
         self,
@@ -127,12 +133,16 @@ class ModelGenerator:
         schemas: typing.List[JsonDict],
         model_type: typing.Optional[str] = None,
         include_original_schema: bool = False,
+        named_schemas: typing.Optional[typing.Dict[str, typing.Any]] = None,
     ) -> str:
         """
         Render the module with the classes generated from the schemas
+
+        Share the mutable `named_schemas` registry across calls to resolve
+        references to types defined in other schemas.
         """
 
-        self.validate_schema(schemas=schemas)
+        self.validate_schema(schemas=schemas, named_schemas=named_schemas)
 
         if model_type is None:
             logger.warning(
@@ -148,3 +158,28 @@ class ModelGenerator:
         model_generator.include_original_schema = include_original_schema
 
         return model_generator.render(schemas=schemas)
+
+    @classmethod
+    def render_files(
+        cls,
+        paths: typing.Sequence[typing.Union[str, Path]],
+        *,
+        model_type: typing.Optional[str] = None,
+        base_class: str = BaseClassEnum.AVRO_MODEL.value,
+        include_original_schema: bool = False,
+    ) -> str:
+        """
+        Load one or more `.avsc` files and render them as python classes
+
+        All files share a single named schemas registry, so a schema can reference a
+        type defined in another file. Files are processed in the given order and names
+        are registered as they are encountered, so dependencies must come first. Files
+        are read with `json.loads` and must be strict json.
+        """
+        schemas = [json.loads(Path(p).read_text()) for p in paths]
+        mg = cls(base_class=base_class, include_original_schema=include_original_schema)
+        return mg.render_module(
+            schemas=schemas,
+            model_type=model_type,
+            include_original_schema=include_original_schema,
+        )
