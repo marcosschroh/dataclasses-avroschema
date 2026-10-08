@@ -78,6 +78,45 @@ MAX_FAKE_FIXED_SIZE = 65_536  # bytes
 MAX_FAKE_DECIMAL_DIGITS = 1_000  # digits
 
 
+def _get_nested_metadata(native_type: typing.Any) -> typing.Dict[str, typing.Any]:
+    """Read Pydantic metadata attached to a container's type argument."""
+    if not utils.is_annotated(native_type) or utils.pydantic is None:
+        return {}
+
+    from pydantic.fields import FieldInfo
+
+    metadata: typing.Dict[str, typing.Any] = {}
+    for annotation in get_args(native_type)[1:]:
+        if isinstance(annotation, FieldInfo) and isinstance(annotation.json_schema_extra, dict):
+            extra_metadata = typing.cast(typing.Dict[str, typing.Any], annotation.json_schema_extra).get("metadata", {})
+            metadata.update(extra_metadata)
+    return metadata
+
+
+def _get_nested_avro_type(avro_type: types.AvroTypeRepr, native_type: typing.Any) -> types.AvroTypeRepr:
+    """Retain annotation metadata where there is no enclosing record field."""
+    metadata = {
+        key: value
+        for key, value in _get_nested_metadata(native_type).items()
+        if key not in ("exclude_default", "inner_name")
+    }
+    if not metadata:
+        return avro_type
+
+    def annotate(schema: types.AvroTypeRepr) -> types.AvroTypeRepr:
+        if isinstance(schema, list):
+            # Avro unions cannot carry attributes; annotate their non-null branches.
+            return [annotate(branch) for branch in schema]
+        if schema == field_utils.NULL:
+            return schema
+        if isinstance(schema, dict):
+            # Preserve structural properties and built-in logical type attributes.
+            return {**metadata, **schema}
+        return {**metadata, "type": schema}
+
+    return annotate(avro_type)
+
+
 class ImmutableField(Field):
     def get_avro_type(
         self,
@@ -238,7 +277,7 @@ class BaseListField(ContainerField):
                 parent=self.parent,
             )
 
-        self.items_type = self.internal_field.get_avro_type()
+        self.items_type = _get_nested_avro_type(self.internal_field.get_avro_type(), items_type)
 
 
 @dataclasses.dataclass
@@ -310,7 +349,7 @@ class DictField(ContainerField):
             model_metadata=self.model_metadata,
             parent=self.parent,
         )
-        self.values_type = self.internal_field.get_avro_type()
+        self.values_type = _get_nested_avro_type(self.internal_field.get_avro_type(), values_type)
 
     def fake(self) -> typing.Dict[str, typing.Any]:
         # return a dict of one element with the items type specified
@@ -347,19 +386,31 @@ class UnionField(Field):
             unions.insert(0, field_utils.NULL)
         elif type(self.default) is not dataclasses._MISSING_TYPE:
             default_type = type(self.default)
+            # Reuse an annotated default branch instead of adding a second,
+            # unannotated branch with the same Avro primitive type.
+            default_type = next(
+                (
+                    element
+                    for element in self.elements
+                    if utils.is_annotated(element)
+                    and get_args(element)[0] is default_type
+                    and _get_nested_metadata(element)
+                ),
+                default_type,
+            )
             default_field = AvroField(
                 name,
                 default_type,
                 model_metadata=self.model_metadata,
                 parent=self.parent,
             )
-            unions.append(default_field.get_avro_type())
+            unions.append(_get_nested_avro_type(default_field.get_avro_type(), default_type))
             self.internal_fields.append(default_field)
 
         for element in self.elements:
             # create the field and get the avro type
             field = AvroField(name, element, model_metadata=self.model_metadata, parent=self.parent)
-            avro_type = field.get_avro_type()
+            avro_type = _get_nested_avro_type(field.get_avro_type(), element)
 
             if avro_type not in unions and field != default_field:
                 unions.append(avro_type)
@@ -1038,6 +1089,11 @@ def field_factory(
 
     # Resolve ForwardRef to actual type if possible
     # This handles cases like TYPE_CHECKING imports where types are ForwardRef at runtime
+    if isinstance(native_type, str) and native_type not in ALL_TYPES_FIELD_CLASSES:
+        # Python 3.10 keeps string arguments of builtin generics (e.g. dict[str, "User"])
+        # as plain strings; normalize them so the ForwardRef handling below applies.
+        # Names registered as field classes (e.g. "ConstrainedIntValue") stay untouched.
+        native_type = typing.ForwardRef(native_type)
     if isinstance(native_type, typing.ForwardRef):
         # Try to evaluate the ForwardRef in a namespace that includes common types
         forward_arg = native_type.__forward_arg__
