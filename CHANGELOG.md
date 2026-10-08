@@ -1,3 +1,9 @@
+## 0.71.0 (2026-10-08)
+
+### Feat
+
+- add named_schemas and render_files() for cross-file schema resolution (#973)
+
 ## 0.70.11 (2026-09-30)
 
 ### Fix
