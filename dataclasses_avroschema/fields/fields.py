@@ -345,7 +345,7 @@ class UnionField(Field):
         default_type = default_field = None
         if self.default is None and self.default_factory is dataclasses.MISSING:
             unions.insert(0, field_utils.NULL)
-        elif type(self.default) is not dataclasses._MISSING_TYPE:
+        elif self.default is not dataclasses.MISSING:
             default_type = type(self.default)
             default_field = AvroField(
                 name,
