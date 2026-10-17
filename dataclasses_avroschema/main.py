@@ -1,8 +1,9 @@
 import dataclasses
 import inspect
 import json
+import threading
 from collections import OrderedDict
-from typing import Any, Dict, List, Literal, Optional, Set, Type, TypeVar, Union, overload
+from typing import Any, ClassVar, Dict, List, Literal, Optional, Set, Type, TypeVar, Union, overload
 
 from dacite import Config, from_dict
 from fastavro.validation import validate
@@ -24,6 +25,16 @@ class AvroModel:
     _parent: Optional[Type["ModelProtocol"]] = None
     _user_defined_types: Set[UserDefinedType] = set()
     _rendered_schema: OrderedDict = dataclasses.field(default_factory=OrderedDict)
+    _schema_generation_lock: ClassVar[threading.RLock] = threading.RLock()
+
+    def __init_subclass__(cls, **kwargs: Any) -> None:
+        super().__init_subclass__(**kwargs)
+        # Each model keeps its own lock so that concurrent schema generation
+        # for independent models does not contend on a single global lock.
+        # `threading.RLock` is used because rendering a nested record re-enters
+        # `avro_schema_to_python` for the nested type (which, for self references,
+        # may resolve back to the same model).
+        cls._schema_generation_lock = threading.RLock()
 
     @classmethod
     def get_fullname(cls: Type["AvroModel"]) -> str:
@@ -54,17 +65,18 @@ class AvroModel:
     def generate_schema(
         cls: Type["AvroModel"], schema_type: serialization.SerializationType = "avro"
     ) -> Optional[OrderedDict]:
-        if cls._parser is None:
-            # let's live open the possibility to define different
-            # schema definitions like json
-            if schema_type == "avro":
-                # cache the schema
-                cls._parser = cls._generate_parser()
-                cls._rendered_schema = cls._parser.render()
-            else:
-                raise ValueError("Invalid type. Expected avro schema type.")
+        with cls._schema_generation_lock:
+            if cls._parser is None:
+                # let's live open the possibility to define different
+                # schema definitions like json
+                if schema_type == "avro":
+                    # cache the schema
+                    cls._parser = cls._generate_parser()
+                    cls._rendered_schema = cls._parser.render()
+                else:
+                    raise ValueError("Invalid type. Expected avro schema type.")
 
-        return cls._rendered_schema
+            return cls._rendered_schema
 
     @classmethod
     def _get_serialization_context(cls) -> JsonDict:
@@ -90,28 +102,35 @@ class AvroModel:
         parent: Optional[Type["AvroModel"]] = None,
         case_type: Optional[str] = None,
     ) -> Dict[str, Any]:
-        if parent is not None:
-            # in this case the current class is a child with a parent
-            # we recalculate the schema definition to prevent re usages
-            cls._parent = parent
-            cls._parser = None
-        else:
-            # This happens when an AvroModel is the root of the tree (first class in the hierarchy)
-            # Because intermediate schemas can be reused as a root later, we need to reset them
-            # Example with A as a root:
-            #     A -> B -> C -> D
-            #
-            # After generating the A.avro_schema the parent of B is A,
-            # if we want to do B.avro_schema (now B is the root)
-            # B should clean the data that was only valid when it was the child
-            cls._reset_parser()
+        # The lock protects the mutable class-level schema state
+        # (`_parent`, `_parser`, `_user_defined_types`, `_rendered_schema`) against
+        # concurrent schema generation for the same model. Without it, a thread
+        # rendering a nested type can observe it as already seen in another thread
+        # and emit a bare name reference instead of the inline definition,
+        # producing an invalid, non-self-contained schema.
+        with cls._schema_generation_lock:
+            if parent is not None:
+                # in this case the current class is a child with a parent
+                # we recalculate the schema definition to prevent re usages
+                cls._parent = parent
+                cls._parser = None
+            else:
+                # This happens when an AvroModel is the root of the tree (first class in the hierarchy)
+                # Because intermediate schemas can be reused as a root later, we need to reset them
+                # Example with A as a root:
+                #     A -> B -> C -> D
+                #
+                # After generating the A.avro_schema the parent of B is A,
+                # if we want to do B.avro_schema (now B is the root)
+                # B should clean the data that was only valid when it was the child
+                cls._reset_parser()
 
-        avro_schema = cls.generate_schema()
+            avro_schema = cls.generate_schema()
 
-        if case_type is not None:
-            avro_schema = case.case_record(cls._rendered_schema, case_type)  # type: ignore
+            if case_type is not None:
+                avro_schema = case.case_record(cls._rendered_schema, case_type)  # type: ignore
 
-        return json.loads(json.dumps(avro_schema))
+            return json.loads(json.dumps(avro_schema))
 
     @classmethod
     def get_fields(cls: Type["AvroModel"]) -> List[FieldProtocol]:
