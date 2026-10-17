@@ -1,3 +1,9 @@
+## 0.71.1 (2026-10-17)
+
+### Fix
+
+- compare union defaults with dataclasses.MISSING (Python 3.15) (#984)
+
 ## 0.71.0 (2026-10-08)
 
 ### Feat
