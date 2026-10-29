@@ -1,3 +1,9 @@
+## 0.71.2 (2026-10-29)
+
+### Fix
+
+- make concurrent schema generation thread-safe (#985)
+
 ## 0.71.1 (2026-10-17)
 
 ### Fix
