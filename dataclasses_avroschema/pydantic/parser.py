@@ -25,7 +25,7 @@ class PydanticParser(Parser):
 
     @staticmethod
     def get_field_metadata(field_info: FieldInfo) -> dict[str, typing.Any]:
-        metadata: dict[str, typing.Any] = (
+        metadata: dict[str, typing.Any] = dict(
             field_info.json_schema_extra.get("metadata", {}) if field_info.json_schema_extra else {}  # type: ignore
         )
         if field_info.description:
