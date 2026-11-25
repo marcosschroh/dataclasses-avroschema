@@ -59,6 +59,13 @@ def test_primitive_types_with_default_factory_value(primitive_type, default):
     assert {"name": name, "type": field.avro_type, "default": default} == result
 
 
+def test_bytes_default_with_non_utf8_bytes():
+    name = "a_field"
+    field = AvroField(name, bytes, default=b"\xff\x00")
+
+    assert {"name": name, "type": field_utils.BYTES, "default": "\xff\x00"} == field.to_dict()
+
+
 @pytest.mark.parametrize("primitive_type,default", consts.PRIMITIVE_TYPES_AND_DEFAULTS)
 def test_primitive_types_with_exclude_default_value(primitive_type, default):
     name = "a_field"
