@@ -1,3 +1,15 @@
+## 0.71.4 (2026-11-27)
+
+### Fix
+
+- encode bytes defaults as latin-1 (#993)
+
+## 0.71.3 (2026-11-20)
+
+### Fix
+
+- allow python-dateutil 3.x and 4.x (#992)
+
 ## 0.71.2 (2026-10-29)
 
 ### Fix

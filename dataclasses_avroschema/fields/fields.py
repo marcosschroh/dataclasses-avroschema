@@ -158,7 +158,7 @@ class BytesField(ImmutableField):
         return field_utils.BYTES
 
     def default_to_avro(self, item: bytes) -> str:
-        return item.decode()
+        return item.decode("latin-1")
 
     def fake(self) -> bytes:
         return fake.pystr().encode()

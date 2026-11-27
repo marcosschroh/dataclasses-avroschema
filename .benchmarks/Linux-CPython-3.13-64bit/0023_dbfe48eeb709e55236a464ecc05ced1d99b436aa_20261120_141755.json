@@ -1,0 +1,3353 @@
+{
+    "machine_info": {
+        "node": "runnervmccnms",
+        "processor": "",
+        "machine": "x86_64",
+        "python_compiler": "GCC 15.2.0",
+        "python_implementation": "CPython",
+        "python_implementation_version": "3.13.18",
+        "python_version": "3.13.18",
+        "python_build": [
+            "main",
+            "Oct 26 2026 14:19:33"
+        ],
+        "release": "7.0.0-1019-azure",
+        "system": "Linux",
+        "cpu": {
+            "python_version": "3.13.18.final.0 (64 bit)",
+            "cpuinfo_version": [
+                9,
+                0,
+                0
+            ],
+            "cpuinfo_version_string": "9.0.0",
+            "arch": "X86_64",
+            "bits": 64,
+            "count": 4,
+            "arch_string_raw": "x86_64",
+            "vendor_id_raw": "AuthenticAMD",
+            "brand_raw": "AMD EPYC 7763 64-Core Processor",
+            "hz_advertised_friendly": "3.2408 GHz",
+            "hz_actual_friendly": "3.2408 GHz",
+            "hz_advertised": [
+                3240834000,
+                0
+            ],
+            "hz_actual": [
+                3240834000,
+                0
+            ],
+            "stepping": 1,
+            "model": 1,
+            "family": 25,
+            "flags": [
+                "3dnowext",
+                "3dnowprefetch",
+                "abm",
+                "adx",
+                "aes",
+                "aperfmperf",
+                "apic",
+                "arat",
+                "avx",
+                "avx2",
+                "bmi1",
+                "bmi2",
+                "clflush",
+                "clflushopt",
+                "clwb",
+                "clzero",
+                "cmov",
+                "cmp_legacy",
+                "constant_tsc",
+                "cpuid",
+                "cr8_legacy",
+                "cx16",
+                "cx8",
+                "de",
+                "decodeassists",
+                "erms",
+                "extd_apicid",
+                "f16c",
+                "flushbyasid",
+                "fma",
+                "fpu",
+                "fsgsbase",
+                "fsrm",
+                "fxsr",
+                "fxsr_opt",
+                "ht",
+                "hypervisor",
+                "invpcid",
+                "lahf_lm",
+                "lm",
+                "mca",
+                "mce",
+                "misalignsse",
+                "mmx",
+                "mmxext",
+                "movbe",
+                "msr",
+                "mtrr",
+                "nonstop_tsc",
+                "nopl",
+                "npt",
+                "nrip_save",
+                "nx",
+                "osvw",
+                "osxsave",
+                "pae",
+                "pat",
+                "pausefilter",
+                "pcid",
+                "pclmulqdq",
+                "pdpe1gb",
+                "pfthreshold",
+                "pge",
+                "pni",
+                "popcnt",
+                "pse",
+                "pse36",
+                "rdpid",
+                "rdpru",
+                "rdrand",
+                "rdrnd",
+                "rdseed",
+                "rdtscp",
+                "rep_good",
+                "sep",
+                "sha",
+                "sha_ni",
+                "smap",
+                "smep",
+                "sse",
+                "sse2",
+                "sse4_1",
+                "sse4_2",
+                "sse4a",
+                "ssse3",
+                "svm",
+                "syscall",
+                "topoext",
+                "tsc",
+                "tsc_known_freq",
+                "tsc_reliable",
+                "tsc_scale",
+                "umip",
+                "user_shstk",
+                "v_vmsave_vmload",
+                "vaes",
+                "vmcb_clean",
+                "vme",
+                "vmmcall",
+                "vpclmulqdq",
+                "xgetbv1",
+                "xsave",
+                "xsavec",
+                "xsaveerptr",
+                "xsaveopt",
+                "xsaves"
+            ],
+            "l3_cache_size": 524288,
+            "l2_cache_size": 1048576,
+            "l1_data_cache_size": 65536,
+            "l1_instruction_cache_size": 65536,
+            "l2_cache_line_size": 512,
+            "l2_cache_associativity": 6
+        }
+    },
+    "commit_info": {
+        "id": "dbfe48eeb709e55236a464ecc05ced1d99b436aa",
+        "time": "2026-11-20T14:16:50Z",
+        "author_time": "2026-11-20T14:16:50Z",
+        "dirty": false,
+        "project": "dataclasses-avroschema",
+        "branch": "master"
+    },
+    "benchmarks": [
+        {
+            "group": "avro_schema_rendering",
+            "name": "test_render_avro_schema[user_dataclass]",
+            "fullname": "tests/test_benchmarks.py::test_render_avro_schema[user_dataclass]",
+            "params": {
+                "fixture_name": "user_dataclass"
+            },
+            "param": "user_dataclass",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 6.003400000054171e-05,
+                "max": 0.00016230800000016643,
+                "mean": 6.506406767961594e-05,
+                "stddev": 7.091194503849697e-06,
+                "rounds": 3620,
+                "median": 6.294800000006262e-05,
+                "iqr": 2.0784999996692477e-06,
+                "q1": 6.223700000163035e-05,
+                "q3": 6.43155000012996e-05,
+                "iqr_outliers": 478,
+                "stddev_outliers": 325,
+                "outliers": "325;478",
+                "ld15iqr": 6.003400000054171e-05,
+                "hd15iqr": 6.745599999646856e-05,
+                "ops": 15369.46636850515,
+                "total": 0.2355319250002097,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "avro_schema_rendering",
+            "name": "test_render_avro_schema[user_dataclass_with_doc]",
+            "fullname": "tests/test_benchmarks.py::test_render_avro_schema[user_dataclass_with_doc]",
+            "params": {
+                "fixture_name": "user_dataclass_with_doc"
+            },
+            "param": "user_dataclass_with_doc",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.00012375300000400102,
+                "max": 0.0002512410000008458,
+                "mean": 0.00013185385708356864,
+                "stddev": 9.575757432490218e-06,
+                "rounds": 4814,
+                "median": 0.0001281499999983282,
+                "iqr": 5.0880000017627935e-06,
+                "q1": 0.00012694799999479756,
+                "q3": 0.00013203599999656035,
+                "iqr_outliers": 754,
+                "stddev_outliers": 702,
+                "outliers": "702;754",
+                "ld15iqr": 0.00012375300000400102,
+                "hd15iqr": 0.00013973000000078173,
+                "ops": 7584.154321448501,
+                "total": 0.6347444680002994,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "avro_schema_rendering",
+            "name": "test_render_avro_schema[user_dataclass_with_field_metadata]",
+            "fullname": "tests/test_benchmarks.py::test_render_avro_schema[user_dataclass_with_field_metadata]",
+            "params": {
+                "fixture_name": "user_dataclass_with_field_metadata"
+            },
+            "param": "user_dataclass_with_field_metadata",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 6.470099999944523e-05,
+                "max": 0.00018336300000498795,
+                "mean": 6.962823166681678e-05,
+                "stddev": 7.283925685502136e-06,
+                "rounds": 8741,
+                "median": 6.750600000060558e-05,
+                "iqr": 1.8842500004723206e-06,
+                "q1": 6.682400000102007e-05,
+                "q3": 6.870825000149239e-05,
+                "iqr_outliers": 1217,
+                "stddev_outliers": 761,
+                "outliers": "761;1217",
+                "ld15iqr": 6.470099999944523e-05,
+                "hd15iqr": 7.154299999712066e-05,
+                "ops": 14361.990475144825,
+                "total": 0.6086203729996456,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "avro_schema_rendering",
+            "name": "test_render_avro_schema[user_v2_dataclass]",
+            "fullname": "tests/test_benchmarks.py::test_render_avro_schema[user_v2_dataclass]",
+            "params": {
+                "fixture_name": "user_v2_dataclass"
+            },
+            "param": "user_v2_dataclass",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 8.871600000048829e-05,
+                "max": 0.00042535400000076606,
+                "mean": 9.425610148876226e-05,
+                "stddev": 9.098000209503227e-06,
+                "rounds": 6247,
+                "median": 9.129000000029919e-05,
+                "iqr": 2.2817499978344813e-06,
+                "q1": 9.063899999972591e-05,
+                "q3": 9.292074999756039e-05,
+                "iqr_outliers": 1043,
+                "stddev_outliers": 709,
+                "outliers": "709;1043",
+                "ld15iqr": 8.871600000048829e-05,
+                "hd15iqr": 9.635099999627528e-05,
+                "ops": 10609.392752353815,
+                "total": 0.5888178660002978,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "avro_schema_rendering",
+            "name": "test_render_avro_schema[user_extra_avro_atributes_dataclass]",
+            "fullname": "tests/test_benchmarks.py::test_render_avro_schema[user_extra_avro_atributes_dataclass]",
+            "params": {
+                "fixture_name": "user_extra_avro_atributes_dataclass"
+            },
+            "param": "user_extra_avro_atributes_dataclass",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 8.754400000299256e-05,
+                "max": 0.00017666000000104987,
+                "mean": 9.281463397545815e-05,
+                "stddev": 6.795612753429736e-06,
+                "rounds": 7423,
+                "median": 9.035800000134486e-05,
+                "iqr": 1.9237500019642084e-06,
+                "q1": 8.973699999792473e-05,
+                "q3": 9.166074999988894e-05,
+                "iqr_outliers": 1181,
+                "stddev_outliers": 842,
+                "outliers": "842;1181",
+                "ld15iqr": 8.754400000299256e-05,
+                "hd15iqr": 9.454700000333105e-05,
+                "ops": 10774.163051318157,
+                "total": 0.6889630279998258,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "avro_schema_rendering",
+            "name": "test_render_avro_schema[user_advance_dataclass]",
+            "fullname": "tests/test_benchmarks.py::test_render_avro_schema[user_advance_dataclass]",
+            "params": {
+                "fixture_name": "user_advance_dataclass"
+            },
+            "param": "user_advance_dataclass",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.00032669000000140613,
+                "max": 0.00045600100000342536,
+                "mean": 0.0003419296487341237,
+                "stddev": 1.4340729003572667e-05,
+                "rounds": 316,
+                "median": 0.00033677799999765057,
+                "iqr": 1.9009999999042293e-05,
+                "q1": 0.00033161949999893636,
+                "q3": 0.00035062949999797866,
+                "iqr_outliers": 6,
+                "stddev_outliers": 35,
+                "outliers": "35;6",
+                "ld15iqr": 0.00032669000000140613,
+                "hd15iqr": 0.0003806609999941202,
+                "ops": 2924.5782098807585,
+                "total": 0.10804976899998309,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "avro_schema_rendering",
+            "name": "test_render_avro_schema[user_advance_dataclass_with_enum]",
+            "fullname": "tests/test_benchmarks.py::test_render_avro_schema[user_advance_dataclass_with_enum]",
+            "params": {
+                "fixture_name": "user_advance_dataclass_with_enum"
+            },
+            "param": "user_advance_dataclass_with_enum",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.00040030699999960007,
+                "max": 0.0011039610000054267,
+                "mean": 0.0004277165090271336,
+                "stddev": 4.968804540580929e-05,
+                "rounds": 1994,
+                "median": 0.00041802550000014094,
+                "iqr": 1.9766999997727908e-05,
+                "q1": 0.0004082620000005477,
+                "q3": 0.0004280289999982756,
+                "iqr_outliers": 97,
+                "stddev_outliers": 71,
+                "outliers": "71;97",
+                "ld15iqr": 0.00040030699999960007,
+                "hd15iqr": 0.0004580049999987068,
+                "ops": 2337.997198832841,
+                "total": 0.8528667190001045,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "avro_schema_rendering",
+            "name": "test_render_avro_schema[user_advance_dataclass_with_union_enum]",
+            "fullname": "tests/test_benchmarks.py::test_render_avro_schema[user_advance_dataclass_with_union_enum]",
+            "params": {
+                "fixture_name": "user_advance_dataclass_with_union_enum"
+            },
+            "param": "user_advance_dataclass_with_union_enum",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.000402881999995941,
+                "max": 0.0007671219999991763,
+                "mean": 0.000424892434675786,
+                "stddev": 2.4880818268197638e-05,
+                "rounds": 2036,
+                "median": 0.0004199040000045784,
+                "iqr": 1.9712000000282615e-05,
+                "q1": 0.0004112529999993342,
+                "q3": 0.0004309649999996168,
+                "iqr_outliers": 77,
+                "stddev_outliers": 136,
+                "outliers": "136;77",
+                "ld15iqr": 0.000402881999995941,
+                "hd15iqr": 0.0004607800000044904,
+                "ops": 2353.536844597032,
+                "total": 0.8650809969999003,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "avro_schema_rendering",
+            "name": "test_render_avro_schema[user_advance_dataclass_with_union_enum_with_annotated]",
+            "fullname": "tests/test_benchmarks.py::test_render_avro_schema[user_advance_dataclass_with_union_enum_with_annotated]",
+            "params": {
+                "fixture_name": "user_advance_dataclass_with_union_enum_with_annotated"
+            },
+            "param": "user_advance_dataclass_with_union_enum_with_annotated",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.00041967300000322894,
+                "max": 0.0008229160000041702,
+                "mean": 0.0004403973525866056,
+                "stddev": 2.002318645480041e-05,
+                "rounds": 1991,
+                "median": 0.00043785799999795927,
+                "iqr": 1.933349999383438e-05,
+                "q1": 0.00042744800000349414,
+                "q3": 0.0004467814999973285,
+                "iqr_outliers": 74,
+                "stddev_outliers": 164,
+                "outliers": "164;74",
+                "ld15iqr": 0.00041967300000322894,
+                "hd15iqr": 0.00047584800000066707,
+                "ops": 2270.6766835146827,
+                "total": 0.8768311289999318,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "avro_schema_rendering",
+            "name": "test_render_avro_schema[user_advance_dataclass_with_sub_record_and_enum]",
+            "fullname": "tests/test_benchmarks.py::test_render_avro_schema[user_advance_dataclass_with_sub_record_and_enum]",
+            "params": {
+                "fixture_name": "user_advance_dataclass_with_sub_record_and_enum"
+            },
+            "param": "user_advance_dataclass_with_sub_record_and_enum",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.0002763650000048301,
+                "max": 0.0006849090000002889,
+                "mean": 0.0002934718570858445,
+                "stddev": 1.8284550689647647e-05,
+                "rounds": 2505,
+                "median": 0.0002873969999939163,
+                "iqr": 1.853749999725096e-05,
+                "q1": 0.0002828547500008938,
+                "q3": 0.00030139224999814473,
+                "iqr_outliers": 74,
+                "stddev_outliers": 190,
+                "outliers": "190;74",
+                "ld15iqr": 0.0002763650000048301,
+                "hd15iqr": 0.00032931500000188407,
+                "ops": 3407.481759681939,
+                "total": 0.7351470020000406,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "avro_schema_rendering",
+            "name": "test_render_avro_schema[user_advance_with_defaults_dataclass]",
+            "fullname": "tests/test_benchmarks.py::test_render_avro_schema[user_advance_with_defaults_dataclass]",
+            "params": {
+                "fixture_name": "user_advance_with_defaults_dataclass"
+            },
+            "param": "user_advance_with_defaults_dataclass",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.00029102299999550496,
+                "max": 0.00041555600000009463,
+                "mean": 0.00030536563948495743,
+                "stddev": 1.3095232576549044e-05,
+                "rounds": 2563,
+                "median": 0.0002999099999954069,
+                "iqr": 1.7401999997446183e-05,
+                "q1": 0.00029611300000453866,
+                "q3": 0.00031351500000198484,
+                "iqr_outliers": 61,
+                "stddev_outliers": 282,
+                "outliers": "282;61",
+                "ld15iqr": 0.00029102299999550496,
+                "hd15iqr": 0.0003397850000013136,
+                "ops": 3274.7626801975566,
+                "total": 0.7826521339999459,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "avro_schema_rendering",
+            "name": "test_render_avro_schema[user_advance_with_defaults_dataclass_with_enum]",
+            "fullname": "tests/test_benchmarks.py::test_render_avro_schema[user_advance_with_defaults_dataclass_with_enum]",
+            "params": {
+                "fixture_name": "user_advance_with_defaults_dataclass_with_enum"
+            },
+            "param": "user_advance_with_defaults_dataclass_with_enum",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.0003744790000013154,
+                "max": 0.0005946909999963168,
+                "mean": 0.0003943240498575499,
+                "stddev": 1.53955970951693e-05,
+                "rounds": 2106,
+                "median": 0.0003900980000004495,
+                "iqr": 1.8994999997801187e-05,
+                "q1": 0.00038262500000030286,
+                "q3": 0.00040161999999810405,
+                "iqr_outliers": 64,
+                "stddev_outliers": 323,
+                "outliers": "323;64",
+                "ld15iqr": 0.0003744790000013154,
+                "hd15iqr": 0.0004303039999982161,
+                "ops": 2535.985315532368,
+                "total": 0.8304464490000001,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "avro_schema_to_python_rendering",
+            "name": "test_render_avro_schema_to_python[user_dataclass]",
+            "fullname": "tests/test_benchmarks.py::test_render_avro_schema_to_python[user_dataclass]",
+            "params": {
+                "fixture_name": "user_dataclass"
+            },
+            "param": "user_dataclass",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 5.371900000028518e-05,
+                "max": 0.0001911020000022745,
+                "mean": 5.749122815681745e-05,
+                "stddev": 5.261015462153989e-06,
+                "rounds": 9511,
+                "median": 5.5953000000386055e-05,
+                "iqr": 1.3030000047820067e-06,
+                "q1": 5.543199999635817e-05,
+                "q3": 5.673500000114018e-05,
+                "iqr_outliers": 1302,
+                "stddev_outliers": 793,
+                "outliers": "793;1302",
+                "ld15iqr": 5.371900000028518e-05,
+                "hd15iqr": 5.8697999996581984e-05,
+                "ops": 17393.95786209896,
+                "total": 0.5467990709994908,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "avro_schema_to_python_rendering",
+            "name": "test_render_avro_schema_to_python[user_dataclass_with_doc]",
+            "fullname": "tests/test_benchmarks.py::test_render_avro_schema_to_python[user_dataclass_with_doc]",
+            "params": {
+                "fixture_name": "user_dataclass_with_doc"
+            },
+            "param": "user_dataclass_with_doc",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.00011682600000284538,
+                "max": 0.0002810439999976211,
+                "mean": 0.00012351662911614742,
+                "stddev": 9.071191314698652e-06,
+                "rounds": 5193,
+                "median": 0.00011989099999709651,
+                "iqr": 3.7592499975147575e-06,
+                "q1": 0.00011902900000215766,
+                "q3": 0.00012278824999967242,
+                "iqr_outliers": 899,
+                "stddev_outliers": 743,
+                "outliers": "743;899",
+                "ld15iqr": 0.00011682600000284538,
+                "hd15iqr": 0.00012843599999712296,
+                "ops": 8096.075865701141,
+                "total": 0.6414218550001536,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "avro_schema_to_python_rendering",
+            "name": "test_render_avro_schema_to_python[user_dataclass_with_field_metadata]",
+            "fullname": "tests/test_benchmarks.py::test_render_avro_schema_to_python[user_dataclass_with_field_metadata]",
+            "params": {
+                "fixture_name": "user_dataclass_with_field_metadata"
+            },
+            "param": "user_dataclass_with_field_metadata",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 5.7097000002670484e-05,
+                "max": 0.00018220999999840615,
+                "mean": 6.239982414458134e-05,
+                "stddev": 9.512101840234538e-06,
+                "rounds": 9849,
+                "median": 5.974100000116778e-05,
+                "iqr": 1.623000002837216e-06,
+                "q1": 5.913999999762609e-05,
+                "q3": 6.076300000046331e-05,
+                "iqr_outliers": 1451,
+                "stddev_outliers": 811,
+                "outliers": "811;1451",
+                "ld15iqr": 5.7097000002670484e-05,
+                "hd15iqr": 6.319799999943143e-05,
+                "ops": 16025.686189162729,
+                "total": 0.6145758679999815,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "avro_schema_to_python_rendering",
+            "name": "test_render_avro_schema_to_python[user_v2_dataclass]",
+            "fullname": "tests/test_benchmarks.py::test_render_avro_schema_to_python[user_v2_dataclass]",
+            "params": {
+                "fixture_name": "user_v2_dataclass"
+            },
+            "param": "user_v2_dataclass",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 8.337499999555575e-05,
+                "max": 0.0002291370000051529,
+                "mean": 9.444056224349668e-05,
+                "stddev": 1.5053532423459795e-05,
+                "rounds": 6579,
+                "median": 8.696200000457566e-05,
+                "iqr": 1.0125500006452626e-05,
+                "q1": 8.558999999763728e-05,
+                "q3": 9.57155000040899e-05,
+                "iqr_outliers": 1056,
+                "stddev_outliers": 1109,
+                "outliers": "1109;1056",
+                "ld15iqr": 8.337499999555575e-05,
+                "hd15iqr": 0.00011095699999685849,
+                "ops": 10588.67054837829,
+                "total": 0.6213244589999647,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "avro_schema_to_python_rendering",
+            "name": "test_render_avro_schema_to_python[user_extra_avro_atributes_dataclass]",
+            "fullname": "tests/test_benchmarks.py::test_render_avro_schema_to_python[user_extra_avro_atributes_dataclass]",
+            "params": {
+                "fixture_name": "user_extra_avro_atributes_dataclass"
+            },
+            "param": "user_extra_avro_atributes_dataclass",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 8.278500000358235e-05,
+                "max": 0.0001666010000036522,
+                "mean": 8.962646996915926e-05,
+                "stddev": 1.0392170771348163e-05,
+                "rounds": 7792,
+                "median": 8.522899999974243e-05,
+                "iqr": 4.1779999975233295e-06,
+                "q1": 8.441700000361152e-05,
+                "q3": 8.859500000113485e-05,
+                "iqr_outliers": 1250,
+                "stddev_outliers": 1030,
+                "outliers": "1030;1250",
+                "ld15iqr": 8.278500000358235e-05,
+                "hd15iqr": 9.487700000221366e-05,
+                "ops": 11157.418119268816,
+                "total": 0.698369453999689,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "avro_schema_to_python_rendering",
+            "name": "test_render_avro_schema_to_python[user_advance_dataclass]",
+            "fullname": "tests/test_benchmarks.py::test_render_avro_schema_to_python[user_advance_dataclass]",
+            "params": {
+                "fixture_name": "user_advance_dataclass"
+            },
+            "param": "user_advance_dataclass",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.00030902599999649283,
+                "max": 0.0006054090000020551,
+                "mean": 0.0003263602275828831,
+                "stddev": 1.7769773923895092e-05,
+                "rounds": 2052,
+                "median": 0.0003211939999978597,
+                "iqr": 1.74870000009264e-05,
+                "q1": 0.00031539800000146556,
+                "q3": 0.00033288500000239196,
+                "iqr_outliers": 80,
+                "stddev_outliers": 167,
+                "outliers": "167;80",
+                "ld15iqr": 0.00030902599999649283,
+                "hd15iqr": 0.00035921999999999343,
+                "ops": 3064.0988560594074,
+                "total": 0.6696911870000761,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "avro_schema_to_python_rendering",
+            "name": "test_render_avro_schema_to_python[user_advance_dataclass_with_enum]",
+            "fullname": "tests/test_benchmarks.py::test_render_avro_schema_to_python[user_advance_dataclass_with_enum]",
+            "params": {
+                "fixture_name": "user_advance_dataclass_with_enum"
+            },
+            "param": "user_advance_dataclass_with_enum",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.0003876920000038808,
+                "max": 0.0005665959999987535,
+                "mean": 0.00040636254316195965,
+                "stddev": 1.5749987596940843e-05,
+                "rounds": 2062,
+                "median": 0.00040201950000096076,
+                "iqr": 1.8676000003381432e-05,
+                "q1": 0.0003948250000007647,
+                "q3": 0.00041350100000414614,
+                "iqr_outliers": 72,
+                "stddev_outliers": 220,
+                "outliers": "220;72",
+                "ld15iqr": 0.0003876920000038808,
+                "hd15iqr": 0.0004416939999956071,
+                "ops": 2460.856732067061,
+                "total": 0.8379195639999608,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "avro_schema_to_python_rendering",
+            "name": "test_render_avro_schema_to_python[user_advance_dataclass_with_union_enum]",
+            "fullname": "tests/test_benchmarks.py::test_render_avro_schema_to_python[user_advance_dataclass_with_union_enum]",
+            "params": {
+                "fixture_name": "user_advance_dataclass_with_union_enum"
+            },
+            "param": "user_advance_dataclass_with_union_enum",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.0003946949999971139,
+                "max": 0.000546108000001766,
+                "mean": 0.00041320470881233654,
+                "stddev": 1.6299243460780284e-05,
+                "rounds": 2088,
+                "median": 0.00040926199999802293,
+                "iqr": 1.9090999998638836e-05,
+                "q1": 0.0004010024999985262,
+                "q3": 0.00042009349999716505,
+                "iqr_outliers": 79,
+                "stddev_outliers": 234,
+                "outliers": "234;79",
+                "ld15iqr": 0.0003946949999971139,
+                "hd15iqr": 0.0004488470000012512,
+                "ops": 2420.1079481264233,
+                "total": 0.8627714320001587,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "avro_schema_to_python_rendering",
+            "name": "test_render_avro_schema_to_python[user_advance_dataclass_with_union_enum_with_annotated]",
+            "fullname": "tests/test_benchmarks.py::test_render_avro_schema_to_python[user_advance_dataclass_with_union_enum_with_annotated]",
+            "params": {
+                "fixture_name": "user_advance_dataclass_with_union_enum_with_annotated"
+            },
+            "param": "user_advance_dataclass_with_union_enum_with_annotated",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.0004063979999955336,
+                "max": 0.0006041159999981005,
+                "mean": 0.00042904235026457497,
+                "stddev": 1.8474507595353356e-05,
+                "rounds": 1890,
+                "median": 0.0004268809999992129,
+                "iqr": 1.9606999998700303e-05,
+                "q1": 0.000415965000001961,
+                "q3": 0.0004355720000006613,
+                "iqr_outliers": 62,
+                "stddev_outliers": 179,
+                "outliers": "179;62",
+                "ld15iqr": 0.0004063979999955336,
+                "hd15iqr": 0.00046514699999988807,
+                "ops": 2330.772240510374,
+                "total": 0.8108900420000467,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "avro_schema_to_python_rendering",
+            "name": "test_render_avro_schema_to_python[user_advance_dataclass_with_sub_record_and_enum]",
+            "fullname": "tests/test_benchmarks.py::test_render_avro_schema_to_python[user_advance_dataclass_with_sub_record_and_enum]",
+            "params": {
+                "fixture_name": "user_advance_dataclass_with_sub_record_and_enum"
+            },
+            "param": "user_advance_dataclass_with_sub_record_and_enum",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.000263119999999617,
+                "max": 0.0006081439999974236,
+                "mean": 0.00028592384648827275,
+                "stddev": 3.80992591501842e-05,
+                "rounds": 2762,
+                "median": 0.0002740909999943142,
+                "iqr": 1.9206999994025864e-05,
+                "q1": 0.0002699430000063785,
+                "q3": 0.00028915000000040436,
+                "iqr_outliers": 167,
+                "stddev_outliers": 146,
+                "outliers": "146;167",
+                "ld15iqr": 0.000263119999999617,
+                "hd15iqr": 0.0003180030000038414,
+                "ops": 3497.4347620250533,
+                "total": 0.7897216640006093,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "avro_schema_to_python_rendering",
+            "name": "test_render_avro_schema_to_python[user_advance_with_defaults_dataclass]",
+            "fullname": "tests/test_benchmarks.py::test_render_avro_schema_to_python[user_advance_with_defaults_dataclass]",
+            "params": {
+                "fixture_name": "user_advance_with_defaults_dataclass"
+            },
+            "param": "user_advance_with_defaults_dataclass",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.00028114500000242515,
+                "max": 0.0006296530000042821,
+                "mean": 0.00029719310922140396,
+                "stddev": 2.055695939328028e-05,
+                "rounds": 2646,
+                "median": 0.00029007100000200126,
+                "iqr": 1.7614000000776286e-05,
+                "q1": 0.00028640300000404295,
+                "q3": 0.00030401700000481924,
+                "iqr_outliers": 99,
+                "stddev_outliers": 173,
+                "outliers": "173;99",
+                "ld15iqr": 0.00028114500000242515,
+                "hd15iqr": 0.00033045600000036757,
+                "ops": 3364.815565945765,
+                "total": 0.7863729669998349,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "avro_schema_to_python_rendering",
+            "name": "test_render_avro_schema_to_python[user_advance_with_defaults_dataclass_with_enum]",
+            "fullname": "tests/test_benchmarks.py::test_render_avro_schema_to_python[user_advance_with_defaults_dataclass_with_enum]",
+            "params": {
+                "fixture_name": "user_advance_with_defaults_dataclass_with_enum"
+            },
+            "param": "user_advance_with_defaults_dataclass_with_enum",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.0003546920000019327,
+                "max": 0.000534035000001154,
+                "mean": 0.00037197663820411086,
+                "stddev": 1.5043615267816904e-05,
+                "rounds": 2272,
+                "median": 0.0003673700000064173,
+                "iqr": 1.854949999113842e-05,
+                "q1": 0.00036102300000351306,
+                "q3": 0.0003795724999946515,
+                "iqr_outliers": 66,
+                "stddev_outliers": 218,
+                "outliers": "218;66",
+                "ld15iqr": 0.0003546920000019327,
+                "hd15iqr": 0.00040763900000229114,
+                "ops": 2688.3408722331656,
+                "total": 0.8451309219997398,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "fake_data_generation",
+            "name": "test_fake[user_dataclass]",
+            "fullname": "tests/test_benchmarks.py::test_fake[user_dataclass]",
+            "params": {
+                "fixture_name": "user_dataclass"
+            },
+            "param": "user_dataclass",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 5.581399999243786e-05,
+                "max": 0.00011965299999872059,
+                "mean": 6.01906369365318e-05,
+                "stddev": 6.424349843120098e-06,
+                "rounds": 2063,
+                "median": 5.833900000595804e-05,
+                "iqr": 1.4805000070339247e-06,
+                "q1": 5.775699999333028e-05,
+                "q3": 5.923750000036421e-05,
+                "iqr_outliers": 274,
+                "stddev_outliers": 168,
+                "outliers": "168;274",
+                "ld15iqr": 5.581399999243786e-05,
+                "hd15iqr": 6.148499998914758e-05,
+                "ops": 16613.879681227714,
+                "total": 0.12417328400006511,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "fake_data_generation",
+            "name": "test_fake[user_dataclass_with_doc]",
+            "fullname": "tests/test_benchmarks.py::test_fake[user_dataclass_with_doc]",
+            "params": {
+                "fixture_name": "user_dataclass_with_doc"
+            },
+            "param": "user_dataclass_with_doc",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 5.446099999062426e-05,
+                "max": 0.0001392790000096511,
+                "mean": 5.905155685498141e-05,
+                "stddev": 6.033264883123675e-06,
+                "rounds": 2480,
+                "median": 5.7327000007489914e-05,
+                "iqr": 1.3274999872692206e-06,
+                "q1": 5.677600000808525e-05,
+                "q3": 5.810349999535447e-05,
+                "iqr_outliers": 331,
+                "stddev_outliers": 207,
+                "outliers": "207;331",
+                "ld15iqr": 5.4792000000247754e-05,
+                "hd15iqr": 6.011199999989003e-05,
+                "ops": 16934.354541334043,
+                "total": 0.1464478610003539,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "fake_data_generation",
+            "name": "test_fake[user_dataclass_with_field_metadata]",
+            "fullname": "tests/test_benchmarks.py::test_fake[user_dataclass_with_field_metadata]",
+            "params": {
+                "fixture_name": "user_dataclass_with_field_metadata"
+            },
+            "param": "user_dataclass_with_field_metadata",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 5.5063000004906826e-05,
+                "max": 0.00012244799999905354,
+                "mean": 5.965800061080734e-05,
+                "stddev": 5.4408813017238935e-06,
+                "rounds": 3275,
+                "median": 5.810900000824404e-05,
+                "iqr": 1.4929999991863951e-06,
+                "q1": 5.7486999992306664e-05,
+                "q3": 5.897999999149306e-05,
+                "iqr_outliers": 411,
+                "stddev_outliers": 273,
+                "outliers": "273;411",
+                "ld15iqr": 5.5263000007244045e-05,
+                "hd15iqr": 6.128500000102122e-05,
+                "ops": 16762.211099291268,
+                "total": 0.19537995200039404,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "fake_data_generation",
+            "name": "test_fake[user_v2_dataclass]",
+            "fullname": "tests/test_benchmarks.py::test_fake[user_v2_dataclass]",
+            "params": {
+                "fixture_name": "user_v2_dataclass"
+            },
+            "param": "user_v2_dataclass",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 2.4285999998596708e-05,
+                "max": 6.484099999681803e-05,
+                "mean": 2.681625964903055e-05,
+                "stddev": 3.936782335417648e-06,
+                "rounds": 855,
+                "median": 2.577799999414765e-05,
+                "iqr": 1.0920000050873568e-06,
+                "q1": 2.5397000001703418e-05,
+                "q3": 2.6489000006790775e-05,
+                "iqr_outliers": 83,
+                "stddev_outliers": 57,
+                "outliers": "57;83",
+                "ld15iqr": 2.4285999998596708e-05,
+                "hd15iqr": 2.817200000038156e-05,
+                "ops": 37290.80837849628,
+                "total": 0.02292790199992112,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "fake_data_generation",
+            "name": "test_fake[user_extra_avro_atributes_dataclass]",
+            "fullname": "tests/test_benchmarks.py::test_fake[user_extra_avro_atributes_dataclass]",
+            "params": {
+                "fixture_name": "user_extra_avro_atributes_dataclass"
+            },
+            "param": "user_extra_avro_atributes_dataclass",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 2.383399998961977e-05,
+                "max": 8.402699999976448e-05,
+                "mean": 2.6096594756297257e-05,
+                "stddev": 3.5715902731494653e-06,
+                "rounds": 3509,
+                "median": 2.5346999990460972e-05,
+                "iqr": 8.252499945626823e-07,
+                "q1": 2.4973750004875228e-05,
+                "q3": 2.579899999943791e-05,
+                "iqr_outliers": 286,
+                "stddev_outliers": 183,
+                "outliers": "183;286",
+                "ld15iqr": 2.383399998961977e-05,
+                "hd15iqr": 2.7039999991984587e-05,
+                "ops": 38319.175713861834,
+                "total": 0.09157295099984708,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "fake_data_generation",
+            "name": "test_fake[user_advance_dataclass]",
+            "fullname": "tests/test_benchmarks.py::test_fake[user_advance_dataclass]",
+            "params": {
+                "fixture_name": "user_advance_dataclass"
+            },
+            "param": "user_advance_dataclass",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.00010704000000316682,
+                "max": 0.00016718199999843364,
+                "mean": 0.00011371665449680995,
+                "stddev": 7.321503902312145e-06,
+                "rounds": 1123,
+                "median": 0.00011110799999869414,
+                "iqr": 3.967250002290257e-06,
+                "q1": 0.00010974725000423291,
+                "q3": 0.00011371450000652317,
+                "iqr_outliers": 164,
+                "stddev_outliers": 156,
+                "outliers": "156;164",
+                "ld15iqr": 0.00010704000000316682,
+                "hd15iqr": 0.0001197429999990618,
+                "ops": 8793.78666585775,
+                "total": 0.12770380299991757,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "fake_data_generation",
+            "name": "test_fake[user_advance_dataclass_with_enum]",
+            "fullname": "tests/test_benchmarks.py::test_fake[user_advance_dataclass_with_enum]",
+            "params": {
+                "fixture_name": "user_advance_dataclass_with_enum"
+            },
+            "param": "user_advance_dataclass_with_enum",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.00011959300000796702,
+                "max": 0.00018528500000059012,
+                "mean": 0.00012617191392406984,
+                "stddev": 7.255686352555632e-06,
+                "rounds": 1185,
+                "median": 0.0001232289999961722,
+                "iqr": 4.560749999882319e-06,
+                "q1": 0.00012202774999536814,
+                "q3": 0.00012658849999525046,
+                "iqr_outliers": 177,
+                "stddev_outliers": 177,
+                "outliers": "177;177",
+                "ld15iqr": 0.00011959300000796702,
+                "hd15iqr": 0.0001334390000096164,
+                "ops": 7925.694149347683,
+                "total": 0.14951371800002278,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "fake_data_generation",
+            "name": "test_fake[user_advance_dataclass_with_union_enum]",
+            "fullname": "tests/test_benchmarks.py::test_fake[user_advance_dataclass_with_union_enum]",
+            "params": {
+                "fixture_name": "user_advance_dataclass_with_union_enum"
+            },
+            "param": "user_advance_dataclass_with_union_enum",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.00011845000000221262,
+                "max": 0.00020463100000256418,
+                "mean": 0.0001276365449915325,
+                "stddev": 8.5932001795917e-06,
+                "rounds": 1178,
+                "median": 0.0001259100000012836,
+                "iqr": 6.492000011348864e-06,
+                "q1": 0.00012212800000099833,
+                "q3": 0.0001286200000123472,
+                "iqr_outliers": 136,
+                "stddev_outliers": 163,
+                "outliers": "163;136",
+                "ld15iqr": 0.00011845000000221262,
+                "hd15iqr": 0.00013836799999467075,
+                "ops": 7834.74670257128,
+                "total": 0.15035585000002527,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "fake_data_generation",
+            "name": "test_fake[user_advance_dataclass_with_union_enum_with_annotated]",
+            "fullname": "tests/test_benchmarks.py::test_fake[user_advance_dataclass_with_union_enum_with_annotated]",
+            "params": {
+                "fixture_name": "user_advance_dataclass_with_union_enum_with_annotated"
+            },
+            "param": "user_advance_dataclass_with_union_enum_with_annotated",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.0001264060000067957,
+                "max": 0.0002889380000112851,
+                "mean": 0.00013759780500904306,
+                "stddev": 1.5742149342674877e-05,
+                "rounds": 1118,
+                "median": 0.00013346400000102676,
+                "iqr": 7.2829999879786556e-06,
+                "q1": 0.00013000300000953757,
+                "q3": 0.00013728599999751623,
+                "iqr_outliers": 124,
+                "stddev_outliers": 65,
+                "outliers": "65;124",
+                "ld15iqr": 0.0001264060000067957,
+                "hd15iqr": 0.00014823600000113402,
+                "ops": 7267.557792322916,
+                "total": 0.15383434600011014,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "fake_data_generation",
+            "name": "test_fake[user_advance_dataclass_with_sub_record_and_enum]",
+            "fullname": "tests/test_benchmarks.py::test_fake[user_advance_dataclass_with_sub_record_and_enum]",
+            "params": {
+                "fixture_name": "user_advance_dataclass_with_sub_record_and_enum"
+            },
+            "param": "user_advance_dataclass_with_sub_record_and_enum",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 7.194399999832513e-05,
+                "max": 0.00014301699999919038,
+                "mean": 7.893712888188113e-05,
+                "stddev": 6.694887282524542e-06,
+                "rounds": 1288,
+                "median": 7.792499999936808e-05,
+                "iqr": 4.7939999987534065e-06,
+                "q1": 7.469399999848747e-05,
+                "q3": 7.948799999724088e-05,
+                "iqr_outliers": 127,
+                "stddev_outliers": 137,
+                "outliers": "137;127",
+                "ld15iqr": 7.194399999832513e-05,
+                "hd15iqr": 8.695200000374825e-05,
+                "ops": 12668.309756950579,
+                "total": 0.10167102199986289,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "fake_data_generation",
+            "name": "test_fake[user_advance_with_defaults_dataclass]",
+            "fullname": "tests/test_benchmarks.py::test_fake[user_advance_with_defaults_dataclass]",
+            "params": {
+                "fixture_name": "user_advance_with_defaults_dataclass"
+            },
+            "param": "user_advance_with_defaults_dataclass",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 9.702100000197333e-05,
+                "max": 0.0001670409999974254,
+                "mean": 0.00010335162306124089,
+                "stddev": 7.127150203255039e-06,
+                "rounds": 1483,
+                "median": 0.00010074799999415518,
+                "iqr": 2.4814999939337667e-06,
+                "q1": 9.998699999869132e-05,
+                "q3": 0.00010246849999262508,
+                "iqr_outliers": 238,
+                "stddev_outliers": 189,
+                "outliers": "189;238",
+                "ld15iqr": 9.702100000197333e-05,
+                "hd15iqr": 0.00010620900000901656,
+                "ops": 9675.706780216226,
+                "total": 0.15327045699982023,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "fake_data_generation",
+            "name": "test_fake[user_advance_with_defaults_dataclass_with_enum]",
+            "fullname": "tests/test_benchmarks.py::test_fake[user_advance_with_defaults_dataclass_with_enum]",
+            "params": {
+                "fixture_name": "user_advance_with_defaults_dataclass_with_enum"
+            },
+            "param": "user_advance_with_defaults_dataclass_with_enum",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.00010907300000440046,
+                "max": 0.00021169400000076166,
+                "mean": 0.00011552347987613392,
+                "stddev": 8.177591807786338e-06,
+                "rounds": 1292,
+                "median": 0.00011246950001009282,
+                "iqr": 3.612000000430271e-06,
+                "q1": 0.00011150749999444542,
+                "q3": 0.0001151194999948757,
+                "iqr_outliers": 203,
+                "stddev_outliers": 174,
+                "outliers": "174;203",
+                "ld15iqr": 0.00010907300000440046,
+                "hd15iqr": 0.00012083500000414915,
+                "ops": 8656.248938070561,
+                "total": 0.14925633599996502,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "binary_serialization",
+            "name": "test_serialization[user_dataclass]",
+            "fullname": "tests/test_benchmarks.py::test_serialization[user_dataclass]",
+            "params": {
+                "fixture_name": "user_dataclass"
+            },
+            "param": "user_dataclass",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.00011402200000532048,
+                "max": 0.0002095300000064526,
+                "mean": 0.00012158147798732989,
+                "stddev": 8.560665320306656e-06,
+                "rounds": 1749,
+                "median": 0.00011808000000712582,
+                "iqr": 3.937249992702618e-06,
+                "q1": 0.00011708549999767115,
+                "q3": 0.00012102274999037377,
+                "iqr_outliers": 307,
+                "stddev_outliers": 260,
+                "outliers": "260;307",
+                "ld15iqr": 0.00011402200000532048,
+                "hd15iqr": 0.00012694699999826753,
+                "ops": 8224.937026215546,
+                "total": 0.21264600499984,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "binary_serialization",
+            "name": "test_serialization[user_dataclass_with_doc]",
+            "fullname": "tests/test_benchmarks.py::test_serialization[user_dataclass_with_doc]",
+            "params": {
+                "fixture_name": "user_dataclass_with_doc"
+            },
+            "param": "user_dataclass_with_doc",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.00011513500000148724,
+                "max": 0.00019492399999876397,
+                "mean": 0.00012305417950519824,
+                "stddev": 8.24501926942937e-06,
+                "rounds": 1415,
+                "median": 0.0001196230000033438,
+                "iqr": 4.00475000006395e-06,
+                "q1": 0.00011855099999991126,
+                "q3": 0.0001225557499999752,
+                "iqr_outliers": 247,
+                "stddev_outliers": 212,
+                "outliers": "212;247",
+                "ld15iqr": 0.00011513500000148724,
+                "hd15iqr": 0.0001286090000007789,
+                "ops": 8126.501708605163,
+                "total": 0.1741216639998555,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "binary_serialization",
+            "name": "test_serialization[user_dataclass_with_field_metadata]",
+            "fullname": "tests/test_benchmarks.py::test_serialization[user_dataclass_with_field_metadata]",
+            "params": {
+                "fixture_name": "user_dataclass_with_field_metadata"
+            },
+            "param": "user_dataclass_with_field_metadata",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.00011395300001026953,
+                "max": 0.0002662069999956884,
+                "mean": 0.00012388143928373341,
+                "stddev": 1.2862184234343103e-05,
+                "rounds": 1787,
+                "median": 0.00011907200000393914,
+                "iqr": 6.7799999960982404e-06,
+                "q1": 0.00011742925000035598,
+                "q3": 0.00012420924999645422,
+                "iqr_outliers": 261,
+                "stddev_outliers": 204,
+                "outliers": "204;261",
+                "ld15iqr": 0.00011395300001026953,
+                "hd15iqr": 0.0001344600000123819,
+                "ops": 8072.234273204055,
+                "total": 0.2213761320000316,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "binary_serialization",
+            "name": "test_serialization[user_v2_dataclass]",
+            "fullname": "tests/test_benchmarks.py::test_serialization[user_v2_dataclass]",
+            "params": {
+                "fixture_name": "user_v2_dataclass"
+            },
+            "param": "user_v2_dataclass",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 6.159500000535445e-05,
+                "max": 0.00012191700000130368,
+                "mean": 6.624629581990133e-05,
+                "stddev": 7.036894994203059e-06,
+                "rounds": 1866,
+                "median": 6.384949999471701e-05,
+                "iqr": 1.8730000022060267e-06,
+                "q1": 6.3197999992326e-05,
+                "q3": 6.507099999453203e-05,
+                "iqr_outliers": 292,
+                "stddev_outliers": 196,
+                "outliers": "196;292",
+                "ld15iqr": 6.159500000535445e-05,
+                "hd15iqr": 6.788599999651979e-05,
+                "ops": 15095.183626849454,
+                "total": 0.12361558799993588,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "binary_serialization",
+            "name": "test_serialization[user_extra_avro_atributes_dataclass]",
+            "fullname": "tests/test_benchmarks.py::test_serialization[user_extra_avro_atributes_dataclass]",
+            "params": {
+                "fixture_name": "user_extra_avro_atributes_dataclass"
+            },
+            "param": "user_extra_avro_atributes_dataclass",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 6.046299999695748e-05,
+                "max": 0.0006745570000106227,
+                "mean": 6.531434125703766e-05,
+                "stddev": 1.5310720382692915e-05,
+                "rounds": 1893,
+                "median": 6.281800000351723e-05,
+                "iqr": 1.8857499846092196e-06,
+                "q1": 6.220600000617083e-05,
+                "q3": 6.409174999078004e-05,
+                "iqr_outliers": 281,
+                "stddev_outliers": 86,
+                "outliers": "86;281",
+                "ld15iqr": 6.046299999695748e-05,
+                "hd15iqr": 6.700500000533793e-05,
+                "ops": 15310.5731567376,
+                "total": 0.12364004799957229,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "binary_serialization",
+            "name": "test_serialization[user_advance_dataclass]",
+            "fullname": "tests/test_benchmarks.py::test_serialization[user_advance_dataclass]",
+            "params": {
+                "fixture_name": "user_advance_dataclass"
+            },
+            "param": "user_advance_dataclass",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.00022928799999988314,
+                "max": 0.00032549700000572557,
+                "mean": 0.00024291974861851814,
+                "stddev": 1.2394118842513491e-05,
+                "rounds": 724,
+                "median": 0.00023742749999655643,
+                "iqr": 1.6435500000966385e-05,
+                "q1": 0.0002347324999973921,
+                "q3": 0.0002511679999983585,
+                "iqr_outliers": 16,
+                "stddev_outliers": 107,
+                "outliers": "107;16",
+                "ld15iqr": 0.00022928799999988314,
+                "hd15iqr": 0.00027755799999340525,
+                "ops": 4116.585850623462,
+                "total": 0.17587389799980713,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "binary_serialization",
+            "name": "test_serialization[user_advance_dataclass_with_enum]",
+            "fullname": "tests/test_benchmarks.py::test_serialization[user_advance_dataclass_with_enum]",
+            "params": {
+                "fixture_name": "user_advance_dataclass_with_enum"
+            },
+            "param": "user_advance_dataclass_with_enum",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.0002563569999978199,
+                "max": 0.0005227440000084016,
+                "mean": 0.00028426523564940875,
+                "stddev": 4.045183506505321e-05,
+                "rounds": 662,
+                "median": 0.00027022900000162053,
+                "iqr": 1.953699998580305e-05,
+                "q1": 0.0002642830000070262,
+                "q3": 0.00028381999999282925,
+                "iqr_outliers": 66,
+                "stddev_outliers": 52,
+                "outliers": "52;66",
+                "ld15iqr": 0.0002563569999978199,
+                "hd15iqr": 0.00031383500000004005,
+                "ops": 3517.841348821579,
+                "total": 0.1881835859999086,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "binary_serialization",
+            "name": "test_serialization[user_advance_dataclass_with_union_enum]",
+            "fullname": "tests/test_benchmarks.py::test_serialization[user_advance_dataclass_with_union_enum]",
+            "params": {
+                "fixture_name": "user_advance_dataclass_with_union_enum"
+            },
+            "param": "user_advance_dataclass_with_union_enum",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.0002567389999938996,
+                "max": 0.00038113100001169187,
+                "mean": 0.00027858640356127234,
+                "stddev": 1.3945660679174788e-05,
+                "rounds": 674,
+                "median": 0.00027604950000181816,
+                "iqr": 1.6600000009248106e-05,
+                "q1": 0.0002681710000018711,
+                "q3": 0.0002847710000111192,
+                "iqr_outliers": 18,
+                "stddev_outliers": 217,
+                "outliers": "217;18",
+                "ld15iqr": 0.0002567389999938996,
+                "hd15iqr": 0.0003103380000055722,
+                "ops": 3589.550628518236,
+                "total": 0.18776723600029754,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "binary_serialization",
+            "name": "test_serialization[user_advance_dataclass_with_union_enum_with_annotated]",
+            "fullname": "tests/test_benchmarks.py::test_serialization[user_advance_dataclass_with_union_enum_with_annotated]",
+            "params": {
+                "fixture_name": "user_advance_dataclass_with_union_enum_with_annotated"
+            },
+            "param": "user_advance_dataclass_with_union_enum_with_annotated",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.00027527299999974275,
+                "max": 0.00044847600000252896,
+                "mean": 0.00029745172900188605,
+                "stddev": 1.6757514460289554e-05,
+                "rounds": 631,
+                "median": 0.0002948690000010856,
+                "iqr": 1.8792500007691615e-05,
+                "q1": 0.00028522874999836745,
+                "q3": 0.00030402125000605906,
+                "iqr_outliers": 16,
+                "stddev_outliers": 127,
+                "outliers": "127;16",
+                "ld15iqr": 0.00027527299999974275,
+                "hd15iqr": 0.0003322499999995898,
+                "ops": 3361.890022813279,
+                "total": 0.1876920410001901,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "binary_serialization",
+            "name": "test_serialization[user_advance_dataclass_with_sub_record_and_enum]",
+            "fullname": "tests/test_benchmarks.py::test_serialization[user_advance_dataclass_with_sub_record_and_enum]",
+            "params": {
+                "fixture_name": "user_advance_dataclass_with_sub_record_and_enum"
+            },
+            "param": "user_advance_dataclass_with_sub_record_and_enum",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.000173343000000159,
+                "max": 0.00034998299999244864,
+                "mean": 0.00019245316212518666,
+                "stddev": 1.9013621983052626e-05,
+                "rounds": 734,
+                "median": 0.00018910299999674862,
+                "iqr": 1.7612999997140832e-05,
+                "q1": 0.0001797549999906778,
+                "q3": 0.00019736799998781862,
+                "iqr_outliers": 32,
+                "stddev_outliers": 70,
+                "outliers": "70;32",
+                "ld15iqr": 0.000173343000000159,
+                "hd15iqr": 0.00022394799999858606,
+                "ops": 5196.069469357544,
+                "total": 0.141260620999887,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "binary_serialization",
+            "name": "test_serialization[user_advance_with_defaults_dataclass]",
+            "fullname": "tests/test_benchmarks.py::test_serialization[user_advance_with_defaults_dataclass]",
+            "params": {
+                "fixture_name": "user_advance_with_defaults_dataclass"
+            },
+            "param": "user_advance_with_defaults_dataclass",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.0002155420000065078,
+                "max": 0.0003124130000031755,
+                "mean": 0.0002275714490321346,
+                "stddev": 1.1907153093594439e-05,
+                "rounds": 775,
+                "median": 0.00022235500000533648,
+                "iqr": 1.4111999995236602e-05,
+                "q1": 0.0002197115000051042,
+                "q3": 0.0002338235000003408,
+                "iqr_outliers": 21,
+                "stddev_outliers": 133,
+                "outliers": "133;21",
+                "ld15iqr": 0.0002155420000065078,
+                "hd15iqr": 0.00025708999999096704,
+                "ops": 4394.224338127729,
+                "total": 0.1763678729999043,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "binary_serialization",
+            "name": "test_serialization[user_advance_with_defaults_dataclass_with_enum]",
+            "fullname": "tests/test_benchmarks.py::test_serialization[user_advance_with_defaults_dataclass_with_enum]",
+            "params": {
+                "fixture_name": "user_advance_with_defaults_dataclass_with_enum"
+            },
+            "param": "user_advance_with_defaults_dataclass_with_enum",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.0002446969999994053,
+                "max": 0.0003801790000039773,
+                "mean": 0.00025913143604626784,
+                "stddev": 1.2761584801595772e-05,
+                "rounds": 688,
+                "median": 0.00025441950000271163,
+                "iqr": 1.626499999929365e-05,
+                "q1": 0.0002501815000073293,
+                "q3": 0.00026644650000662295,
+                "iqr_outliers": 16,
+                "stddev_outliers": 100,
+                "outliers": "100;16",
+                "ld15iqr": 0.0002446969999994053,
+                "hd15iqr": 0.00029379700001186393,
+                "ops": 3859.0454915761366,
+                "total": 0.1782824279998323,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "model_rendering",
+            "name": "test_render_model[schema]",
+            "fullname": "tests/model_generator/test_benchmark_model_generator.py::test_render_model[schema]",
+            "params": {
+                "fixture_name": "schema"
+            },
+            "param": "schema",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.0003567450000048211,
+                "max": 0.09400836899999376,
+                "mean": 0.046840226066566945,
+                "stddev": 0.02676326712759512,
+                "rounds": 1337,
+                "median": 0.046582639000007475,
+                "iqr": 0.04674048724999835,
+                "q1": 0.023615962250001843,
+                "q3": 0.0703564495000002,
+                "iqr_outliers": 0,
+                "stddev_outliers": 561,
+                "outliers": "561;0",
+                "ld15iqr": 0.0003567450000048211,
+                "hd15iqr": 0.09400836899999376,
+                "ops": 21.349171085956137,
+                "total": 62.625382251000005,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "model_rendering",
+            "name": "test_render_model[schema_2]",
+            "fullname": "tests/model_generator/test_benchmark_model_generator.py::test_render_model[schema_2]",
+            "params": {
+                "fixture_name": "schema_2"
+            },
+            "param": "schema_2",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.09226374600001463,
+                "max": 0.09431314799999768,
+                "mean": 0.09316831536363618,
+                "stddev": 0.0007167103835763499,
+                "rounds": 11,
+                "median": 0.09301968600001942,
+                "iqr": 0.0012297504999949638,
+                "q1": 0.09254338474999457,
+                "q3": 0.09377313524998954,
+                "iqr_outliers": 0,
+                "stddev_outliers": 5,
+                "outliers": "5;0",
+                "ld15iqr": 0.09226374600001463,
+                "hd15iqr": 0.09431314799999768,
+                "ops": 10.733262655839567,
+                "total": 1.024851468999998,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "model_rendering",
+            "name": "test_render_model[schema_with_invalid_python_identifiers]",
+            "fullname": "tests/model_generator/test_benchmark_model_generator.py::test_render_model[schema_with_invalid_python_identifiers]",
+            "params": {
+                "fixture_name": "schema_with_invalid_python_identifiers"
+            },
+            "param": "schema_with_invalid_python_identifiers",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.09310869100002606,
+                "max": 0.09637153599999237,
+                "mean": 0.09364253872727152,
+                "stddev": 0.0009180759159991114,
+                "rounds": 11,
+                "median": 0.09342610299998455,
+                "iqr": 0.0002645679999773165,
+                "q1": 0.09324896850000641,
+                "q3": 0.09351353649998373,
+                "iqr_outliers": 1,
+                "stddev_outliers": 1,
+                "outliers": "1;1",
+                "ld15iqr": 0.09310869100002606,
+                "hd15iqr": 0.09637153599999237,
+                "ops": 10.67890740246206,
+                "total": 1.0300679259999868,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "model_rendering",
+            "name": "test_render_model[schema_with_python_keywords]",
+            "fullname": "tests/model_generator/test_benchmark_model_generator.py::test_render_model[schema_with_python_keywords]",
+            "params": {
+                "fixture_name": "schema_with_python_keywords"
+            },
+            "param": "schema_with_python_keywords",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.09262605199998575,
+                "max": 0.09697373900002049,
+                "mean": 0.09398720818182162,
+                "stddev": 0.0011494391479666681,
+                "rounds": 11,
+                "median": 0.09377254899999343,
+                "iqr": 0.0007466022499826863,
+                "q1": 0.0933323810000175,
+                "q3": 0.09407898325000019,
+                "iqr_outliers": 1,
+                "stddev_outliers": 2,
+                "outliers": "2;1",
+                "ld15iqr": 0.09262605199998575,
+                "hd15iqr": 0.09697373900002049,
+                "ops": 10.639745762694261,
+                "total": 1.0338592900000378,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "model_rendering",
+            "name": "test_render_model[schema_with_no_fields]",
+            "fullname": "tests/model_generator/test_benchmark_model_generator.py::test_render_model[schema_with_no_fields]",
+            "params": {
+                "fixture_name": "schema_with_no_fields"
+            },
+            "param": "schema_with_no_fields",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.09215814800000999,
+                "max": 0.09554221899998083,
+                "mean": 0.09325480945454698,
+                "stddev": 0.0009235935651904564,
+                "rounds": 11,
+                "median": 0.09307736400000977,
+                "iqr": 0.000971574749996762,
+                "q1": 0.09268184599999785,
+                "q3": 0.09365342074999461,
+                "iqr_outliers": 1,
+                "stddev_outliers": 2,
+                "outliers": "2;1",
+                "ld15iqr": 0.09215814800000999,
+                "hd15iqr": 0.09554221899998083,
+                "ops": 10.723307525360466,
+                "total": 1.0258029040000167,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "model_rendering",
+            "name": "test_render_model[schema_primitive_types_as_defined_types]",
+            "fullname": "tests/model_generator/test_benchmark_model_generator.py::test_render_model[schema_primitive_types_as_defined_types]",
+            "params": {
+                "fixture_name": "schema_primitive_types_as_defined_types"
+            },
+            "param": "schema_primitive_types_as_defined_types",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.09389185899999575,
+                "max": 0.09726143099999263,
+                "mean": 0.09503889336363355,
+                "stddev": 0.0010933414705855133,
+                "rounds": 11,
+                "median": 0.09469383499998685,
+                "iqr": 0.0016305145000075072,
+                "q1": 0.09428730949999675,
+                "q3": 0.09591782400000426,
+                "iqr_outliers": 0,
+                "stddev_outliers": 4,
+                "outliers": "4;0",
+                "ld15iqr": 0.09389185899999575,
+                "hd15iqr": 0.09726143099999263,
+                "ops": 10.522008039107156,
+                "total": 1.045427826999969,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "model_rendering",
+            "name": "test_render_model[schema_with_nulls]",
+            "fullname": "tests/model_generator/test_benchmark_model_generator.py::test_render_model[schema_with_nulls]",
+            "params": {
+                "fixture_name": "schema_with_nulls"
+            },
+            "param": "schema_with_nulls",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.09426285100002474,
+                "max": 0.09815768199999297,
+                "mean": 0.09545556272727461,
+                "stddev": 0.001004422837073524,
+                "rounds": 11,
+                "median": 0.09525888699999996,
+                "iqr": 0.0005290309999921305,
+                "q1": 0.09498540575000902,
+                "q3": 0.09551443675000115,
+                "iqr_outliers": 1,
+                "stddev_outliers": 2,
+                "outliers": "2;1",
+                "ld15iqr": 0.09426285100002474,
+                "hd15iqr": 0.09815768199999297,
+                "ops": 10.476078831121585,
+                "total": 1.0500111900000206,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "model_rendering",
+            "name": "test_render_model[schema_with_unions]",
+            "fullname": "tests/model_generator/test_benchmark_model_generator.py::test_render_model[schema_with_unions]",
+            "params": {
+                "fixture_name": "schema_with_unions"
+            },
+            "param": "schema_with_unions",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.09466388799998526,
+                "max": 0.09831511499999124,
+                "mean": 0.09570688209090474,
+                "stddev": 0.000949019662201372,
+                "rounds": 11,
+                "median": 0.09545212800000513,
+                "iqr": 0.0006837892499902409,
+                "q1": 0.09525748800000855,
+                "q3": 0.09594127724999879,
+                "iqr_outliers": 1,
+                "stddev_outliers": 2,
+                "outliers": "2;1",
+                "ld15iqr": 0.09466388799998526,
+                "hd15iqr": 0.09831511499999124,
+                "ops": 10.448569404342058,
+                "total": 1.052775702999952,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "model_rendering",
+            "name": "test_render_model[schema_with_array_types]",
+            "fullname": "tests/model_generator/test_benchmark_model_generator.py::test_render_model[schema_with_array_types]",
+            "params": {
+                "fixture_name": "schema_with_array_types"
+            },
+            "param": "schema_with_array_types",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.09578411699999378,
+                "max": 0.0990897000000075,
+                "mean": 0.09668639290909327,
+                "stddev": 0.0009628012754656564,
+                "rounds": 11,
+                "median": 0.0962977849999902,
+                "iqr": 0.00115408100000991,
+                "q1": 0.0960385842499889,
+                "q3": 0.09719266524999881,
+                "iqr_outliers": 1,
+                "stddev_outliers": 1,
+                "outliers": "1;1",
+                "ld15iqr": 0.09578411699999378,
+                "hd15iqr": 0.0990897000000075,
+                "ops": 10.342717004038226,
+                "total": 1.063550322000026,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "model_rendering",
+            "name": "test_render_model[schema_with_map_types]",
+            "fullname": "tests/model_generator/test_benchmark_model_generator.py::test_render_model[schema_with_map_types]",
+            "params": {
+                "fixture_name": "schema_with_map_types"
+            },
+            "param": "schema_with_map_types",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.09541946699999926,
+                "max": 0.0982110010000099,
+                "mean": 0.09675891981818423,
+                "stddev": 0.000817584607247524,
+                "rounds": 11,
+                "median": 0.09675897500000019,
+                "iqr": 0.001071222249997561,
+                "q1": 0.09611285200000452,
+                "q3": 0.09718407425000208,
+                "iqr_outliers": 0,
+                "stddev_outliers": 5,
+                "outliers": "5;0",
+                "ld15iqr": 0.09541946699999926,
+                "hd15iqr": 0.0982110010000099,
+                "ops": 10.334964485745186,
+                "total": 1.0643481180000265,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "model_rendering",
+            "name": "test_render_model[schema_with_fixed_types]",
+            "fullname": "tests/model_generator/test_benchmark_model_generator.py::test_render_model[schema_with_fixed_types]",
+            "params": {
+                "fixture_name": "schema_with_fixed_types"
+            },
+            "param": "schema_with_fixed_types",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.09562676400000214,
+                "max": 0.09912464499998919,
+                "mean": 0.09688208772726883,
+                "stddev": 0.001017500752765507,
+                "rounds": 11,
+                "median": 0.09653222199997913,
+                "iqr": 0.0012890812499861681,
+                "q1": 0.09614469125000369,
+                "q3": 0.09743377249998986,
+                "iqr_outliers": 0,
+                "stddev_outliers": 3,
+                "outliers": "3;0",
+                "ld15iqr": 0.09562676400000214,
+                "hd15iqr": 0.09912464499998919,
+                "ops": 10.32182546287693,
+                "total": 1.0657029649999572,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "model_rendering",
+            "name": "test_render_model[schema_with_enum_types]",
+            "fullname": "tests/model_generator/test_benchmark_model_generator.py::test_render_model[schema_with_enum_types]",
+            "params": {
+                "fixture_name": "schema_with_enum_types"
+            },
+            "param": "schema_with_enum_types",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.0965232050000111,
+                "max": 0.09943229999998948,
+                "mean": 0.09823487854545347,
+                "stddev": 0.0009761156859147547,
+                "rounds": 11,
+                "median": 0.09839253100000178,
+                "iqr": 0.001575042500000734,
+                "q1": 0.09745773749999387,
+                "q3": 0.0990327799999946,
+                "iqr_outliers": 0,
+                "stddev_outliers": 4,
+                "outliers": "4;0",
+                "ld15iqr": 0.0965232050000111,
+                "hd15iqr": 0.09943229999998948,
+                "ops": 10.179683782449,
+                "total": 1.0805836639999882,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "model_rendering",
+            "name": "test_render_model[schema_with_enum_types_with_inner_default]",
+            "fullname": "tests/model_generator/test_benchmark_model_generator.py::test_render_model[schema_with_enum_types_with_inner_default]",
+            "params": {
+                "fixture_name": "schema_with_enum_types_with_inner_default"
+            },
+            "param": "schema_with_enum_types_with_inner_default",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.09943608699998663,
+                "max": 0.10203299899998797,
+                "mean": 0.10057612099999744,
+                "stddev": 0.0007661026328006568,
+                "rounds": 10,
+                "median": 0.10058944700000438,
+                "iqr": 0.0005895889999862902,
+                "q1": 0.10030733100001044,
+                "q3": 0.10089691999999673,
+                "iqr_outliers": 1,
+                "stddev_outliers": 3,
+                "outliers": "3;1",
+                "ld15iqr": 0.09943608699998663,
+                "hd15iqr": 0.10203299899998797,
+                "ops": 9.942717914126211,
+                "total": 1.0057612099999744,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "model_rendering",
+            "name": "test_render_model[schema_enum_in_isolation]",
+            "fullname": "tests/model_generator/test_benchmark_model_generator.py::test_render_model[schema_enum_in_isolation]",
+            "params": {
+                "fixture_name": "schema_enum_in_isolation"
+            },
+            "param": "schema_enum_in_isolation",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.09971924399999921,
+                "max": 0.10123604300000011,
+                "mean": 0.10047648719999813,
+                "stddev": 0.0005238603505998583,
+                "rounds": 10,
+                "median": 0.10052877850000641,
+                "iqr": 0.0009338110000101096,
+                "q1": 0.10000868399998808,
+                "q3": 0.10094249499999819,
+                "iqr_outliers": 0,
+                "stddev_outliers": 4,
+                "outliers": "4;0",
+                "ld15iqr": 0.09971924399999921,
+                "hd15iqr": 0.10123604300000011,
+                "ops": 9.952577243365436,
+                "total": 1.0047648719999813,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "model_rendering",
+            "name": "test_render_model[schema_with_enum_types_case_sensitivity]",
+            "fullname": "tests/model_generator/test_benchmark_model_generator.py::test_render_model[schema_with_enum_types_case_sensitivity]",
+            "params": {
+                "fixture_name": "schema_with_enum_types_case_sensitivity"
+            },
+            "param": "schema_with_enum_types_case_sensitivity",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.1009035229999995,
+                "max": 0.10220840499999895,
+                "mean": 0.10168780600000674,
+                "stddev": 0.0003686806932425891,
+                "rounds": 10,
+                "median": 0.1016887870000005,
+                "iqr": 0.0004027709999832041,
+                "q1": 0.10151426200002334,
+                "q3": 0.10191703300000654,
+                "iqr_outliers": 1,
+                "stddev_outliers": 3,
+                "outliers": "3;1",
+                "ld15iqr": 0.10146575100000632,
+                "hd15iqr": 0.10220840499999895,
+                "ops": 9.834020806781236,
+                "total": 1.0168780600000673,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "model_rendering",
+            "name": "test_render_model[schema_with_enum_types_no_pascal_case]",
+            "fullname": "tests/model_generator/test_benchmark_model_generator.py::test_render_model[schema_with_enum_types_no_pascal_case]",
+            "params": {
+                "fixture_name": "schema_with_enum_types_no_pascal_case"
+            },
+            "param": "schema_with_enum_types_no_pascal_case",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.10169561899999735,
+                "max": 0.10380309899997542,
+                "mean": 0.10275003159999585,
+                "stddev": 0.0006043482526627516,
+                "rounds": 10,
+                "median": 0.10257898650002062,
+                "iqr": 0.0006229109999935645,
+                "q1": 0.10247358099999815,
+                "q3": 0.10309649199999171,
+                "iqr_outliers": 0,
+                "stddev_outliers": 3,
+                "outliers": "3;0",
+                "ld15iqr": 0.10169561899999735,
+                "hd15iqr": 0.10380309899997542,
+                "ops": 9.73235710420979,
+                "total": 1.0275003159999585,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "model_rendering",
+            "name": "test_render_model[schema_with_custom_inner_names]",
+            "fullname": "tests/model_generator/test_benchmark_model_generator.py::test_render_model[schema_with_custom_inner_names]",
+            "params": {
+                "fixture_name": "schema_with_custom_inner_names"
+            },
+            "param": "schema_with_custom_inner_names",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.10165184799998883,
+                "max": 0.1030315010000038,
+                "mean": 0.1024488009999999,
+                "stddev": 0.0004849302656531596,
+                "rounds": 10,
+                "median": 0.10252198999999962,
+                "iqr": 0.0006222600000000966,
+                "q1": 0.10215882399998577,
+                "q3": 0.10278108399998587,
+                "iqr_outliers": 0,
+                "stddev_outliers": 4,
+                "outliers": "4;0",
+                "ld15iqr": 0.10165184799998883,
+                "hd15iqr": 0.1030315010000038,
+                "ops": 9.760973190891722,
+                "total": 1.024488009999999,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "model_rendering",
+            "name": "test_render_model[schema_one_to_one_relationship]",
+            "fullname": "tests/model_generator/test_benchmark_model_generator.py::test_render_model[schema_one_to_one_relationship]",
+            "params": {
+                "fixture_name": "schema_one_to_one_relationship"
+            },
+            "param": "schema_one_to_one_relationship",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.10239964199999463,
+                "max": 0.10497985300000323,
+                "mean": 0.10363153620000105,
+                "stddev": 0.0008222819539396507,
+                "rounds": 10,
+                "median": 0.10351589699999408,
+                "iqr": 0.0010918460000084451,
+                "q1": 0.10299794799999518,
+                "q3": 0.10408979400000362,
+                "iqr_outliers": 0,
+                "stddev_outliers": 3,
+                "outliers": "3;0",
+                "ld15iqr": 0.10239964199999463,
+                "hd15iqr": 0.10497985300000323,
+                "ops": 9.649572289173397,
+                "total": 1.0363153620000105,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "model_rendering",
+            "name": "test_render_model[schema_one_to_many_relationship_array_clashes_types]",
+            "fullname": "tests/model_generator/test_benchmark_model_generator.py::test_render_model[schema_one_to_many_relationship_array_clashes_types]",
+            "params": {
+                "fixture_name": "schema_one_to_many_relationship_array_clashes_types"
+            },
+            "param": "schema_one_to_many_relationship_array_clashes_types",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.10357607700001381,
+                "max": 0.10594804999999496,
+                "mean": 0.10431859290000603,
+                "stddev": 0.0006863820588005242,
+                "rounds": 10,
+                "median": 0.10413864200000944,
+                "iqr": 0.0004318950000197219,
+                "q1": 0.10388583499999982,
+                "q3": 0.10431773000001954,
+                "iqr_outliers": 2,
+                "stddev_outliers": 2,
+                "outliers": "2;2",
+                "ld15iqr": 0.10357607700001381,
+                "hd15iqr": 0.1050026080000066,
+                "ops": 9.586018869699902,
+                "total": 1.0431859290000602,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "model_rendering",
+            "name": "test_render_model[schema_one_to_many_relationship_map_clashes_types]",
+            "fullname": "tests/model_generator/test_benchmark_model_generator.py::test_render_model[schema_one_to_many_relationship_map_clashes_types]",
+            "params": {
+                "fixture_name": "schema_one_to_many_relationship_map_clashes_types"
+            },
+            "param": "schema_one_to_many_relationship_map_clashes_types",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.10436010999998757,
+                "max": 0.10864810499998612,
+                "mean": 0.10585349999999778,
+                "stddev": 0.001151827920760383,
+                "rounds": 10,
+                "median": 0.10557251450001104,
+                "iqr": 0.0006445429999928365,
+                "q1": 0.10535084599999323,
+                "q3": 0.10599538899998606,
+                "iqr_outliers": 2,
+                "stddev_outliers": 2,
+                "outliers": "2;2",
+                "ld15iqr": 0.1051506839999945,
+                "hd15iqr": 0.10864810499998612,
+                "ops": 9.44701875705594,
+                "total": 1.0585349999999778,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "model_rendering",
+            "name": "test_render_model[schema_with_enum_clashes_types]",
+            "fullname": "tests/model_generator/test_benchmark_model_generator.py::test_render_model[schema_with_enum_clashes_types]",
+            "params": {
+                "fixture_name": "schema_with_enum_clashes_types"
+            },
+            "param": "schema_with_enum_clashes_types",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.10569018999999003,
+                "max": 0.10908521999999721,
+                "mean": 0.10688875129999928,
+                "stddev": 0.0010962571250234343,
+                "rounds": 10,
+                "median": 0.1066630884999995,
+                "iqr": 0.0015587569999979678,
+                "q1": 0.10596500200000492,
+                "q3": 0.10752375900000288,
+                "iqr_outliers": 0,
+                "stddev_outliers": 2,
+                "outliers": "2;0",
+                "ld15iqr": 0.10569018999999003,
+                "hd15iqr": 0.10908521999999721,
+                "ops": 9.355521398068822,
+                "total": 1.0688875129999929,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "model_rendering",
+            "name": "test_render_model[schema_one_to_many_relationship_multiple_clashes_types]",
+            "fullname": "tests/model_generator/test_benchmark_model_generator.py::test_render_model[schema_one_to_many_relationship_multiple_clashes_types]",
+            "params": {
+                "fixture_name": "schema_one_to_many_relationship_multiple_clashes_types"
+            },
+            "param": "schema_one_to_many_relationship_multiple_clashes_types",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.10594634699998551,
+                "max": 0.10933902299998977,
+                "mean": 0.10685536120000165,
+                "stddev": 0.0010404488529281823,
+                "rounds": 10,
+                "median": 0.10660727450000707,
+                "iqr": 0.0011939069999868934,
+                "q1": 0.10611901900000476,
+                "q3": 0.10731292599999165,
+                "iqr_outliers": 1,
+                "stddev_outliers": 1,
+                "outliers": "1;1",
+                "ld15iqr": 0.10594634699998551,
+                "hd15iqr": 0.10933902299998977,
+                "ops": 9.358444805855791,
+                "total": 1.0685536120000165,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "model_rendering",
+            "name": "test_render_model[schema_one_to_many_relationship_with_late_clashes_types]",
+            "fullname": "tests/model_generator/test_benchmark_model_generator.py::test_render_model[schema_one_to_many_relationship_with_late_clashes_types]",
+            "params": {
+                "fixture_name": "schema_one_to_many_relationship_with_late_clashes_types"
+            },
+            "param": "schema_one_to_many_relationship_with_late_clashes_types",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.10661917199999493,
+                "max": 0.10909658099998865,
+                "mean": 0.1079339693999998,
+                "stddev": 0.0007218997253092824,
+                "rounds": 10,
+                "median": 0.10793451450001612,
+                "iqr": 0.0010430360000270866,
+                "q1": 0.10739245299998856,
+                "q3": 0.10843548900001565,
+                "iqr_outliers": 0,
+                "stddev_outliers": 3,
+                "outliers": "3;0",
+                "ld15iqr": 0.10661917199999493,
+                "hd15iqr": 0.10909658099998865,
+                "ops": 9.264923782187907,
+                "total": 1.079339693999998,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "model_rendering",
+            "name": "test_render_model[schema_one_to_many_relationship_union_with_clashes_types]",
+            "fullname": "tests/model_generator/test_benchmark_model_generator.py::test_render_model[schema_one_to_many_relationship_union_with_clashes_types]",
+            "params": {
+                "fixture_name": "schema_one_to_many_relationship_union_with_clashes_types"
+            },
+            "param": "schema_one_to_many_relationship_union_with_clashes_types",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.10612073200002214,
+                "max": 0.10890551500000356,
+                "mean": 0.10717660990000581,
+                "stddev": 0.0008990904275308849,
+                "rounds": 10,
+                "median": 0.10685739600000943,
+                "iqr": 0.0010743010000169306,
+                "q1": 0.10658826400000976,
+                "q3": 0.10766256500002669,
+                "iqr_outliers": 0,
+                "stddev_outliers": 3,
+                "outliers": "3;0",
+                "ld15iqr": 0.10612073200002214,
+                "hd15iqr": 0.10890551500000356,
+                "ops": 9.330394019114667,
+                "total": 1.0717660990000581,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "model_rendering",
+            "name": "test_render_model[schema_one_to_many_array_relationship]",
+            "fullname": "tests/model_generator/test_benchmark_model_generator.py::test_render_model[schema_one_to_many_array_relationship]",
+            "params": {
+                "fixture_name": "schema_one_to_many_array_relationship"
+            },
+            "param": "schema_one_to_many_array_relationship",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.10621630400001436,
+                "max": 0.10896235900000306,
+                "mean": 0.10742003229999568,
+                "stddev": 0.0007411737484189835,
+                "rounds": 10,
+                "median": 0.10718020299998443,
+                "iqr": 0.0007771899999795551,
+                "q1": 0.1070586060000096,
+                "q3": 0.10783579599998916,
+                "iqr_outliers": 0,
+                "stddev_outliers": 2,
+                "outliers": "2;0",
+                "ld15iqr": 0.10621630400001436,
+                "hd15iqr": 0.10896235900000306,
+                "ops": 9.309250598689683,
+                "total": 1.0742003229999568,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "model_rendering",
+            "name": "test_render_model[schema_one_to_one_relationship_clashes_types]",
+            "fullname": "tests/model_generator/test_benchmark_model_generator.py::test_render_model[schema_one_to_one_relationship_clashes_types]",
+            "params": {
+                "fixture_name": "schema_one_to_one_relationship_clashes_types"
+            },
+            "param": "schema_one_to_one_relationship_clashes_types",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.10790412500000457,
+                "max": 0.11183330800000135,
+                "mean": 0.1091472093999954,
+                "stddev": 0.0013109174980038465,
+                "rounds": 10,
+                "median": 0.1087873574999918,
+                "iqr": 0.0008667580000008002,
+                "q1": 0.10834451599998829,
+                "q3": 0.10921127399998909,
+                "iqr_outliers": 2,
+                "stddev_outliers": 2,
+                "outliers": "2;2",
+                "ld15iqr": 0.10790412500000457,
+                "hd15iqr": 0.11115706600000408,
+                "ops": 9.161938317041773,
+                "total": 1.091472093999954,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "model_rendering",
+            "name": "test_render_model[schema_one_to_many_map_relationship]",
+            "fullname": "tests/model_generator/test_benchmark_model_generator.py::test_render_model[schema_one_to_many_map_relationship]",
+            "params": {
+                "fixture_name": "schema_one_to_many_map_relationship"
+            },
+            "param": "schema_one_to_many_map_relationship",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.10965752699999598,
+                "max": 0.11158056600001487,
+                "mean": 0.11066238269999644,
+                "stddev": 0.0005669071594825854,
+                "rounds": 10,
+                "median": 0.11071110499999293,
+                "iqr": 0.0006151170000237016,
+                "q1": 0.11034121699998423,
+                "q3": 0.11095633400000793,
+                "iqr_outliers": 0,
+                "stddev_outliers": 3,
+                "outliers": "3;0",
+                "ld15iqr": 0.10965752699999598,
+                "hd15iqr": 0.11158056600001487,
+                "ops": 9.036494385910526,
+                "total": 1.1066238269999644,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "model_rendering",
+            "name": "test_render_model[schema_one_to_self_relationship]",
+            "fullname": "tests/model_generator/test_benchmark_model_generator.py::test_render_model[schema_one_to_self_relationship]",
+            "params": {
+                "fixture_name": "schema_one_to_self_relationship"
+            },
+            "param": "schema_one_to_self_relationship",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.10884757299999137,
+                "max": 0.11133492999999817,
+                "mean": 0.10967869539999527,
+                "stddev": 0.0009307106631876198,
+                "rounds": 10,
+                "median": 0.1092531689999845,
+                "iqr": 0.001689739999989115,
+                "q1": 0.10895098599999642,
+                "q3": 0.11064072599998553,
+                "iqr_outliers": 0,
+                "stddev_outliers": 3,
+                "outliers": "3;0",
+                "ld15iqr": 0.10884757299999137,
+                "hd15iqr": 0.11133492999999817,
+                "ops": 9.117540980525222,
+                "total": 1.0967869539999526,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "model_rendering",
+            "name": "test_render_model[schema_with_multiple_levels_of_relationship]",
+            "fullname": "tests/model_generator/test_benchmark_model_generator.py::test_render_model[schema_with_multiple_levels_of_relationship]",
+            "params": {
+                "fixture_name": "schema_with_multiple_levels_of_relationship"
+            },
+            "param": "schema_with_multiple_levels_of_relationship",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.11014564200002042,
+                "max": 0.11291081800001734,
+                "mean": 0.11120555980000404,
+                "stddev": 0.0010463061749091845,
+                "rounds": 10,
+                "median": 0.11085482450000939,
+                "iqr": 0.001464431000016475,
+                "q1": 0.11036887899999215,
+                "q3": 0.11183331000000862,
+                "iqr_outliers": 0,
+                "stddev_outliers": 3,
+                "outliers": "3;0",
+                "ld15iqr": 0.11014564200002042,
+                "hd15iqr": 0.11291081800001734,
+                "ops": 8.992356153760971,
+                "total": 1.1120555980000404,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "model_rendering",
+            "name": "test_render_model[schema_with_decimal_field]",
+            "fullname": "tests/model_generator/test_benchmark_model_generator.py::test_render_model[schema_with_decimal_field]",
+            "params": {
+                "fixture_name": "schema_with_decimal_field"
+            },
+            "param": "schema_with_decimal_field",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.1116280070000073,
+                "max": 0.11250355900000386,
+                "mean": 0.11206915466666739,
+                "stddev": 0.00029520578951420205,
+                "rounds": 9,
+                "median": 0.1121217769999987,
+                "iqr": 0.00044371150001154547,
+                "q1": 0.11181892799999815,
+                "q3": 0.1122626395000097,
+                "iqr_outliers": 0,
+                "stddev_outliers": 4,
+                "outliers": "4;0",
+                "ld15iqr": 0.1116280070000073,
+                "hd15iqr": 0.11250355900000386,
+                "ops": 8.923061862778813,
+                "total": 1.0086223920000066,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "model_rendering",
+            "name": "test_render_model[schema_with_logical_types]",
+            "fullname": "tests/model_generator/test_benchmark_model_generator.py::test_render_model[schema_with_logical_types]",
+            "params": {
+                "fixture_name": "schema_with_logical_types"
+            },
+            "param": "schema_with_logical_types",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.11061248400000068,
+                "max": 0.11387801600000103,
+                "mean": 0.11219476433334169,
+                "stddev": 0.001169546717082573,
+                "rounds": 9,
+                "median": 0.11221803400002273,
+                "iqr": 0.0020301624999845558,
+                "q1": 0.11100193325001584,
+                "q3": 0.1130320957500004,
+                "iqr_outliers": 0,
+                "stddev_outliers": 3,
+                "outliers": "3;0",
+                "ld15iqr": 0.11061248400000068,
+                "hd15iqr": 0.11387801600000103,
+                "ops": 8.913071888353914,
+                "total": 1.0097528790000752,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "model_rendering",
+            "name": "test_render_model[schema_with_logical_types_field_order]",
+            "fullname": "tests/model_generator/test_benchmark_model_generator.py::test_render_model[schema_with_logical_types_field_order]",
+            "params": {
+                "fixture_name": "schema_with_logical_types_field_order"
+            },
+            "param": "schema_with_logical_types_field_order",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.11211687599998754,
+                "max": 0.11355563299997584,
+                "mean": 0.11277980844444199,
+                "stddev": 0.00045449058298257616,
+                "rounds": 9,
+                "median": 0.11272209599999883,
+                "iqr": 0.0004746657500120932,
+                "q1": 0.11252336074998937,
+                "q3": 0.11299802650000146,
+                "iqr_outliers": 0,
+                "stddev_outliers": 3,
+                "outliers": "3;0",
+                "ld15iqr": 0.11211687599998754,
+                "hd15iqr": 0.11355563299997584,
+                "ops": 8.866835418439496,
+                "total": 1.015018275999978,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "model_rendering",
+            "name": "test_render_model[schema_with_unknown_logical_types]",
+            "fullname": "tests/model_generator/test_benchmark_model_generator.py::test_render_model[schema_with_unknown_logical_types]",
+            "params": {
+                "fixture_name": "schema_with_unknown_logical_types"
+            },
+            "param": "schema_with_unknown_logical_types",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.11317951999998854,
+                "max": 0.11904963500001031,
+                "mean": 0.11465216300000709,
+                "stddev": 0.0017064069311809851,
+                "rounds": 9,
+                "median": 0.11430760800001849,
+                "iqr": 0.00046411474998819813,
+                "q1": 0.11398822375002027,
+                "q3": 0.11445233850000847,
+                "iqr_outliers": 2,
+                "stddev_outliers": 1,
+                "outliers": "1;2",
+                "ld15iqr": 0.11361261999999783,
+                "hd15iqr": 0.11904963500001031,
+                "ops": 8.722033443014398,
+                "total": 1.0318694670000639,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "model_rendering",
+            "name": "test_render_model[schema_with_pydantic_fields]",
+            "fullname": "tests/model_generator/test_benchmark_model_generator.py::test_render_model[schema_with_pydantic_fields]",
+            "params": {
+                "fixture_name": "schema_with_pydantic_fields"
+            },
+            "param": "schema_with_pydantic_fields",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.11392882199999121,
+                "max": 0.11623062300000697,
+                "mean": 0.11486330155555101,
+                "stddev": 0.0007408086320839516,
+                "rounds": 9,
+                "median": 0.11486078899997665,
+                "iqr": 0.0009749624999741968,
+                "q1": 0.11424213600000854,
+                "q3": 0.11521709849998274,
+                "iqr_outliers": 0,
+                "stddev_outliers": 3,
+                "outliers": "3;0",
+                "ld15iqr": 0.11392882199999121,
+                "hd15iqr": 0.11623062300000697,
+                "ops": 8.70600084149917,
+                "total": 1.033769713999959,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "model_rendering",
+            "name": "test_render_model[schema_with_pydantic_constrained_fields]",
+            "fullname": "tests/model_generator/test_benchmark_model_generator.py::test_render_model[schema_with_pydantic_constrained_fields]",
+            "params": {
+                "fixture_name": "schema_with_pydantic_constrained_fields"
+            },
+            "param": "schema_with_pydantic_constrained_fields",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.11216169700000478,
+                "max": 0.11487198999998327,
+                "mean": 0.1138331466666658,
+                "stddev": 0.0008578989090584545,
+                "rounds": 9,
+                "median": 0.11395914900001003,
+                "iqr": 0.001166674250001165,
+                "q1": 0.1133844719999999,
+                "q3": 0.11455114625000107,
+                "iqr_outliers": 0,
+                "stddev_outliers": 3,
+                "outliers": "3;0",
+                "ld15iqr": 0.11216169700000478,
+                "hd15iqr": 0.11487198999998327,
+                "ops": 8.784787465537345,
+                "total": 1.0244983199999922,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "model_rendering",
+            "name": "test_render_model[schema_with_pydantic_logical_fields]",
+            "fullname": "tests/model_generator/test_benchmark_model_generator.py::test_render_model[schema_with_pydantic_logical_fields]",
+            "params": {
+                "fixture_name": "schema_with_pydantic_logical_fields"
+            },
+            "param": "schema_with_pydantic_logical_fields",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.11410677399999258,
+                "max": 0.11637448099997982,
+                "mean": 0.11497320077777494,
+                "stddev": 0.0007318264888140035,
+                "rounds": 9,
+                "median": 0.11468130400001542,
+                "iqr": 0.0010140532500102495,
+                "q1": 0.11444881099998838,
+                "q3": 0.11546286424999863,
+                "iqr_outliers": 0,
+                "stddev_outliers": 2,
+                "outliers": "2;0",
+                "ld15iqr": 0.11410677399999258,
+                "hd15iqr": 0.11637448099997982,
+                "ops": 8.69767905246756,
+                "total": 1.0347588069999745,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "model_rendering",
+            "name": "test_render_model[with_fields_with_metadata]",
+            "fullname": "tests/model_generator/test_benchmark_model_generator.py::test_render_model[with_fields_with_metadata]",
+            "params": {
+                "fixture_name": "with_fields_with_metadata"
+            },
+            "param": "with_fields_with_metadata",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.1135412750000171,
+                "max": 0.11920803500001398,
+                "mean": 0.11600783811111468,
+                "stddev": 0.0014551082655160218,
+                "rounds": 9,
+                "median": 0.11585380200000372,
+                "iqr": 0.0006023032500124259,
+                "q1": 0.11561411799999632,
+                "q3": 0.11621642125000875,
+                "iqr_outliers": 2,
+                "stddev_outliers": 2,
+                "outliers": "2;2",
+                "ld15iqr": 0.11551227100000006,
+                "hd15iqr": 0.11920803500001398,
+                "ops": 8.620107195189515,
+                "total": 1.044070543000032,
+                "iterations": 1
+            }
+        },
+        {
+            "group": "model_rendering",
+            "name": "test_render_model[logical_types_not_nested]",
+            "fullname": "tests/model_generator/test_benchmark_model_generator.py::test_render_model[logical_types_not_nested]",
+            "params": {
+                "fixture_name": "logical_types_not_nested"
+            },
+            "param": "logical_types_not_nested",
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 0.11522418399999879,
+                "max": 0.11705568099998231,
+                "mean": 0.11586777766665869,
+                "stddev": 0.0006384151432666762,
+                "rounds": 9,
+                "median": 0.11559324199998855,
+                "iqr": 0.000921562249999397,
+                "q1": 0.11541706299999532,
+                "q3": 0.11633862524999472,
+                "iqr_outliers": 0,
+                "stddev_outliers": 3,
+                "outliers": "3;0",
+                "ld15iqr": 0.11522418399999879,
+                "hd15iqr": 0.11705568099998231,
+                "ops": 8.630527141695175,
+                "total": 1.0428099989999282,
+                "iterations": 1
+            }
+        }
+    ],
+    "datetime": "2026-11-20T14:20:08.396305+00:00",
+    "version": "5.2.3"
+}
