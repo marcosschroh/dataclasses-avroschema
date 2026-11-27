@@ -16,61 +16,31 @@ This section describe how to convert `python classes` from an `avro schema` (avs
 
 ## Mapping `avro fields` to `python fields` summary
 
-=== "python <= 3.10"
-
-    |Avro Type | Python Type  |
-    |-----------|-------------|
-    | string    | str         |
-    | int       | long        |
-    | boolean   | bool        |
-    | float     | double      |
-    | null      | None        |
-    | bytes     | bytes       |
-    | array     | typing.List |
-    | map       | typing.Dict |
-    | fixed     | types.confixed |
-    | enum      | enum.Enum   |
-    | int       | types.Int32 |
-    | float     | types.Float32|
-    | union     | typing.Union|
-    | record    | Python class|
-    | date      | datetime.date|
-    | time-millis| datetime.time|
-    | time-micros| types.TimeMicro|
-    | timestamp-millis| datetime.datetime|
-    | timestamp-micros| types.DateTimeMicro|
-    | local-timestamp-millis| types.LocalDateTime|
-    | local-timestamp-millis-micros| types.LocalDateTimeMicro|
-    | decimal | types.condecimal|
-    | uuid | uuid.UUID    |
-
-=== "python >= 3.11"
-
-    |Avro Type | Python Type  |
-    |-----------|-------------|
-    | string    | str         |
-    | int       | long        |
-    | boolean   | bool        |
-    | float     | double      |
-    | null      | None        |
-    | bytes     | bytes       |
-    | array     | typing.List |
-    | map       | typing.Dict |
-    | fixed     | types.confixed |
-    | enum      | str, enum.Enum   |
-    | int       | types.Int32 |
-    | float     | types.Float32|
-    | union     | typing.Union|
-    | record    | Python class|
-    | date      | datetime.date|
-    | time-millis| datetime.time|
-    | time-micros| types.TimeMicro|
-    | timestamp-millis| datetime.datetime|
-    | timestamp-micros| types.DateTimeMicro|
-    | local-timestamp-millis| types.LocalDateTime|
-    | local-timestamp-millis-micros| types.LocalDateTimeMicro|
-    | decimal | types.condecimal|
-    | uuid | uuid.UUID    |
+|Avro Type | Python Type  |
+|-----------|-------------|
+| string    | str         |
+| int       | long        |
+| boolean   | bool        |
+| float     | double      |
+| null      | None        |
+| bytes     | bytes       |
+| array     | typing.List |
+| map       | typing.Dict |
+| fixed     | types.confixed |
+| enum      | str, enum.Enum   |
+| int       | types.Int32 |
+| float     | types.Float32|
+| union     | typing.Union|
+| record    | Python class|
+| date      | datetime.date|
+| time-millis| datetime.time|
+| time-micros| types.TimeMicro|
+| timestamp-millis| datetime.datetime|
+| timestamp-micros| types.DateTimeMicro|
+| local-timestamp-millis| types.LocalDateTime|
+| local-timestamp-millis-micros| types.LocalDateTimeMicro|
+| decimal | types.condecimal|
+| uuid | uuid.UUID    |
 
 ## Render a Python module
 
@@ -586,32 +556,18 @@ print(result)
 
 Resulting in
 
-=== "python <= 3.10"
-    ```python
-    import enum
+```python
+import enum
 
 
-    class Color(enum.Enum):
-        RED = "red"
-        BLUE = "blue"
+class Color(str, enum.Enum):
+    RED = "red"
+    BLUE = "blue"
 
-        class Meta:
-            default = "blue"
-    ```
-
-=== "python >= 3.11"
-    ```python
-    import enum
-
-
-    class Color(str, enum.Enum):
-        RED = "red"
-        BLUE = "blue"
-
-        @enum.nonmember
-        class Meta:
-            default = "blue"
-    ```
+    @enum.nonmember
+    class Meta:
+        default = "blue"
+```
 
 ### Enums and case sensitivity
 
@@ -648,43 +604,22 @@ with open("models.py", mode="+w") as f:
 
 Then the result will be:
 
-=== "python <= 3.10"
-
-    ```python
-    # models.py
-    from dataclasses_avroschema import AvroModel
-    import dataclasses
-    import enum
+```python
+# models.py
+from dataclasses_avroschema import AvroModel
+import dataclasses
+import enum
 
 
-    class UnitMultiPlayer(enum.Enum):
-        Q = "Q"
-        q = "q"
+class UnitMultiPlayer(str, enum.Enum):
+    Q = "Q"
+    q = "q"
 
 
-    @dataclasses.dataclass
-    class User(AvroModel):
-        unit_multi_player: UnitMultiPlayer
-    ```
-
-=== "python >= 3.11"
-
-    ```python
-    # models.py
-    from dataclasses_avroschema import AvroModel
-    import dataclasses
-    import enum
-
-
-    class UnitMultiPlayer(str, enum.Enum):
-        Q = "Q"
-        q = "q"
-
-
-    @dataclasses.dataclass
-    class User(AvroModel):
-        unit_multi_player: UnitMultiPlayer
-    ```
+@dataclasses.dataclass
+class User(AvroModel):
+    unit_multi_player: UnitMultiPlayer
+```
 
 As the example shows the second enum member `UnitMultiPlayer.p` is not in uppercase otherwise will collide with the first member `UnitMultiPlayer.P`
 

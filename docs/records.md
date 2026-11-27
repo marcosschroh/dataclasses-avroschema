@@ -235,8 +235,8 @@ It is possible to have inheritance so you do not have to repeat the same code. Y
 attributes with default values and that can cause `TypeError: non-default argument` errors.
 
 !!! hint
-    With Python 3.10, it is now possible to do it natively with dataclasses.
-    Dataclasses 3.10 added the `kw_only` attribute (similar to attrs). It allows you to specify which fields are keyword_only,
+    With Python >= 3.11, it is now possible to do it natively with dataclasses.
+    Dataclasses >= 3.11 added the `kw_only` attribute (similar to attrs). It allows you to specify which fields are keyword_only,
     thus will be set at the end of the init, not causing an inheritance problem.
 
 ```python

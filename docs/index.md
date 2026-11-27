@@ -5,11 +5,11 @@ Generate [Avro](https://avro.apache.org/docs/1.8.2/spec.html) Schemas from a Pyt
 [![Tests](https://github.com/marcosschroh/dataclasses-avroschema/actions/workflows/tests.yaml/badge.svg)](https://github.com/marcosschroh/dataclasses-avroschema/actions/workflows/tests.yaml)
 [![GitHub license](https://img.shields.io/github/license/marcosschroh/dataclasses-avroschema.svg)](https://github.com/marcosschroh/dataclasses-avroschema/blob/master/LICENSE)
 [![codecov](https://codecov.io/gh/marcosschroh/dataclasses-avroschema/branch/master/graph/badge.svg)](https://codecov.io/gh/marcosschroh/dataclasses-avroschema)
-![python version](https://img.shields.io/badge/python-3.10%2B-yellowgreen)
+![python version](https://img.shields.io/badge/python-3.11%2B-yellowgreen)
 
 ## Requirements
 
-`python 3.10+`
+`python 3.11+`
 
 ## Installation
 
@@ -30,144 +30,71 @@ with `pip` or `poetry`:
 
 ### Generating the avro schema
 
-=== "python <= 3.10"
+```python title="Trival Usage"
+import enum
+import typing
+import dataclasses
 
-    ```python title="Trival Usage"
-    import enum
-    import typing
-    import dataclasses
-
-    from dataclasses_avroschema import AvroModel
+from dataclasses_avroschema import AvroModel
 
 
-    class FavoriteColor(enum.Enum):
-        BLUE = "Blue"
-        YELLOW = "Yellow"
-        GREEN = "Green"
+class FavoriteColor(str, enum.Enum):
+    BLUE = "Blue"
+    YELLOW = "Yellow"
+    GREEN = "Green"
 
 
-    @dataclasses.dataclass
-    class User(AvroModel):
-        "An User"
-        name: str
-        age: int
-        pets: typing.List[str]
-        accounts: typing.Dict[str, int]
-        favorite_color: FavoriteColor
-        country: str = "Argentina"
-        address: str = None
+@dataclasses.dataclass
+class User(AvroModel):
+    "An User"
+    name: str
+    age: int
+    pets: typing.List[str]
+    accounts: typing.Dict[str, int]
+    favorite_color: FavoriteColor
+    country: str = "Argentina"
+    address: str = None
 
-        class Meta:
-            namespace = "User.v1"
-            aliases = ["user-v1", "super user"]
-
-
-    User.avro_schema()
-
-    '{
-        "type": "record",
-        "name": "User",
-        "doc": "An User",
-        "namespace": "User.v1",
-        "aliases": ["user-v1", "super user"],
-        "fields": [
-            {"name": "name", "type": "string"},
-            {"name": "age", "type": "long"},
-            {"name": "pets", "type": "array", "items": "string"},
-            {"name": "accounts", "type": "map", "values": "long"},
-            {"name": "favorite_color", "type": {"type": "enum", "name": "FavoriteColor", "symbols": ["Blue", "Yellow", "Green"]}}
-            {"name": "country", "type": "string", "default": "Argentina"},
-            {"name": "address", "type": ["null", "string"], "default": null}
-        ]
-    }'
-
-    User.avro_schema_to_python()
-
-    {
-        "type": "record",
-        "name": "User",
-        "doc": "An User",
-        "namespace": "User.v1",
-        "aliases": ["user-v1", "super user"],
-        "fields": [
-            {"name": "name", "type": "string"},
-            {"name": "age", "type": "long"},
-            {"name": "pets", "type": {"type": "array", "items": "string", "name": "pet"}},
-            {"name": "accounts", "type": {"type": "map", "values": "long", "name": "account"}},
-            {"name": "favorite_color", "type": {"type": "enum", "name": "FavoriteColor", "symbols": ["BLUE", "YELLOW", "GREEN"]}},
-            {"name": "country", "type": "string", "default": "Argentina"},
-            {"name": "address", "type": ["null", "string"], "default": None}
-        ],
-    }
-    ```
-
-=== "python >= 3.11"
-
-    ```python title="Trival Usage"
-    import enum
-    import typing
-    import dataclasses
-
-    from dataclasses_avroschema import AvroModel
+    class Meta:
+        namespace = "User.v1"
+        aliases = ["user-v1", "super user"]
 
 
-    class FavoriteColor(str, enum.Enum):
-        BLUE = "Blue"
-        YELLOW = "Yellow"
-        GREEN = "Green"
+User.avro_schema()
 
+'{
+    "type": "record",
+    "name": "User",
+    "doc": "An User",
+    "namespace": "User.v1",
+    "aliases": ["user-v1", "super user"],
+    "fields": [
+        {"name": "name", "type": "string"},
+        {"name": "age", "type": "long"},
+        {"name": "pets", "type": "array", "items": "string"},
+        {"name": "accounts", "type": "map", "values": "long"},
+        {"name": "favorite_color", "type": {"type": "enum", "name": "FavoriteColor", "symbols": ["Blue", "Yellow", "Green"]}}
+        {"name": "country", "type": "string", "default": "Argentina"},
+        {"name": "address", "type": ["null", "string"], "default": null}
+    ]
+}'
 
-    @dataclasses.dataclass
-    class User(AvroModel):
-        "An User"
-        name: str
-        age: int
-        pets: typing.List[str]
-        accounts: typing.Dict[str, int]
-        favorite_color: FavoriteColor
-        country: str = "Argentina"
-        address: str = None
+User.avro_schema_to_python()
 
-        class Meta:
-            namespace = "User.v1"
-            aliases = ["user-v1", "super user"]
-
-
-    User.avro_schema()
-
-    '{
-        "type": "record",
-        "name": "User",
-        "doc": "An User",
-        "namespace": "User.v1",
-        "aliases": ["user-v1", "super user"],
-        "fields": [
-            {"name": "name", "type": "string"},
-            {"name": "age", "type": "long"},
-            {"name": "pets", "type": "array", "items": "string"},
-            {"name": "accounts", "type": "map", "values": "long"},
-            {"name": "favorite_color", "type": {"type": "enum", "name": "FavoriteColor", "symbols": ["Blue", "Yellow", "Green"]}}
-            {"name": "country", "type": "string", "default": "Argentina"},
-            {"name": "address", "type": ["null", "string"], "default": null}
-        ]
-    }'
-
-    User.avro_schema_to_python()
-
-    {
-        "type": "record",
-        "name": "User",
-        "doc": "An User",
-        "namespace": "User.v1",
-        "aliases": ["user-v1", "super user"],
-        "fields": [
-            {"name": "name", "type": "string"},
-            {"name": "age", "type": "long"},
-            {"name": "pets", "type": {"type": "array", "items": "string", "name": "pet"}},
-            {"name": "accounts", "type": {"type": "map", "values": "long", "name": "account"}},
-            {"name": "favorite_color", "type": {"type": "enum", "name": "FavoriteColor", "symbols": ["BLUE", "YELLOW", "GREEN"]}},
-            {"name": "country", "type": "string", "default": "Argentina"},
-            {"name": "address", "type": ["null", "string"], "default": None}
-        ],
-    }
-    ```
+{
+    "type": "record",
+    "name": "User",
+    "doc": "An User",
+    "namespace": "User.v1",
+    "aliases": ["user-v1", "super user"],
+    "fields": [
+        {"name": "name", "type": "string"},
+        {"name": "age", "type": "long"},
+        {"name": "pets", "type": {"type": "array", "items": "string", "name": "pet"}},
+        {"name": "accounts", "type": {"type": "map", "values": "long", "name": "account"}},
+        {"name": "favorite_color", "type": {"type": "enum", "name": "FavoriteColor", "symbols": ["BLUE", "YELLOW", "GREEN"]}},
+        {"name": "country", "type": "string", "default": "Argentina"},
+        {"name": "address", "type": ["null", "string"], "default": None}
+    ],
+}
+```
