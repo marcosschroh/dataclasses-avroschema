@@ -1200,8 +1200,8 @@ the same approach as <code>pydantic</code> with <code>parse_obj</code> method. T
 attributes with default values and that can cause <code>TypeError: non-default argument</code> errors.</p>
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
-<p>With Python 3.10, it is now possible to do it natively with dataclasses.
-Dataclasses 3.10 added the <code>kw_only</code> attribute (similar to attrs). It allows you to specify which fields are keyword_only,
+<p>With Python &gt;= 3.11, it is now possible to do it natively with dataclasses.
+Dataclasses &gt;= 3.11 added the <code>kw_only</code> attribute (similar to attrs). It allows you to specify which fields are keyword_only,
 thus will be set at the end of the init, not causing an inheritance problem.</p>
 </div>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
