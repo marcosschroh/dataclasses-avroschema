@@ -3,134 +3,68 @@
 Sometimes we use `avro schemas` with different sources (some written in Scala, some in Python, etc). With the `case`
 you can generate your schemas according to your programming language convention:
 
-=== "python <= 3.10"
+```python  title="Example with CAPITALCASE"
+import typing
+import dataclasses
+import enum
 
-    ```python  title="Example with CAPITALCASE"
-    import typing
-    import dataclasses
-    import enum
-
-    from dataclasses_avroschema import AvroModel, case, types
+from dataclasses_avroschema import AvroModel, case, types
 
 
-    class FavoriteColor(enum.Enum):
-        BLUE = "BLUE"
-        YELLOW = "YELLOW"
-        GREEN = "GREEN"
+# New enum!!
+class FavoriteColor(str, enum.Enum):
+    BLUE = "BLUE"
+    YELLOW = "YELLOW"
+    GREEN = "GREEN"
 
 
-    @dataclasses.dataclass
-    class UserAdvance(AvroModel):
-        name: str
-        age: int
-        pets: typing.List[str]
-        accounts: typing.Dict[str, int]
-        favorite_colors: FavoriteColor
-        has_car: bool = False
-        country: str = "Argentina"
-        address: str = None
-        md5: types.Fixed = types.Fixed(16)
+@dataclasses.dataclass
+class UserAdvance(AvroModel):
+    name: str
+    age: int
+    pets: typing.List[str]
+    accounts: typing.Dict[str, int]
+    favorite_colors: FavoriteColor
+    has_car: bool = False
+    country: str = "Argentina"
+    address: str = None
+    md5: types.Fixed = types.Fixed(16)
 
-        class Meta:
-            schema_doc = False
-
-
-    UserAdvance.avro_schema(case_type=case.CAPITALCASE)
-    ```
-
-    resulting in
-
-    ```json
-    {
-        "type": "record", 
-        "name": "UserAdvance", 
-        "fields": [
-            {"name": "Name", "type": "string"},
-            {"name": "Age", "type": "long"},
-            {"name": "Pets", "type": {
-                "type": "array", "items": "string", "name": "Pet"
-                }
-            },
-            {"name": "Accounts", "type": {
-                "type": "map", "values": "long", "name": "Account"
-                }
-            },
-            {"name": "Has_car", "type": "boolean", "default": false},
-            {"name": "Favorite_colors", "type": {
-                "type": "enum", "name": "FavoriteColor", "symbols": ["BLUE", "YELLOW", "GREEN"]
-                }
-            },
-            {"name": "Country", "type": "string", "default": "Argentina"},
-            {"name": "Address", "type": ["null", "string"], "default": null},
-            {"name": "Md5", "type": {"type": "fixed", "name": "Md5", "size": 16}}
-        ]
-    }'
-    ```
-
-=== "python >= 3.11"
-
-    ```python  title="Example with CAPITALCASE"
-    import typing
-    import dataclasses
-    import enum
-
-    from dataclasses_avroschema import AvroModel, case, types
+    class Meta:
+        schema_doc = False
 
 
-    # New enum!!
-    class FavoriteColor(str, enum.Enum):
-        BLUE = "BLUE"
-        YELLOW = "YELLOW"
-        GREEN = "GREEN"
+UserAdvance.avro_schema(case_type=case.CAPITALCASE)
+```
 
+resulting in
 
-    @dataclasses.dataclass
-    class UserAdvance(AvroModel):
-        name: str
-        age: int
-        pets: typing.List[str]
-        accounts: typing.Dict[str, int]
-        favorite_colors: FavoriteColor
-        has_car: bool = False
-        country: str = "Argentina"
-        address: str = None
-        md5: types.Fixed = types.Fixed(16)
-
-        class Meta:
-            schema_doc = False
-
-
-    UserAdvance.avro_schema(case_type=case.CAPITALCASE)
-    ```
-
-    resulting in
-
-    ```json
-    {
-        "type": "record", 
-        "name": "UserAdvance", 
-        "fields": [
-            {"name": "Name", "type": "string"},
-            {"name": "Age", "type": "long"},
-            {"name": "Pets", "type": {
-                "type": "array", "items": "string", "name": "Pet"
-                }
-            },
-            {"name": "Accounts", "type": {
-                "type": "map", "values": "long", "name": "Account"
-                }
-            },
-            {"name": "Has_car", "type": "boolean", "default": false},
-            {"name": "Favorite_colors", "type": {
-                "type": "enum", "name": "FavoriteColor", "symbols": ["BLUE", "YELLOW", "GREEN"]
-                }
-            },
-            {"name": "Country", "type": "string", "default": "Argentina"},
-            {"name": "Address", "type": ["null", "string"], "default": null},
-            {"name": "Md5", "type": {"type": "fixed", "name": "Md5", "size": 16}}
-        ]
-    }'
-    ```
+```json
+{
+    "type": "record", 
+    "name": "UserAdvance", 
+    "fields": [
+        {"name": "Name", "type": "string"},
+        {"name": "Age", "type": "long"},
+        {"name": "Pets", "type": {
+            "type": "array", "items": "string", "name": "Pet"
+            }
+        },
+        {"name": "Accounts", "type": {
+            "type": "map", "values": "long", "name": "Account"
+            }
+        },
+        {"name": "Has_car", "type": "boolean", "default": false},
+        {"name": "Favorite_colors", "type": {
+            "type": "enum", "name": "FavoriteColor", "symbols": ["BLUE", "YELLOW", "GREEN"]
+            }
+        },
+        {"name": "Country", "type": "string", "default": "Argentina"},
+        {"name": "Address", "type": ["null", "string"], "default": null},
+        {"name": "Md5", "type": {"type": "fixed", "name": "Md5", "size": 16}}
+    ]
+}'
+```
 
 *(This script is complete, it should run "as is")*
 

@@ -6,7 +6,6 @@ import sys
 import typing
 import uuid
 
-import pytest
 from fastavro import parse_schema
 
 from dataclasses_avroschema import AvroModel
@@ -113,7 +112,6 @@ def test_schema_with_optional_enum_defaults(
     assert LimitTest.avro_schema() == json.dumps(optional_enum_with_default_schema)
 
 
-@pytest.mark.skipif(condition=PY_VER < (3, 10), reason="Union with syntax | is only for python >= 3.10")
 def test_schema_with_new_unions_type_syntax(union_type_schema: JsonDict) -> None:
     @dataclasses.dataclass
     class Bus(AvroModel):
@@ -160,7 +158,6 @@ def test_schema_with_new_unions_type_syntax(union_type_schema: JsonDict) -> None
 # The following two tests were written for Issue 85 - Union field with default generating out-of-spec schema
 # This test is written explicitly to adhere to the Avro spec. The general behavior is covered in other tests,
 # but the schemas generated are out-of-spec currently
-@pytest.mark.skipif(condition=PY_VER < (3, 10), reason="Union with syntax | is only for python >= 3.10")
 def test_schema_with_new_unions_defaults_syntax(default_union_schema: JsonDict) -> None:
     class UserType(enum.Enum):
         BASIC = "Basic"

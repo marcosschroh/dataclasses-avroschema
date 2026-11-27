@@ -2,146 +2,73 @@
 
 The following list represent the avro complex types mapped to python types:
 
-=== "python <= 3.10"
-
-    | Avro Type          | Python Type                                                        |
-    | ------------------ | ------------------------------------------------------------------ |
-    | enums              | enum.Enum, typing.Literal[str]                                |
-    | arrays             | typing.List, typing.Tuple, typing.Sequence, typing.MutableSequence |
-    | maps               | typing.Dict, typing.Mapping, typing.MutableMapping                 |
-    | fixed              | types.confixed                                                     |
-    | unions             | typing.Union                                                       |
-    | unions with `null` | typing.Optional                                                    |
-    | records            | Python Class                                                       |
-
-=== "python >= 3.11"
-
-    | Avro Type          | Python Type                                                        |
-    | ------------------ | ------------------------------------------------------------------ |
-    | enums              | str, enum.Enum, typing.Literal[str]                                |
-    | arrays             | typing.List, typing.Tuple, typing.Sequence, typing.MutableSequence |
-    | maps               | typing.Dict, typing.Mapping, typing.MutableMapping                 |
-    | fixed              | types.confixed                                                     |
-    | unions             | typing.Union                                                       |
-    | unions with `null` | typing.Optional                                                    |
-    | records            | Python Class                                                       |
+| Avro Type          | Python Type                                                        |
+| ------------------ | ------------------------------------------------------------------ |
+| enums              | str, enum.Enum, typing.Literal[str]                                |
+| arrays             | typing.List, typing.Tuple, typing.Sequence, typing.MutableSequence |
+| maps               | typing.Dict, typing.Mapping, typing.MutableMapping                 |
+| fixed              | types.confixed                                                     |
+| unions             | typing.Union                                                       |
+| unions with `null` | typing.Optional                                                    |
+| records            | Python Class                                                       |
 
 ## Enums
 
-=== "python <= 3.10"
+```python title="Enum example"
+import enum
+import dataclasses
 
-    ```python title="Enum example"
-    import enum
-    import dataclasses
-
-    from dataclasses_avroschema import AvroModel
+from dataclasses_avroschema import AvroModel
 
 
-    class FavoriteColor(enum.Enum):
-        BLUE = "Blue"
-        YELLOW = "Yellow"
-        GREEN = "Green"
-        
-        class Meta:
-            doc = "A favorite color"
-            namespace = "some.name.space"
-            aliases = ["Color", "My favorite color"]
+class FavoriteColor(str, enum.Enum):
+    BLUE = "Blue"
+    YELLOW = "Yellow"
+    GREEN = "Green"
+    
+    @enum.nonmember
+    class Meta:
+        doc = "A favorite color"
+        namespace = "some.name.space"
+        aliases = ["Color", "My favorite color"]
 
 
-    @dataclasses.dataclass
-    class User(AvroModel):
-        "An User"
-        favorite_color: FavoriteColor = FavoriteColor.BLUE
+@dataclasses.dataclass
+class User(AvroModel):
+    "An User"
+    favorite_color: FavoriteColor = FavoriteColor.BLUE
 
 
-    User.avro_schema()
+User.avro_schema()
 
-    '{
-      "type": "record",
-      "name": "User",
-      "fields":
-      [
-        {
-          "name": "favorite_color",
-          "type":
-          {
-            "type": "enum",
-            "name": "FavoriteColor",
-            "symbols":
-            [
-              "Blue",
-              "Yellow",
-              "Green"
-            ],
-            "doc": "A favorite color",
-            "namespace": "some.name.space",
-            "aliases":
-            ["Color", "My favorite color"]
-          },
-          "default": "Blue"
-        }
-      ],
-      "doc": "An User"
-    }'
-    ```
-
-=== "python >= 3.11"
-
-    ```python title="Enum example"
-    import enum
-    import dataclasses
-
-    from dataclasses_avroschema import AvroModel
-
-
-    class FavoriteColor(str, enum.Enum):
-        BLUE = "Blue"
-        YELLOW = "Yellow"
-        GREEN = "Green"
-        
-        @enum.nonmember
-        class Meta:
-            doc = "A favorite color"
-            namespace = "some.name.space"
-            aliases = ["Color", "My favorite color"]
-
-
-    @dataclasses.dataclass
-    class User(AvroModel):
-        "An User"
-        favorite_color: FavoriteColor = FavoriteColor.BLUE
-
-
-    User.avro_schema()
-
-    '{
-      "type": "record",
-      "name": "User",
-      "fields":
-      [
-        {
-          "name": "favorite_color",
-          "type":
-          {
-            "type": "enum",
-            "name": "FavoriteColor",
-            "symbols":
-            [
-              "Blue",
-              "Yellow",
-              "Green"
-            ],
-            "doc": "A favorite color",
-            "namespace": "some.name.space",
-            "aliases":
-            ["Color", "My favorite color"]
-          },
-          "default": "Blue"
-        }
-      ],
-      "doc": "An User"
-    }'
-    ```
+'{
+  "type": "record",
+  "name": "User",
+  "fields":
+  [
+    {
+      "name": "favorite_color",
+      "type":
+      {
+        "type": "enum",
+        "name": "FavoriteColor",
+        "symbols":
+        [
+          "Blue",
+          "Yellow",
+          "Green"
+        ],
+        "doc": "A favorite color",
+        "namespace": "some.name.space",
+        "aliases":
+        ["Color", "My favorite color"]
+      },
+      "default": "Blue"
+    }
+  ],
+  "doc": "An User"
+}'
+```
 
 !!! info
     There are not restriction about `enum` names but is is highly recommended to use `pascalcase`
@@ -208,62 +135,32 @@ For this behaviour the attribute `convert_literal_to_enum` must be set to `True`
 Sometimes we have cases where an `Enum` is used more than once with a particular class, for those cases the same `type` is used in order to generate a valid schema.
 It is a good practice but *NOT* neccesary to a define the `namespace` on the repeated `type`.
 
-=== "python <= 3.10"
+```python
+import enum
+import dataclasses
+import typing
 
-    ```python
-    import enum
-    import dataclasses
-    import typing
-
-    from dataclasses_avroschema import AvroModel
+from dataclasses_avroschema import AvroModel
 
 
-    class TripDistance(enum.Enum):
-        CLOSE = "Close"
-        FAR = "Far"
+class TripDistance(str, enum.Enum):
+    CLOSE = "Close"
+    FAR = "Far"
 
-        class Meta:
-            doc = "Distance of the trip"
-            namespace = "trip"
-
-
-    @dataclasses.dataclass
-    class User(AvroModel):
-        trip_distance: TripDistance
-        optional_distance: typing.Optional[TripDistance] = None
+    @enum.nonmember
+    class Meta:
+        doc = "Distance of the trip"
+        namespace = "trip"
 
 
-    print(User.avro_schema())
-    ```
-
-=== "python >= 3.11"
-
-    ```python
-    import enum
-    import dataclasses
-    import typing
-
-    from dataclasses_avroschema import AvroModel
+@dataclasses.dataclass
+class User(AvroModel):
+    trip_distance: TripDistance
+    optional_distance: typing.Optional[TripDistance] = None
 
 
-    class TripDistance(str, enum.Enum):
-        CLOSE = "Close"
-        FAR = "Far"
-
-        @enum.nonmember
-        class Meta:
-            doc = "Distance of the trip"
-            namespace = "trip"
-
-
-    @dataclasses.dataclass
-    class User(AvroModel):
-        trip_distance: TripDistance
-        optional_distance: typing.Optional[TripDistance] = None
-
-
-    print(User.avro_schema())
-    ```
+print(User.avro_schema())
+```
 
 resulting in
 
@@ -334,52 +231,27 @@ From `avro 1.9.0` it is possible to set `enum type level default`: *Enum type le
 
 The question is: how can we set a `enum type level default`?. The answer is using the `class Meta`
 
-=== "python <= 3.10"
+```python
+import enum
+import dataclasses
 
-    ```python
-    import enum
-    import dataclasses
-
-    from dataclasses_avroschema import AvroModel
+from dataclasses_avroschema import AvroModel
 
 
-    class MyEnum(enum.Enum):
-        A = "A"
-        B = "B"
-        UNKNOWN = "Unknown"
+class MyEnum(str, enum.Enum):
+    A = "A"
+    B = "B"
+    UNKNOWN = "Unknown"
 
-        class Meta:
-            default = "Unknown"
-
-
-    @dataclasses.dataclass
-    class MyRecord(AvroModel):
-        my_field: MyEnum = MyEnum.UNKNOWN
-    ```
-
-=== "python >= 3.11"
-
-    ```python
-    import enum
-    import dataclasses
-
-    from dataclasses_avroschema import AvroModel
+    @enum.nonmember
+    class Meta:
+        default = "Unknown"
 
 
-    class MyEnum(str, enum.Enum):
-        A = "A"
-        B = "B"
-        UNKNOWN = "Unknown"
-
-        @enum.nonmember
-        class Meta:
-            default = "Unknown"
-
-
-    @dataclasses.dataclass
-    class User(AvroModel):
-        my_field: MyEnum = MyEnum.UNKNOWN
-    ```
+@dataclasses.dataclass
+class User(AvroModel):
+    my_field: MyEnum = MyEnum.UNKNOWN
+```
 
 !!! warning
     This is great because we achieve avro `FULL COMPATIBILITY`, however this can lead to confusing scenarios.
@@ -530,49 +402,25 @@ UnionSchema.avro_schema()
 
 ## Unions
 
-=== "python <= 3.9"
+``` python
+import typing
+import dataclasses
+import datetime
+import uuid
 
-    ```python
-    import typing
-    import dataclasses
-    import datetime
-    import uuid
-
-    from dataclasses_avroschema import AvroModel
+from dataclasses_avroschema import AvroModel
 
 
-    @dataclasses.dataclass
-    class UnionSchema(AvroModel):
-        "Some Unions"
-        first_union: typing.Union[str, int]
-        logical_union: typing.Union[datetime.datetime, datetime.date, uuid.uuid4]
-        second_union: typing.Union[str, int] = "test"
-        third_union: typing.Union[int, str] = 'STRING TYPE'
+@dataclasses.dataclass
+class UnionSchema(AvroModel):
+    "Some Unions"
+    first_union: str | int
+    logical_union: datetime.datetime | datetime.date | uuid.uuid
+    second_union: str | int = "test"
+    third_union: int | str = 'STRING TYPE'
 
-    UnionSchema.avro_schema()
-    ```
-
-=== "python3.10"
-
-    ``` python
-    import typing
-    import dataclasses
-    import datetime
-    import uuid
-
-    from dataclasses_avroschema import AvroModel
-
-
-    @dataclasses.dataclass
-    class UnionSchema(AvroModel):
-        "Some Unions"
-        first_union: str | int
-        logical_union: datetime.datetime | datetime.date | uuid.uuid
-        second_union: str | int = "test"
-        third_union: int | str = 'STRING TYPE'
-
-    UnionSchema.avro_schema()
-    ```
+UnionSchema.avro_schema()
+```
 
 ```json title="result"
 {
@@ -591,81 +439,41 @@ UnionSchema.avro_schema()
 ```  
 
 ### Union with Records
-
-=== "python <= 3.9"
-
-    ```python
-    import typing
-    import dataclasses
-    from dataclasses_avroschema import AvroModel
-
-
-    @dataclasses.dataclass
-    class Bus(AvroModel):
-        "A Bus"
-        engine_name: str
-
-        class Meta:
-            namespace = "types"
-
-
-    @dataclasses.dataclass
-    class Car(AvroModel):
-        "A Car"
-        engine_name: str
-
-        class Meta:
-            namespace = "types"
-
-
-    @dataclasses.dataclass
-    class UnionSchema(AvroModel):
-      "Some Unions"
-      lake_trip: typing.Union[Bus, Car]
-      river_trip: typing.Union[Bus, Car] = None
-      mountain_trip: typing.Union[Bus, Car] = dataclasses.field(
-        default_factory=lambda: Bus(engine_name="honda")
-      )
-
-    UnionSchema.avro_schema()
-    ```
   
-=== "python3.10"
-
-    ```python
-    import dataclasses
-    from dataclasses_avroschema import AvroModel
+```python
+import dataclasses
+from dataclasses_avroschema import AvroModel
 
 
-    @dataclasses.dataclass
-    class Bus(AvroModel):
-        "A Bus"
-        engine_name: str
+@dataclasses.dataclass
+class Bus(AvroModel):
+    "A Bus"
+    engine_name: str
 
-        class Meta:
-            namespace = "types"
-
-
-    @dataclasses.dataclass
-    class Car(AvroModel):
-        "A Car"
-        engine_name: str
-
-        class Meta:
-            namespace = "types"
+    class Meta:
+        namespace = "types"
 
 
-    @dataclasses.dataclass
-    class UnionSchema(AvroModel):
-      "Some Unions"
-      lake_trip: Bus | Car
-      river_trip: Bus | Car | None = None
-      mountain_trip: Bus | Car = dataclasses.field(
-        default_factory=lambda: Bus(engine_name="honda")
-      )
+@dataclasses.dataclass
+class Car(AvroModel):
+    "A Car"
+    engine_name: str
 
-    UnionSchema.avro_schema()
-    ```
+    class Meta:
+        namespace = "types"
+
+
+@dataclasses.dataclass
+class UnionSchema(AvroModel):
+  "Some Unions"
+  lake_trip: Bus | Car
+  river_trip: Bus | Car | None = None
+  mountain_trip: Bus | Car = dataclasses.field(
+    default_factory=lambda: Bus(engine_name="honda")
+  )
+
+UnionSchema.avro_schema()
+```
 
 ```json title="result"
 {
@@ -729,41 +537,21 @@ UnionSchema.avro_schema()
 `typing.Optional[Any]` is translated as an optional Union: `typing.Union[Any, NoneType]` where `NoneType`
 is always at the end
 
-=== "python <= 3.9"
+```python
+import typing
+import dataclasses
 
-    ```python
-    import typing
-    import dataclasses
-
-    from dataclasses_avroschema import AvroModel
-    from dataclasses import dataclass, field
+from dataclasses_avroschema import AvroModel
+from dataclasses import dataclass, field
 
 
-    @dataclasses.dataclass
-    class X(AvroModel):
-        y: typing.Optional[typing.List[int]]
+@dataclasses.dataclass
+class X(AvroModel):
+    y: typing.List[int] | None
 
 
-    X.avro_schema()
-    ```
-
-=== "python3.10"
-
-    ```python
-    import typing
-    import dataclasses
-
-    from dataclasses_avroschema import AvroModel
-    from dataclasses import dataclass, field
-
-
-    @dataclasses.dataclass
-    class X(AvroModel):
-        y: typing.List[int] | None
-
-
-    X.avro_schema()
-    ```
+X.avro_schema()
+```
 
 ```json title="result"
 {
